@@ -14,8 +14,7 @@ Graph Representation Integrating Signals for Emotion Recognition and Analysis (G
 ## Setup steps
 1. `$ python3 -m venv venv`
 1. `$ source venv/bin/activate`
-1. `(venv) $ pip install fastapi`
-1. `(venv) $ pip install uvicorn[standard]`
+1. `(venv) $ pip install -r requirements.txt`
 
 ## Start Uvicorn server 
 `(venv) $ uvicorn main:app --reload`
