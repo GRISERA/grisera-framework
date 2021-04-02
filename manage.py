@@ -5,7 +5,10 @@ import sys
 if 'test' in sys.argv:
     loader = unittest.TestLoader()
 
-    tests_dir = '.'
+    try:
+        tests_dir = f'tests/{sys.argv[2]}_tests'
+    except IndexError:
+        tests_dir = 'tests'
     tests = loader.discover(tests_dir)
 
     runner = unittest.TextTestRunner()

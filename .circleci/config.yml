@@ -4,27 +4,29 @@ orbs:
   python: circleci/python@1.3.4
 
 jobs:
-  build-and-test:
+  graph-api-build-and-test:
     executor: python/default
     steps:
       - checkout
-      - restore_cache:
-          key: cache-{{ .Branch }}
       - python/install-packages:
           app-dir: ./graph_api
           pkg-manager: pip
+      - run:
+          command: python ./manage.py test graph_api
+          name: Test
+  grisera-api-build-and-test:
+    executor: python/default
+    steps:
+      - checkout
       - python/install-packages:
           app-dir: ./grisera_api
           pkg-manager: pip
-      - save_cache:
-          key: cache-{{ .Branch }}
-          paths: 
-            - .
       - run:
-          command: ./manage.py test
+          command: python ./manage.py test grisera_api
           name: Test
 
 workflows:
   main:
     jobs:
-      - build-and-test
+      - graph-api-build-and-test
+      - grisera-api-build-and-test
