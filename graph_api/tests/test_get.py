@@ -1,4 +1,4 @@
-import graph_api.main as main
+import main
 import unittest
 import asyncio
 

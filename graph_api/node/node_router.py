@@ -1,9 +1,9 @@
 from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
-from .node_model import NodeIn, NodeOut
-from .node_service import NodeService
-from ..hateoas import get_links
+from node.node_model import NodeIn, NodeOut
+from node.node_service import NodeService
+from hateoas import get_links
 
 router = InferringRouter()
 

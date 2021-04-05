@@ -1,7 +1,7 @@
 import requests
 from requests.auth import HTTPBasicAuth
-from ..database_config import database
-from .node_model import NodeOut
+from database_config import database
+from node.node_model import NodeOut
 
 
 class NodeService:

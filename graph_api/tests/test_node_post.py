@@ -1,4 +1,4 @@
-from graph_api.node.node_router import *
+from node.node_router import *
 import unittest
 import unittest.mock as mock
 import asyncio

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from .node.node_router import router
-from .hateoas import get_links
+from node.node_router import router
+from hateoas import get_links
 
 app = FastAPI()
 
