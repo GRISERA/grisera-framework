@@ -6,4 +6,7 @@ import asyncio
 class TestGet(unittest.TestCase):
 
     def test_root(self):
-        self.assertEqual(asyncio.run(main.root()), {"title": "Graph DB API"})
+        expect = {"title": "Graph DB API"}
+        expect.update({'links': main.get_links(main.app)})
+        
+        self.assertEqual(asyncio.run(main.root()), expect)

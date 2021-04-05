@@ -3,6 +3,7 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from .node_model import NodeIn, NodeOut
 from .node_service import NodeService
+from ..hateoas import get_links
 
 router = InferringRouter()
 
@@ -23,8 +24,10 @@ class NodeRouter:
         Create node with optional labels
         """
         create_response = self.node_service.save_node(node)
-
         if create_response.errors is not None:
             response.status_code = 422
+
+        # add links from hateoas
+        create_response.links = get_links(router)
 
         return create_response

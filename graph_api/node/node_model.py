@@ -22,3 +22,4 @@ class NodeOut(NodeIn):
     """
     id: Optional[int]
     errors: Optional[Any] = None
+    links: Optional[list] = None

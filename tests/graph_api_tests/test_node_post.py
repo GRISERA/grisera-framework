@@ -20,7 +20,7 @@ class TestNodePost(unittest.TestCase):
 
         result = asyncio.run(node_router.create_node(node, response))
 
-        self.assertEqual(result, NodeOut(id=5, labels={"test"}, errors=None))
+        self.assertEqual(result, NodeOut(id=5, labels={"test"}, errors=None, links=get_links(router)))
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(NodeService, 'save_node')

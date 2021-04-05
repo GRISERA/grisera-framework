@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from .node.node_router import router
-
+from .hateoas import get_links
 
 app = FastAPI()
 
@@ -12,6 +12,7 @@ async def root():
     """
     Return home page of api
     """
-    return {"title": "Graph DB API"}
-
+    response = {"title": "Graph DB API"}
+    response.update({'links': get_links(app)})
+    return response
 
