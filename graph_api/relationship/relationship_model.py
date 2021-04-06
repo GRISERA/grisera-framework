@@ -25,7 +25,6 @@ class RelationshipOut(RelationshipIn):
             id (Optional[int]): Id of relationship returned from graph database
             errors (Optional[Any]): Optional errors appeared during query executions
     """
-
     id: Optional[int]
     errors: Optional[Any] = None
     links: Optional[list] = None
