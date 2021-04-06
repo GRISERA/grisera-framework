@@ -1,20 +1,25 @@
 
+def prepare_links(route):
+    """
+    Prepare list of links for given route differing by its request methods
+
+    Args:
+        route (Route): Route for which links are prepared
+
+    Returns:
+        List of links for given route
+    """
+    return list(map(lambda method: {'rel': route.name, '$ref': route.path, 'action': method}, route.methods))
+
 
 def get_links(router):
     """
-        Return list of links from given router
+    Return list of links from given router
 
-        Args:
-            router (Router): Router to get links from
+    Args:
+        router (Router): Router to get links from
 
-        Returns:
-            List of links
-        """
-    links_json = []
-    links = [[route.name, route.path, route.methods] for route in router.routes]
-
-    for link in links:
-        for method in link[2]:
-            links_json.append({'rel': link[0], '$ref': link[1], 'action': method})
-
-    return links_json
+    Returns:
+        List of links
+    """
+    return sum(list(map(prepare_links, router.routes)), [])
