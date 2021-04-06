@@ -15,4 +15,3 @@ async def root():
     response = {"title": "Graph DB API"}
     response.update({'links': get_links(app)})
     return response
-
