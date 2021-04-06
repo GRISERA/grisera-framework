@@ -12,7 +12,7 @@ jobs:
           app-dir: ./graph_api
           pkg-manager: pip
       - run:
-          command: python ./manage.py test graph_api
+          command: python ./graph_api/manage.py test
           name: Test
   grisera-api-build-and-test:
     executor: python/default
@@ -22,7 +22,7 @@ jobs:
           app-dir: ./grisera_api
           pkg-manager: pip
       - run:
-          command: python ./manage.py test grisera_api
+          command: python ./grisera_api/manage.py test
           name: Test
 
 workflows:
