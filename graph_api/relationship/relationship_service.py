@@ -1,7 +1,7 @@
 import requests
 from requests.auth import HTTPBasicAuth
 from database_config import database
-from relationship.relationship_model import RelationshipOut
+from relationship.relationship_model import RelationshipOut, RelationshipIn
 
 
 class RelationshipService:
