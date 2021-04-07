@@ -8,8 +8,8 @@ class RelationshipIn(BaseModel):
 
         Attributes:
             start_node (int): Id of node which starts connection
-            end_node: (int): Id of node which ends connection
-            name
+            end_node (int): Id of node which ends connection
+            name (str): Name of the relationship
     """
 
     start_node: int
