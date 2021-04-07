@@ -1,11 +1,4 @@
-import requests
-<<<<<<< HEAD
 from database_service import DatabaseService
-=======
-import string
-from requests.auth import HTTPBasicAuth
-from database_config import database
->>>>>>> 5026709... GRIS-25. Implementation of property model and development of node service and … (#17)
 from node.node_model import NodeIn, NodeOut
 from property.property_model import PropertyIn
 from typing import List
