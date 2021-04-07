@@ -1,4 +1,3 @@
-import requests
 from database_service import DatabaseService
 from database_config import database
 from relationship.relationship_model import RelationshipOut, RelationshipIn
@@ -13,8 +12,7 @@ class RelationshipService:
     Attributes:
         db (DatabaseService): Handles communication with Neo4j database
     """
-
-    db = DatabaseService()
+    db: DatabaseService = DatabaseService()
 
     def save_relationship(self, relationship: RelationshipIn):
         """
@@ -54,19 +52,9 @@ class RelationshipService:
         Returns:
             Result of request as relationship object
         """
-        if self.relationship_exist(id):
-            create_statement = f"MATCH ()-[r]->() where id(r)={id} set r = $props return r"
-            commit_body = {
-                "statements": [{"statement": create_statement,
-                                "parameters": {
-                                    "props": {
-                                        property.key: property.value for property in properties
-                                    }
-                                }}]
-            }
-            response = requests.post(url=self.database_url,
-                                     json=commit_body,
-                                     auth=self.database_auth).json()
+        if self.db.relationship_exist(id):
+            response = self.db.create_properties(id, properties)
+
             if len(response["errors"]) > 0:
                 result = RelationshipOut(errors=response["errors"])
             else:

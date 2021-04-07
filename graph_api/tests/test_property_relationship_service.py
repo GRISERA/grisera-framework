@@ -8,7 +8,7 @@ import json
 
 class TestRelationshipPostService(unittest.TestCase):
 
-    @mock.patch('relationship.relationship_service.requests')
+    @mock.patch('database_service.requests')
     def test_relationship_service_without_error(self, mock_requests):
         response = Response()
         response._content = json.dumps({'results': [
@@ -25,7 +25,7 @@ class TestRelationshipPostService(unittest.TestCase):
 
         self.assertEqual(result, RelationshipOut(id=5, properties=properties, errors=None))
 
-    @mock.patch('relationship.relationship_service.requests')
+    @mock.patch('database_service.requests')
     def test_relationship_service_with_error(self, mock_requests):
         response = Response()
         response._content = json.dumps({'results': [{'data': [{'meta': [{}]}]}],
