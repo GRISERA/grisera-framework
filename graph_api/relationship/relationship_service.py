@@ -89,6 +89,7 @@ class RelationshipService:
         else:
             result = RelationshipOut(start_node=relationship.start_node, end_node=relationship.end_node,
                                      name=relationship.name, errors={"errors": "not matching id"})
+
         return result
 
     def save_properties(self, id: int, properties: List[PropertyIn]):
