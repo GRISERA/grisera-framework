@@ -15,8 +15,31 @@ class RelationshipService:
     database_url = (database["address"] + database["commit_path"]) \
         .replace("{database_name}", database["name"])
     database_auth = HTTPBasicAuth(database["user"], database["passwd"])
+    
+    def node_exist(self, node_id):
+        """
+        Check if node exists in the database
+        
+        Args:
+            node_id(int): id of the node
+            
+        Returns:
+            True - If there is a node in the database.
+            False - If there is not a node in the database.
+        """
+        check_node_statement = f"MATCH (n) where id(n) ={node_id} return n"
 
-    def save_relationship(self, relationship):
+        commit_body = {
+            "statements": [{"statement": check_node_statement}]
+        }
+        response = requests.post(url=self.database_url,
+                                 json=commit_body,
+                                 auth=self.database_auth).json()
+
+        return len(response['results'][0]['data']) == 1 
+         
+            
+    def save_relationship(self, relationship: RelationshipIn):
         """
         Send request to database by its API to create new relationship
 
@@ -26,43 +49,22 @@ class RelationshipService:
         Returns:
             Result of request as relationship object
         """
-        check_start_node_statement = f"MATCH (n) where id(n) ={relationship.start_node} return n"
-
-        commit_body = {
-            "statements": [{"statement": check_start_node_statement}]
-        }
-        response = requests.post(url=self.database_url,
-                                 json=commit_body,
-                                 auth=self.database_auth).json()
-
-        if len(response['results'][0]['data']) == 1:
-            check_end_node_statement = f"MATCH (m) where id(m) ={relationship.end_node} return m"
+        if node_exists(relationship.start_node) and node_exists(relationship.end_node):
+            create_statement = f"MATCH (n) where id(n) ={relationship.start_node} MATCH (m) where id(m) = {relationship.end_node} MERGE (n) - [r:{relationship.name}] -> (m) RETURN r"
             commit_body = {
-                "statements": [{"statement": check_end_node_statement}]
+                "statements": [{"statement": create_statement}]
             }
             response = requests.post(url=self.database_url,
                                      json=commit_body,
                                      auth=self.database_auth).json()
 
-            if len(response['results'][0]['data']) == 1:
-                create_statement = f"MATCH (n) where id(n) ={relationship.start_node} MATCH (m) where id(m) = {relationship.end_node} MERGE (n) - [r:{relationship.name}] -> (m) RETURN r"
-                commit_body = {
-                    "statements": [{"statement": create_statement}]
-                }
-                response = requests.post(url=self.database_url,
-                                         json=commit_body,
-                                         auth=self.database_auth).json()
-
-                if len(response["errors"]) > 0:
-                    result = RelationshipOut(start_node=relationship.start_node, end_node=relationship.end_node,
-                                             name=relationship.name, errors=response["errors"])
-                else:
-                    relationship_id = response["results"][0]["data"][0]["meta"][0]["id"]
-                    result = RelationshipOut(start_node=relationship.start_node, end_node=relationship.end_node,
-                                             name=relationship.name, id=relationship_id)
-            else:
+            if len(response["errors"]) > 0:
                 result = RelationshipOut(start_node=relationship.start_node, end_node=relationship.end_node,
-                                         name=relationship.name, errors={"errors": "not matching id"})
+                                         name=relationship.name, errors=response["errors"])
+            else:
+                relationship_id = response["results"][0]["data"][0]["meta"][0]["id"]
+                result = RelationshipOut(start_node=relationship.start_node, end_node=relationship.end_node,
+                                         name=relationship.name, id=relationship_id)
         else:
             result = RelationshipOut(start_node=relationship.start_node, end_node=relationship.end_node,
                                      name=relationship.name, errors={"errors": "not matching id"})
