@@ -1,10 +1,12 @@
 from fastapi import FastAPI
-from node.node_router import router
+from node.node_router import router as node_router
+from relationship.relationship_router import router as relationship_router
 from hateoas import get_links
 
 app = FastAPI()
 
-app.include_router(router)
+app.include_router(node_router)
+app.include_router(relationship_router)
 
 
 @app.get("/", tags=["root"])

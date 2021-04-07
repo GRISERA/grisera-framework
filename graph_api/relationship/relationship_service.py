@@ -1,7 +1,8 @@
 import requests
 from requests.auth import HTTPBasicAuth
 from database_config import database
-from relationship.relationshi_service import RelationshipOut
+from relationship.relationship_model import RelationshipOut
+
 
 class RelationshipService:
     """
@@ -23,22 +24,53 @@ class RelationshipService:
             relationship (-): Relationship to be added to database
 
         Returns:
-
+            Result of request as relationship object
         """
-        # if start_node and end_node nie istnieje ?
 
-        create_statement = "MATCH(n {" + f"{relati}" + "}), (m { " + f"{end_node}" + "}) CREATE (n)-[:" + f"{relationship}" + "]->(m)"
+        check_start_node_statement = f"MATCH (n) where id(n) ={relationship.start_node} return n"
+        print(check_start_node_statement)
         commit_body = {
-            "statements": [{"statement": create_statement}]
+            "statements": [{"statement": check_start_node_statement}]
         }
         result = requests.post(url=self.database_url,
                                json=commit_body,
                                auth=self.database_auth).json()
-        if len(result["errors"]) > 0:
-             result = RelationshipOut(errors=result["errors"])
+
+        if len(result['results'][0]['data']) == 1:
+            print()
+            print("node 1 dobry")
+
+            check_end_node_statement = f"MATCH (m) where id(m) ={relationship.end_node} return m"
+            print(check_end_node_statement)
+            commit_body = {
+                "statements": [{"statement": check_end_node_statement}]
+            }
+            result = requests.post(url=self.database_url,
+                                   json=commit_body,
+                                   auth=self.database_auth).json()
+
+            if len(result['results'][0]['data']) == 1:
+                create_statement = f"MATCH (n) where id(n) ={relationship.start_node} MATCH (m) where id(m) = {relationship.end_node} MERGE (n) - [r:{relationship.name}] -> (m) RETURN r"
+                commit_body = {
+                    "statements": [{"statement": create_statement}]
+                }
+                result = requests.post(url=self.database_url,
+                                       json=commit_body,
+                                       auth=self.database_auth).json()
+
+                if len(result["errors"]) > 0:
+                    errors = result["errors"]
+                    result = RelationshipOut(start_node=relationship.start_node, end_node=relationship.end_node,
+                                             name=relationship.name, errors=errors)
+                else:
+                    relationship_id = result["results"][0]["data"][0]["meta"][0]["id"]
+                    result = RelationshipOut(start_node=relationship.start_node, end_node=relationship.end_node,
+                                             name=relationship.name, id=relationship_id)
+            else:
+                result = RelationshipOut(start_node=relationship.start_node, end_node=relationship.end_node,
+                                             name=relationship.name, errors={"errors": "not matching id"})
         else:
-            relationship_id = result["results"][0]["data"][0]["meta"][0]["id"]
-            result = RelationshipOut(id=relationship_id)
+            result = RelationshipOut(start_node=relationship.start_node, end_node=relationship.end_node,
+                                             name=relationship.name, errors={"errors": "not matching id"})
 
         return result
-
