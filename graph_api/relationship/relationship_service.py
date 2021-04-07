@@ -5,7 +5,6 @@ from relationship.relationship_model import RelationshipOut, RelationshipIn
 from property.property_model import PropertyIn
 from typing import List
 
-
 class RelationshipService:
     """
     Object to handle logic of relationships requests
@@ -90,7 +89,6 @@ class RelationshipService:
         else:
             result = RelationshipOut(start_node=relationship.start_node, end_node=relationship.end_node,
                                      name=relationship.name, errors={"errors": "not matching id"})
-
         return result
 
     def save_properties(self, id: int, properties: List[PropertyIn]):
@@ -128,4 +126,5 @@ class RelationshipService:
 
         return result
     
+
 

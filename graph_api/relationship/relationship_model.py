@@ -27,6 +27,7 @@ class RelationshipOut(RelationshipIn):
             propeties(Optional[List[PropertyIn]]): List of properties of the relationship in the database
             errors (Optional[Any]): Optional errors appeared during query executions
     """
+
     id: Optional[int]
     properties: Optional[List[PropertyIn]] = None
     errors: Optional[Any] = None
