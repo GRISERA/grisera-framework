@@ -37,7 +37,7 @@ class NodeRouter:
     @router.post("/nodes/{id}/properties", tags=["nodes"], response_model=NodeOut)
     async def create_node_properties(self, id: int, properties: List[PropertyIn], response: Response):
         """
-        Create properties with optional labels
+        Create properties for node with given id
         """
         create_response = self.node_service.save_properties(id, properties)
         if create_response.errors is not None:
