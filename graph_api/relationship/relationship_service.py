@@ -49,7 +49,7 @@ class RelationshipService:
         Returns:
             Result of request as relationship object
         """
-        if node_exists(relationship.start_node) and node_exists(relationship.end_node):
+        if self.node_exists(relationship.start_node) and self.node_exists(relationship.end_node):
             create_statement = f"MATCH (n) where id(n) ={relationship.start_node} MATCH (m) where id(m) = {relationship.end_node} MERGE (n) - [r:{relationship.name}] -> (m) RETURN r"
             commit_body = {
                 "statements": [{"statement": create_statement}]
