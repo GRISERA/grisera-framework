@@ -3,7 +3,6 @@ from requests.auth import HTTPBasicAuth
 from database_config import database
 from relationship.relationship_model import RelationshipOut, RelationshipIn
 
-
 class RelationshipService:
     """
     Object to handle logic of relationships requests
@@ -68,6 +67,4 @@ class RelationshipService:
         else:
             result = RelationshipOut(start_node=relationship.start_node, end_node=relationship.end_node,
                                      name=relationship.name, errors={"errors": "not matching id"})
-
         return result
-
