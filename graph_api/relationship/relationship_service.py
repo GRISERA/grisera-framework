@@ -1,3 +1,4 @@
+import requests
 from database_service import DatabaseService
 from database_config import database
 from relationship.relationship_model import RelationshipOut, RelationshipIn

@@ -1,3 +1,4 @@
+import requests
 from database_service import DatabaseService
 from node.node_model import NodeIn, NodeOut
 from property.property_model import PropertyIn
