@@ -16,7 +16,7 @@ class RelationshipService:
         .replace("{database_name}", database["name"])
     database_auth = HTTPBasicAuth(database["user"], database["passwd"])
     
-    def node_exist(self, node_id):
+    def node_exists(self, node_id):
         """
         Check if node exists in the database
         
