@@ -1,7 +1,4 @@
-import requests
-import string
-from requests.auth import HTTPBasicAuth
-from database_config import database
+from database_service import DatabaseService
 from node.node_model import NodeIn, NodeOut
 from property.property_model import PropertyIn
 from typing import List
@@ -12,12 +9,10 @@ class NodeService:
     Object to handle logic of nodes requests
 
     Attributes:
-        database_url (str): URL to used database
-        database_auth (HTTPBasicAuth): Used to authenticate to database
+        db (DatabaseService): Handles communication with Neo4j database
     """
-    database_url = (database["address"] + database["commit_path"]) \
-        .replace("{database_name}", database["name"])
-    database_auth = HTTPBasicAuth(database["user"], database["passwd"])
+
+    db = DatabaseService()
 
     def node_exists(self, node_id):
         """
@@ -51,18 +46,8 @@ class NodeService:
         Returns:
             Result of request as node object
         """
-        create_template = string.Template("CREATE (n:$labels) RETURN n")
-        create_statement = create_template.substitute(
-            labels=":".join(list(node.labels))
-        )
+        response = self.db.create_node(node)
 
-        commit_body = {
-            "statements": [{"statement": create_statement}]
-        }
-
-        response = requests.post(url=self.database_url,
-                                 json=commit_body,
-                                 auth=self.database_auth).json()
         if len(response["errors"]) > 0:
             result = NodeOut(errors=response["errors"])
         else:
