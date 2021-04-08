@@ -40,7 +40,6 @@ class RelationshipRouter:
         """
         Create properties for relationship with given id
         """
-        print(id)
         create_response = self.relationship_service.save_properties(id, properties)
         if create_response.errors is not None:
             response.status_code = 422
