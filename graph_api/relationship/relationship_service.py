@@ -1,4 +1,3 @@
-import requests
 from database_service import DatabaseService
 from database_config import database
 from relationship.relationship_model import RelationshipOut, RelationshipIn
@@ -11,7 +10,7 @@ class RelationshipService:
     Attributes:
         db (DatabaseService): Handles communication with Neo4j database
     """
-    db = DatabaseService()
+    db: DatabaseService = DatabaseService()
 
     def save_relationship(self, relationship: RelationshipIn):
         """
