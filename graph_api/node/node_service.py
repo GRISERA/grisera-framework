@@ -13,29 +13,7 @@ class NodeService:
         db (DatabaseService): Handles communication with Neo4j database
     """
 
-    db = DatabaseService()
-
-    def node_exists(self, node_id):
-        """
-        Check if node exists in the database
-
-        Args:
-            node_id(int): id of the node
-
-        Returns:
-            True - If there is a node in the database.
-            False - If there is not a node in the database.
-        """
-        check_node_statement = f"MATCH (n) where id(n) ={node_id} return n"
-
-        commit_body = {
-            "statements": [{"statement": check_node_statement}]
-        }
-        response = requests.post(url=self.database_url,
-                                 json=commit_body,
-                                 auth=self.database_auth).json()
-
-        return len(response['results'][0]['data']) == 1
+    db : DatabaseService = DatabaseService()
 
     def save_node(self, node: NodeIn):
         """
@@ -69,19 +47,8 @@ class NodeService:
         Returns:
             Result of request as node object
         """
-        if self.node_exists(id):
-            create_statement = f"MATCH (n) where id(n)={id} SET n = $props return n"
-            commit_body = {
-                "statements": [{"statement": create_statement,
-                                "parameters": {
-                                    "props": {
-                                        property.key: property.value for property in properties
-                                    }
-                                }}]
-            }
-            response = requests.post(url=self.database_url,
-                                     json=commit_body,
-                                     auth=self.database_auth).json()
+        if self.db.node_exists(id):
+            response = self.db.create_properties(id, properties)
             if len(response["errors"]) > 0:
                 result = NodeOut(errors=response["errors"])
             else:
