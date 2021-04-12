@@ -1,4 +1,4 @@
-from typing import Set, Optional, Any, List
+from typing import Optional, Any, List
 from pydantic import BaseModel
 from property.property_model import PropertyIn
 
@@ -13,9 +13,9 @@ class RelationshipIn(BaseModel):
             name (Optional[str]): Name of the relationship
     """
 
-    start_node: Optional[int]
-    end_node: Optional[int]
-    name: Optional[str]
+    start_node: int = None
+    end_node: int = None
+    name: str = None
 
 
 class RelationshipOut(RelationshipIn):
@@ -28,7 +28,7 @@ class RelationshipOut(RelationshipIn):
             errors (Optional[Any]): Optional errors appeared during query executions
     """
 
-    id: Optional[int]
+    id: Optional[int] = None
     properties: Optional[List[PropertyIn]] = None
     errors: Optional[Any] = None
     links: Optional[list] = None

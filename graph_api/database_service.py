@@ -120,24 +120,52 @@ class DatabaseService:
                                                name=relationship.name)
         return self.post_statement(create_statement)
 
-    def create_properties(self, node_id: int, properties):
+    def create_properties(self, id, properties, object_part, return_part):
         """
-        Send to the database request to create relationship
+        Send to the database request to add properties
 
         Args:
-            relationship (): relationship to be created
-
+            id (int): Id of node or relationship
+            properties (List[PropertyIn]): Properties to add
+            object_part (str): Part of statement used to identify object type
+            return_part (str): Part of statement used to return proper information
         Returns:
             Result of request      
         """
-        create_statement = "MATCH (n) where id(n)={} SET n = $props return n".format(
-            node_id)
+        set_part = ''.join(map(lambda property: 'x.{}="{}", '.format(property.key, property.value), properties))
+        create_statement = "MATCH {} where id(x)={} SET {} return {}, x".format(
+            object_part, id, set_part[:-2], return_part)
         commit_body = {
-            "statements": [{"statement": create_statement,
-                            "parameters": {
-                                "props": {
-                                    property.key: property.value for property in properties
-                                }
-                            }}]
+            "statements": [{"statement": create_statement}]
         }
         return self.post(commit_body)
+
+    def create_relationship_properties(self, id, properties):
+        """
+        Create properties in database for relationship
+
+        Args:
+            id (int): Id of node or relationship
+            properties (List[PropertyIn]): Properties to add
+
+        Returns:
+            Result of request
+        """
+        relation_part = "(n)-[x]->(m)"
+        return_part = "id(n), type(x), id(m)"
+        return self.create_properties(id, properties, relation_part, return_part)
+
+    def create_node_properties(self, id, properties):
+        """
+        Create properties in database for node
+
+        Args:
+            id (int): Id of node or relationship
+            properties (List[PropertyIn]): Properties to add
+
+        Returns:
+            Result of request
+        """
+        node_part = "(x)"
+        return_part = "labels(x)"
+        return self.create_properties(id, properties, node_part, return_part)
