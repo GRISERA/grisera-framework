@@ -6,33 +6,39 @@ from requests import Response
 import json
 
 
-class TestNodePostService(unittest.TestCase):
+class TestPropertyNodePostService(unittest.TestCase):
 
     @mock.patch('database_service.requests')
-    def test_node_service_without_error(self, mock_requests):
+    def test_property_node_service_without_error(self, mock_requests):
         response = Response()
         response._content = json.dumps({'results': [
-                                        {'data': [
-                                            {'meta': [
-                                                {'id': '5'}]
-                                            }]
-                                        }],
-                                        'errors': []}).encode('utf-8')
+            {'data': [
+                {'row': [
+                    ["test"],
+                    {'testkey': 'testvalue'}
+                ]
+                }
+            ]
+            }
+        ],
+            'errors': []}).encode('utf-8')
         mock_requests.post.return_value = response
         node_service = NodeService()
         properties = [PropertyIn(key="testkey", value="testvalue")]
+
         result = node_service.save_properties(id=5, properties=properties)
 
-        self.assertEqual(result, NodeOut(id=5, properties=properties, errors=None))
+        self.assertEqual(result, NodeOut(labels={"test"}, id=5, properties=properties))
 
     @mock.patch('database_service.requests')
-    def test_node_service_with_error(self, mock_requests):
+    def test_property_node_service_with_error(self, mock_requests):
         response = Response()
         response._content = json.dumps({'results': [{'data': [{'meta': [{}]}]}],
                                         'errors': ['error']}).encode('utf-8')
         mock_requests.post.return_value = response
-
         node_service = NodeService()
         properties = [PropertyIn(key="testkey", value="testvalue")]
+
         result = node_service.save_properties(id=5, properties=properties)
-        self.assertEqual(result, NodeOut( errors=['error']))
+
+        self.assertEqual(result, NodeOut(errors=['error']))

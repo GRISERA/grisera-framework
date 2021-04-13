@@ -4,16 +4,16 @@ import unittest.mock as mock
 import asyncio
 
 
-def return_node(*args, **kwargs):
-    node_out = RelationshipOut(id=5, properties=args[1], errors=None)
+def return_relationship(*args, **kwargs):
+    node_out = RelationshipOut(start_node=0, end_node=1, name="test", id=args[0], properties=args[1])
     return node_out
 
 
-class TestRelationshipPost(unittest.TestCase):
+class TestRelationshipPropertyPost(unittest.TestCase):
 
     @mock.patch.object(RelationshipService, 'save_properties')
-    def test_properties_for_node_post_without_error(self, mock_service):
-        mock_service.side_effect = return_node
+    def test_properties_for_relationship_post_without_error(self, mock_service):
+        mock_service.side_effect = return_relationship
         response = Response()
         id = 5
         properties = [PropertyIn(key="testkey", value="testvalue")]
@@ -21,12 +21,13 @@ class TestRelationshipPost(unittest.TestCase):
 
         result = asyncio.run(node_router.create_relationship_properties(id, properties, response))
 
-        self.assertEqual(result, RelationshipOut(id=5, properties=properties, errors=None, links=get_links(router)))
+        self.assertEqual(result, RelationshipOut(start_node=0, end_node=1, name="test", id=5,
+                                                 properties=properties, links=get_links(router)))
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(RelationshipService, 'save_properties')
-    def test_properties_for_node_post_with_error(self, mock_service):
-        mock_service.return_value = RelationshipOut(id=5, errors={'errors': ['test']})
+    def test_properties_for_relationship_post_with_error(self, mock_service):
+        mock_service.return_value = RelationshipOut(errors={'errors': ['test']})
         response = Response()
         id = 5
         properties = [PropertyIn(key="testkey", value="testvalue")]

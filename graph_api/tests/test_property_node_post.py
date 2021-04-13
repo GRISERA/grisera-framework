@@ -5,8 +5,7 @@ import asyncio
 
 
 def return_node(*args, **kwargs):
-    node_out = NodeOut(id=5, properties=args[1], errors=None)
-    return node_out
+    return NodeOut(labels={"test"}, id=5, properties=args[1], errors=None)
 
 
 class TestNodePost(unittest.TestCase):
@@ -21,7 +20,7 @@ class TestNodePost(unittest.TestCase):
 
         result = asyncio.run(node_router.create_node_properties(id, properties, response))
 
-        self.assertEqual(result, NodeOut(id=5, properties=properties, errors=None, links=get_links(router)))
+        self.assertEqual(result, NodeOut(labels={"test"}, id=id, properties=properties, links=get_links(router)))
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(NodeService, 'save_properties')

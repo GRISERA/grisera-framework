@@ -53,17 +53,16 @@ class RelationshipService:
             Result of request as relationship object
         """
         if self.db.relationship_exist(id):
-            response = self.db.create_properties(id, properties)
-
+            response = self.db.create_relationship_properties(id, properties)
             if len(response["errors"]) > 0:
                 result = RelationshipOut(errors=response["errors"])
             else:
-                relationship_id = response["results"][0]["data"][0]["meta"][0]["id"]
-                result = RelationshipOut(id=relationship_id, properties=properties)
+                response_data = response["results"][0]["data"][0]["row"]
+                response_properties = list((map(
+                    lambda property: PropertyIn(key=property[0], value=property[1]), response_data[3].items())))
+                result = RelationshipOut(start_node=response_data[0], end_node=response_data[2], name=response_data[1],
+                                         id=id, properties=response_properties)
         else:
             result = RelationshipOut(id=id, errors={"errors": "not matching id"})
 
         return result
-    
-
-
