@@ -8,7 +8,7 @@ from requests import Response
 
 class TestParticipantPostService(unittest.TestCase):
 
-    @mock.patch('participant.participant_service.requests')
+    @mock.patch('graph_api_service.requests')
     def test_participant_service_without_error(self, mock_requests):
         response = Response()
         response._content = json.dumps({'id': 1, 'properties': None, "errors": None,
@@ -21,7 +21,7 @@ class TestParticipantPostService(unittest.TestCase):
 
         self.assertEqual(result, ParticipantOut(id=1))
 
-    @mock.patch('participant.participant_service.requests')
+    @mock.patch('graph_api_service.requests')
     def test_participant_service_with_error(self, mock_requests):
         response = Response()
         response._content = json.dumps({'id': None, 'properties': None, "errors": {'error': 'test'},

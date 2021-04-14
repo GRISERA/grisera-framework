@@ -1,12 +1,16 @@
 import requests
-from graph_api_config import graph_api_address
+from graph_api_service import GraphApiService
 from participant.participant_model import ParticipantIn, ParticipantOut
 
 
 class ParticipantService:
     """
     Object to handle logic of participants requests
+
+    Attributes:
+        graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
+    graph_api_service = GraphApiService()
 
     def save_participant(self, participant: ParticipantIn):
         """
@@ -18,9 +22,7 @@ class ParticipantService:
         Returns:
             Result of request as participant object
         """
-        commit_body = {"labels": ["Participant"]}
-        response = requests.post(url=graph_api_address+"/nodes",
-                                 json=commit_body).json()
+        response = self.graph_api_service.create_participant(participant)
 
         if response["errors"] is not None:
             return ParticipantOut(errors=response["errors"])
