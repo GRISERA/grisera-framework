@@ -6,4 +6,7 @@ import asyncio
 class TestGet(unittest.TestCase):
 
     def test_root(self):
-        self.assertEqual(asyncio.run(main.root()), {"message": "Welcome to GRISERA API!"})
+        expect = {"title": "GRISERA API"}
+        expect.update({'links': main.get_links(main.app)})
+
+        self.assertEqual(asyncio.run(main.root()), expect)
