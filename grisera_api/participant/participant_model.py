@@ -1,11 +1,56 @@
 from pydantic import BaseModel
 from typing import Optional, Any
+from enum import Enum
+
+
+class Sex(str, Enum):
+    """
+    The sexes
+
+    Attributes:
+        male (str): Male sex
+        female (str): Female sex
+        not_given (str): Sex was not given
+    """
+    male = "male"
+    female = "female"
+    not_given = "not given"
+
+
+class FacialHair(str, Enum):
+    """
+    Types of facial hair
+
+    Attributes:
+        heavy (str): Heavy facial hair
+        no (str): No facial hair
+        some (str): Some facial hair
+    """
+    heavy = "heavy"
+    no = "no"
+    some = "some"
 
 
 class ParticipantIn(BaseModel):
     """
     Model of participant to acquire from client
+
+    Attributes:
+        age (Optional[int]): Age of participant
+        sex (Optional[Sex]): Sex of participant
+        beard (Optional[FacialHair]): Type of participant's beard
+        moustache (Optional[FacialHair]): Type of participant's moustache
+        glasses (Optional[bool]): Did participant have glasses
+        disorder (Optional[bool]): Was participant disordered
+        disorder_type (Optional[str]): Type of disorder
     """
+    age: Optional[int]
+    sex: Optional[Sex]
+    beard: Optional[FacialHair]
+    moustache: Optional[FacialHair]
+    glasses: Optional[bool]
+    disorder: Optional[bool]
+    disorder_type: Optional[str]
 
 
 class ParticipantOut(ParticipantIn):

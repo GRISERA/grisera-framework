@@ -1,5 +1,6 @@
 import requests
 from graph_api_config import graph_api_address
+from participant.participant_model import ParticipantIn
 
 
 class GraphApiService:
@@ -27,15 +28,30 @@ class GraphApiService:
                                  json=request_body).json()
         return response
 
-    def create_participant(self, participant):
+    def create_participant_node(self):
         """
-        Send to the Graph API request to create participant
-
-        Args:
-            participant (): participant to be created
+        Send to the Graph API request to create participant node
 
         Returns:
             Result of request
         """
         request_body = {"labels": ["Participant"]}
         return self.post("/nodes", request_body)
+
+    def create_participant_properties(self, participant_id: int, participant: ParticipantIn):
+        """
+        Send to the Graph API request to create properties for participant
+
+        Args:
+            participant_id (int): Id of participant
+            participant (ParticipantIn): Participant to be created
+
+        Returns:
+            Result of request
+        """
+        request_body = []
+        for property in participant.dict().items():
+            if property[1] is not None:
+                request_body.append({"key": property[0], "value": property[1]})
+
+        return self.post("/nodes/{}/properties".format(participant_id), request_body)
