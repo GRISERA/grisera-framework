@@ -1,4 +1,3 @@
-import requests
 from graph_api_service import GraphApiService
 from participant.participant_model import ParticipantIn, ParticipantOut
 
