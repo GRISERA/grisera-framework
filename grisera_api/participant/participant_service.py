@@ -21,13 +21,13 @@ class ParticipantService:
         Returns:
             Result of request as participant object
         """
-        node_response = self.graph_api_service.create_participant_node()
+        node_response = self.graph_api_service.create_node("Participant")
 
         if node_response["errors"] is not None:
             return ParticipantOut(errors=node_response["errors"])
 
         participant_id = node_response["id"]
-        properties_response = self.graph_api_service.create_participant_properties(participant_id, participant)
+        properties_response = self.graph_api_service.create_properties(participant_id, participant)
         if properties_response["errors"] is not None:
             return ParticipantOut(errors=properties_response["errors"])
 
