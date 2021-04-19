@@ -21,9 +21,17 @@ class ParticipantService:
         Returns:
             Result of request as participant object
         """
-        response = self.graph_api_service.create_participant(participant)
+        node_response = self.graph_api_service.create_node("Participant")
 
-        if response["errors"] is not None:
-            return ParticipantOut(errors=response["errors"])
-        participant_id = response["id"]
-        return ParticipantOut(id=participant_id)
+        if node_response["errors"] is not None:
+            return ParticipantOut(errors=node_response["errors"])
+
+        participant_id = node_response["id"]
+        properties_response = self.graph_api_service.create_properties(participant_id, participant)
+        if properties_response["errors"] is not None:
+            return ParticipantOut(errors=properties_response["errors"])
+
+        return ParticipantOut(age=participant.age, sex=participant.sex, beard=participant.beard,
+                              moustache=participant.moustache, glasses=participant.glasses,
+                              disorder=participant.disorder, disorder_type=participant.disorder_type,
+                              id=participant_id)
