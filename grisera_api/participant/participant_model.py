@@ -1,6 +1,8 @@
+from typing import List
 from pydantic import BaseModel
 from typing import Optional, Any
 from enum import Enum
+from property.property_model import PropertyIn
 
 
 class Sex(str, Enum):
@@ -43,6 +45,7 @@ class ParticipantIn(BaseModel):
         glasses (Optional[bool]): Did participant have glasses
         disorder (Optional[bool]): Was participant disordered
         disorder_type (Optional[str]): Type of disorder
+        additional_properties (Optional[List[PropertyIn]]): Additional properties for participant
     """
     age: Optional[int]
     sex: Optional[Sex]
@@ -51,6 +54,7 @@ class ParticipantIn(BaseModel):
     glasses: Optional[bool]
     disorder: Optional[bool]
     disorder_type: Optional[str]
+    additional_properties: Optional[List[PropertyIn]]
 
 
 class ParticipantOut(ParticipantIn):

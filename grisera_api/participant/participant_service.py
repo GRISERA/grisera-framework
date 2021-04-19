@@ -34,4 +34,4 @@ class ParticipantService:
         return ParticipantOut(age=participant.age, sex=participant.sex, beard=participant.beard,
                               moustache=participant.moustache, glasses=participant.glasses,
                               disorder=participant.disorder, disorder_type=participant.disorder_type,
-                              id=participant_id)
+                              id=participant_id, additional_properties=participant.additional_properties)

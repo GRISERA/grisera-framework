@@ -51,7 +51,12 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_body = [{"key": key, "value": value} for key, value in node_model.dict().items()
-                        if value is not None]
+        node_dict = node_model.dict()
+        request_body = [{"key": key, "value": value} for key, value in node_dict.items()
+                        if value is not None and key != 'additional_properties']
+
+        if node_dict['additional_properties'] is not None:
+            [request_body.append({"key": property['key'], "value": property['value']})
+             for property in node_dict['additional_properties']]
 
         return self.post("/nodes/{}/properties".format(node_id), request_body)
