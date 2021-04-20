@@ -55,7 +55,7 @@ class GraphApiService:
         request_body = [{"key": key, "value": value} for key, value in node_dict.items()
                         if value is not None and key != 'additional_properties']
 
-        if node_dict['additional_properties'] is not None:
+        if 'additional_properties' in node_dict and node_dict['additional_properties'] is not None:
             [request_body.append({"key": property['key'], "value": property['value']})
              for property in node_dict['additional_properties']]
 
