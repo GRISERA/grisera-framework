@@ -3,7 +3,10 @@ from node.node_router import router as node_router
 from relationship.relationship_router import router as relationship_router
 from hateoas import get_links
 
-app = FastAPI()
+app = FastAPI(title="GRISERA GraphDB API",
+              description="GraphDB API provides an access to graph database for the GRISERA framework.",
+              version="0.1",
+              )
 
 app.include_router(node_router)
 app.include_router(relationship_router)
