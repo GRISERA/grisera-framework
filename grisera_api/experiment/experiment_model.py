@@ -6,6 +6,7 @@ from author.author_model import AuthorIn
 from publication.publication_model import PublicationIn
 
 
+
 class ExperimentIn(BaseModel):
     """
     Model of experiment to acquire from client
