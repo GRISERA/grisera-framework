@@ -20,7 +20,6 @@ class ExperimentIn(BaseModel):
     name: str
     authors: Optional[List[AuthorIn]]
     publication: Optional[PublicationIn]
-    # scenario = Optional[List[Activity]]
     abstract: Optional[str]
     additional_properties: Optional[List[PropertyIn]]
 

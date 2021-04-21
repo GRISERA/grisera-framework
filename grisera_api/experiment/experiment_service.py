@@ -48,7 +48,7 @@ class ExperimentService:
                     return ExperimentOut(title=experiment.title, authors=experiment.authors,
                                          errors=node_response_experiment["errors"])
 
-        if experiment.authors is not None:
+        if experiment.publication is not None:
             # Create Node Publication for experiment
             node_response_publication = self.publication_service.save_publication(self,
                                                                                   publication=experiment.publication)
