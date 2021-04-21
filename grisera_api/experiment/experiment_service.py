@@ -31,4 +31,4 @@ class ExperimentService:
         if properties_response["errors"] is not None:
             return ExperimentOut(name=experiment.name, errors=properties_response["errors"])
 
-        return ExperimentOut(name=experiment.name, id=experiment_id)
+        return ExperimentOut(name=experiment.name, abstract=experiment.abstract, id=experiment_id, additional_properties=experiment.additional_properties)

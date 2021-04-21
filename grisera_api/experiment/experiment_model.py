@@ -1,5 +1,7 @@
+from typing import List
 from pydantic import BaseModel
 from typing import Optional, Any
+from property.property_model import PropertyIn
 
 
 class ExperimentIn(BaseModel):
@@ -8,8 +10,12 @@ class ExperimentIn(BaseModel):
 
     Attributes:
         name (str): Name of experiment
+        abstract (Optional[str]): Summary of the experiment
+        additional_properties (Optional[List[PropertyIn]]): Additional properties for experiment
     """
     name: str
+    abstract: Optional[str]
+    additional_properties: Optional[List[PropertyIn]]
 
 
 class ExperimentOut(ExperimentIn):
