@@ -24,7 +24,7 @@ class GraphApiService:
             Result of request
         """
 
-        response = requests.post(url=self.graph_api_url+url_part,
+        response = requests.post(url=self.graph_api_url + url_part,
                                  json=request_body).json()
         return response
 
@@ -53,10 +53,37 @@ class GraphApiService:
         """
         node_dict = node_model.dict()
         request_body = [{"key": key, "value": value} for key, value in node_dict.items()
-                        if value is not None and key != 'additional_properties']
+                        if value is not None and key not in ['additional_properties', 'authors', 'publication']]
 
-        if node_dict['additional_properties'] is not None:
-            [request_body.append({"key": property['key'], "value": property['value']})
-             for property in node_dict['additional_properties']]
+        if 'additional_properties' in node_dict and node_dict['additional_properties'] is not None:
+            [request_body.append({"key": additional_properties['key'], "value": additional_properties['value']})
+             for additional_properties in node_dict['additional_properties']]
+
+        if 'authors' in node_dict and node_dict['authors'] is not None:
+            for authors in node_dict['authors']:
+                request_body.append({"key": "name", "value": authors['name']})
+                request_body.append({"key": "institution", "value": authors['institution']})
+
+        if 'publication' in node_dict and node_dict['publication'] is not None:
+            publication = node_dict['publication']
+            request_body.append({"key": "title", "value": publication['title']})
+            for authors in node_dict['authors']:
+                request_body.append({"key": "name", "value": authors['name']})
+                request_body.append({"key": "institution", "value": authors['institution']})
 
         return self.post("/nodes/{}/properties".format(node_id), request_body)
+
+    def create_relationships(self, start_node: int, end_node: int, name: str):
+        """
+        Send to the Graph API request to create a relationship
+
+        Args:
+            start_node(int): Id of node which starts connection
+            end_node(int): Id of node which ends connection
+            name(str): Name of the relationship
+
+        Returns:
+            Result of request
+       """
+        request_body = {"start_node": start_node, "end_node": end_node, "name": name}
+        return self.post("/relationships", request_body)
