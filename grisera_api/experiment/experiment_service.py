@@ -40,7 +40,7 @@ class ExperimentService:
         if experiment.authors is not None:
             # Create Nodes Author for experiment
             for author in experiment.authors:
-                node_response_author = self.author_service.save_author(self, author=author)
+                node_response_author = self.author_service.save_author(author=author)
                 # Create relationship between Author and Experiment
                 relationship_response_experiment_author = self.graph_api_service.create_relationships(
                     end_node=node_response_author.id, start_node=experiment_id, name="hasAuthor")
@@ -50,8 +50,7 @@ class ExperimentService:
 
         if experiment.publication is not None:
             # Create Node Publication for experiment
-            node_response_publication = self.publication_service.save_publication(self,
-                                                                                  publication=experiment.publication)
+            node_response_publication = self.publication_service.save_publication(publication=experiment.publication)
             # Create relationship between Publication and Experiment
             relationship_response_experiment_publication = self.graph_api_service.create_relationships(
                 end_node=node_response_publication.id, start_node=experiment_id, name="hasPublication")
@@ -60,5 +59,6 @@ class ExperimentService:
                                      additional_properties=experiment.additional_properties,
                                      errors=node_response_experiment["errors"])
 
-        return ExperimentOut(name=experiment.name, abstract=experiment.abstract, id=experiment_id,
+        return ExperimentOut(experiment_name=experiment.experiment_name, authors=experiment.authors,
+                             publication=experiment.publication, abstract=experiment.abstract, id=experiment_id,
                              additional_properties=experiment.additional_properties)

@@ -38,7 +38,7 @@ class PublicationService:
 
         # Create Nodes Author for publication
         for author in publication.authors:
-            node_response_author = self.author_service.save_author(self, author=author)
+            node_response_author = self.author_service.save_author(author=author)
             # Create relationship between Author and Publication
             relationship_response_publication_author = self.graph_api_service.create_relationships(
                 end_node=node_response_author.id, start_node=publication_id, name="hasAuthor")

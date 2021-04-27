@@ -6,19 +6,18 @@ from author.author_model import AuthorIn
 from publication.publication_model import PublicationIn
 
 
-
 class ExperimentIn(BaseModel):
     """
     Model of experiment to acquire from client
 
     Attributes:
-        name (str): Name of experiment
+        experiment_name (str): Name of experiment
         authors (Optional[Set[AuthorIn]]): Authors of the experiment
         publication(Optional[PublicationIn]): Publication, in which the experiment is described
         abstract (Optional[str]): Summary of the experiment
         additional_properties (Optional[List[PropertyIn]]): Additional properties for experiment
     """
-    name: str
+    experiment_name: str
     authors: Optional[List[AuthorIn]]
     publication: Optional[PublicationIn]
     abstract: Optional[str]
