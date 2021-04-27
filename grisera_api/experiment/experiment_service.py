@@ -30,12 +30,12 @@ class ExperimentService:
         node_response_experiment = self.graph_api_service.create_node("Experiment")
 
         if node_response_experiment["errors"] is not None:
-            return ExperimentOut(name=experiment.name, errors=node_response_experiment["errors"])
+            return ExperimentOut(experiment_name=experiment.experiment_name, errors=node_response_experiment["errors"])
 
         experiment_id = node_response_experiment["id"]
         properties_response = self.graph_api_service.create_properties(experiment_id, experiment)
         if properties_response["errors"] is not None:
-            return ExperimentOut(name=experiment.name, errors=properties_response["errors"])
+            return ExperimentOut(experiment_name=experiment.experiment_name, errors=properties_response["errors"])
 
         if experiment.authors is not None:
             # Create Nodes Author for experiment
@@ -45,7 +45,7 @@ class ExperimentService:
                 relationship_response_experiment_author = self.graph_api_service.create_relationships(
                     end_node=node_response_author.id, start_node=experiment_id, name="hasAuthor")
                 if relationship_response_experiment_author["errors"] is not None:
-                    return ExperimentOut(title=experiment.title, authors=experiment.authors,
+                    return ExperimentOut(experiment_name=experiment.experiment_name, authors=experiment.authors,
                                          errors=node_response_experiment["errors"])
 
         if experiment.publication is not None:
@@ -55,8 +55,7 @@ class ExperimentService:
             relationship_response_experiment_publication = self.graph_api_service.create_relationships(
                 end_node=node_response_publication.id, start_node=experiment_id, name="hasPublication")
             if relationship_response_experiment_publication["errors"] is not None:
-                return ExperimentOut(name=experiment.name, abstract=experiment.abstract, id=experiment_id,
-                                     additional_properties=experiment.additional_properties,
+                return ExperimentOut(experiment_name=experiment.experiment_name, publication=experiment.publication,
                                      errors=node_response_experiment["errors"])
 
         return ExperimentOut(experiment_name=experiment.experiment_name, authors=experiment.authors,
