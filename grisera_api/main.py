@@ -7,7 +7,9 @@ from author.author_router import router as author_router
 
 
 app = FastAPI(title="GRISERA API",
-              description="Graph Representation Integrating Signals for Emotion Recognition and Analysis (GRISERA) framework provides a persistent model for storing integrated signals and methods for its creation.",
+              description="Graph Representation Integrating Signals for Emotion Recognition and Analysis (GRISERA) "
+                          "framework provides a persistent model for storing integrated signals and methods for its "
+                          "creation.",
               version="0.1",
               )
 app.include_router(participant_router)

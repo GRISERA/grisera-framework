@@ -14,22 +14,23 @@ class TestExperimentPostService(unittest.TestCase):
         response._content = json.dumps({'id': 1, 'properties': None, "errors": None,
                                         'links': None}).encode('utf-8')
         mock_requests.post.return_value = response
-        experiment = ExperimentIn(name="test")
+        experiment = ExperimentIn(experiment_name="test")
         experiment_service = ExperimentService()
 
         result = experiment_service.save_experiment(experiment)
 
-        self.assertEqual(result, ExperimentOut(id=1, name="test"))
+        self.assertEqual(result, ExperimentOut(id=1, experiment_name="test"))
 
     @mock.patch('graph_api_service.requests')
     def test_experiment_service_with_error(self, mock_requests):
         response = Response()
-        response._content = json.dumps({'id': None, 'properties': {'name':'test'}, "errors": {'error': 'test'},
-                                        'links': None}).encode('utf-8')
+        response._content = json.dumps(
+            {'id': None, 'properties': {'experiment_name': 'test'}, "errors": {'error': 'test'},
+             'links': None}).encode('utf-8')
         mock_requests.post.return_value = response
-        experiment = ExperimentIn(name="test")
+        experiment = ExperimentIn(experiment_name="test")
         experiment_service = ExperimentService()
 
         result = experiment_service.save_experiment(experiment)
 
-        self.assertEqual(result, ExperimentOut(name="test", errors={'error': 'test'}))
+        self.assertEqual(result, ExperimentOut(experiment_name="test", errors={'error': 'test'}))
