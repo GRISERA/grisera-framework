@@ -1,7 +1,7 @@
 from typing import List
 from pydantic import BaseModel
 from typing import Optional, Any
-from activity.activity_model import ActivityIn
+from activity.activity_model import ActivityIn, ActivityOut
 
 
 class ScenarioIn(BaseModel):
@@ -21,10 +21,10 @@ class ScenarioOut(ScenarioIn):
     Model of scenario to send to client as a result of request
 
     Attributes:
-        id (Optional[int]): Id of scenario returned from graph api
+        activities (List[ActivityOut]): List of activities in scenario
         errors (Optional[Any]): Optional errors appeared during query executions
         links (Optional[list]): List of links available from api
     """
-    id: Optional[int]
+    activities: List[ActivityOut]
     errors: Optional[Any] = None
     links: Optional[list] = None
