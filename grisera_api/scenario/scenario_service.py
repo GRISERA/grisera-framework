@@ -27,6 +27,6 @@ class ScenarioService:
         if scenario.activities is not None:
             for activity in scenario.activities:
                 # Create Nodes Activity for scenario
-                node_response_activity=self.activity_service.save_activity(activity=activity)
+                self.activity_service.save_activity(activity=activity)
 
         return ScenarioOut(experiment_id=scenario.experiment_id, activities=scenario.activities)

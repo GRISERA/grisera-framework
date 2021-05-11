@@ -24,7 +24,7 @@ class ActivityService:
         node_response = self.graph_api_service.create_node("Activity")
 
         if node_response["errors"] is not None:
-            return ActivityOut(errors=node_response["errors"])
+            return ActivityOut(identifier=activity.identifier, errors=node_response["errors"])
 
         activity_id = node_response["id"]
         properties_response = self.graph_api_service.create_properties(activity_id, activity)

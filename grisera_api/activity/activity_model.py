@@ -15,7 +15,7 @@ class Type(str, Enum):
         group (str): Group activity
     """
     individual = "individual"
-    two_people = "two-people"
+    two_people = "two people"
     group = "group"
 
 
