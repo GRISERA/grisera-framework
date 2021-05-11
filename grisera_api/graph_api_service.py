@@ -52,24 +52,27 @@ class GraphApiService:
             Result of request
         """
         node_dict = node_model.dict()
-        request_body = [{"key": key, "value": value} for key, value in node_dict.items()
-                        if value is not None and key not in ['additional_properties', 'authors', 'publication']]
-
-        if 'additional_properties' in node_dict and node_dict['additional_properties'] is not None:
-            [request_body.append({"key": additional_properties['key'], "value": additional_properties['value']})
-             for additional_properties in node_dict['additional_properties']]
-
-        if 'authors' in node_dict and node_dict['authors'] is not None:
-            for authors in node_dict['authors']:
-                request_body.append({"key": "name", "value": authors['name']})
-                request_body.append({"key": "institution", "value": authors['institution']})
-
-        if 'publication' in node_dict and node_dict['publication'] is not None:
-            publication = node_dict['publication']
-            request_body.append({"key": "title", "value": publication['title']})
-            for authors in node_dict['authors']:
-                request_body.append({"key": "name", "value": authors['name']})
-                request_body.append({"key": "institution", "value": authors['institution']})
+        request_body = []
+        for key, value in node_dict.items():
+            if isinstance(value, list) and key != 'additional_properties':
+                for dict_property in node_dict[key]:
+                    keys = list(dict_property.keys())
+                    values = list(dict_property.values())
+                    for k, v in zip(keys, values):
+                        request_body.append({"key": k, "value": v})
+            elif isinstance(value, dict):
+                for k, v in value.items():
+                    if isinstance(v, list) and k == 'additional_properties':
+                        [request_body.append(
+                            {"key": additional_properties['key'], "value": additional_properties['value']})
+                         for additional_properties in v]
+                    else:
+                        request_body.append({"key": k, "value": v})
+            elif isinstance(value, list) and key == 'additional_properties':
+                [request_body.append({"key": additional_properties['key'], "value": additional_properties['value']})
+                 for additional_properties in value]
+            else:
+                request_body.append({"key": key, "value": value})
 
         return self.post("/nodes/{}/properties".format(node_id), request_body)
 
