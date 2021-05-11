@@ -24,17 +24,9 @@ class ScenarioService:
         Returns:
             Result of request as scenario object
         """
-        activities = []
-        previous_activity = None
-        for activity in scenario.activities:
-            # Create Nodes Activity for scenario
-            actual_activity = self.activity_service.save_activity(activity=activity)
-            if previous_activity is None:
-                self.graph_api_service.create_relationships(scenario.experiment_id, actual_activity.id,
-                                                            'hasActivity')
-            else:
-                self.graph_api_service.create_relationships(previous_activity.id, actual_activity.id, 'next')
-            previous_activity = actual_activity
-            activities.append(actual_activity)
+        activities = [self.activity_service.save_activity(activity=activity) for activity in scenario.activities]
+        self.graph_api_service.create_relationships(scenario.experiment_id, activities[0].id, 'hasActivity')
+        [self.graph_api_service.create_relationships(activities[index-1].id, activities[index].id, 'next')
+         for index in range(1, len(activities))]
 
         return ScenarioOut(experiment_id=scenario.experiment_id, activities=activities)
