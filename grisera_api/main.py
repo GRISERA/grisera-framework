@@ -6,6 +6,7 @@ from publication.publication_router import router as publication_router
 from author.author_router import router as author_router
 from scenario.scenario_router import router as scenario_router
 from activity.activity_router import router as activity_router
+from observable_information.observable_information_router import router as observable_information_router
 
 
 app = FastAPI(title="GRISERA API",
@@ -20,6 +21,7 @@ app.include_router(author_router)
 app.include_router(publication_router)
 app.include_router(activity_router)
 app.include_router(scenario_router)
+app.include_router(observable_information_router)
 
 
 @app.get("/", tags=["root"])
