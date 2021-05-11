@@ -20,18 +20,6 @@ class FacialHair(str, Enum):
     some = "some"
 
 
-# class Glasses(str, Enum):
-#     """
-#     The glasses
-#
-#     Attributes:
-#         yes (str): Glasses
-#         no (str): No glasses
-#     """
-#     yes = "yes"
-#     no = "no"
-
-
 class ParticipantStateIn(BaseModel):
     """
     Model of participant state to acquire from client

@@ -23,6 +23,10 @@ class ParticipantStateRouter:
         """
         Create participant state in database
         """
+
+        if participant_state.participant is not None and participant_state.participant.date_of_birth is not None:
+            participant_state.participant.date_of_birth = participant_state.participant.date_of_birth.__str__()
+
         create_response = self.participant_state_service.save_participant_state(participant_state)
         if create_response.errors is not None:
             response.status_code = 422
