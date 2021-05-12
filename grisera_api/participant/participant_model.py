@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional, Any
 from enum import Enum
 from property.property_model import PropertyIn
+from datetime import date
 
 
 class Sex(str, Enum):
@@ -38,20 +39,16 @@ class ParticipantIn(BaseModel):
     Model of participant to acquire from client
 
     Attributes:
-        age (Optional[int]): Age of participant
+        identifier (Optional[int]): Identifier of participant
+        date_of_birth (Optional[date]): Date of birth of participant
         sex (Optional[Sex]): Sex of participant
-        beard (Optional[FacialHair]): Type of participant's beard
-        moustache (Optional[FacialHair]): Type of participant's moustache
-        glasses (Optional[bool]): Did participant have glasses
         disorder (Optional[bool]): Was participant disordered
         disorder_type (Optional[str]): Type of disorder
         additional_properties (Optional[List[PropertyIn]]): Additional properties for participant
     """
-    age: Optional[int]
+    identifier: Optional[int]
+    date_of_birth: Optional[date]
     sex: Optional[Sex]
-    beard: Optional[FacialHair]
-    moustache: Optional[FacialHair]
-    glasses: Optional[bool]
     disorder: Optional[bool]
     disorder_type: Optional[str]
     additional_properties: Optional[List[PropertyIn]]

@@ -3,6 +3,60 @@ from graph_api_config import graph_api_address
 from pydantic import BaseModel
 
 
+def create_additional_properties(property_dict: dict):
+    """
+    Creates request body for additional properties
+
+    Args:
+        property_dict (dict): dictionary of properties
+
+    Returns:
+        Request body
+    """
+    request_body = [{"key": additional_properties['key'], "value": additional_properties['value']}
+                    for additional_properties in property_dict['additional_properties']]
+
+    return request_body
+
+
+def create_properties_from_dict(dictionary: dict):
+    """
+    Creates request body from dictionary with properties
+
+    Args:
+        dictionary (dict): dictionary of properties
+
+    Returns:
+        Request body
+    """
+    request_body = []
+    for k, v in dictionary.items():
+        if isinstance(v, list) and k == 'additional_properties':
+            request_body.extend(create_additional_properties(property_dict=dictionary))
+        elif isinstance(v, list) and k != 'additional_properties':
+            request_body.extend(create_properties_from_list_of_dict(list_of_dicts=v))
+        else:
+            request_body.append({"key": k, "value": v})
+    return request_body
+
+
+def create_properties_from_list_of_dict(list_of_dicts: list):
+    """
+    Creates request body from list of dictionaries with properties
+
+    Args:
+        list_of_dicts (list): list of dictionaries of properties
+
+    Returns:
+        Request body
+    """
+    request_body = []
+    for dict_property in list_of_dicts:
+        request_body.extend(create_properties_from_dict(dict_property))
+
+    return request_body
+
+
 class GraphApiService:
     """
     Object that handles communication with graph api
@@ -52,24 +106,16 @@ class GraphApiService:
             Result of request
         """
         node_dict = node_model.dict()
-        request_body = [{"key": key, "value": value} for key, value in node_dict.items()
-                        if value is not None and key not in ['additional_properties', 'authors', 'publication']]
-
-        if 'additional_properties' in node_dict and node_dict['additional_properties'] is not None:
-            [request_body.append({"key": additional_properties['key'], "value": additional_properties['value']})
-             for additional_properties in node_dict['additional_properties']]
-
-        if 'authors' in node_dict and node_dict['authors'] is not None:
-            for authors in node_dict['authors']:
-                request_body.append({"key": "name", "value": authors['name']})
-                request_body.append({"key": "institution", "value": authors['institution']})
-
-        if 'publication' in node_dict and node_dict['publication'] is not None:
-            publication = node_dict['publication']
-            request_body.append({"key": "title", "value": publication['title']})
-            for authors in node_dict['authors']:
-                request_body.append({"key": "name", "value": authors['name']})
-                request_body.append({"key": "institution", "value": authors['institution']})
+        request_body = []
+        for key, value in node_dict.items():
+            if isinstance(value, list) and key != 'additional_properties':
+                request_body.extend(create_properties_from_list_of_dict(list_of_dicts=value))
+            elif isinstance(value, dict):
+                request_body.extend(create_properties_from_dict(dictionary=value))
+            elif isinstance(value, list) and key == 'additional_properties':
+                request_body.extend(create_additional_properties(property_dict=node_dict))
+            else:
+                request_body.append({"key": key, "value": value})
 
         return self.post("/nodes/{}/properties".format(node_id), request_body)
 

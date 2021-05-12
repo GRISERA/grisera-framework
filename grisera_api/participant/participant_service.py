@@ -31,7 +31,7 @@ class ParticipantService:
         if properties_response["errors"] is not None:
             return ParticipantOut(errors=properties_response["errors"])
 
-        return ParticipantOut(age=participant.age, sex=participant.sex, beard=participant.beard,
-                              moustache=participant.moustache, glasses=participant.glasses,
-                              disorder=participant.disorder, disorder_type=participant.disorder_type,
-                              id=participant_id, additional_properties=participant.additional_properties)
+        return ParticipantOut(identifier=participant.identifier, date_of_birth=participant.date_of_birth,
+                              sex=participant.sex, disorder=participant.disorder,
+                              disorder_type=participant.disorder_type
+                              , id=participant_id, additional_properties=participant.additional_properties)
