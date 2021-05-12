@@ -3,22 +3,19 @@ from graph_api_config import graph_api_address
 from pydantic import BaseModel
 
 
-def create_properties_from_list_of_dict(list_of_dicts: list):
+def create_additional_properties(property_dict: dict):
     """
-    Creates request body from list of dictionaries with properties
+    Creates request body for additional properties
 
     Args:
-        list_of_dicts (dict): list of dictionaries of properties
+        property_dict (dict): dictionary of properties
 
     Returns:
         Request body
     """
-    request_body = []
-    for dict_property in list_of_dicts:
-        keys = list(dict_property.keys())
-        values = list(dict_property.values())
-        for k, v in zip(keys, values):
-            request_body.append({"key": k, "value": v})
+    request_body = [{"key": additional_properties['key'], "value": additional_properties['value']}
+                    for additional_properties in property_dict['additional_properties']]
+
     return request_body
 
 
@@ -36,24 +33,27 @@ def create_properties_from_dict(dictionary: dict):
     for k, v in dictionary.items():
         if isinstance(v, list) and k == 'additional_properties':
             request_body.extend(create_additional_properties(property_dict=dictionary))
+        elif isinstance(v, list) and k != 'additional_properties':
+            request_body.extend(create_properties_from_list_of_dict(list_of_dicts=v))
         else:
             request_body.append({"key": k, "value": v})
     return request_body
 
 
-def create_additional_properties(property_dict: dict):
+def create_properties_from_list_of_dict(list_of_dicts: list):
     """
-    Creates request body for additional properties
+    Creates request body from list of dictionaries with properties
 
     Args:
-        property_dict (dict): dictionary of properties
+        list_of_dicts (list): list of dictionaries of properties
 
     Returns:
         Request body
     """
     request_body = []
-    [request_body.append({"key": additional_properties['key'], "value": additional_properties['value']})
-     for additional_properties in property_dict['additional_properties']]
+    for dict_property in list_of_dicts:
+        request_body.extend(create_properties_from_dict(dict_property))
+
     return request_body
 
 
@@ -109,7 +109,7 @@ class GraphApiService:
         request_body = []
         for key, value in node_dict.items():
             if isinstance(value, list) and key != 'additional_properties':
-                request_body.extend(create_properties_from_list_of_dict(list_of_dicts=node_dict[key]))
+                request_body.extend(create_properties_from_list_of_dict(list_of_dicts=value))
             elif isinstance(value, dict):
                 request_body.extend(create_properties_from_dict(dictionary=value))
             elif isinstance(value, list) and key == 'additional_properties':
