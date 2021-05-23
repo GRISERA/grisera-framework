@@ -1,4 +1,5 @@
 from graph_api_service import GraphApiService
+from participant.participant_service import ParticipantService
 from participant_state.participant_state_model import ParticipantStateIn, ParticipantStateOut
 
 
@@ -8,8 +9,10 @@ class ParticipantStateService:
 
     Attributes:
         graph_api_service (GraphApiService): Service used to communicate with Graph API
+        participant_service (ParticipantService): Service to manage participant models
     """
     graph_api_service = GraphApiService()
+    participant_service = ParticipantService()
 
     def save_participant_state(self, participant_state: ParticipantStateIn):
         """
@@ -27,11 +30,19 @@ class ParticipantStateService:
             return ParticipantStateOut(errors=node_response["errors"])
 
         participant_state_id = node_response["id"]
+
+        participant = None
+        if participant_state.participant is not None:
+            participant = self.participant_service.save_participant(participant=participant_state.participant)
+            self.graph_api_service.create_relationships(start_node=participant_state_id,
+                                                        end_node=participant.id,
+                                                        name="hasParticipant")
+
         properties_response = self.graph_api_service.create_properties(participant_state_id, participant_state)
         if properties_response["errors"] is not None:
             return ParticipantStateOut(errors=properties_response["errors"])
 
-        return ParticipantStateOut(participant=participant_state.participant, age=participant_state.age,
+        return ParticipantStateOut(participant=participant, age=participant_state.age,
                                    beard=participant_state.beard, moustache=participant_state.moustache,
                                    glasses=participant_state.glasses, id=participant_state_id,
                                    additional_properties=participant_state.additional_properties)
