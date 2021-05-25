@@ -114,9 +114,8 @@ class GraphApiService:
                 request_body.extend(create_properties_from_dict(dictionary=value))
             elif isinstance(value, list) and key == 'additional_properties':
                 request_body.extend(create_additional_properties(property_dict=node_dict))
-            else:
+            elif key != 'additional_properties':
                 request_body.append({"key": key, "value": value})
-
         return self.post("/nodes/{}/properties".format(node_id), request_body)
 
     def create_relationships(self, start_node: int, end_node: int, name: str):
