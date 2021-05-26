@@ -1,7 +1,7 @@
 from typing import List
 from pydantic import BaseModel
 from typing import Optional, Any
-from author.author_model import AuthorIn
+from author.author_model import AuthorIn, AuthorOut
 
 
 class PublicationIn(BaseModel):
@@ -21,10 +21,12 @@ class PublicationOut(PublicationIn):
     Model of publication to send to client as a result of request
 
     Attributes:
+        authors (List[AuthorOut]): Authors of the publication
         id (Optional[int]): Id of publication returned from graph api
         errors (Optional[Any]): Optional errors appeared during query executions
         links (Optional[list]): List of links available from api
     """
+    authors: List[AuthorOut]
     id: Optional[int]
     errors: Optional[Any] = None
     links: Optional[list] = None

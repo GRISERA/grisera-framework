@@ -37,6 +37,7 @@ class PublicationService:
                                   errors=node_response_publication["errors"])
 
         # Create Nodes Author for publication
+        authors_out = []
         for author in publication.authors:
             node_response_author = self.author_service.save_author(author=author)
             # Create relationship between Author and Publication
@@ -45,5 +46,6 @@ class PublicationService:
             if relationship_response_publication_author["errors"] is not None:
                 return PublicationOut(title=publication.title, authors=publication.authors,
                                       errors=node_response_publication["errors"])
+            authors_out.append(node_response_author)
 
-        return PublicationOut(title=publication.title, authors=publication.authors, id=publication_id)
+        return PublicationOut(title=publication.title, authors=authors_out, id=publication_id)

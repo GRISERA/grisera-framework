@@ -1,6 +1,6 @@
 from graph_api_service import GraphApiService
 from experiment.experiment_model import ExperimentIn, ExperimentOut
-from author.author_service import AuthorService
+from author.author_service import AuthorService, AuthorOut
 from publication.publication_service import PublicationService
 
 
@@ -37,6 +37,7 @@ class ExperimentService:
         if properties_response["errors"] is not None:
             return ExperimentOut(experiment_name=experiment.experiment_name, errors=properties_response["errors"])
 
+        authors_out = []
         if experiment.authors is not None:
             # Create Nodes Author for experiment
             for author in experiment.authors:
@@ -47,17 +48,19 @@ class ExperimentService:
                 if relationship_response_experiment_author["errors"] is not None:
                     return ExperimentOut(experiment_name=experiment.experiment_name, authors=experiment.authors,
                                          errors=node_response_experiment["errors"])
+                authors_out.append(node_response_author)
 
+        publication_out = None
         if experiment.publication is not None:
             # Create Node Publication for experiment
-            node_response_publication = self.publication_service.save_publication(publication=experiment.publication)
+            publication_out = self.publication_service.save_publication(publication=experiment.publication)
             # Create relationship between Publication and Experiment
             relationship_response_experiment_publication = self.graph_api_service.create_relationships(
-                end_node=node_response_publication.id, start_node=experiment_id, name="hasPublication")
+                end_node=publication_out.id, start_node=experiment_id, name="hasPublication")
             if relationship_response_experiment_publication["errors"] is not None:
                 return ExperimentOut(experiment_name=experiment.experiment_name, publication=experiment.publication,
                                      errors=node_response_experiment["errors"])
 
-        return ExperimentOut(experiment_name=experiment.experiment_name, authors=experiment.authors,
-                             publication=experiment.publication, abstract=experiment.abstract, id=experiment_id,
+        return ExperimentOut(experiment_name=experiment.experiment_name, authors=authors_out,
+                             publication=publication_out, abstract=experiment.abstract, id=experiment_id,
                              additional_properties=experiment.additional_properties)
