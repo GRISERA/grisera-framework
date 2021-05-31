@@ -56,7 +56,7 @@ class GraphApiService:
         for key, value in node_dict.items():
             if key == 'additional_properties' and value is not None:
                 request_body.extend(self.create_additional_properties(property_dict=node_dict))
-            elif not isinstance(value, list) and not isinstance(value, dict):
+            elif value is not None and not isinstance(value, list) and not isinstance(value, dict):
                 request_body.append({"key": key, "value": value})
 
         return self.post("/nodes/{}/properties".format(node_id), request_body)
