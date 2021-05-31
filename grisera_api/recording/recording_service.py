@@ -1,5 +1,6 @@
 from graph_api_service import GraphApiService
 from recording.recording_model import RecordingsIn, RecordingsOut, RecordingIn, RecordingOut
+from participation.participation_service import ParticipationService, ParticipationOut
 
 
 class RecordingService:
@@ -8,9 +9,11 @@ class RecordingService:
 
     Attributes:
         graph_api_service (GraphApiService): Service used to communicate with Graph API
+        participation_service (ParticipationService): Service used to communicate with Participation
     """
     graph_api_service = GraphApiService()
-
+    participation_service = ParticipationService()
+    
     def save_recording(self, recording: RecordingIn):
         """
         Send request to graph api to create new recording
@@ -21,15 +24,23 @@ class RecordingService:
         Returns:
             Result of request as recording object
         """
-        node_response = self.graph_api_service.create_node("Recording")
+        node_response_recording = self.graph_api_service.create_node("Recording")
 
-        if node_response["errors"] is not None:
-            return RecordingOut(errors=node_response["errors"])
+        if node_response_recording["errors"] is not None:
+            return RecordingOut(errors=node_response_recording["errors"])
 
-        recording_id = node_response["id"]
+        recording_id = node_response_recording["id"]
 
-        self.graph_api_service.create_relationships(recording_id, recording.participant_state_id, "hasRecording")
-        self.graph_api_service.create_relationships(recording_id, recording.activity_id, "hasActivity")
+        node_response_participation = self.participation_service.save_participation()
+
+        participation_id = node_response_participation.id
+
+        self.graph_api_service.create_relationships(participation_id, recording.activity_id,
+                                                    "hasActivity")
+        self.graph_api_service.create_relationships(participation_id, recording.participant_state_id,
+                                                    "hasParticipantState")
+        self.graph_api_service.create_relationships(recording_id, participation_id,
+                                                    "hasParticipation")
 
         return RecordingOut(activity_id=recording.activity_id, participant_state_id=recording.participant_state_id,
                             id=recording_id)
