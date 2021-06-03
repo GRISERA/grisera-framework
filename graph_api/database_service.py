@@ -88,6 +88,20 @@ class DatabaseService:
             labels=":".join(list(node.labels)))
         return self.post_statement(create_statement)
 
+    def get_nodes(self, label):
+        """
+        Send to the database request to get nodes with given label
+
+        Args:
+            label (): label to search by
+
+        Returns:
+            Result of request
+        """
+        get_statement = "MATCH (n: {label}) RETURN n".format(
+            label=label)
+        return self.post_statement(get_statement)
+
     def relationship_exist(self, relationship_id):
         """
         Check if relationship exists in the database

@@ -1,5 +1,5 @@
 from channel.channel_service import ChannelService
-from channel.channel_model import ChannelIn
+from channel.channel_model import ChannelIn, Type
 import os
 from time import sleep
 
@@ -13,11 +13,12 @@ class SetupNodes:
         Initialize values of channels
         """
         channel_service = ChannelService()
-        channel_types = ["Audio", "BVP", "Chest size", "Depth video", "ECG",
-                         "EDA", "EEG", "EMG", "RGB video", "Temperature"]
 
-        if not os.path.exists("pipe"):
-            open("pipe", "w").write("Busy")
+        if not os.path.exists("lock"):
+            open("lock", "w").write("Busy")
             sleep(30)
-            [channel_service.save_channel(ChannelIn(type=channel_type)) for channel_type in channel_types]
-            os.remove("pipe")
+            created_types = [channel.type for channel in channel_service.get_channels().channels]
+
+            [channel_service.save_channel(ChannelIn(type=channel_type.value)) for channel_type in Type
+             if channel_type not in created_types]
+            os.remove("lock")

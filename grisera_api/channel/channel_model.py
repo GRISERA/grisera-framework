@@ -1,5 +1,34 @@
 from pydantic import BaseModel
-from typing import Optional, Any
+from typing import Optional, Any, List
+from enum import Enum
+
+
+class Type(str, Enum):
+    """
+    Types of channel
+
+    Attributes:
+        audio (str): Audio channel
+        bvp (str): BVP channel
+        chest_size (str): Chest size channel
+        depth_video (str): Depth video channel
+        ecg (str): ECG channel
+        eda (str): EDA channel
+        eeg (str): EEG channel
+        emg (str): EMG channel
+        rgb_video (str): RGB video channel
+        temperature (str): Temperature channel
+    """
+    audio = "Audio"
+    bvp = "BVP"
+    chest_size = "Chest size"
+    depth_video = "Depth video"
+    ecg = "ECG"
+    eda = "EDA"
+    eeg = "EEG"
+    emg = "EMG"
+    rgb_video = "RGB video"
+    temperature = "Temperature"
 
 
 class ChannelIn(BaseModel):
@@ -12,15 +41,37 @@ class ChannelIn(BaseModel):
     type: str
 
 
-class ChannelOut(ChannelIn):
+class BasicChannelOut(ChannelIn):
+    """
+    Model of channel in database
+
+    Attributes:
+        id (Optional[int]): Id of channel returned from graph api
+    """
+    id: Optional[int]
+
+
+class ChannelOut(BasicChannelOut):
     """
     Model of channel to send to client as a result of request
 
     Attributes:
-        id (Optional[int]): Id of channel returned from graph api
         errors (Optional[Any]): Optional errors appeared during query executions
         links (Optional[list]): List of links available from api
     """
-    id: Optional[int]
+    errors: Optional[Any] = None
+    links: Optional[list] = None
+
+
+class ChannelsOut(BaseModel):
+    """
+    Model of channels to send to client as a result of request
+
+    Attributes:
+        channels (List[BasicChannelOut]): Channels from database
+        errors (Optional[Any]): Optional errors appeared during query executions
+        links (Optional[list]): List of links available from api
+    """
+    channels: List[BasicChannelOut] = []
     errors: Optional[Any] = None
     links: Optional[list] = None
