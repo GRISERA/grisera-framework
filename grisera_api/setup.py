@@ -20,5 +20,5 @@ class SetupNodes:
             created_types = [channel.type for channel in channel_service.get_channels().channels]
 
             [channel_service.save_channel(ChannelIn(type=channel_type.value)) for channel_type in Type
-             if channel_type not in created_types]
+             if channel_type.value not in created_types]
             os.remove("lock")
