@@ -16,6 +16,7 @@ class TestRegisteredChannelPostService(unittest.TestCase):
         mock_requests.post.return_value = response
         get_response = Response()
         get_response._content = json.dumps({'nodes': [{'id': 1, 'properties': [{'key': 'type', 'value': 'ECG'}]}],
+                                            'errors': None,
                                             'links': []}).encode('utf-8')
         mock_requests.get.return_value = get_response
         registered_channel = RegisteredChannelIn(channel="ECG", registered_data_id=1)
