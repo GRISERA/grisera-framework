@@ -13,13 +13,11 @@ class TestNodesGetService(unittest.TestCase):
     def test_nodes_service_without_error(self, mock_requests):
         response = Response()
         response._content = json.dumps({'results': [
-                                        {'data':[
+                                        {'data': [
                                             {
                                             'row': [{}],
-                                            'meta': [
-                                                {'id': '5'}]
-
-                                        }]
+                                            'meta': [{'id': '5'}]
+                                            }]
                                         }],
                                         'errors': []}).encode('utf-8')
         mock_requests.post.return_value = response
@@ -28,7 +26,7 @@ class TestNodesGetService(unittest.TestCase):
 
         result = node_service.get_nodes(label)
 
-        self.assertEqual(result, [BasicNodeOut(id=5, labels={"Test"}, properties=[])])
+        self.assertEqual(result, NodesOut(nodes=[BasicNodeOut(id=5, labels={"Test"}, properties=[])]))
 
     @mock.patch('database_service.requests')
     def test_nodes_service_with_error(self, mock_requests):
@@ -41,4 +39,4 @@ class TestNodesGetService(unittest.TestCase):
 
         result = node_service.get_nodes(label)
 
-        self.assertEqual(result, {'errors': ['error']})
+        self.assertEqual(result, NodesOut(errors=['error']))

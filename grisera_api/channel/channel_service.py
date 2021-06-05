@@ -41,9 +41,9 @@ class ChannelService:
             Result of request as list of channel objects
         """
         get_response = self.graph_api_service.get_nodes("Channel")
-        if type(get_response["Channel"]) is dict:
-            return ChannelsOut(errors=get_response["Channel"])
+        if get_response["errors"] is not None:
+            return ChannelsOut(errors=get_response["errors"])
         channels = [BasicChannelOut(id=channel["id"], type=channel["properties"][0]["value"])
-                    for channel in get_response["Channel"]]
+                    for channel in get_response["nodes"]]
 
         return ChannelsOut(channels=channels)
