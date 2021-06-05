@@ -7,11 +7,11 @@ class RegisteredChannelIn(BaseModel):
     Model of registered channel to acquire from client
 
     Attributes:
-        channel_id (int): Id of channel
+        channel (str): Channel by which data was registered
         registered_data_id (id): Id of created registered data
 
     """
-    channel_id: int
+    channel: str
     registered_data_id: int
 
 
