@@ -1,5 +1,5 @@
 from database_service import DatabaseService
-from node.node_model import NodeIn, NodeOut, BasicNodeOut
+from node.node_model import NodeIn, NodeOut, BasicNodeOut, NodesOut
 from property.property_model import PropertyIn
 from typing import List
 
@@ -42,17 +42,17 @@ class NodeService:
             label (str): Label by which it is searched for in the database
 
         Returns:
-            List of acquired nodes
+            List of acquired nodes in NodesOut model
         """
         response = self.db.get_nodes(label)
 
         if len(response["errors"]) > 0:
-            result = {'errors': response["errors"]}
-        else:
-            result = []
-            for node in response["results"][0]["data"]:
-                properties = [PropertyIn(key=property[0], value=property[1]) for property in node["row"][0].items()]
-                result.append(BasicNodeOut(labels={label}, id=node["meta"][0]["id"], properties=properties))
+            return NodesOut(errors=response["errors"])
+
+        result = NodesOut(nodes=[])
+        for node in response["results"][0]["data"]:
+            properties = [PropertyIn(key=property[0], value=property[1]) for property in node["row"][0].items()]
+            result.nodes.append(BasicNodeOut(labels={label}, id=node["meta"][0]["id"], properties=properties))
 
         return result
 

@@ -2,6 +2,7 @@ from typing import Set, Optional, Any, List
 from pydantic import BaseModel
 from property.property_model import PropertyIn
 
+
 class NodeIn(BaseModel):
     """
     Model of node to acquire from client
@@ -35,3 +36,16 @@ class NodeOut(BasicNodeOut):
     errors: Optional[Any] = None
     links: Optional[list] = None
 
+
+class NodesOut(BaseModel):
+    """
+    Model of list of nodes
+
+    Attributes:
+        nodes (Optional[List[BasicNodeOut]]): List of nodes to send
+        errors (Optional[Any]): Optional errors appeared during query executions
+        links (Optional[list): Hateoas implementation
+    """
+    nodes: Optional[List[BasicNodeOut]] = None
+    errors: Optional[Any] = None
+    links: Optional[List] = None

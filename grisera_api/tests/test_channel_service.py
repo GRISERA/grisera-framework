@@ -34,10 +34,14 @@ class TestChannelPostService(unittest.TestCase):
 
         self.assertEqual(result, ChannelOut(type="ECG", errors={'error': 'test'}))
 
+
+class TestChannelGetService(unittest.TestCase):
+
     @mock.patch('graph_api_service.requests')
     def test_channel_get_service_without_error(self, mock_requests):
         response = Response()
-        response._content = json.dumps({'Channel': [{'id': 1, 'properties': [{'key': 'type', 'value': 'ECG'}]}],
+        response._content = json.dumps({'nodes': [{'id': 1, 'properties': [{'key': 'type', 'value': 'ECG'}]}],
+                                        'errors': None,
                                         'links': []}).encode('utf-8')
         mock_requests.get.return_value = response
         channel_service = ChannelService()
@@ -49,11 +53,12 @@ class TestChannelPostService(unittest.TestCase):
     @mock.patch('graph_api_service.requests')
     def test_channel_get_service_with_error(self, mock_requests):
         response = Response()
-        response._content = json.dumps({'Channel': {'errors': 'error'},
+        response._content = json.dumps({'nodes': {},
+                                        'errors': 'error',
                                         'links': []}).encode('utf-8')
         mock_requests.get.return_value = response
         channel_service = ChannelService()
 
         result = channel_service.get_channels()
 
-        self.assertEqual(result, ChannelsOut(errors={'errors': 'error'}))
+        self.assertEqual(result, ChannelsOut(errors='error'))
