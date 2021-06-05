@@ -12,17 +12,26 @@ class NodeIn(BaseModel):
     labels: Optional[Set[str]] = []
 
 
-class NodeOut(NodeIn):
+class BasicNodeOut(NodeIn):
     """
-    Model of node to send to client as a result of request
+    Model of node in database
 
     Attributes:
         id (Optional[int]): Id of node returned from graph database
         propeties(Optional[List[PropertyIn]]): List of properties of the node in the database
-        errors (Optional[Any]): Optional errors appeared during query executions
     """
     id: Optional[int]
     properties: Optional[List[PropertyIn]] = None
+
+
+class NodeOut(BasicNodeOut):
+    """
+    Model of node to send to client as a result of request
+
+    Attributes:
+        errors (Optional[Any]): Optional errors appeared during query executions
+        links (Optional[list): Hateoas implementation
+    """
     errors: Optional[Any] = None
     links: Optional[list] = None
 
