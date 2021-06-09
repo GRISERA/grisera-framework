@@ -1,10 +1,10 @@
 from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
-from node.node_model import NodeIn, NodeOut
+from node.node_model import NodeIn, NodeOut, NodesOut
 from node.node_service import NodeService
 from hateoas import get_links
-from typing import List
+from typing import List, Dict
 from property.property_model import PropertyIn
 
 router = InferringRouter()
@@ -33,6 +33,19 @@ class NodeRouter:
         create_response.links = get_links(router)
 
         return create_response
+
+    @router.get("/nodes", tags=["nodes"], response_model=NodesOut)
+    async def get_nodes(self, label: str, response: Response):
+        """
+        Get nodes with same label as given
+        """
+        nodes = self.node_service.get_nodes(label)
+        if nodes.errors is not None:
+            response.status_code = 422
+
+        nodes.links = get_links(router)
+
+        return nodes
 
     @router.post("/nodes/{id}/properties", tags=["nodes"], response_model=NodeOut)
     async def create_node_properties(self, id: int, properties: List[PropertyIn], response: Response):

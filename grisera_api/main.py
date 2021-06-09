@@ -10,7 +10,7 @@ from observable_information.observable_information_router import router as obser
 from participant_state.participant_state_router import router as participant_state_router
 from participation.participation_router import router as participation_router
 from registered_data.registered_data_router import router as registered_data_router
-
+from setup import SetupNodes
 
 app = FastAPI(title="GRISERA API",
               description="Graph Representation Integrating Signals for Emotion Recognition and Analysis (GRISERA) "
@@ -28,6 +28,12 @@ app.include_router(observable_information_router)
 app.include_router(participant_state_router)
 app.include_router(participation_router)
 app.include_router(registered_data_router)
+
+
+@app.on_event("startup")
+async def startup_event():
+    startup = SetupNodes()
+    startup.set_channels()
 
 
 @app.get("/", tags=["root"])
