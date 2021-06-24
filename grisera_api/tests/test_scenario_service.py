@@ -23,7 +23,7 @@ class TestScenarioPostService(unittest.TestCase):
         self.assertEqual(result, ScenarioOut(experiment_id=3, activities=[ActivityOut(identifier=0, id=1)]))
 
     @mock.patch('graph_api_service.requests')
-    def test_experiment_service_with_error(self, mock_requests):
+    def test_scenario_service_with_error(self, mock_requests):
         response = Response()
         response._content = json.dumps(
             {'id': None, 'properties': None, "errors": {'error': 'test'}, 'links': None}).encode('utf-8')
