@@ -29,7 +29,6 @@ class TestExperimentService(unittest.TestCase):
         authors = [AuthorIn(name='TestName'), AuthorIn(name='TestName')]
         save_publication_mock.return_value = PublicationOut(id=3, authors=authors, title='Test')
         create_relationships_mock.return_value = {'start_node': 1, 'end_node': 2, 'id': 4, 'name': 'has', 'errors': None}
-        authors = [AuthorIn(name='TestName'), AuthorIn(name='TestName')]
         publication = PublicationIn(title='Test', authors=authors)
         additional_properties = [PropertyIn(key='testkey', value='testvalue')]
         experiment = ExperimentIn(experiment_name="test", authors=authors, publication=publication,

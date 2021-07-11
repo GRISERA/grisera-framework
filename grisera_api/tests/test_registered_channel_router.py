@@ -4,16 +4,11 @@ import unittest.mock as mock
 import asyncio
 
 
-def return_registered_channel(*args, **kwargs):
-    registered_channel_out = RegisteredChannelOut(channel="ECG", registered_data_id=1, id=2)
-    return registered_channel_out
-
-
-class TestRegisteredChannelPost(unittest.TestCase):
+class TestRegisteredChannelRouter(unittest.TestCase):
 
     @mock.patch.object(RegisteredChannelService, 'save_registered_channel')
-    def test_registered_channel_post_without_error(self, mock_service):
-        mock_service.side_effect = return_registered_channel
+    def test_create_registered_channel_without_error(self, save_registered_channel_mock):
+        save_registered_channel_mock.return_value = RegisteredChannelOut(channel="ECG", registered_data_id=1, id=2)
         response = Response()
         registered_channel = RegisteredChannelIn(channel="ECG", registered_data_id=1)
         registered_channel_router = RegisteredChannelRouter()
@@ -22,15 +17,19 @@ class TestRegisteredChannelPost(unittest.TestCase):
 
         self.assertEqual(result, RegisteredChannelOut(channel="ECG", registered_data_id=1,
                                                       id=2, links=get_links(router)))
+        save_registered_channel_mock.assert_called_once_with(registered_channel)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(RegisteredChannelService, 'save_registered_channel')
-    def test_registered_channel_post_with_error(self, mock_service):
-        mock_service.return_value = RegisteredChannelOut(channel="ECG", registered_data_id=1, errors={'errors': ['test']})
+    def test_create_registered_channel_with_error(self, save_registered_channel_mock):
+        save_registered_channel_mock.return_value = RegisteredChannelOut(channel="ECG", registered_data_id=1, errors={'errors': ['test']})
         response = Response()
         registered_channel = RegisteredChannelIn(channel="ECG", registered_data_id=1)
         registered_channel_router = RegisteredChannelRouter()
         
         result = asyncio.run(registered_channel_router.create_registered_channel(registered_channel, response))
 
+        self.assertEqual(result, RegisteredChannelOut(channel="ECG", registered_data_id=1,
+                                                      errors={'errors': ['test']}, links=get_links(router)))
+        save_registered_channel_mock.assert_called_once_with(registered_channel)
         self.assertEqual(response.status_code, 422)

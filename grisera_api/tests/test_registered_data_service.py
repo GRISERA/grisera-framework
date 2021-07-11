@@ -1,35 +1,52 @@
-import json
 import unittest
 import unittest.mock as mock
 from registered_data.registered_data_model import *
 from registered_data.registered_data_service import RegisteredDataService
-from requests import Response
+from graph_api_service import GraphApiService
 
 
-class TestRegisteredDataPostService(unittest.TestCase):
+class TestRegisteredDataService(unittest.TestCase):
 
-    @mock.patch('graph_api_service.requests')
-    def test_registered_data_service_without_error(self, mock_requests):
-        response = Response()
-        response._content = json.dumps({'id': 1, 'properties': None, "errors": None,
-                                        'links': None}).encode('utf-8')
-        mock_requests.post.return_value = response
-        registered_data = RegisteredDataIn(source="http://localhost")
+    @mock.patch.object(GraphApiService, 'create_node')
+    @mock.patch.object(GraphApiService, 'create_properties')
+    def test_save_registered_data_without_error(self, create_properties_mock, create_node_mock):
+        id_node = 1
+        create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
+        create_properties_mock.return_value = {'id': id_node, 'properties': [{'key': 'source', 'value': 'url'}],
+                                               "errors": None, 'links': None}
+        additional_properties = [PropertyIn(key='testkey', value='testvalue')]
+        registered_data = RegisteredDataIn(source='url', additional_properties=additional_properties)
         registered_data_service = RegisteredDataService()
 
         result = registered_data_service.save_registered_data(registered_data)
 
-        self.assertEqual(result, RegisteredDataOut(source="http://localhost", id=1))
+        self.assertEqual(result, RegisteredDataOut(source='url', id=id_node, additional_properties=additional_properties))
+        create_node_mock.assert_called_once_with('`Registered data`')
+        create_properties_mock.assert_called_once_with(id_node, registered_data)
 
-    @mock.patch('graph_api_service.requests')
-    def test_registered_data_service_with_error(self, mock_requests):
-        response = Response()
-        response._content = json.dumps({'id': None, 'properties': None, "errors": {'error': 'test'},
-                                        'links': None}).encode('utf-8')
-        mock_requests.post.return_value = response
-        registered_data = RegisteredDataIn(source="http://localhost")
+    @mock.patch.object(GraphApiService, 'create_node')
+    def test_save_registered_data_with_node_error(self, create_node_mock):
+        id_node = 1
+        create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
+        registered_data = RegisteredDataIn(source='url')
         registered_data_service = RegisteredDataService()
 
         result = registered_data_service.save_registered_data(registered_data)
 
-        self.assertEqual(result, RegisteredDataOut(source="http://localhost", errors={'error': 'test'}))
+        self.assertEqual(result, RegisteredDataOut(source='url', errors=['error']))
+        create_node_mock.assert_called_once_with('`Registered data`')
+
+    @mock.patch.object(GraphApiService, 'create_node')
+    @mock.patch.object(GraphApiService, 'create_properties')
+    def test_save_registered_data_with_properties_error(self, create_properties_mock, create_node_mock):
+        id_node = 1
+        create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
+        create_properties_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
+        registered_data = RegisteredDataIn(source='url')
+        registered_data_service = RegisteredDataService()
+
+        result = registered_data_service.save_registered_data(registered_data)
+
+        self.assertEqual(result, RegisteredDataOut(source='url', errors=['error']))
+        create_node_mock.assert_called_once_with('`Registered data`')
+        create_properties_mock.assert_called_once_with(id_node, registered_data)

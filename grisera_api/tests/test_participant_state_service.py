@@ -17,7 +17,7 @@ class TestParticipantStateService(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'create_properties')
     @mock.patch.object(GraphApiService, 'create_relationships')
     @mock.patch.object(ParticipantService, 'save_participant')
-    def test_save_participant_stateexperiment_without_errors(self, save_participant_mock, create_relationships_mock,
+    def test_save_participant_state_without_errors(self, save_participant_mock, create_relationships_mock,
                                                           create_properties_mock, create_node_mock):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
