@@ -31,7 +31,9 @@ class ObservableInformationService:
         observable_information_id = node_response["id"]
         properties_response = self.graph_api_service.create_properties(observable_information_id, observable_information)
         if properties_response["errors"] is not None:
-            return ObservableInformationOut(errors=properties_response["errors"])
+            return ObservableInformationOut(modality=observable_information.modality,
+                                            live_activity=observable_information.live_activity,
+                                            errors=properties_response["errors"])
 
         return ObservableInformationOut(modality=observable_information.modality,
                                         live_activity=observable_information.live_activity,

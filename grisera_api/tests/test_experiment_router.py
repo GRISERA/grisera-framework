@@ -9,27 +9,31 @@ def return_experiment(*args, **kwargs):
     return experiment_out
 
 
-class TestExperimentPost(unittest.TestCase):
+class TestExperimentRouter(unittest.TestCase):
 
     @mock.patch.object(ExperimentService, 'save_experiment')
-    def test_experiment_post_without_error(self, mock_service):
-        mock_service.side_effect = return_experiment
+    def test_create_experiment_without_error(self, save_experiment_mock):
+        save_experiment_mock.side_effect = return_experiment
         response = Response()
-        experiment = ExperimentIn(experiment_name="test")
+        experiment = ExperimentIn(id=1, experiment_name="test")
         experiment_router = ExperimentRouter()
 
         result = asyncio.run(experiment_router.create_experiment(experiment, response))
 
         self.assertEqual(result, ExperimentOut(id=1, experiment_name="test", links=get_links(router)))
+        save_experiment_mock.assert_called_once_with(experiment)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(ExperimentService, 'save_experiment')
-    def test_experiment_post_with_error(self, mock_service):
-        mock_service.return_value = ExperimentOut(experiment_name="test", errors={'errors': ['test']})
+    def test_create_experiment_with_error(self, save_experiment_mock):
+        save_experiment_mock.return_value = ExperimentOut(experiment_name="test", errors={'errors': ['test']})
         response = Response()
-        experiment = ExperimentIn(experiment_name="test")
+        experiment = ExperimentIn(id=1, experiment_name="test")
         experiment_router = ExperimentRouter()
 
         result = asyncio.run(experiment_router.create_experiment(experiment, response))
 
+        self.assertEqual(result, ExperimentOut(experiment_name="test",
+                                               errors={'errors': ['test']}, links=get_links(router)))
+        save_experiment_mock.assert_called_once_with(experiment)
         self.assertEqual(response.status_code, 422)
