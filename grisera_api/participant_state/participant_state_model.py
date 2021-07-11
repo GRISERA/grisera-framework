@@ -6,20 +6,6 @@ from property.property_model import PropertyIn
 from participant.participant_model import ParticipantIn, ParticipantOut
 
 
-class FacialHair(str, Enum):
-    """
-    Types of facial hair
-
-    Attributes:
-        heavy (str): Heavy facial hair
-        no (str): No facial hair
-        some (str): Some facial hair
-    """
-    heavy = "heavy"
-    no = "no"
-    some = "some"
-
-
 class ParticipantStateIn(BaseModel):
     """
     Model of participant state to acquire from client
@@ -27,16 +13,10 @@ class ParticipantStateIn(BaseModel):
     Attributes:
         participant (Optional[ParticipantIn]): Participant whose state is described
         age (Optional[int]): Age of participant state
-        beard (Optional[FacialHair]): Type of participant state's beard
-        moustache (Optional[FacialHair]): Type of participant state's moustache
-        glasses (Optional[bool]): Did participant state have glasses
         additional_properties (Optional[List[PropertyIn]]): Additional properties for participant state
     """
     participant: Optional[ParticipantIn]
     age: Optional[int]
-    beard: Optional[FacialHair]
-    moustache: Optional[FacialHair]
-    glasses: Optional[bool]
     additional_properties: Optional[List[PropertyIn]]
 
 

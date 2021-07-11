@@ -42,7 +42,5 @@ class ParticipantStateService:
         if properties_response["errors"] is not None:
             return ParticipantStateOut(errors=properties_response["errors"])
 
-        return ParticipantStateOut(participant=participant, age=participant_state.age,
-                                   beard=participant_state.beard, moustache=participant_state.moustache,
-                                   glasses=participant_state.glasses, id=participant_state_id,
+        return ParticipantStateOut(participant=participant, age=participant_state.age, id=participant_state_id,
                                    additional_properties=participant_state.additional_properties)
