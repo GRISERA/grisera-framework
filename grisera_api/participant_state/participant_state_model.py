@@ -1,7 +1,6 @@
 from typing import List
 from pydantic import BaseModel
 from typing import Optional, Any
-from enum import Enum
 from property.property_model import PropertyIn
 from participant.participant_model import ParticipantIn, ParticipantOut
 
