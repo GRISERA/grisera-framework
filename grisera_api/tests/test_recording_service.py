@@ -1,9 +1,10 @@
 import unittest
 import unittest.mock as mock
+
 from activity.activity_model import *
+from graph_api_service import GraphApiService
 from recording.recording_model import *
 from recording.recording_service import RecordingService
-from graph_api_service import GraphApiService
 
 
 class TestRecordingService(unittest.TestCase):

@@ -1,7 +1,8 @@
-from registered_data.registered_data_router import *
+import asyncio
 import unittest
 import unittest.mock as mock
-import asyncio
+
+from registered_data.registered_data_router import *
 
 
 class TestRegisteredDataRouter(unittest.TestCase):

@@ -1,8 +1,9 @@
 import unittest
 import unittest.mock as mock
+
+from graph_api_service import GraphApiService
 from publication.publication_model import *
 from publication.publication_service import PublicationService, AuthorService
-from graph_api_service import GraphApiService
 
 
 def relationship_function(*args, **kwargs):

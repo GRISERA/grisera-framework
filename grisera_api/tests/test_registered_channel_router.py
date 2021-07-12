@@ -1,7 +1,8 @@
-from registered_channel.registered_channel_router import *
+import asyncio
 import unittest
 import unittest.mock as mock
-import asyncio
+
+from registered_channel.registered_channel_router import *
 
 
 class TestRegisteredChannelRouter(unittest.TestCase):

@@ -1,7 +1,8 @@
-from observable_information.observable_information_router import *
+import asyncio
 import unittest
 import unittest.mock as mock
-import asyncio
+
+from observable_information.observable_information_router import *
 
 
 class TestObservableInformationRouter(unittest.TestCase):

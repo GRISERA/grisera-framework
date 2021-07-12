@@ -1,8 +1,9 @@
-from scenario.scenario_router import *
+import asyncio
 import unittest
 import unittest.mock as mock
-import asyncio
+
 from activity.activity_model import ActivityIn, ActivityOut
+from scenario.scenario_router import *
 
 
 class TestScenarioRouter(unittest.TestCase):

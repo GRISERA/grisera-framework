@@ -1,9 +1,8 @@
-import json
 import unittest
 import unittest.mock as mock
+
 from channel.channel_model import *
 from channel.channel_service import ChannelService
-from requests import Response
 from graph_api_service import GraphApiService
 
 

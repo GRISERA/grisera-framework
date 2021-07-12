@@ -1,9 +1,8 @@
-import json
 import unittest
 import unittest.mock as mock
+
 from author.author_model import *
 from author.author_service import AuthorService
-from requests import Response
 from graph_api_service import GraphApiService
 
 

@@ -1,8 +1,9 @@
 import unittest
 import unittest.mock as mock
+
+from graph_api_service import GraphApiService
 from participant_state.participant_state_model import *
 from participant_state.participant_state_service import ParticipantStateService, ParticipantService
-from graph_api_service import GraphApiService
 
 
 def relationship_function(*args, **kwargs):

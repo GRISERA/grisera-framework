@@ -1,7 +1,8 @@
-from author.author_router import *
+import asyncio
 import unittest
 import unittest.mock as mock
-import asyncio
+
+from author.author_router import *
 
 
 def return_author(*args, **kwargs):

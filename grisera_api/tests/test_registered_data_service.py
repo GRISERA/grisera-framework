@@ -1,8 +1,9 @@
 import unittest
 import unittest.mock as mock
+
+from graph_api_service import GraphApiService
 from registered_data.registered_data_model import *
 from registered_data.registered_data_service import RegisteredDataService
-from graph_api_service import GraphApiService
 
 
 class TestRegisteredDataService(unittest.TestCase):

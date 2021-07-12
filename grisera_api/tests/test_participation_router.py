@@ -1,7 +1,8 @@
-from participation.participation_router import *
+import asyncio
 import unittest
 import unittest.mock as mock
-import asyncio
+
+from participation.participation_router import *
 
 
 class TestParticipationRouter(unittest.TestCase):

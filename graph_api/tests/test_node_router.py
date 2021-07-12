@@ -1,8 +1,9 @@
-from node.node_router import *
+import asyncio
 import unittest
 import unittest.mock as mock
-import asyncio
+
 from node.node_model import *
+from node.node_router import *
 
 
 def return_new_node(*args, **kwargs):

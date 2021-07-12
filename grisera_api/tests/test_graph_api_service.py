@@ -1,9 +1,10 @@
+import json
 import unittest
 import unittest.mock as mock
-import json
-from requests import Response
-from graph_api_service import GraphApiService
+
 from activity.activity_model import ActivityIn
+from graph_api_service import GraphApiService
+from requests import Response
 
 
 class DatabaseServiceTestCase(unittest.TestCase):

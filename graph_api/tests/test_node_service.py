@@ -1,8 +1,9 @@
-from node.node_service import NodeService
-from node.node_model import *
-from database_service import DatabaseService
 import unittest
 import unittest.mock as mock
+
+from database_service import DatabaseService
+from node.node_model import *
+from node.node_service import NodeService
 
 
 class NodeServiceTestCase(unittest.TestCase):

@@ -1,5 +1,6 @@
 import unittest
 import unittest.mock as mock
+
 from activity.activity_model import *
 from activity.activity_service import ActivityService
 from graph_api_service import GraphApiService

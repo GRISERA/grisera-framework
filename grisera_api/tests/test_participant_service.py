@@ -1,8 +1,9 @@
 import unittest
 import unittest.mock as mock
+
+from graph_api_service import GraphApiService
 from participant.participant_model import *
 from participant.participant_service import ParticipantService
-from graph_api_service import GraphApiService
 
 
 class TestParticipantService(unittest.TestCase):

@@ -1,7 +1,8 @@
-from participant.participant_router import *
+import asyncio
 import unittest
 import unittest.mock as mock
-import asyncio
+
+from participant.participant_router import *
 
 
 class TestParticipantRouter(unittest.TestCase):

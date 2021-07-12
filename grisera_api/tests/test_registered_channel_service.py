@@ -1,10 +1,11 @@
 import unittest
 import unittest.mock as mock
-from registered_channel.registered_channel_model import *
-from registered_channel.registered_channel_service import RegisteredChannelService
-from graph_api_service import GraphApiService
+
 from channel.channel_model import ChannelsOut, BasicChannelOut
 from channel.channel_service import ChannelService
+from graph_api_service import GraphApiService
+from registered_channel.registered_channel_model import *
+from registered_channel.registered_channel_service import RegisteredChannelService
 
 
 class TestRegisteredChannelService(unittest.TestCase):

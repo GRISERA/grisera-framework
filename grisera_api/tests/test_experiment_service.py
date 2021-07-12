@@ -1,6 +1,6 @@
-import json
 import unittest
 import unittest.mock as mock
+
 from experiment.experiment_model import *
 from experiment.experiment_service import ExperimentService, AuthorService, PublicationService
 from graph_api_service import GraphApiService

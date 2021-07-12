@@ -1,8 +1,9 @@
-from relationship.relationship_service import RelationshipService
-from relationship.relationship_model import *
-from database_service import DatabaseService
 import unittest
 import unittest.mock as mock
+
+from database_service import DatabaseService
+from relationship.relationship_model import *
+from relationship.relationship_service import RelationshipService
 
 
 class TestRelationshipService(unittest.TestCase):

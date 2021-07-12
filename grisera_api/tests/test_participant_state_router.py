@@ -1,8 +1,9 @@
-from participant_state.participant_state_router import *
-from participant.participant_model import ParticipantIn
+import asyncio
 import unittest
 import unittest.mock as mock
-import asyncio
+
+from participant.participant_model import ParticipantIn
+from participant_state.participant_state_router import *
 
 
 class TestParticipantStateRouter(unittest.TestCase):

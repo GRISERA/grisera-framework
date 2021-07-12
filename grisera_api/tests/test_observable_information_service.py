@@ -1,8 +1,9 @@
 import unittest
 import unittest.mock as mock
+
+from graph_api_service import GraphApiService
 from observable_information.observable_information_model import *
 from observable_information.observable_information_service import ObservableInformationService
-from graph_api_service import GraphApiService
 
 
 class TestObservableInformationService(unittest.TestCase):

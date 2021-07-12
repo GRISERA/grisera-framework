@@ -1,6 +1,7 @@
-import main
-import unittest
 import asyncio
+import unittest
+
+import main
 
 
 class MainTestCase(unittest.TestCase):

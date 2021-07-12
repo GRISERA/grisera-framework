@@ -1,11 +1,12 @@
+import json
 import unittest
 import unittest.mock as mock
-import json
-from requests import Response
+
 from database_service import DatabaseService
 from node.node_model import NodeIn
-from relationship.relationship_model import RelationshipIn
 from property.property_model import PropertyIn
+from relationship.relationship_model import RelationshipIn
+from requests import Response
 
 
 class DatabaseServiceTestCase(unittest.TestCase):

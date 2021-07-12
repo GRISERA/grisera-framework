@@ -1,8 +1,9 @@
 import unittest
 import unittest.mock as mock
+
+from graph_api_service import GraphApiService
 from scenario.scenario_model import *
 from scenario.scenario_service import ScenarioService, ActivityService
-from graph_api_service import GraphApiService
 
 
 class TestScenarioService(unittest.TestCase):
