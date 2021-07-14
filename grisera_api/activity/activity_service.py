@@ -29,7 +29,7 @@ class ActivityService:
         activity_id = node_response["id"]
         properties_response = self.graph_api_service.create_properties(activity_id, activity)
         if properties_response["errors"] is not None:
-            return ActivityOut(errors=properties_response["errors"])
+            return ActivityOut(identifier=activity.identifier, errors=properties_response["errors"])
 
         return ActivityOut(identifier=activity.identifier, name=activity.name, type=activity.type,
                            layout=activity.layout, id=activity_id, additional_properties=activity.additional_properties)

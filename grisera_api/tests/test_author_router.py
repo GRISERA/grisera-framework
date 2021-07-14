@@ -1,7 +1,8 @@
-from author.author_router import *
+import asyncio
 import unittest
 import unittest.mock as mock
-import asyncio
+
+from author.author_router import *
 
 
 def return_author(*args, **kwargs):
@@ -9,11 +10,11 @@ def return_author(*args, **kwargs):
     return author_out
 
 
-class TestAuthorPost(unittest.TestCase):
+class TestAuthorRouter(unittest.TestCase):
 
     @mock.patch.object(AuthorService, 'save_author')
-    def test_author_post_without_error(self, mock_service):
-        mock_service.side_effect = return_author
+    def test_create_author_without_error(self, save_author_mock):
+        save_author_mock.side_effect = return_author
         response = Response()
         author = AuthorIn(name="test")
         author_router = AuthorRouter()
@@ -21,15 +22,18 @@ class TestAuthorPost(unittest.TestCase):
         result = asyncio.run(author_router.create_author(author, response))
 
         self.assertEqual(result, AuthorOut(id=1, name="test", links=get_links(router)))
+        save_author_mock.assert_called_once_with(author)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(AuthorService, 'save_author')
-    def test_author_post_with_error(self, mock_service):
-        mock_service.return_value = AuthorOut(name="test", errors={'errors': ['test']})
+    def test_create_author_with_error(self, save_author_mock):
+        save_author_mock.return_value = AuthorOut(name="test", errors={'errors': ['test']})
         response = Response()
         author = AuthorIn(name="test")
         author_router = AuthorRouter()
 
         result = asyncio.run(author_router.create_author(author, response))
 
+        self.assertEqual(result, AuthorOut(name="test", errors={'errors': ['test']}, links=get_links(router)))
+        save_author_mock.assert_called_once_with(author)
         self.assertEqual(response.status_code, 422)

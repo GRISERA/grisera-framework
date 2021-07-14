@@ -1,9 +1,10 @@
-import main
-import unittest
 import asyncio
+import unittest
+
+import main
 
 
-class TestGet(unittest.TestCase):
+class TestMain(unittest.TestCase):
 
     def test_root(self):
         expect = {"title": "GRISERA API"}

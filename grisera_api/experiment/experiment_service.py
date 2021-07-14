@@ -47,7 +47,7 @@ class ExperimentService:
                     end_node=node_response_author.id, start_node=experiment_id, name="hasAuthor")
                 if relationship_response_experiment_author["errors"] is not None:
                     return ExperimentOut(experiment_name=experiment.experiment_name, authors=experiment.authors,
-                                         errors=node_response_experiment["errors"])
+                                         errors=relationship_response_experiment_author["errors"])
                 authors_out.append(node_response_author)
 
         publication_out = None
@@ -59,7 +59,7 @@ class ExperimentService:
                 end_node=publication_out.id, start_node=experiment_id, name="hasPublication")
             if relationship_response_experiment_publication["errors"] is not None:
                 return ExperimentOut(experiment_name=experiment.experiment_name, publication=experiment.publication,
-                                     errors=node_response_experiment["errors"])
+                                     errors=relationship_response_experiment_publication["errors"])
 
         return ExperimentOut(experiment_name=experiment.experiment_name, authors=authors_out,
                              publication=publication_out, abstract=experiment.abstract, id=experiment_id,
