@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Any
+from typing import Optional, Any, List
 from enum import Enum
 
 
@@ -32,9 +32,19 @@ class LiveActivityIn(BaseModel):
     Model of actions of a human body observed during experiment
 
     Attributes:
-        live_activity (LiveActivity): Actions of a human body
+        live_activity (str): Actions of a human body
     """
-    live_activity: LiveActivity
+    live_activity: str
+
+
+class BasicLiveActivityOut(LiveActivityIn):
+    """
+    Model of actions of a human body during experiment in database
+
+    Attributes:
+        id (Optional[int]): Id of node returned from graph api
+    """
+    id: Optional[int]
 
 
 class LiveActivityOut(LiveActivityIn):
@@ -42,10 +52,22 @@ class LiveActivityOut(LiveActivityIn):
     Model of actions of a human body during experiment to send to client as a result of request
 
     Attributes:
-        id (Optional[int]): Id of node returned from graph api
         errors (Optional[Any]): Optional errors appeared during query executions
         links (Optional[list]): List of links available from api
     """
-    id: Optional[int]
+    errors: Optional[Any] = None
+    links: Optional[list] = None
+
+
+class LiveActivitiesOut(BaseModel):
+    """
+    Model of actions of a human body during experiment to send to client as a result of request
+
+    Attributes:
+        live_activities (List[BasicLiveActivityOut]): Live activities from database
+        errors (Optional[Any]): Optional errors appeared during query executions
+        links (Optional[list]): List of links available from api
+    """
+    live_activities: List[BasicLiveActivityOut] = []
     errors: Optional[Any] = None
     links: Optional[list] = None
