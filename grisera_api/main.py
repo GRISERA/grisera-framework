@@ -12,6 +12,8 @@ from participation.participation_router import router as participation_router
 from registered_data.registered_data_router import router as registered_data_router
 from recording.recording_router import router as recording_router
 from registered_channel.registered_channel_router import router as registered_channel_router
+from modality.modality_router import router as modality_router
+from live_activity.live_activity_router import router as live_activity_router
 from setup import SetupNodes
 
 app = FastAPI(title="GRISERA API",
@@ -32,6 +34,8 @@ app.include_router(participation_router)
 app.include_router(registered_data_router)
 app.include_router(recording_router)
 app.include_router(registered_channel_router)
+app.include_router(modality_router)
+app.include_router(live_activity_router)
 
 
 @app.on_event("startup")
