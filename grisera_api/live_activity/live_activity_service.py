@@ -1,5 +1,5 @@
 from graph_api_service import GraphApiService
-from live_activity.live_activity_model import LiveActivityIn, LiveActivityOut
+from live_activity.live_activity_model import LiveActivityIn, LiveActivityOut, LiveActivitiesOut, BasicLiveActivityOut
 
 
 class LiveActivityService:
@@ -34,3 +34,18 @@ class LiveActivityService:
             return LiveActivityOut(errors=properties_response["errors"])
 
         return LiveActivityOut(live_activity=live_activity.live_activity, id=live_activity_id)
+
+    def get_live_activities(self):
+        """
+        Send request to graph api to get all live activities
+
+        Returns:
+            Result of request as list of live activity objects
+        """
+        get_response = self.graph_api_service.get_nodes("`Live Activity`")
+        if get_response["errors"] is not None:
+            return LiveActivitiesOut(errors=get_response["errors"])
+        live_activities = [BasicLiveActivityOut(id=live_activity["id"], live_activity=live_activity["properties"][0]["value"])
+                           for live_activity in get_response["nodes"]]
+
+        return LiveActivitiesOut(live_activities=live_activities)

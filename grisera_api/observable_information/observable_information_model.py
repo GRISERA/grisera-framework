@@ -1,7 +1,5 @@
 from pydantic import BaseModel
 from typing import Optional, Any
-from modality.modality_model import Modality
-from live_activity.live_activity_model import LiveActivity
 
 
 class ObservableInformationIn(BaseModel):
@@ -12,8 +10,8 @@ class ObservableInformationIn(BaseModel):
         modality (Modality): Type of observable information
         live_activity (LiveActivity): Actions of a human body
     """
-    modality: Modality
-    live_activity: LiveActivity
+    modality: str
+    live_activity: str
 
 
 class ObservableInformationOut(ObservableInformationIn):

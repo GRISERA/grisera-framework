@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Any
+from typing import Optional, Any, List
 from enum import Enum
 
 
@@ -46,20 +46,42 @@ class ModalityIn(BaseModel):
     Model of modality observed during experiment
 
     Attributes:
-        modality (Modality): Type of observable information
+        modality (str): Type of observable information
     """
-    modality: Modality
+    modality: str
 
 
-class ModalityOut(ModalityIn):
+class BasicModalityOut(ModalityIn):
+    """
+    Model of modality in database
+
+    Attributes:
+        id (Optional[int]): Id of modality returned from graph api
+    """
+    id: Optional[int]
+
+
+class ModalityOut(BasicModalityOut):
     """
     Model of information observed during experiment to send to client as a result of request
 
     Attributes:
-        id (Optional[int]): Id of node returned from graph api
         errors (Optional[Any]): Optional errors appeared during query executions
         links (Optional[list]): List of links available from api
     """
-    id: Optional[int]
+    errors: Optional[Any] = None
+    links: Optional[list] = None
+
+
+class ModalitiesOut(BaseModel):
+    """
+    Model of information observed during experiment to send to client as a result of request
+
+    Attributes:
+        modalities (List[BasicModalityOut]): Modalities from database
+        errors (Optional[Any]): Optional errors appeared during query executions
+        links (Optional[list]): List of links available from api
+    """
+    modalities: List[BasicModalityOut] = []
     errors: Optional[Any] = None
     links: Optional[list] = None
