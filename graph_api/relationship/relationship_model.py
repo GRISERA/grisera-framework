@@ -18,17 +18,42 @@ class RelationshipIn(BaseModel):
     name: str = None
 
 
-class RelationshipOut(RelationshipIn):
+class BasicRelationshipOut(RelationshipIn):
     """
-        Model of relationship to send to client as a result of request
+        Model of relationship in database
 
         Attributes:
             id (Optional[int]): Id of relationship returned from graph database
             propeties(Optional[List[PropertyIn]]): List of properties of the relationship in the database
-            errors (Optional[Any]): Optional errors appeared during query executions
+
     """
 
     id: Optional[int] = None
     properties: Optional[List[PropertyIn]] = None
+
+
+class RelationshipOut(BasicRelationshipOut):
+    """
+        Model of relationship to send to client as a result of request
+
+        Attributes:
+            errors (Optional[Any]): Optional errors appeared during query executions
+            links (Optional[list): Hateoas implementation
+    """
+    errors: Optional[Any] = None
+    links: Optional[list] = None
+
+
+class RelationshipsOut(BaseModel):
+    """
+        List of relationships to send to client as a result of request
+
+        Attributes:
+            relationships (BasicRelationshipOut): Attached relationships
+            errors (Optional[Any]): Optional errors appeared during query executions
+            links (Optional[list): Hateoas implementation
+    """
+
+    relationships: List[BasicRelationshipOut] = []
     errors: Optional[Any] = None
     links: Optional[list] = None

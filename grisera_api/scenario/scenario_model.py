@@ -28,3 +28,27 @@ class ScenarioOut(ScenarioIn):
     activities: List[ActivityOut]
     errors: Optional[Any] = None
     links: Optional[list] = None
+
+
+class OrderChangeIn(BaseModel):
+    """
+    Model of ids to change order in scenario
+
+    Attributes:
+        previous_id (int): Id of activity/experiment to put activity after that
+        activity_id (int): Id of activity to change order of it
+    """
+    previous_id: int
+    activity_id: int
+
+
+class OrderChangeOut(OrderChangeIn):
+    """
+    Model of changed order in scenario
+
+    Attributes:
+        errors (Optional[Any]): Optional errors appeared during query executions
+        links (Optional[list]): List of links available from api
+    """
+    errors: Optional[Any] = None
+    links: Optional[list] = None

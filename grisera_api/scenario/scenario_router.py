@@ -2,8 +2,9 @@ from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
-from scenario.scenario_model import ScenarioIn, ScenarioOut
+from scenario.scenario_model import ScenarioIn, ScenarioOut, OrderChangeIn, OrderChangeOut
 from scenario.scenario_service import ScenarioService
+from activity.activity_model import ActivityOut, ActivityIn
 
 router = InferringRouter()
 
@@ -31,3 +32,45 @@ class ScenarioRouter:
         create_response.links = get_links(router)
 
         return create_response
+
+    @router.post("/scenarios/{previous_id}", tags=["scenarios"], response_model=ActivityOut)
+    async def add_activity(self, previous_id: int, activity: ActivityIn, response: Response):
+        """
+        Add new activity to scenario
+        """
+        create_response = self.scenario_service.add_activity(previous_id, activity)
+        if create_response.errors is not None:
+            response.status_code = 422
+
+        # add links from hateoas
+        create_response.links = get_links(router)
+
+        return create_response
+
+    @router.put("/scenarios", tags=["scenarios"], response_model=OrderChangeOut)
+    async def change_order(self, order_change: OrderChangeIn, response: Response):
+        """
+        Change order of one activity in scenario
+        """
+        put_response = self.scenario_service.change_order(order_change)
+        if put_response.errors is not None:
+            response.status_code = 422
+
+        # add links from hateoas
+        put_response.links = get_links(router)
+
+        return put_response
+
+    @router.delete("/scenarios/{activity_id}", tags=["scenarios"], response_model=ActivityOut)
+    async def delete_activity(self, activity_id: int, response: Response):
+        """
+        Delete activity from scenario
+        """
+        delete_response = self.scenario_service.delete_activity(activity_id)
+        if delete_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        delete_response.links = get_links(router)
+
+        return delete_response
