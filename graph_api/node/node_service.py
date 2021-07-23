@@ -89,11 +89,8 @@ class NodeService:
         """
         node = self.get_node(node_id)
         response = self.db.delete_node(node_id)
-
-        if len(response["errors"]) > 0:
-            result = NodeOut(errors=response["errors"])
-        else:
-            result = NodeOut(id=node_id, labels=node.labels, properties=node.properties)
+        result = NodeOut(errors=response["errors"]) if len(response["errors"]) > 0 else \
+            NodeOut(id=node_id, labels=node.labels, properties=node.properties)
 
         return result
 

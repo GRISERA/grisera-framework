@@ -86,12 +86,36 @@ class DatabaseServiceTestCase(unittest.TestCase):
                                               auth=self.database_service.database_auth)
 
     @mock.patch('database_service.requests')
+    def test_get_node(self, requests_mock):
+        requests_mock.post.return_value = self.response
+        commit_body = {"statements": [{"statement": "MATCH (n) WHERE id(n)=5 RETURN n, labels(n)"}]}
+        node_id = 5
+
+        result = self.database_service.get_node(node_id)
+
+        self.assertEqual(result, self.response_content)
+        requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
+                                              auth=self.database_service.database_auth)
+
+    @mock.patch('database_service.requests')
     def test_get_nodes(self, requests_mock):
         requests_mock.post.return_value = self.response
         commit_body = {"statements": [{"statement": "MATCH (n: Test) RETURN n"}]}
         label = "Test"
 
         result = self.database_service.get_nodes(label)
+
+        self.assertEqual(result, self.response_content)
+        requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
+                                              auth=self.database_service.database_auth)
+
+    @mock.patch('database_service.requests')
+    def test_delete_node(self, requests_mock):
+        requests_mock.post.return_value = self.response
+        commit_body = {"statements": [{"statement": "MATCH (n) WHERE id(n)=5 DETACH DELETE n return n"}]}
+        node_id = 5
+
+        result = self.database_service.delete_node(node_id)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
@@ -120,6 +144,45 @@ class DatabaseServiceTestCase(unittest.TestCase):
         result = self.database_service.relationship_exist(node_id)
 
         self.assertFalse(result)
+
+    @mock.patch('database_service.requests')
+    def test_get_relationship(self, requests_mock):
+        requests_mock.post.return_value = self.response
+        commit_body = {"statements": [{"statement": "MATCH ()-[r]->() where id(r)=5 "
+                                                    "return id(startNode(r)), id(endNode(r)), type(r), id(r)"}]}
+        relationship_id = 5
+
+        result = self.database_service.get_relationship(relationship_id)
+
+        self.assertEqual(result, self.response_content)
+        requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
+                                              auth=self.database_service.database_auth)
+
+    @mock.patch('database_service.requests')
+    def test_delete_relationship(self, requests_mock):
+        requests_mock.post.return_value = self.response
+        commit_body = {"statements": [{"statement": "MATCH ()-[r]->() WHERE id(r)=5 "
+                                                    "DETACH DELETE r return r"}]}
+        relationship_id = 5
+
+        result = self.database_service.delete_relationship(relationship_id)
+
+        self.assertEqual(result, self.response_content)
+        requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
+                                              auth=self.database_service.database_auth)
+
+    @mock.patch('database_service.requests')
+    def test_get_relationships(self, requests_mock):
+        requests_mock.post.return_value = self.response
+        commit_body = {"statements": [{"statement": "MATCH (n)-[r]->(m) where id(n)=5 or id(m)=5 "
+                                                    "return id(startNode(r)), id(endNode(r)), type(r), id(r)"}]}
+        node_id = 5
+
+        result = self.database_service.get_relationships(node_id)
+
+        self.assertEqual(result, self.response_content)
+        requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
+                                              auth=self.database_service.database_auth)
 
     @mock.patch('database_service.requests')
     def test_create_relationship(self, requests_mock):

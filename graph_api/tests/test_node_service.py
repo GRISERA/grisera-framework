@@ -4,6 +4,7 @@ import unittest.mock as mock
 from database_service import DatabaseService
 from node.node_model import *
 from node.node_service import NodeService
+from relationship.relationship_model import *
 
 
 class NodeServiceTestCase(unittest.TestCase):
@@ -32,6 +33,28 @@ class NodeServiceTestCase(unittest.TestCase):
         self.assertEqual(result, NodeOut(errors=['error']))
         create_node_mock.assert_called_once_with(node)
 
+    @mock.patch.object(DatabaseService, 'get_node')
+    def test_get_node_with_existing_node(self, get_node_mock):
+        get_node_mock.return_value = {'results': [{'data': [{'row': [{'key': 'value'}, ["Test"]]}]}], 'errors': []}
+        node_id = 1
+        node_service = NodeService()
+
+        result = node_service.get_node(node_id)
+
+        self.assertEqual(result, NodeOut(id=1, properties=[PropertyIn(key='key', value='value')], labels={"Test"}))
+        get_node_mock.assert_called_once_with(node_id)
+
+    @mock.patch.object(DatabaseService, 'get_node')
+    def test_get_node_without_existing_node(self, get_node_mock):
+        get_node_mock.return_value = {'results': [{'data': []}], 'errors': []}
+        node_id = 1
+        node_service = NodeService()
+
+        result = node_service.get_node(node_id)
+
+        self.assertEqual(result, NodeOut(errors='Node not found'))
+        get_node_mock.assert_called_once_with(node_id)
+
     @mock.patch.object(DatabaseService, 'get_nodes')
     def test_get_nodes_without_error(self, get_nodes_mock):
         get_nodes_mock.return_value = {'results': [{'data': [{'row': [{}], 'meta': [{'id': '5'}]}]}],
@@ -54,6 +77,56 @@ class NodeServiceTestCase(unittest.TestCase):
 
         self.assertEqual(result, NodesOut(errors=['error']))
         get_nodes_mock.assert_called_once_with(label)
+
+    @mock.patch.object(NodeService, 'get_node')
+    @mock.patch.object(DatabaseService, 'delete_node')
+    def test_delete_node_without_error(self, delete_node_mock, get_node_mock):
+        delete_node_mock.return_value = {'results': [{'data': [{'row': [{'key': 'value'}, ["Test"]]}]}], 'errors': []}
+        get_node_mock.return_value = NodeOut(id=1, properties=[PropertyIn(key='key', value='value')], labels={"Test"})
+        node_id = 1
+        node_service = NodeService()
+
+        result = node_service.delete_node(node_id)
+
+        self.assertEqual(result, NodeOut(id=1, properties=[PropertyIn(key='key', value='value')], labels={"Test"}))
+        delete_node_mock.assert_called_once_with(node_id)
+        get_node_mock.assert_called_once_with(node_id)
+
+    @mock.patch.object(DatabaseService, 'get_node')
+    @mock.patch.object(DatabaseService, 'delete_node')
+    def test_delete_node_with_error(self, delete_node_mock, get_node_mock):
+        delete_node_mock.return_value = {'results': [{'data': []}], 'errors': ['error']}
+        node_id = 1
+        node_service = NodeService()
+
+        result = node_service.delete_node(node_id)
+
+        self.assertEqual(result, NodeOut(errors=['error']))
+        delete_node_mock.assert_called_once_with(node_id)
+        get_node_mock.assert_called_once_with(node_id)
+
+    @mock.patch.object(DatabaseService, 'get_relationships')
+    def test_get_relationships_without_error(self, get_relationships_mock):
+        get_relationships_mock.return_value = {'results': [{'data': [{'row': ['1', '2', 'Test', '0']}]}], 'errors': []}
+        node_id = 1
+        node_service = NodeService()
+
+        result = node_service.get_relationships(node_id)
+
+        self.assertEqual(result, RelationshipsOut(relationships=[BasicRelationshipOut(start_node=1, end_node=2,
+                                                  id=0, name="Test")]))
+        get_relationships_mock.assert_called_once_with(node_id)
+
+    @mock.patch.object(DatabaseService, 'get_relationships')
+    def test_get_relationships_with_error(self, get_relationships_mock):
+        get_relationships_mock.return_value = {'results': [{'data': []}], 'errors': ['error']}
+        node_id = 1
+        node_service = NodeService()
+
+        result = node_service.get_relationships(node_id)
+
+        self.assertEqual(result, RelationshipsOut(errors=["error"]))
+        get_relationships_mock.assert_called_once_with(node_id)
 
     @mock.patch.object(DatabaseService, 'create_node_properties')
     @mock.patch.object(DatabaseService, 'node_exists')

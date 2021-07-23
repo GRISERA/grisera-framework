@@ -10,6 +10,10 @@ def return_relationship(*args, **kwargs):
                                        name=args[0].name, id=5, errors=None)
 
 
+def return_relationship_delete(*args, **kwargs):
+    return RelationshipOut(start_node=1, end_node=2, name="Test", id=args[0], errors=None)
+
+
 def return_relationship_with_properties(*args, **kwargs):
     return RelationshipOut(start_node=0, end_node=1, name="test", id=args[0], properties=args[1])
 
@@ -75,3 +79,28 @@ class TestRelationshipRouter(unittest.TestCase):
                                                  id=5, errors={'errors': ['test']}, links=get_links(router)))
         save_properties_mock.assert_called_once_with(id, properties)
         self.assertEqual(response.status_code, 422)
+
+    @mock.patch.object(RelationshipService, 'delete_relationship')
+    def test_delete_relationship_without_error(self, delete_relationship_mock):
+        delete_relationship_mock.side_effect = return_relationship_delete
+        response = Response()
+        node_router = RelationshipRouter()
+
+        result = asyncio.run(node_router.delete_relationship(5, response))
+
+        self.assertEqual(result, RelationshipOut(start_node=1, end_node=2, name="Test", id=5,
+                                                 errors=None, links=get_links(router)))
+        delete_relationship_mock.assert_called_with(5)
+        self.assertEqual(response.status_code, 200)
+
+    @mock.patch.object(RelationshipService, 'delete_relationship')
+    def test_delete_relationship_with_error(self, delete_relationship_mock):
+        delete_relationship_mock.return_value = RelationshipOut(errors="error")
+        response = Response()
+        node_router = RelationshipRouter()
+
+        result = asyncio.run(node_router.delete_relationship(5, response))
+
+        self.assertEqual(result, RelationshipOut(errors="error", links=get_links(router)))
+        delete_relationship_mock.assert_called_with(5)
+        self.assertEqual(response.status_code, 404)
