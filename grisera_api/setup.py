@@ -20,7 +20,7 @@ class SetupNodes:
         channel_service = ChannelService()
         if not os.path.exists("lock_channels"):
             open("lock_channels", "w").write("Busy")
-            sleep(30)
+            sleep(60)
             created_types = [channel.type for channel in channel_service.get_channels().channels]
             [channel_service.save_channel(ChannelIn(type=channel_type.value))
              for channel_type in Type
@@ -34,7 +34,7 @@ class SetupNodes:
         modality_service = ModalityService()
         if not os.path.exists("lock_modalities"):
             open("lock_modalities", "w").write("Busy")
-            sleep(30)
+            sleep(60)
             created_modalities = [modality.modality for modality in modality_service.get_modalities().modalities]
             [modality_service.save_modality(ModalityIn(modality=modality_modality.value))
              for modality_modality in Modality
@@ -48,7 +48,7 @@ class SetupNodes:
         live_activity_service = LiveActivityService()
         if not os.path.exists("lock_live_activities"):
             open("lock_live_activities", "w").write("Busy")
-            sleep(30)
+            sleep(60)
             created_types = [live_activity.live_activity for live_activity in
                              live_activity_service.get_live_activities().live_activities]
 
