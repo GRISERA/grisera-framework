@@ -40,6 +40,48 @@ class RelationshipService:
 
         return result
 
+    def get_relationship(self, relationship_id: int):
+        """
+        Send request to database by its API to acquire relationship with given id
+
+        Args:
+            relationship_id (int): Id by which it is searched for in the database
+
+        Returns:
+            Acquired relationship in RelationshipOut model
+        """
+        response = self.db.get_relationship(relationship_id)
+
+        if len(response['results'][0]["data"]) == 0:
+            return RelationshipOut(errors="Relationship not found")
+
+        relationship = response['results'][0]["data"][0]
+        result = RelationshipOut(start_node=relationship["row"][0], end_node=relationship["row"][1],
+                                 id=relationship["row"][3], name=relationship["row"][2])
+
+        return result
+
+    def delete_relationship(self, relationship_id: int):
+        """
+        Send request to database by its API to delete relationship with given id
+
+        Args:
+            relationship_id (int): Id of relationship
+        Returns:
+            Deleted relationship
+        """
+        relationship = self.get_relationship(relationship_id)
+        response = self.db.delete_relationship(relationship_id)
+
+        if len(response["errors"]) > 0:
+            result = RelationshipOut(errors=response["errors"])
+        else:
+            result = RelationshipOut(id=relationship_id, start_node=relationship.start_node,
+                                     end_node=relationship.end_node, name=relationship.name,
+                                     properties=relationship.properties)
+
+        return result
+
     def save_properties(self, id: int, properties: List[PropertyIn]):
         """
         Send request to database by its API to create new properties

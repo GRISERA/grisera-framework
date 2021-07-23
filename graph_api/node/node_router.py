@@ -4,9 +4,9 @@ from fastapi_utils.inferring_router import InferringRouter
 from node.node_model import NodeIn, NodeOut, NodesOut
 from node.node_service import NodeService
 from hateoas import get_links
-from typing import List, Dict
+from typing import List
 from property.property_model import PropertyIn
-
+from relationship.relationship_model import RelationshipsOut
 router = InferringRouter()
 
 
@@ -34,6 +34,19 @@ class NodeRouter:
 
         return create_response
 
+    @router.get("/node/{id}", tags=["nodes"], response_model=NodeOut)
+    async def get_node(self, id: int, response: Response):
+        """
+        Get node with same id as given
+        """
+        node = self.node_service.get_node(id)
+        if node.errors is not None:
+            response.status_code = 404
+
+        node.links = get_links(router)
+
+        return node
+
     @router.get("/nodes", tags=["nodes"], response_model=NodesOut)
     async def get_nodes(self, label: str, response: Response):
         """
@@ -46,6 +59,34 @@ class NodeRouter:
         nodes.links = get_links(router)
 
         return nodes
+
+    @router.delete("/nodes/{id}", tags=["nodes"], response_model=NodeOut)
+    async def delete_node(self, id: int, response: Response):
+        """
+        Delete node by id
+        """
+        delete_response = self.node_service.delete_node(id)
+        if delete_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        delete_response.links = get_links(router)
+
+        return delete_response
+
+    @router.get("/nodes/{id}/relationships", tags=["nodes"], response_model=RelationshipsOut)
+    async def get_node_relationships(self, id: int, response: Response):
+        """
+        Get relationships for node with given id
+        """
+        get_response = self.node_service.get_relationships(id)
+        if get_response.errors is not None:
+            response.status_code = 422
+
+        # add links from hateoas
+        get_response.links = get_links(router)
+
+        return get_response
 
     @router.post("/nodes/{id}/properties", tags=["nodes"], response_model=NodeOut)
     async def create_node_properties(self, id: int, properties: List[PropertyIn], response: Response):

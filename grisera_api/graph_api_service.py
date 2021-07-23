@@ -44,6 +44,22 @@ class GraphApiService:
                                 params=params).json()
         return response
 
+    def delete(self, url_part, params):
+        """
+        Send request get to Graph API
+
+        Args:
+            url_part (str): Part to add at the end of url
+            params (dict): Parameters of request
+
+        Returns:
+            Result of request
+        """
+
+        response = requests.delete(url=self.graph_api_url + url_part,
+                                   params=params).json()
+        return response
+
     def create_node(self, label: str):
         """
         Send to the Graph API request to create a node
@@ -67,6 +83,30 @@ class GraphApiService:
         """
         request_params = {"label": label}
         return self.get("/nodes", request_params)
+
+    def get_node_relationships(self, node_id: int):
+        """
+        Send to the Graph API request to get node's relationship
+
+        Args:
+            node_id (int): Id of node
+        Returns:
+            Result of request
+        """
+        request_params = {}
+        return self.get(f"/nodes/{node_id}/relationships", request_params)
+
+    def delete_node(self, node_id: int):
+        """
+        Send to the Graph API request to delete node
+
+        Args:
+            node_id (int): Id of node
+        Returns:
+            Result of request
+        """
+        request_params = {}
+        return self.delete(f"/nodes/{node_id}", request_params)
 
     def create_properties(self, node_id: int, node_model: BaseModel):
         """
@@ -103,6 +143,18 @@ class GraphApiService:
        """
         request_body = {"start_node": start_node, "end_node": end_node, "name": name}
         return self.post("/relationships", request_body)
+
+    def delete_relationship(self, relationship_id: int):
+        """
+        Send to the Graph API request to delete relationship
+
+        Args:
+            relationship_id (int): Id of relationship
+        Returns:
+            Result of request
+        """
+        request_params = {}
+        return self.delete(f"/relationships/{relationship_id}", request_params)
 
     def create_additional_properties(self, property_dict: dict):
         """

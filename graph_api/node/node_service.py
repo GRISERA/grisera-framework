@@ -2,6 +2,7 @@ from database_service import DatabaseService
 from node.node_model import NodeIn, NodeOut, BasicNodeOut, NodesOut
 from property.property_model import PropertyIn
 from typing import List
+from relationship.relationship_model import RelationshipsOut, BasicRelationshipOut
 
 
 class NodeService:
@@ -34,6 +35,27 @@ class NodeService:
 
         return result
 
+    def get_node(self, node_id: int):
+        """
+        Send request to database by its API to acquire node with given id
+
+        Args:
+            node_id (int): Id by which it is searched for in the database
+
+        Returns:
+            Acquired node in NodeOut model
+        """
+        response = self.db.get_node(node_id)
+
+        if len(response['results'][0]["data"]) == 0:
+            return NodeOut(errors="Node not found")
+
+        node = response['results'][0]["data"][0]
+        properties = [PropertyIn(key=property[0], value=property[1]) for property in node["row"][0].items()]
+        result = NodeOut(id=node_id, properties=properties, labels={node["row"][1][0]})
+
+        return result
+
     def get_nodes(self, label: str):
         """
         Send request to database by its API to acquire all nodes with given label
@@ -53,6 +75,44 @@ class NodeService:
         for node in response["results"][0]["data"]:
             properties = [PropertyIn(key=property[0], value=property[1]) for property in node["row"][0].items()]
             result.nodes.append(BasicNodeOut(labels={label}, id=node["meta"][0]["id"], properties=properties))
+
+        return result
+
+    def delete_node(self, node_id: int):
+        """
+        Send request to database by its API to delete node with given id
+
+        Args:
+            node_id (int): Id of node
+        Returns:
+            Deleted node
+        """
+        node = self.get_node(node_id)
+        response = self.db.delete_node(node_id)
+        result = NodeOut(errors=response["errors"]) if len(response["errors"]) > 0 else \
+            NodeOut(id=node_id, labels=node.labels, properties=node.properties)
+
+        return result
+
+    def get_relationships(self, id: int):
+        """
+        Send request to database by its API to get node's relationships
+
+        Args:
+            id (int): Id of the node
+
+        Returns:
+            Result of request as list of relationships
+        """
+        response = self.db.get_relationships(id)
+
+        if len(response["errors"]) > 0:
+            result = RelationshipsOut(errors=response["errors"])
+        else:
+            response_data = response["results"][0]["data"]
+            relationships = [BasicRelationshipOut(start_node=relation["row"][0], end_node=relation["row"][1],
+                                                  id=relation["row"][3], name=relation["row"][2]) for relation in response_data]
+            result = RelationshipsOut(relationships=relationships)
 
         return result
 
