@@ -19,7 +19,7 @@ class TestExperimentPostService(unittest.TestCase):
 
         result = experiment_service.save_experiment(experiment)
 
-        self.assertEqual(result, ExperimentOut(id=1, experiment_name="test", authors=[], publication=None))
+        self.assertEqual(result, ExperimentOut(id=1, experiment_name="test"))
 
     @mock.patch('graph_api_service.requests')
     def test_experiment_service_with_error(self, mock_requests):
