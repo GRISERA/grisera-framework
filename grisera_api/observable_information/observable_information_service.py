@@ -39,12 +39,14 @@ class ObservableInformationService:
         modalities = self.modality_service.get_modalities().modalities
         modality_id = next(modality.id for modality in modalities
                            if modality.modality == observable_information.modality)
-        self.graph_api_service.create_relationships(observable_information_id, modality_id, "hasModality")
+        self.graph_api_service.create_relationships(start_node=observable_information_id,
+                                                    end_node=modality_id, name="hasModality")
 
         live_activities = self.live_activity_service.get_live_activities().live_activities
         live_activity_id = next(live_activity.id for live_activity in live_activities if
                                 observable_information.live_activity == live_activity.live_activity)
-        self.graph_api_service.create_relationships(observable_information_id, live_activity_id, "hasLiveActivity")
+        self.graph_api_service.create_relationships(start_node=observable_information_id,
+                                                    end_node=live_activity_id, name="hasLiveActivity")
 
         return ObservableInformationOut(modality=observable_information.modality,
                                         live_activity=observable_information.live_activity,
