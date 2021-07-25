@@ -29,7 +29,7 @@ class ChannelService:
         channel_id = create_response["id"]
         properties_response = self.graph_api_service.create_properties(channel_id, channel)
         if properties_response["errors"] is not None:
-            return ChannelOut(type=channel.type, errors=create_response["errors"])
+            return ChannelOut(type=channel.type, errors=properties_response["errors"])
 
         return ChannelOut(type=channel.type,  id=channel_id)
 

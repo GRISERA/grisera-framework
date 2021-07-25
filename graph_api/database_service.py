@@ -88,6 +88,19 @@ class DatabaseService:
             labels=":".join(list(node.labels)))
         return self.post_statement(create_statement)
 
+    def get_node(self, node_id):
+        """
+        Send to the database request to get node with given id
+
+        Args:
+            node_id (): id to search by
+
+        Returns:
+            Result of request
+        """
+        get_statement = f"MATCH (n) WHERE id(n)={node_id} RETURN n, labels(n)"
+        return self.post_statement(get_statement)
+
     def get_nodes(self, label):
         """
         Send to the database request to get nodes with given label
@@ -101,6 +114,19 @@ class DatabaseService:
         get_statement = "MATCH (n: {label}) RETURN n".format(
             label=label)
         return self.post_statement(get_statement)
+
+    def delete_node(self, node_id):
+        """
+        Send to the database request to delete node with given id
+
+        Args:
+            node_id (): Id to search by
+
+        Returns:
+            Result of request
+        """
+        delete_statement = f"MATCH (n) WHERE id(n)={node_id} DETACH DELETE n return n"
+        return self.post_statement(delete_statement)
 
     def relationship_exist(self, relationship_id):
         """
@@ -116,6 +142,48 @@ class DatabaseService:
 
         response = self.post_statement(check_relationship_statement)
         return len(response['results']) != 0 and len(response['results'][0]['data']) == 1
+
+    def get_relationship(self, relationship_id):
+        """
+        Send to the database request to get relationship
+
+        Args:
+            relationship_id (): Relationship to search by
+
+        Returns:
+            Result of request
+        """
+        get_statement = "MATCH ()-[r]->() where id(r)={} " \
+                        "return id(startNode(r)), id(endNode(r)), type(r), id(r)".format(relationship_id)
+        return self.post_statement(get_statement)
+
+    def delete_relationship(self, relationship_id):
+        """
+        Send to the database request to delete relationship with given id
+
+        Args:
+            relationship_id (): Id to search by
+
+        Returns:
+            Result of request
+        """
+        delete_statement = f"MATCH ()-[r]->() WHERE id(r)={relationship_id} DETACH DELETE r return r"
+        return self.post_statement(delete_statement)
+
+    def get_relationships(self, node_id):
+        """
+        Send to the database request to get relationships of node
+
+        Args:
+            node_id (): node to search by
+
+        Returns:
+            Result of request
+        """
+        get_statement = "MATCH (n)-[r]->(m) where id(n)={} or id(m)={} " \
+                        "return id(startNode(r)), id(endNode(r)), type(r), id(r)".format(
+                         node_id, node_id)
+        return self.post_statement(get_statement)
 
     def create_relationship(self, relationship):
         """

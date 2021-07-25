@@ -1,35 +1,55 @@
-import json
 import unittest
 import unittest.mock as mock
+
+from graph_api_service import GraphApiService
 from participant.participant_model import *
 from participant.participant_service import ParticipantService
-from requests import Response
 
 
-class TestParticipantPostService(unittest.TestCase):
+class TestParticipantService(unittest.TestCase):
 
-    @mock.patch('graph_api_service.requests')
-    def test_participant_service_without_error(self, mock_requests):
-        response = Response()
-        response._content = json.dumps({'id': 1, 'properties': None, "errors": None,
-                                        'links': None}).encode('utf-8')
-        mock_requests.post.return_value = response
-        participant = ParticipantIn()
+    @mock.patch.object(GraphApiService, 'create_node')
+    @mock.patch.object(GraphApiService, 'create_properties')
+    def test_save_participant_without_error(self, create_properties_mock, create_node_mock):
+        id_node = 1
+        create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
+        create_properties_mock.return_value = {'id': id_node, 'properties': [{'key': 'sex', 'value': 'male'},
+                                                                             {'key': 'identifier', 'value': 5}],
+                                               "errors": None, 'links': None}
+        additional_properties = [PropertyIn(key='testkey', value='testvalue')]
+        participant = ParticipantIn(sex='male', identifier=5, additional_properties=additional_properties)
         participant_service = ParticipantService()
 
         result = participant_service.save_participant(participant)
 
-        self.assertEqual(result, ParticipantOut(id=1))
+        self.assertEqual(result, ParticipantOut(sex='male', identifier=5, id=id_node,
+                                                additional_properties=additional_properties))
+        create_node_mock.assert_called_once_with('Participant')
+        create_properties_mock.assert_called_once_with(id_node, participant)
 
-    @mock.patch('graph_api_service.requests')
-    def test_participant_service_with_error(self, mock_requests):
-        response = Response()
-        response._content = json.dumps({'id': None, 'properties': None, "errors": {'error': 'test'},
-                                        'links': None}).encode('utf-8')
-        mock_requests.post.return_value = response
-        participant = ParticipantIn()
+    @mock.patch.object(GraphApiService, 'create_node')
+    def test_save_participant_with_node_error(self, create_node_mock):
+        id_node = 1
+        create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
+        participant = ParticipantIn(sex='male', identifier=5)
         participant_service = ParticipantService()
 
         result = participant_service.save_participant(participant)
 
-        self.assertEqual(result, ParticipantOut(errors={'error': 'test'}))
+        self.assertEqual(result, ParticipantOut(errors=['error']))
+        create_node_mock.assert_called_once_with('Participant')
+
+    @mock.patch.object(GraphApiService, 'create_node')
+    @mock.patch.object(GraphApiService, 'create_properties')
+    def test_save_participant_with_properties_error(self, create_properties_mock, create_node_mock):
+        id_node = 1
+        create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
+        create_properties_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
+        participant = ParticipantIn(sex='male', identifier=5)
+        participant_service = ParticipantService()
+
+        result = participant_service.save_participant(participant)
+
+        self.assertEqual(result, ParticipantOut(errors=['error']))
+        create_node_mock.assert_called_once_with('Participant')
+        create_properties_mock.assert_called_once_with(id_node, participant)

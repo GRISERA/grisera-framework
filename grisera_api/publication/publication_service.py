@@ -34,7 +34,7 @@ class PublicationService:
         properties_response = self.graph_api_service.create_properties(publication_id, publication)
         if properties_response["errors"] is not None:
             return PublicationOut(title=publication.title, authors=publication.authors,
-                                  errors=node_response_publication["errors"])
+                                  errors=properties_response["errors"])
 
         # Create Nodes Author for publication
         authors_out = []
@@ -45,7 +45,7 @@ class PublicationService:
                 end_node=node_response_author.id, start_node=publication_id, name="hasAuthor")
             if relationship_response_publication_author["errors"] is not None:
                 return PublicationOut(title=publication.title, authors=publication.authors,
-                                      errors=node_response_publication["errors"])
+                                      errors=relationship_response_publication_author["errors"])
             authors_out.append(node_response_author)
 
         return PublicationOut(title=publication.title, authors=authors_out, id=publication_id)

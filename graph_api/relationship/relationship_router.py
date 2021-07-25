@@ -48,3 +48,17 @@ class RelationshipRouter:
         create_response.links = get_links(router)
 
         return create_response
+
+    @router.delete("/relationships/{id}", tags=["relationships"], response_model=RelationshipOut)
+    async def delete_relationship(self, id: int, response: Response):
+        """
+        Delete relationship by id
+        """
+        delete_response = self.relationship_service.delete_relationship(id)
+        if delete_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        delete_response.links = get_links(router)
+
+        return delete_response
