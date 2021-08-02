@@ -38,6 +38,8 @@ app.include_router(registered_channel_router)
 async def startup_event():
     startup = SetupNodes()
     startup.set_channels()
+    startup.set_modalities()
+    startup.set_live_activities()
 
 
 @app.get("/", tags=["root"])
