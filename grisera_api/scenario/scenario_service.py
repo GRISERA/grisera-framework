@@ -81,8 +81,8 @@ class ScenarioService:
 
         if len(activity_relationships) == 2:
             start_node, end_node = (activity_relationships[0]['start_node'], activity_relationships[1]['end_node']) \
-                if activity_relationships[0]['start_node'] != order_change.activity_id else \
-                (activity_relationships[1]['start_node'], activity_relationships[0]['end_node'])
+                if activity_relationships[0]['end_node'] == order_change.activity_id \
+                else (activity_relationships[1]['start_node'], activity_relationships[0]['end_node'])
             self.graph_api_service.create_relationships(start_node, end_node, 'next')
 
         if order_change.previous_id in [relation['start_node'] for relation in relationships
@@ -113,8 +113,8 @@ class ScenarioService:
         Returns:
             Result of request as activity object
         """
-        relationships = self.graph_api_service.get_node_relationships(activity_id)
-        if len(relationships['relationships']) == 0:
+        relationships = self.graph_api_service.get_node_relationships(activity_id)['relationships']
+        if len(relationships) == 0:
             return ActivityOut(identifier=0, errors='Relationships not found')
 
         activity = self.graph_api_service.delete_node(activity_id)
@@ -126,11 +126,12 @@ class ScenarioService:
                                         type=properties['type'], layout=properties['layout'],
                                         additional_properties=additional_properties)
 
-        if len(relationships['relationships']) == 1:
+        if len(relationships) == 1:
             return activity_response
 
-        self.graph_api_service.create_relationships(relationships['relationships'][0]['start_node'],
-                                                    relationships['relationships'][1]['end_node'],
-                                                    relationships['relationships'][0]['name'])
+        start_node, end_node = (relationships[0]['start_node'], relationships[1]['end_node']) \
+            if relationships[0]['end_node'] == activity_id \
+            else (relationships[1]['start_node'], relationships[0]['end_node'])
+        self.graph_api_service.create_relationships(start_node, end_node, relationships[0]['name'])
 
         return activity_response
