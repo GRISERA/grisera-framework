@@ -26,7 +26,7 @@ class SignalService:
         if node_response_signal["errors"] is not None:
             return SignalOut(type=signal.type, source=signal.source,
                              observable_information_id=signal.observable_information_id,
-                             recording_id=signal.recording_id,
+                             recording_id=signal.recording_id, measure_id=signal.measure_id,
                              additional_properties=signal.additional_properties,
                              errors=node_response_signal["errors"])
 
@@ -35,7 +35,7 @@ class SignalService:
         if properties_response["errors"] is not None:
             return SignalOut(type=signal.type, source=signal.source,
                              observable_information_id=signal.observable_information_id,
-                             recording_id=signal.recording_id,
+                             recording_id=signal.recording_id, measure_id=signal.measure_id,
                              additional_properties=signal.additional_properties,
                              errors=properties_response["errors"])
 
@@ -43,8 +43,10 @@ class SignalService:
                                                     "hasObservableInformation")
         self.graph_api_service.create_relationships(signal_id, signal.recording_id,
                                                     "hasRecording")
+        self.graph_api_service.create_relationships(signal_id, signal.measure_id,
+                                                    "hasMeasure")
 
         return SignalOut(type=signal.type, source=signal.source,
                          observable_information_id=signal.observable_information_id,
-                         recording_id=signal.recording_id, id=signal_id,
+                         recording_id=signal.recording_id, measure_id=signal.measure_id, id=signal_id,
                          additional_properties=signal.additional_properties)
