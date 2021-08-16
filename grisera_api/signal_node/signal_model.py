@@ -26,9 +26,15 @@ class SignalIn(BaseModel):
 
     Attributes:
         type (Type): Type of the signal
+        source(str): Signal source
+        observable_information_id (Optional[int]): Id of observable information
+        recording_id (Optional[int]): Id of recording
         additional_properties (Optional[List[PropertyIn]]): Additional properties for signal
     """
     type: Type
+    source: str
+    observable_information_id: Optional[int]
+    recording_id: Optional[int]
     additional_properties: Optional[List[PropertyIn]]
 
 
