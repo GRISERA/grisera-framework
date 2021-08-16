@@ -19,9 +19,10 @@ class TestSignalService(unittest.TestCase):
                                                               {'key': 'source', 'value': 'cos'}],
                                                "errors": None, 'links': None}
         additional_properties = [PropertyIn(key='testkey', value='testvalue')]
-        calls = [mock.call(1, 3, 'hasObservableInformation'), mock.call(1, 4, 'hasRecording')]
+        calls = [mock.call(1, 3, 'hasObservableInformation'), mock.call(1, 4, 'hasRecording'),
+                 mock.call(1, 5, 'hasMeasure')]
 
-        signal = SignalIn(type="Epoch", source="cos", observable_information_id=3, recording_id=4,
+        signal = SignalIn(type="Epoch", source="cos", observable_information_id=3, recording_id=4, measure_id=5,
                           additional_properties=additional_properties)
 
         signal_service = SignalService()
@@ -29,7 +30,7 @@ class TestSignalService(unittest.TestCase):
         result = signal_service.save_signal(signal)
 
         self.assertEqual(result, SignalOut(type="Epoch", source="cos", observable_information_id=3, recording_id=4,
-                                           id=1, additional_properties=additional_properties))
+                                           measure_id=5, id=1, additional_properties=additional_properties))
 
         create_node_mock.assert_called_once_with('Signal')
         create_properties_mock.assert_called_once_with(id_node, signal)
