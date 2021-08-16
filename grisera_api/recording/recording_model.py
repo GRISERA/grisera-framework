@@ -1,5 +1,6 @@
-from typing import Optional, Any
+from typing import Optional, Any, List
 from pydantic import BaseModel
+from property.property_model import PropertyIn
 
 
 class RecordingIn(BaseModel):
@@ -9,9 +10,11 @@ class RecordingIn(BaseModel):
     Attributes:
         participation_id (Optional[int]) : id of participation
         registered_channel_id (Optional[int]): id of registered channel
+        additional_properties (Optional[List[PropertyIn]]): Additional properties for recording
     """
     participation_id: Optional[int]
     registered_channel_id: Optional[int]
+    additional_properties: Optional[List[PropertyIn]]
 
 
 class RecordingOut(RecordingIn):
