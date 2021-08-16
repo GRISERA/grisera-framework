@@ -4,6 +4,8 @@ from modality.modality_service import ModalityService
 from modality.modality_model import ModalityIn, Modality
 from live_activity.live_activity_service import LiveActivityService
 from live_activity.live_activity_model import LiveActivityIn, LiveActivity
+from measure_name.measure_name_service import MeasureNameService
+from measure_name.measure_name_model import MeasureNameIn, MeasureName
 import os
 from time import sleep
 
@@ -56,3 +58,18 @@ class SetupNodes:
              for live_activity_live_activity in LiveActivity
              if live_activity_live_activity.value not in created_types]
             os.remove("lock_live_activities")
+
+    def set_measure_names(self):
+        """
+        Initialize values of measure names
+        """
+        if not os.path.exists("lock_measure_names"):
+            measure_name_service = MeasureNameService()
+            open("lock_measure_names", "w").write("Busy")
+            sleep(60)
+            created_names = [measure_name.name for measure_name in
+                             measure_name_service.get_measure_names().measure_names]
+            [measure_name_service.save_measure_name(MeasureNameIn(name=measure_name.value[0], type=measure_name.value[1]))
+             for measure_name in MeasureName
+             if measure_name.value[0] not in created_names]
+            os.remove("lock_measure_names")
