@@ -37,4 +37,4 @@ class RecordingService:
 
         return RecordingOut(participation_id=recording.participation_id,
                             registered_channel_id=recording.registered_channel_id,
-                            id=recording_id)
+                            id=recording_id, additional_properties=recording.additional_properties)
