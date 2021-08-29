@@ -126,12 +126,13 @@ class ScenarioService:
                                         type=properties['type'], layout=properties['layout'],
                                         additional_properties=additional_properties)
 
-        if len(relationships) == 1:
+        if len([relationship for relationship in relationships if relationship['name'] in ['hasActivity', 'next']]) == 1:
             return activity_response
 
-        start_node, end_node = (relationships[0]['start_node'], relationships[1]['end_node']) \
-            if relationships[0]['end_node'] == activity_id \
-            else (relationships[1]['start_node'], relationships[0]['end_node'])
+        start_node = [relationship['start_node'] for relationship in relationships
+                      if relationship['end_node'] == activity_id and relationship['name'] in ['hasActivity', 'next']][0]
+        end_node = [relationship['end_node'] for relationship in relationships
+                    if relationship['start_node'] == activity_id and relationship['name'] == 'next'][0]
         self.graph_api_service.create_relationships(start_node, end_node, relationships[0]['name'])
 
         return activity_response
