@@ -29,12 +29,21 @@ class RecordingService:
                                 errors=node_response["errors"])
 
         recording_id = node_response["id"]
+        registered_channel_id = recording.registered_channel_id
+        participation_id = recording.participation_id
+        recording.registered_channel_id = recording.participation_id = None
 
-        self.graph_api_service.create_relationships(recording_id, recording.registered_channel_id,
+        properties_response = self.graph_api_service.create_properties(recording_id, recording)
+        if properties_response["errors"] is not None:
+            return RecordingOut(participation_id=participation_id,
+                                registered_channel_id=registered_channel_id,
+                                errors=node_response["errors"])
+
+        self.graph_api_service.create_relationships(recording_id, registered_channel_id,
                                                     "hasRegisteredChannel")
-        self.graph_api_service.create_relationships(recording_id, recording.participation_id,
+        self.graph_api_service.create_relationships(recording_id, participation_id,
                                                     "hasParticipation")
 
-        return RecordingOut(participation_id=recording.participation_id,
-                            registered_channel_id=recording.registered_channel_id,
+        return RecordingOut(participation_id=participation_id,
+                            registered_channel_id=registered_channel_id,
                             id=recording_id, additional_properties=recording.additional_properties)
