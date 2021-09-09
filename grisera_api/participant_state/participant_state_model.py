@@ -12,10 +12,14 @@ class ParticipantStateIn(BaseModel):
     Attributes:
         participant (Optional[ParticipantIn]): Participant whose state is described
         age (Optional[int]): Age of participant state
+        personality_id (Optional[int]): Id of personality describing participant
+        appearance_id (Optional[int]): Id of appearance describing participant
         additional_properties (Optional[List[PropertyIn]]): Additional properties for participant state
     """
     participant: Optional[ParticipantIn]
     age: Optional[int]
+    personality_id: Optional[int] = None
+    appearance_id: Optional[int] = None
     additional_properties: Optional[List[PropertyIn]]
 
 

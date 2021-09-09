@@ -20,37 +20,21 @@ class Sex(str, Enum):
     not_given = "not given"
 
 
-class FacialHair(str, Enum):
-    """
-    Types of facial hair
-
-    Attributes:
-        heavy (str): Heavy facial hair
-        no (str): No facial hair
-        some (str): Some facial hair
-    """
-    heavy = "heavy"
-    no = "no"
-    some = "some"
-
-
 class ParticipantIn(BaseModel):
     """
     Model of participant to acquire from client
 
     Attributes:
-        identifier (Optional[int]): Identifier of participant
+        name (str): Name of the participant
         date_of_birth (Optional[date]): Date of birth of participant
         sex (Optional[Sex]): Sex of participant
-        disorder (Optional[bool]): Was participant disordered
-        disorder_type (Optional[str]): Type of disorder
+        disorder (Optional[str]): Type of disorder
         additional_properties (Optional[List[PropertyIn]]): Additional properties for participant
     """
-    identifier: Optional[int]
+    name: str
     date_of_birth: Optional[date]
     sex: Optional[Sex]
-    disorder: Optional[bool]
-    disorder_type: Optional[str]
+    disorder: Optional[str]
     additional_properties: Optional[List[PropertyIn]]
 
 
