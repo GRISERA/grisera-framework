@@ -38,6 +38,15 @@ class ParticipantStateService:
                                                         end_node=participant.id,
                                                         name="hasParticipant")
 
+        if participant_state.personality_id is not None:
+            self.graph_api_service.create_relationships(start_node=participant_state_id,
+                                                        end_node=participant_state.personality_id,
+                                                        name="hasPersonality")
+        if participant_state.appearance_id is not None:
+            self.graph_api_service.create_relationships(start_node=participant_state_id,
+                                                        end_node=participant_state.appearance_id,
+                                                        name="hasAppearance")
+
         properties_response = self.graph_api_service.create_properties(participant_state_id, participant_state)
         if properties_response["errors"] is not None:
             return ParticipantStateOut(errors=properties_response["errors"])
