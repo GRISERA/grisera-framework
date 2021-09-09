@@ -23,11 +23,11 @@ class TestParticipantStateService(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'errors': None, 'links': None}
-        save_participant_mock.return_value = ParticipantOut(sex='male', identifier=5, id=2)
+        save_participant_mock.return_value = ParticipantOut(name="Test Test", sex='male', identifier=5, id=2)
         create_relationships_mock.return_value = {'start_node': 1, 'end_node': 2,
                                                   'name': 'hasParticipant', 'errors': None}
-        participant = ParticipantIn(sex='male', identifier=5)
-        participant_out = ParticipantOut(sex='male', identifier=5, id=2)
+        participant = ParticipantIn(name="Test Test", sex='male', identifier=5)
+        participant_out = ParticipantOut(name="Test Test", sex='male', identifier=5, id=2)
         participant_state = ParticipantStateIn(participant=participant)
         participant_state_service = ParticipantStateService()
 
@@ -43,7 +43,7 @@ class TestParticipantStateService(unittest.TestCase):
     def test_save_participant_state_with_node_error(self, create_node_mock):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
-        participant_state = ParticipantStateIn(participant=ParticipantIn(sex='male', identifier=5))
+        participant_state = ParticipantStateIn(participant=ParticipantIn(name="Test Test", sex='male', identifier=5))
         participant_state_service = ParticipantStateService()
 
         result = participant_state_service.save_participant_state(participant_state)
@@ -60,10 +60,10 @@ class TestParticipantStateService(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
-        save_participant_mock.return_value = ParticipantOut(sex='male', identifier=5, id=2)
+        save_participant_mock.return_value = ParticipantOut(name="Test Test", sex='male', identifier=5, id=2)
         create_relationships_mock.return_value = {'start_node': 1, 'end_node': 2,
                                                   'name': 'hasParticipant', 'errors': None}
-        participant = ParticipantIn(sex='male', identifier=5)
+        participant = ParticipantIn(name="Test Test", sex='male', identifier=5)
         participant_state = ParticipantStateIn(participant=participant)
         participant_state_service = ParticipantStateService()
 

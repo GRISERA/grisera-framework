@@ -14,6 +14,8 @@ from recording.recording_router import router as recording_router
 from registered_channel.registered_channel_router import router as registered_channel_router
 from time_series.time_series_router import router as time_series_router
 from measure.measure_router import router as measure_router
+from appearance.appearance_router import router as appearance_router
+from personality.personality_router import router as personality_router
 from setup import SetupNodes
 
 app = FastAPI(title="GRISERA API",
@@ -36,6 +38,8 @@ app.include_router(recording_router)
 app.include_router(registered_channel_router)
 app.include_router(time_series_router)
 app.include_router(measure_router)
+app.include_router(appearance_router)
+app.include_router(personality_router)
 
 
 @app.on_event("startup")

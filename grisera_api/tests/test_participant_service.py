@@ -17,12 +17,13 @@ class TestParticipantService(unittest.TestCase):
                                                                              {'key': 'identifier', 'value': 5}],
                                                "errors": None, 'links': None}
         additional_properties = [PropertyIn(key='testkey', value='testvalue')]
-        participant = ParticipantIn(sex='male', identifier=5, additional_properties=additional_properties)
+        participant = ParticipantIn(name="Test Test", sex='male', identifier=5,
+                                    additional_properties=additional_properties)
         participant_service = ParticipantService()
 
         result = participant_service.save_participant(participant)
 
-        self.assertEqual(result, ParticipantOut(sex='male', identifier=5, id=id_node,
+        self.assertEqual(result, ParticipantOut(name="Test Test", sex='male', identifier=5, id=id_node,
                                                 additional_properties=additional_properties))
         create_node_mock.assert_called_once_with('Participant')
         create_properties_mock.assert_called_once_with(id_node, participant)
@@ -31,12 +32,12 @@ class TestParticipantService(unittest.TestCase):
     def test_save_participant_with_node_error(self, create_node_mock):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
-        participant = ParticipantIn(sex='male', identifier=5)
+        participant = ParticipantIn(name="Test Test", sex='male', identifier=5)
         participant_service = ParticipantService()
 
         result = participant_service.save_participant(participant)
 
-        self.assertEqual(result, ParticipantOut(errors=['error']))
+        self.assertEqual(result, ParticipantOut(name="Test Test", errors=['error']))
         create_node_mock.assert_called_once_with('Participant')
 
     @mock.patch.object(GraphApiService, 'create_node')
@@ -45,11 +46,11 @@ class TestParticipantService(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
-        participant = ParticipantIn(sex='male', identifier=5)
+        participant = ParticipantIn(name="Test Test", sex='male', identifier=5)
         participant_service = ParticipantService()
 
         result = participant_service.save_participant(participant)
 
-        self.assertEqual(result, ParticipantOut(errors=['error']))
+        self.assertEqual(result, ParticipantOut(name="Test Test", errors=['error']))
         create_node_mock.assert_called_once_with('Participant')
         create_properties_mock.assert_called_once_with(id_node, participant)
