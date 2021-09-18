@@ -9,9 +9,11 @@ class ObservableInformationIn(BaseModel):
     Attributes:
         modality (Modality): Type of observable information
         live_activity (LiveActivity): Actions of a human body
+        recording_id (Optional[int]): Id of recording
     """
     modality: str
     live_activity: str
+    recording_id: Optional[int]
 
 
 class ObservableInformationOut(ObservableInformationIn):
