@@ -31,21 +31,24 @@ class TimeSeriesService:
                                  errors=node_response_time_series["errors"])
 
         time_series_id = node_response_time_series["id"]
+        observable_information_id = time_series.observable_information_id
+        measure_id = time_series.measure_id
+        time_series.observable_information_id = time_series.measure_id = None
+
         properties_response = self.graph_api_service.create_properties(time_series_id, time_series)
         if properties_response["errors"] is not None:
             return TimeSeriesOut(type=time_series.type, source=time_series.source,
-                                 observable_information_id=time_series.observable_information_id,
-                                 measure_id=time_series.measure_id,
+                                 observable_information_id=observable_information_id,
+                                 measure_id=measure_id,
                                  additional_properties=time_series.additional_properties,
                                  errors=properties_response["errors"])
 
-        self.graph_api_service.create_relationships(time_series_id, time_series.observable_information_id,
+        self.graph_api_service.create_relationships(time_series_id, observable_information_id,
                                                     "hasObservableInformation")
 
-        self.graph_api_service.create_relationships(time_series_id, time_series.measure_id,
+        self.graph_api_service.create_relationships(time_series_id, measure_id,
                                                     "hasMeasure")
 
         return TimeSeriesOut(type=time_series.type, source=time_series.source,
-                             observable_information_id=time_series.observable_information_id,
-                             measure_id=time_series.measure_id, id=time_series_id,
-                             additional_properties=time_series.additional_properties)
+                             observable_information_id=observable_information_id, measure_id=measure_id,
+                             id=time_series_id, additional_properties=time_series.additional_properties)
