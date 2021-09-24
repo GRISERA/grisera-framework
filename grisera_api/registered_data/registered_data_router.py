@@ -18,7 +18,7 @@ class RegisteredDataRouter:
     """
     registered_data_service = RegisteredDataService()
 
-    @router.post("/registered_data", tags=["registered_data"], response_model=RegisteredDataOut)
+    @router.post("/registered_data", tags=["registered data"], response_model=RegisteredDataOut)
     async def create_registered_data(self, registered_data: RegisteredDataIn, response: Response):
         """
         Create registered data in database

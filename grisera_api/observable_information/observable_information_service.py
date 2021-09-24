@@ -48,6 +48,10 @@ class ObservableInformationService:
         self.graph_api_service.create_relationships(start_node=observable_information_id,
                                                     end_node=live_activity_id, name="hasLiveActivity")
 
+        self.graph_api_service.create_relationships(start_node=observable_information_id,
+                                                    end_node=observable_information.recording_id,
+                                                    name="hasRecording")
+
         return ObservableInformationOut(modality=observable_information.modality,
                                         live_activity=observable_information.live_activity,
                                         id=observable_information_id)

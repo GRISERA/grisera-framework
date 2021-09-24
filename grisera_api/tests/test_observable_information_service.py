@@ -27,9 +27,10 @@ class TestObservableInformationService(unittest.TestCase):
         get_live_activities_mock.return_value = \
             LiveActivitiesOut(live_activities=[BasicLiveActivityOut(id=5, live_activity='sound')])
         calls = [mock.call(start_node=id_node, end_node=4, name="hasModality"),
-                 mock.call(start_node=id_node, end_node=5, name="hasLiveActivity")]
+                 mock.call(start_node=id_node, end_node=5, name="hasLiveActivity"),
+                 mock.call(start_node=id_node, end_node=6, name="hasRecording")]
 
-        observable_information = ObservableInformationIn(modality='motion', live_activity='sound')
+        observable_information = ObservableInformationIn(modality='motion', live_activity='sound', recording_id=6)
         observable_information_service = ObservableInformationService()
 
         result = observable_information_service.save_observable_information(observable_information)
