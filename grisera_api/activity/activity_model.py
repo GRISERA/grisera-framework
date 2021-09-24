@@ -1,11 +1,9 @@
-from typing import List
 from pydantic import BaseModel
-from typing import Optional, Any
+from typing import Optional, Any, List
 from enum import Enum
-from property.property_model import PropertyIn
 
 
-class Type(str, Enum):
+class Activity(str, Enum):
     """
     The type of activity
 
@@ -21,31 +19,45 @@ class Type(str, Enum):
 
 class ActivityIn(BaseModel):
     """
-    Model of activity to acquire from client
+    Model of activity
 
     Attributes:
-        identifier (int): Activity identifier
-        name (Optional[str]: Name of the activity
-        type (Optional[Type]): Type of the activity
-        layout (Optional[str]): The placement of participants
-        additional_properties (Optional[List[PropertyIn]]): Additional properties for activity
+        activity (str): Type of activity
     """
-    identifier: int
-    name: Optional[str]
-    type: Optional[Type]
-    layout: Optional[str]
-    additional_properties: Optional[List[PropertyIn]]
+    activity: str
 
 
-class ActivityOut(ActivityIn):
+class BasicActivityOut(ActivityIn):
+    """
+    Model of activity in database
+
+    Attributes:
+        id (Optional[int]): Id of activity returned from graph api
+    """
+    id: Optional[int]
+
+
+class ActivityOut(BasicActivityOut):
     """
     Model of activity to send to client as a result of request
 
     Attributes:
-        id (Optional[int]): Id of activity returned from graph api
         errors (Optional[Any]): Optional errors appeared during query executions
         links (Optional[list]): List of links available from api
     """
-    id: Optional[int]
+    errors: Optional[Any] = None
+    links: Optional[list] = None
+
+
+class ActivitiesOut(BaseModel):
+    """
+    Model of activities to send to client as a result of request
+
+    Attributes:
+        activity_types (List[BasicActivityOut]): Activity types from database
+        errors (Optional[Any]): Optional errors appeared during query executions
+        links (Optional[list]): List of links available from api
+    """
+    activities: List[BasicActivityOut] = []
     errors: Optional[Any] = None
     links: Optional[list] = None
