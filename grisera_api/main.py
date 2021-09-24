@@ -5,7 +5,7 @@ from experiment.experiment_router import router as experiment_router
 from publication.publication_router import router as publication_router
 from author.author_router import router as author_router
 from scenario.scenario_router import router as scenario_router
-from activity.activity_router import router as activity_router
+from activity_execution.activity_execution_router import router as activity_execution_router
 from observable_information.observable_information_router import router as observable_information_router
 from participant_state.participant_state_router import router as participant_state_router
 from participation.participation_router import router as participation_router
@@ -26,7 +26,7 @@ app.include_router(participant_router)
 app.include_router(experiment_router)
 app.include_router(author_router)
 app.include_router(publication_router)
-app.include_router(activity_router)
+app.include_router(activity_execution_router)
 app.include_router(scenario_router)
 app.include_router(observable_information_router)
 app.include_router(participant_state_router)
@@ -41,6 +41,7 @@ app.include_router(measure_router)
 @app.on_event("startup")
 async def startup_event():
     startup = SetupNodes()
+    startup.set_activities()
     startup.set_channels()
     startup.set_modalities()
     startup.set_live_activities()

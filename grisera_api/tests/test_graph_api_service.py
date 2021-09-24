@@ -2,7 +2,7 @@ import json
 import unittest
 import unittest.mock as mock
 
-from activity.activity_model import ActivityIn
+from activity_execution.activity_execution_model import ActivityExecutionIn
 from graph_api_service import GraphApiService
 from requests import Response
 
@@ -95,12 +95,13 @@ class DatabaseServiceTestCase(unittest.TestCase):
     def test_create_properties(self, post_mock):
         post_mock.return_value = self.response_content
         node_id = 1
-        node_model = ActivityIn(identifier=1, additional_properties=[{'key': 'test', 'value': 'test'}])
+        node_model = ActivityExecutionIn(activity='group', identifier=1, additional_properties=[{'key': 'test', 'value': 'test'}])
 
         result = self.graph_api_service.create_properties(node_id, node_model)
 
         self.assertEqual(result, self.response_content)
-        post_mock.assert_called_with("/nodes/1/properties", [{'key': 'identifier', 'value': 1},
+        post_mock.assert_called_with("/nodes/1/properties", [{'key': 'activity', 'value': 'group'},
+                                                             {'key': 'identifier', 'value': 1},
                                                              {'key': 'test', 'value': 'test'}])
 
     @mock.patch.object(GraphApiService, 'post')

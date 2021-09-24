@@ -31,7 +31,7 @@ class ScenarioService:
         self.graph_api_service.create_relationships(scenario.experiment_id, activity_executions[0].id,
                                                     'hasActivityExecution')
         [self.graph_api_service.create_relationships(activity_executions[index - 1].id, activity_executions[index].id,
-                                                     'next')
+                                                     'nextActivityExecution')
          for index in range(1, len(activity_executions))]
 
         return ScenarioOut(experiment_id=scenario.experiment_id, activity_executions=activity_executions)
@@ -55,16 +55,16 @@ class ScenarioService:
             self.graph_api_service.create_relationships(previous_id, activity_execution_result.id,
                                                         'hasActivityExecution')
         else:
-            self.graph_api_service.create_relationships(previous_id, activity_execution_result.id, 'next')
+            self.graph_api_service.create_relationships(previous_id, activity_execution_result.id, 'nextActivityExecution')
 
         try:
             next_id, relation_id = [(relation['end_node'], relation['id']) for relation in relationships
-                                    if relation['name'] in ['hasActivityExecution', 'next']
+                                    if relation['name'] in ['hasActivityExecution', 'nextActivityExecution']
                                     and relation['start_node'] == previous_id][0]
         except IndexError:
             return activity_execution_result
 
-        self.graph_api_service.create_relationships(activity_execution_result.id, next_id, 'next')
+        self.graph_api_service.create_relationships(activity_execution_result.id, next_id, 'nextActivityExecution')
         self.graph_api_service.delete_relationship(relation_id)
 
         return activity_execution_result
@@ -81,18 +81,18 @@ class ScenarioService:
         """
         relationships = self.graph_api_service.get_node_relationships(order_change.previous_id)['relationships']
         activity_execution_relationships = \
-        self.graph_api_service.get_node_relationships(order_change.activity_execution_id)['relationships']
+            self.graph_api_service.get_node_relationships(order_change.activity_execution_id)['relationships']
 
         [self.graph_api_service.delete_relationship(relation['id']) for relation in activity_execution_relationships
-         if relation['name'] in ['next', 'hasActivityExecution']]
+         if relation['name'] in ['nextActivityExecution', 'hasActivityExecution']]
 
         if len(activity_execution_relationships) == 2:
             start_node, end_node = (
-            activity_execution_relationships[0]['start_node'], activity_execution_relationships[1]['end_node']) \
+                activity_execution_relationships[0]['start_node'], activity_execution_relationships[1]['end_node']) \
                 if activity_execution_relationships[0]['end_node'] == order_change.activity_execution_id \
                 else (
-            activity_execution_relationships[1]['start_node'], activity_execution_relationships[0]['end_node'])
-            self.graph_api_service.create_relationships(start_node, end_node, 'next')
+                activity_execution_relationships[1]['start_node'], activity_execution_relationships[0]['end_node'])
+            self.graph_api_service.create_relationships(start_node, end_node, 'nextActivityExecution')
 
         if order_change.previous_id in [relation['start_node'] for relation in relationships
                                         if relation['name'] == 'hasActivityExecution']:
@@ -100,17 +100,17 @@ class ScenarioService:
                                                         'hasActivityExecution')
         else:
             self.graph_api_service.create_relationships(order_change.previous_id, order_change.activity_execution_id,
-                                                        'next')
+                                                        'nextActivityExecution')
 
         try:
             next_id, relation_id = [(relation['end_node'], relation['id']) for relation in relationships
-                                    if relation['name'] in ['hasActivityExecution', 'next']
+                                    if relation['name'] in ['hasActivityExecution', 'nextActivityExecution']
                                     and relation['start_node'] == order_change.previous_id][0]
         except IndexError:
             return OrderChangeOut(previous_id=order_change.previous_id,
                                   activity_execution_id=order_change.activity_execution_id)
 
-        self.graph_api_service.create_relationships(order_change.activity_execution_id, next_id, 'next')
+        self.graph_api_service.create_relationships(order_change.activity_execution_id, next_id, 'nextActivityExecution')
         self.graph_api_service.delete_relationship(relation_id)
 
         return OrderChangeOut(previous_id=order_change.previous_id,
@@ -140,18 +140,16 @@ class ScenarioService:
                                                            activity=properties['activity'], layout=properties['layout'],
                                                            additional_properties=additional_properties)
 
-        if len([relationship for relationship in relationships if relationship['name'] in ['hasActivity', 'next']]) == 1:
-            return activity_response
-        if len(relationships) == 1:
+        if len([relationship for relationship in relationships if
+                relationship['name'] in ['hasActivityExecution', 'nextActivityExecution']]) == 1:
             return activity_execution_response
 
         start_node = [relationship['start_node'] for relationship in relationships
-                      if relationship['end_node'] == activity_id and relationship['name'] in ['hasActivity', 'next']][0]
+                      if relationship['end_node'] == activity_execution_id and relationship['name']
+                      in ['hasActivityExecution', 'nextActivityExecution']][0]
         end_node = [relationship['end_node'] for relationship in relationships
-                    if relationship['start_node'] == activity_id and relationship['name'] == 'next'][0]
-        start_node, end_node = (relationships[0]['start_node'], relationships[1]['end_node']) \
-            if relationships[0]['end_node'] == activity_execution_id \
-            else (relationships[1]['start_node'], relationships[0]['end_node'])
+                    if relationship['start_node'] == activity_execution_id
+                    and relationship['name'] == 'nextActivityExecution'][0]
         self.graph_api_service.create_relationships(start_node, end_node, relationships[0]['name'])
 
         return activity_execution_response

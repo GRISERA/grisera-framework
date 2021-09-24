@@ -6,6 +6,8 @@ from live_activity.live_activity_service import LiveActivityService
 from live_activity.live_activity_model import LiveActivityIn, LiveActivity
 from measure_name.measure_name_service import MeasureNameService
 from measure_name.measure_name_model import MeasureNameIn, MeasureName
+from activity.activity_service import ActivityService
+from activity.activity_model import ActivityIn, Activity
 import os
 from time import sleep
 
@@ -14,6 +16,20 @@ class SetupNodes:
     """
     Class to init nodes in graph database
     """
+
+    def set_activities(self):
+        """
+        Initialize values of activities
+        """
+        activity_service = ActivityService()
+        if not os.path.exists("lock_activities"):
+            open("lock_activities", "w").write("Busy")
+            sleep(60)
+            created_activities = [activity.activity for activity in activity_service.get_activities().activities]
+            [activity_service.save_activity(ActivityIn(activity=activity_activity.value))
+             for activity_activity in Activity
+             if activity_activity.value not in created_activities]
+            os.remove("lock_activities")
 
     def set_channels(self):
         """
@@ -69,7 +85,9 @@ class SetupNodes:
             sleep(60)
             created_names = [measure_name.name for measure_name in
                              measure_name_service.get_measure_names().measure_names]
-            [measure_name_service.save_measure_name(MeasureNameIn(name=measure_name.value[0], type=measure_name.value[1]))
-             for measure_name in MeasureName
-             if measure_name.value[0] not in created_names]
+            [measure_name_service.save_measure_name(
+                MeasureNameIn(name=measure_name.value[0], type=measure_name.value[1]))
+                for measure_name in MeasureName
+                if measure_name.value[0] not in created_names]
             os.remove("lock_measure_names")
+
