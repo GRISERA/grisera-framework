@@ -101,7 +101,6 @@ class DatabaseServiceTestCase(unittest.TestCase):
 
         self.assertEqual(result, self.response_content)
         post_mock.assert_called_with("/nodes/1/properties", [{'key': 'activity', 'value': 'group'},
-                                                             {'key': 'identifier', 'value': 1},
                                                              {'key': 'test', 'value': 'test'}])
 
     @mock.patch.object(GraphApiService, 'post')

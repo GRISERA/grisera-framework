@@ -19,9 +19,7 @@ class TestActivityExecutionService(unittest.TestCase):
                                                    create_properties_mock, create_node_mock):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
-        create_properties_mock.return_value = {'id': id_node, 'properties': [{'key': 'activity', 'value': 'group'},
-                                                                             {'key': 'identifier', 'value': 2},
-                                                                             {'key': 'name', 'value': 'test'},
+        create_properties_mock.return_value = {'id': id_node, 'properties': [{'key': 'activity', 'value': 'group'}
                                                                              ],
                                                "errors": None, 'links': None}
         additional_properties = [PropertyIn(key='testkey', value='testvalue')]
@@ -31,14 +29,13 @@ class TestActivityExecutionService(unittest.TestCase):
 
         calls = [mock.call(start_node=id_node, end_node=4, name="hasActivity")]
 
-        activity_execution = ActivityExecutionIn(activity='group', identifier=2, name='test',
-                                                 additional_properties=additional_properties)
+        activity_execution = ActivityExecutionIn(activity='group', additional_properties=additional_properties)
         activity_execution_service = ActivityExecutionService()
 
         result = activity_execution_service.save_activity_execution(activity_execution)
 
-        self.assertEqual(result, ActivityExecutionOut(activity='group', identifier=2, name='test',
-                                                      id=id_node, additional_properties=additional_properties))
+        self.assertEqual(result, ActivityExecutionOut(activity='group', id=id_node,
+                                                      additional_properties=additional_properties))
         create_node_mock.assert_called_once_with('ActivityExecution')
         create_properties_mock.assert_called_once_with(id_node, activity_execution)
         get_activities_mock.assert_called_once()
@@ -48,12 +45,12 @@ class TestActivityExecutionService(unittest.TestCase):
     def test_save_activity_execution_with_node_error(self, create_node_mock):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
-        activity_execution = ActivityExecutionIn(activity='group', identifier=2)
+        activity_execution = ActivityExecutionIn(activity='group')
         activity_execution_service = ActivityExecutionService()
 
         result = activity_execution_service.save_activity_execution(activity_execution)
 
-        self.assertEqual(result, ActivityExecutionOut(activity='group', identifier=2, errors=['error']))
+        self.assertEqual(result, ActivityExecutionOut(activity='group', errors=['error']))
         create_node_mock.assert_called_once_with('ActivityExecution')
 
     @mock.patch.object(GraphApiService, 'create_node')
@@ -62,11 +59,11 @@ class TestActivityExecutionService(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
-        activity_execution = ActivityExecutionIn(activity='group', identifier=2)
+        activity_execution = ActivityExecutionIn(activity='group')
         activity_execution_service = ActivityExecutionService()
 
         result = activity_execution_service.save_activity_execution(activity_execution)
 
-        self.assertEqual(result, ActivityExecutionOut(activity='group', identifier=2, errors=['error']))
+        self.assertEqual(result, ActivityExecutionOut(activity='group', errors=['error']))
         create_node_mock.assert_called_once_with('ActivityExecution')
         create_properties_mock.assert_called_once_with(id_node, activity_execution)

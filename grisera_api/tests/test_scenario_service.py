@@ -12,11 +12,11 @@ class TestScenarioService(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'create_relationships')
     def test_save_scenario_without_error(self, create_relationships_mock, save_activity_execution_mock):
         id_node = 1
-        activity_execution_out = ActivityExecutionOut(activity='group', identifier=1, id=2)
+        activity_execution_out = ActivityExecutionOut(activity='group',  id=2)
         save_activity_execution_mock.return_value = activity_execution_out
         create_relationships_mock.return_value = activity_execution_out
-        calls = [mock.call(2, 2, 'hasActivityExecution')]
-        scenario = ScenarioIn(experiment_id=2, activity_executions=[ActivityExecutionIn(activity='group', identifier=1)])
+        calls = [mock.call(2, 2, 'hasScenario')]
+        scenario = ScenarioIn(experiment_id=2, activity_executions=[ActivityExecutionIn(activity='group')])
         scenario_service = ScenarioService()
 
         result = scenario_service.save_scenario(scenario)
@@ -31,10 +31,10 @@ class TestScenarioService(unittest.TestCase):
     def test_add_activity_execution_after_experiment(self, delete_relationship_mock, create_relationships_mock,
                                            get_node_relationships_mock, save_activity_execution_mock):
         get_node_relationships_mock.return_value = {'relationships': [{'start_node': 1, 'end_node': 2,
-                                                                       'name': 'hasActivityExecution', 'id': 0}]}
+                                                                       'name': 'hasScenario', 'id': 0}]}
         activity_execution = ActivityExecutionIn(activity='group', identifier=0, name='Test')
         save_activity_execution_mock.return_value = ActivityExecutionOut(activity='group', identifier=0, name='Test', id=3)
-        calls = [mock.call(1, 3, 'hasActivityExecution'), mock.call(3, 2, 'nextActivityExecution')]
+        calls = [mock.call(1, 3, 'hasScenario'), mock.call(3, 2, 'nextActivityExecution')]
         scenario_service = ScenarioService()
 
         result = scenario_service.add_activity_execution(1, activity_execution)

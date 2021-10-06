@@ -10,15 +10,9 @@ class ActivityExecutionIn(BaseModel):
 
     Attributes:
         activity (str): Type of the activity execution
-        identifier (int): ActivityExecution identifier
-        name (Optional[str]: Name of the activity execution
-        layout (Optional[str]): The placement of participants
         additional_properties (Optional[List[PropertyIn]]): Additional properties for activity execution
     """
     activity: str
-    identifier: int
-    name: Optional[str]
-    layout: Optional[str]
     additional_properties: Optional[List[PropertyIn]]
 
 

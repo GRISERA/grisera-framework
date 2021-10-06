@@ -27,14 +27,12 @@ class ActivityExecutionService:
         node_response = self.graph_api_service.create_node("ActivityExecution")
 
         if node_response["errors"] is not None:
-            return ActivityExecutionOut(identifier=activity_execution.identifier, activity=activity_execution.activity,
-                                        errors=node_response["errors"])
+            return ActivityExecutionOut(activity=activity_execution.activity, errors=node_response["errors"])
 
         activity_execution_id = node_response["id"]
         properties_response = self.graph_api_service.create_properties(activity_execution_id, activity_execution)
         if properties_response["errors"] is not None:
-            return ActivityExecutionOut(identifier=activity_execution.identifier, activity=activity_execution.activity,
-                                        errors=properties_response["errors"])
+            return ActivityExecutionOut(activity=activity_execution.activity, errors=properties_response["errors"])
 
         activities = self.activity_service.get_activities().activities
         activity_id = next(activity.id for activity in activities
@@ -42,7 +40,5 @@ class ActivityExecutionService:
         self.graph_api_service.create_relationships(start_node=activity_execution_id,
                                                     end_node=activity_id, name="hasActivity")
 
-        return ActivityExecutionOut(identifier=activity_execution.identifier, activity=activity_execution.activity,
-                                    name=activity_execution.name, layout=activity_execution.layout,
-                                    id=activity_execution_id,
+        return ActivityExecutionOut(activity=activity_execution.activity, id=activity_execution_id,
                                     additional_properties=activity_execution.additional_properties)
