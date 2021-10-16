@@ -1,7 +1,9 @@
 from graph_api_service import GraphApiService
 from appearance.appearance_model import AppearanceOcclusionIn, AppearanceOcclusionOut, BasicAppearanceOcclusionOut, \
-     AppearanceSomatotypeIn, AppearanceSomatotypeOut, BasicAppearanceSomatotypeOut, AppearancesOut
+     AppearanceSomatotypeIn, AppearanceSomatotypeOut, BasicAppearanceSomatotypeOut, AppearancesOut, \
+     AppearanceSomatotypeRelationOut, AppearanceOcclusionRelationOut
 from models.not_found_model import NotFoundByIdModel
+from models.relation_information_model import RelationInformation
 
 
 class AppearanceService:
@@ -92,10 +94,24 @@ class AppearanceService:
 
         properties = {property["key"]: property["value"] for property in get_response["properties"]}
 
-        return AppearanceSomatotypeOut(id=appearance_id, glasses=properties["glasses"],
-                                       ectomorph=properties["ectomorph"], endomorph=properties["endomorph"],
-                                       mesomorph=properties["mesomorph"]) if "glasses" in properties.keys() else \
-            AppearanceOcclusionOut(id=appearance_id, beard=properties["beard"], moustache=properties["moustache"])
+        relations_response = self.graph_api_service.get_node_relationships(appearance_id)
+
+        relations = []
+        reversed_relations = []
+        for relation in relations_response["relationships"]:
+            if relation["start_node"] == appearance_id:
+                relations.append(RelationInformation(second_node_id=relation["end_node"], name=relation["name"]))
+            else:
+                reversed_relations.append(RelationInformation(second_node_id=relation["start_node"],
+                                                              name=relation["name"]))
+
+        return AppearanceSomatotypeRelationOut(id=appearance_id, glasses=properties["glasses"],
+                                               ectomorph=properties["ectomorph"], endomorph=properties["endomorph"],
+                                               mesomorph=properties["mesomorph"], relations=relations,
+                                               reversed_relations=reversed_relations) if "glasses" in properties.keys() \
+            else AppearanceOcclusionRelationOut(id=appearance_id, beard=properties["beard"],
+                                                moustache=properties["moustache"], relations=relations,
+                                                reversed_relations=reversed_relations)
 
     def get_appearances(self):
         """

@@ -4,7 +4,8 @@ from fastapi_utils.inferring_router import InferringRouter
 from typing import Union
 from hateoas import get_links
 from appearance.appearance_model import AppearanceOcclusionIn, AppearanceOcclusionOut, BasicAppearanceOcclusionOut, \
-     AppearanceSomatotypeIn, AppearanceSomatotypeOut, BasicAppearanceSomatotypeOut, AppearancesOut
+     AppearanceSomatotypeIn, AppearanceSomatotypeOut, BasicAppearanceSomatotypeOut, AppearancesOut, \
+     AppearanceSomatotypeRelationOut, AppearanceOcclusionRelationOut
 from appearance.appearance_service import AppearanceService
 from models.not_found_model import NotFoundByIdModel
 
@@ -65,7 +66,8 @@ class AppearanceRouter:
         return get_response
 
     @router.get("/appearance/{appearance_id}", tags=["appearance"],
-                response_model=Union[AppearanceSomatotypeOut, AppearanceOcclusionOut, NotFoundByIdModel])
+                response_model=Union[AppearanceSomatotypeRelationOut, AppearanceOcclusionRelationOut,
+                                     NotFoundByIdModel])
     async def get_appearance(self, appearance_id: int, response: Response):
         """
         Get appearance from database
