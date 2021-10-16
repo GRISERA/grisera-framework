@@ -239,3 +239,16 @@ class DatabaseServiceTestCase(unittest.TestCase):
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
                                               auth=self.database_service.database_auth)
+
+    @mock.patch('database_service.requests')
+    def test_delete_node_properties(self, requests_mock):
+        requests_mock.post.return_value = self.response
+        object_id = 2
+        commit_body = {
+            "statements": [{"statement": "MATCH (x) where id(x)="+str(object_id)+" SET x ={} return x"}]
+        }
+        result = self.database_service.delete_node_properties(object_id)
+
+        self.assertEqual(result, self.response_content)
+        requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
+                                              auth=self.database_service.database_auth)

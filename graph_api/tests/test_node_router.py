@@ -186,3 +186,28 @@ class NodeRouterTestCase(unittest.TestCase):
         self.assertEqual(result, RelationshipsOut(errors={'errors': ['test']}, links=get_links(router)))
         get_relationships_mock.assert_called_with(id)
         self.assertEqual(response.status_code, 422)
+
+    @mock.patch.object(NodeService, 'delete_node_properties')
+    def test_delete_node_properties_without_error(self, delete_node_properties_mock):
+        delete_node_properties_mock.side_effect = return_node
+        response = Response()
+        label = "Test"
+        node_router = NodeRouter()
+
+        result = asyncio.run(node_router.delete_node_properties(5, response))
+
+        self.assertEqual(result, NodeOut(id=5, labels={label}, links=get_links(router)))
+        delete_node_properties_mock.assert_called_with(5)
+        self.assertEqual(response.status_code, 200)
+
+    @mock.patch.object(NodeService, 'delete_node_properties')
+    def test_delete_node_with_error(self, delete_node_properties_mock):
+        delete_node_properties_mock.return_value = NodeOut(errors='error')
+        response = Response()
+        node_router = NodeRouter()
+
+        result = asyncio.run(node_router.delete_node_properties(5, response))
+
+        self.assertEqual(result, NodeOut(errors='error', links=get_links(router)))
+        delete_node_properties_mock.assert_called_with(5)
+        self.assertEqual(response.status_code, 404)

@@ -171,3 +171,31 @@ class NodeServiceTestCase(unittest.TestCase):
         result = node_service.save_properties(id=node_id, properties=properties)
 
         self.assertEqual(result, NodeOut(id=node_id, errors={"errors": "not matching id"}))
+
+    @mock.patch.object(NodeService, 'get_node')
+    @mock.patch.object(DatabaseService, 'delete_node_properties')
+    def test_delete_node_properties_without_error(self, delete_node_properties_mock, get_node_mock):
+        delete_node_properties_mock.return_value = {'results': [{'data': [{'row': [{'key': 'value'}, ["Test"]]}]}],
+                                                    'errors': []}
+        get_node_mock.return_value = NodeOut(id=1, properties=[PropertyIn(key='key', value='value')], labels={"Test"})
+        node_id = 1
+        node_service = NodeService()
+
+        result = node_service.delete_node_properties(node_id)
+
+        self.assertEqual(result, NodeOut(id=1, properties=[PropertyIn(key='key', value='value')], labels={"Test"}))
+        delete_node_properties_mock.assert_called_once_with(node_id)
+        get_node_mock.assert_called_once_with(node_id)
+
+    @mock.patch.object(DatabaseService, 'get_node')
+    @mock.patch.object(DatabaseService, 'delete_node_properties')
+    def test_delete_node_properties_with_error(self, delete_node_properties_mock, get_node_mock):
+        delete_node_properties_mock.return_value = {'results': [{'data': []}], 'errors': ['error']}
+        node_id = 1
+        node_service = NodeService()
+
+        result = node_service.delete_node_properties(node_id)
+
+        self.assertEqual(result, NodeOut(errors=['error']))
+        delete_node_properties_mock.assert_called_once_with(node_id)
+        get_node_mock.assert_called_once_with(node_id)

@@ -140,3 +140,19 @@ class NodeService:
             result = NodeOut(id=id, errors={"errors": "not matching id"})
 
         return result
+
+    def delete_node_properties(self, node_id: int):
+        """
+        Send request to database by its API to delete properties from node with given id
+
+        Args:
+            node_id (int): Id of node
+        Returns:
+            Deleted node
+        """
+        node = self.get_node(node_id)
+        response = self.db.delete_node_properties(node_id)
+        result = NodeOut(errors=response["errors"]) if len(response["errors"]) > 0 else \
+            NodeOut(id=node_id, labels=node.labels, properties=node.properties)
+
+        return result
