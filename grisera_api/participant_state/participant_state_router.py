@@ -2,8 +2,11 @@ from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
-from participant_state.participant_state_model import ParticipantStateIn, ParticipantStateOut
+from participant_state.participant_state_model import ParticipantStateRelationIn, ParticipantStateOut,\
+    ParticipantStatesOut, ParticipantStateRelationOut, ParticipantStateIn
 from participant_state.participant_state_service import ParticipantStateService
+from typing import Union
+from models.not_found_model import NotFoundByIdModel
 
 router = InferringRouter()
 
@@ -19,13 +22,10 @@ class ParticipantStateRouter:
     participant_state_service = ParticipantStateService()
 
     @router.post("/participant_state", tags=["participant state"], response_model=ParticipantStateOut)
-    async def create_participant_state(self, participant_state: ParticipantStateIn, response: Response):
+    async def create_participant_state(self, participant_state: ParticipantStateRelationIn, response: Response):
         """
         Create participant state in database
         """
-
-        if participant_state.participant is not None and participant_state.participant.date_of_birth is not None:
-            participant_state.participant.date_of_birth = participant_state.participant.date_of_birth.__str__()
 
         create_response = self.participant_state_service.save_participant_state(participant_state)
         if create_response.errors is not None:
@@ -35,3 +35,64 @@ class ParticipantStateRouter:
         create_response.links = get_links(router)
 
         return create_response
+
+    @router.get("/participant_state", tags=["participant state"], response_model=ParticipantStatesOut)
+    async def get_participant_states(self, response: Response):
+        """
+        Get participant states from database
+        """
+
+        get_response = self.participant_state_service.get_participant_states()
+
+        # add links from hateoas
+        get_response.links = get_links(router)
+
+        return get_response
+
+    @router.get("/participant_state/{participant_state_id}", tags=["participant state"],
+                response_model=Union[ParticipantStateRelationOut, NotFoundByIdModel])
+    async def get_participant_state(self, participant_id: int, response: Response):
+        """
+        Get participant state from database
+        """
+
+        get_response = self.participant_state_service.get_participant_state(participant_id)
+        if get_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        get_response.links = get_links(router)
+
+        return get_response
+
+    @router.delete("/participant_state/{participant_state_id}", tags=["participant state"],
+                   response_model=Union[ParticipantStateOut, NotFoundByIdModel])
+    async def delete_participant_state(self, participant_state_id: int, response: Response):
+        """
+        Delete participant state from database
+        """
+        get_response = self.participant_state_service.delete_participant_state(participant_state_id)
+        if get_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        get_response.links = get_links(router)
+
+        return get_response
+
+    @router.put("/participant_state/{participant_state_id}", tags=["participant state"],
+                response_model=Union[ParticipantStateRelationOut, NotFoundByIdModel])
+    async def update_participant_state(self, participant_state_id: int, participant_state: ParticipantStateIn,
+                                       response: Response):
+        """
+        Update participant state model in database
+        """
+        update_response = self.participant_state_service.update_participant_state(participant_state_id,
+                                                                                  participant_state)
+        if update_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        update_response.links = get_links(router)
+
+        return update_response
