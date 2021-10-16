@@ -6,7 +6,7 @@ from participant.participant_model import *
 from participant.participant_service import ParticipantService
 
 
-class TestParticipantService(unittest.TestCase):
+class TestParticipantServicePost(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'create_node')
     @mock.patch.object(GraphApiService, 'create_properties')

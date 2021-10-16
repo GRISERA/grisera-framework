@@ -251,3 +251,18 @@ class DatabaseService:
         node_part = "(x)"
         return_part = "labels(x)"
         return self.create_properties(id, properties, node_part, return_part)
+
+    def delete_node_properties(self, id):
+        """
+        Send to the database request to delete properties from node
+
+        Args:
+            id (int): Id of node
+        Returns:
+            Result of request
+        """
+        delete_statement = "MATCH (x) where id(x)="+str(id)+" SET x ={} return x"
+        commit_body = {
+            "statements": [{"statement": delete_statement}]
+        }
+        return self.post(commit_body)

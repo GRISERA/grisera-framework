@@ -101,3 +101,17 @@ class NodeRouter:
         create_response.links = get_links(router)
 
         return create_response
+
+    @router.delete("/nodes/{id}/properties", tags=["nodes"], response_model=NodeOut)
+    async def delete_node_properties(self, id: int, response: Response):
+        """
+        Delete node properties by id
+        """
+        delete_response = self.node_service.delete_node_properties(id)
+        if delete_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        delete_response.links = get_links(router)
+
+        return delete_response
