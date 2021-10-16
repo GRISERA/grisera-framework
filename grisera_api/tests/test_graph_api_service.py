@@ -72,6 +72,16 @@ class DatabaseServiceTestCase(unittest.TestCase):
         get_mock.assert_called_with('/nodes', {"label": label})
 
     @mock.patch.object(GraphApiService, 'get')
+    def test_get_node(self, get_mock):
+        get_mock.return_value = self.response_content
+        id = '15'
+
+        result = self.graph_api_service.get_node(id)
+
+        self.assertEqual(result, self.response_content)
+        get_mock.assert_called_with('/nodes/15', {})
+
+    @mock.patch.object(GraphApiService, 'get')
     def test_get_node_relationships(self, get_mock):
         get_mock.return_value = self.response_content
         node_id = 1

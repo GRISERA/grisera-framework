@@ -4,7 +4,7 @@ import unittest.mock as mock
 from appearance.appearance_router import *
 
 
-class TestAppearanceRouter(unittest.TestCase):
+class TestAppearanceRouterPost(unittest.TestCase):
 
     @mock.patch.object(AppearanceService, 'save_appearance_occlusion')
     def test_create_appearance_occlusion_without_error(self, save_appearance_occlusion_mock):
