@@ -6,7 +6,7 @@ from appearance.appearance_service import AppearanceService
 from graph_api_service import GraphApiService
 
 
-class TestAppearanceService(unittest.TestCase):
+class TestAppearanceServicePost(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'create_node')
     @mock.patch.object(GraphApiService, 'create_properties')

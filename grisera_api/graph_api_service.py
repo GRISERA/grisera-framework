@@ -84,6 +84,17 @@ class GraphApiService:
         request_params = {"label": label}
         return self.get("/nodes", request_params)
 
+    def get_node(self, id: int):
+        """
+        Send to the Graph API request to get node with given id
+
+        Args:
+            id (int): ID of node
+        Returns:
+            Result of request
+        """
+        return self.get("/nodes/"+str(id), {})
+
     def get_node_relationships(self, node_id: int):
         """
         Send to the Graph API request to get node's relationship
