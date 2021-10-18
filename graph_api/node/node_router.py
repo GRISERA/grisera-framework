@@ -34,7 +34,7 @@ class NodeRouter:
 
         return create_response
 
-    @router.get("/node/{id}", tags=["nodes"], response_model=NodeOut)
+    @router.get("/nodes/{id}", tags=["nodes"], response_model=NodeOut)
     async def get_node(self, id: int, response: Response):
         """
         Get node with same id as given
@@ -101,5 +101,3 @@ class NodeRouter:
         create_response.links = get_links(router)
 
         return create_response
-
-
