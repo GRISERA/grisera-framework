@@ -179,7 +179,8 @@ class ScenarioService:
 
     def what_order(self, previous_relationships, activity_execution_relationships):
         """
-            Finds which node is in which order in the scenario
+            Finds which node is in which order (starting from experiment) in the scenario
+
             Args:
                 previous_relationships: Relationships of the previous node
                 activity_execution_relationships: Relationships of the activity execution node
@@ -211,6 +212,20 @@ class ScenarioService:
 
         return p_count, a_count
 
+    def swap_order_in_relationships_array(self, relationships, node_id):
+        """
+            Swaps order of relationships list so they are saved in order starting from experiment
+            Args:
+                relationships: List of relationships
+                node_id: Id of node, that relationships belong to
+            Returns:
+                relationships: List of relationships in specified order
+        """
+        if relationships[0]['start_node'] == node_id:
+            relationships[0], relationships[1] = relationships[1], relationships[0]
+
+        return relationships
+
     def change_order(self, order_change: OrderChangeIn):
         """
         Send request to graph api to change order in scenario
@@ -221,33 +236,43 @@ class ScenarioService:
         Returns:
             Result of request as changed order ids
         """
+        # save all relationships in lists
         previous_relationships = self.graph_api_service.get_node_relationships(order_change.previous_id)[
             'relationships']
         activity_execution_relationships = \
             self.graph_api_service.get_node_relationships(order_change.activity_execution_id)['relationships']
 
+        # check which node is before the other
         previous_first, activity_execution_first = self.what_order(previous_relationships,
                                                                    activity_execution_relationships)
 
+        # delete nextActivityExecution and hasScenario relationships 
         [self.graph_api_service.delete_relationship(relation['id']) for relation in previous_relationships
          if relation['name'] in ['nextActivityExecution', 'hasScenario']]
         [self.graph_api_service.delete_relationship(relation['id']) for relation in activity_execution_relationships
          if relation['name'] in ['nextActivityExecution', 'hasScenario']]
 
+        # save nextActivityExecution and hasScenario relationships 
         previous_relationships = [relation for relation in previous_relationships
                                   if relation['name'] in ['nextActivityExecution', 'hasScenario']]
         activity_execution_relationships = [relation for relation in activity_execution_relationships
                                             if relation['name'] in ['nextActivityExecution', 'hasScenario']]
 
+        # swap order of relationships if needed
+        previous_relationships = self.swap_order_in_relationships_array(previous_relationships,
+                                                                        order_change.previous_id)
+        activity_execution_relationships = self.swap_order_in_relationships_array(activity_execution_relationships,
+                                                                                  order_change.activity_execution_id)
+
         if len(activity_execution_relationships) == 1:
-            print('a last')
+            # change order when activity execution node is last
             self.change_order_middle_with_last(middle_id=order_change.previous_id,
                                                last_id=order_change.activity_execution_id,
                                                middle_relationships=previous_relationships,
                                                last_relationships=activity_execution_relationships)
 
         elif len(previous_relationships) == 1:
-            print('p last')
+            # change order when previous node is last
             self.change_order_middle_with_last(middle_id=order_change.activity_execution_id,
                                                last_id=order_change.previous_id,
                                                middle_relationships=activity_execution_relationships,
@@ -255,13 +280,13 @@ class ScenarioService:
 
         elif len(previous_relationships) == 2 and len(activity_execution_relationships) == 2:
             if previous_first is True:
-                print('p before a')
+                # change order when previous node is before activity execution node
                 self.change_order_middle_with_middle(middle_id=order_change.previous_id,
                                                      last_id=order_change.activity_execution_id,
                                                      middle_relationships=previous_relationships,
                                                      last_relationships=activity_execution_relationships)
             elif activity_execution_first is True:
-                print('a before p')
+                # change order when activity execution node is before previous node
                 self.change_order_middle_with_middle(middle_id=order_change.activity_execution_id,
                                                      last_id=order_change.previous_id,
                                                      middle_relationships=activity_execution_relationships,
