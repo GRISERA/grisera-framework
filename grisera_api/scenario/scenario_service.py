@@ -86,7 +86,6 @@ class ScenarioService:
             middle_relationships[0]['name']
         )
         self.graph_api_service.create_relationships(start_node, end_node, relation_name)
-        print("start_node = ", start_node, "end_node = ", end_node, "name = ", relation_name)
 
         if middle_relationships[1] == last_relationships[0]:
             # nodes are next to each other
@@ -95,7 +94,6 @@ class ScenarioService:
                 middle_relationships[1]['name']
             )
             self.graph_api_service.create_relationships(start_node, end_node, relation_name)
-            print("start_node = ", start_node, "end_node = ", end_node, "name = ", relation_name)
 
             return
 
@@ -105,7 +103,6 @@ class ScenarioService:
             middle_relationships[1]['name']
         )
         self.graph_api_service.create_relationships(start_node, end_node, relation_name)
-        print("start_node = ", start_node, "end_node = ", end_node, "name = ", relation_name)
 
         start_node, end_node, relation_name = (
             last_relationships[0]['start_node'], middle_id,
@@ -113,7 +110,6 @@ class ScenarioService:
         )
         if start_node != end_node:
             self.graph_api_service.create_relationships(start_node, end_node, relation_name)
-        print("start_node = ", start_node, "end_node = ", end_node, "name = ", relation_name)
 
         return
 
@@ -133,7 +129,6 @@ class ScenarioService:
             middle_relationships[0]['name']
         )
         self.graph_api_service.create_relationships(start_node, end_node, relation_name)
-        print("start_node = ", start_node, "end_node = ", end_node, "name = ", relation_name)
 
         if middle_relationships[1] == last_relationships[0]:
             # nodes are next to each other
@@ -142,14 +137,12 @@ class ScenarioService:
                 middle_relationships[1]['name']
             )
             self.graph_api_service.create_relationships(start_node, end_node, relation_name)
-            print("start_node = ", start_node, "end_node = ", end_node, "name = ", relation_name)
 
             start_node, end_node, relation_name = (
                 middle_id, last_relationships[1]['end_node'],
                 last_relationships[1]['name']
             )
             self.graph_api_service.create_relationships(start_node, end_node, relation_name)
-            print("start_node = ", start_node, "end_node = ", end_node, "name = ", relation_name)
 
             return
 
@@ -158,7 +151,6 @@ class ScenarioService:
             middle_relationships[1]['name']
         )
         self.graph_api_service.create_relationships(start_node, end_node, relation_name)
-        print("start_node = ", start_node, "end_node = ", end_node, "name = ", relation_name)
 
         start_node, end_node, relation_name = (
             last_relationships[0]['start_node'], middle_id,
@@ -166,14 +158,12 @@ class ScenarioService:
         )
         if start_node != end_node:
             self.graph_api_service.create_relationships(start_node, end_node, relation_name)
-        print("start_node = ", start_node, "end_node = ", end_node, "name = ", relation_name)
 
         start_node, end_node, relation_name = (
             middle_id, last_relationships[1]['end_node'],
             last_relationships[1]['name']
         )
         self.graph_api_service.create_relationships(start_node, end_node, relation_name)
-        print("start_node = ", start_node, "end_node = ", end_node, "name = ", relation_name)
 
         return
 
