@@ -30,12 +30,13 @@ class TestParticipantStateServicePut(unittest.TestCase):
                                       'properties': [{'key': 'age', 'value': 5}, {'key': 'identifier', 'value': 5}],
                                       "errors": None, 'links': None}
         additional_properties = [PropertyIn(key='identifier', value=5)]
-        participant_state_in = ParticipantStateIn(age=5, id=id_node, additional_properties=additional_properties)
-        participant_state_out = ParticipantStateRelationOut(age=5, id=id_node, relations=
-                                 [RelationInformation(second_node_id=19, name="testRelation")], reversed_relations=
-                                 [RelationInformation(second_node_id=15, name="testReversedRelation")],
+        participant_state_in = ParticipantStatePropertyIn(age=5, id=id_node, additional_properties=additional_properties)
+        participant_state_out = ParticipantStateOut(age=5, id=id_node, relations=
+                                 [RelationInformation(second_node_id=19, name="testRelation", relation_id=0)],
+                                                    reversed_relations=
+                                 [RelationInformation(second_node_id=15, name="testReversedRelation", relation_id=0)],
                                  additional_properties=additional_properties)
-        calls = [mock.call(1),  mock.call(1)]
+        calls = [mock.call(1)]
         participant_state_service = ParticipantStateService()
 
         result = participant_state_service.update_participant_state(id_node, participant_state_in)
@@ -53,7 +54,7 @@ class TestParticipantStateServicePut(unittest.TestCase):
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         additional_properties = [PropertyIn(key='identifier', value=5)]
-        participant_state_in = ParticipantStateIn(age=5, id=id_node, additional_properties=additional_properties)
+        participant_state_in = ParticipantStatePropertyIn(age=5, id=id_node, additional_properties=additional_properties)
         participant_state_service = ParticipantStateService()
 
         result = participant_state_service.update_participant_state(id_node, participant_state_in)
@@ -67,7 +68,7 @@ class TestParticipantStateServicePut(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         additional_properties = [PropertyIn(key='identifier', value=5)]
-        participant_state_in = ParticipantStateIn(age=5, id=id_node, additional_properties=additional_properties)
+        participant_state_in = ParticipantStatePropertyIn(age=5, id=id_node, additional_properties=additional_properties)
         participant_state_service = ParticipantStateService()
 
         result = participant_state_service.update_participant_state(id_node, participant_state_in)
