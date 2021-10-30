@@ -1,7 +1,6 @@
 from graph_api_service import GraphApiService
 from appearance.appearance_model import AppearanceOcclusionIn, AppearanceOcclusionOut, BasicAppearanceOcclusionOut, \
-     AppearanceSomatotypeIn, AppearanceSomatotypeOut, BasicAppearanceSomatotypeOut, AppearancesOut, \
-     AppearanceSomatotypeRelationOut, AppearanceOcclusionRelationOut
+     AppearanceSomatotypeIn, AppearanceSomatotypeOut, BasicAppearanceSomatotypeOut, AppearancesOut
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
 
@@ -92,26 +91,22 @@ class AppearanceService:
         if get_response["labels"][0] != "Appearance":
             return NotFoundByIdModel(id=appearance_id, errors="Node not found.")
 
-        properties = {property["key"]: property["value"] for property in get_response["properties"]}
+        appearance = {'id': appearance_id, 'relations': [], 'reversed_relations': []}
+        appearance.update({property["key"]: property["value"] for property in get_response["properties"]})
 
         relations_response = self.graph_api_service.get_node_relationships(appearance_id)
 
-        relations = []
-        reversed_relations = []
         for relation in relations_response["relationships"]:
             if relation["start_node"] == appearance_id:
-                relations.append(RelationInformation(second_node_id=relation["end_node"], name=relation["name"]))
+                appearance["relations"].append(RelationInformation(second_node_id=relation["end_node"],
+                                                                   name=relation["name"], relation_id=relation["id"]))
             else:
-                reversed_relations.append(RelationInformation(second_node_id=relation["start_node"],
-                                                              name=relation["name"]))
+                appearance["reversed_relations"].append(RelationInformation(second_node_id=relation["start_node"],
+                                                                            name=relation["name"],
+                                                                            relation_id=relation["id"]))
 
-        return AppearanceSomatotypeRelationOut(id=appearance_id, glasses=properties["glasses"],
-                                               ectomorph=properties["ectomorph"], endomorph=properties["endomorph"],
-                                               mesomorph=properties["mesomorph"], relations=relations,
-                                               reversed_relations=reversed_relations) if "glasses" in properties.keys() \
-            else AppearanceOcclusionRelationOut(id=appearance_id, beard=properties["beard"],
-                                                moustache=properties["moustache"], relations=relations,
-                                                reversed_relations=reversed_relations)
+        return AppearanceSomatotypeOut(**appearance) if "glasses" in appearance.keys() \
+            else AppearanceOcclusionOut(**appearance)
 
     def get_appearances(self):
         """
@@ -126,12 +121,9 @@ class AppearanceService:
 
         for appearance_node in get_response["nodes"]:
             properties = {property["key"]: property["value"] for property in appearance_node["properties"]}
-            appearance = BasicAppearanceSomatotypeOut(id=appearance_node["id"], glasses=properties["glasses"],
-                                                      ectomorph=properties["ectomorph"], endomorph=
-                                                      properties["endomorph"], mesomorph=properties["mesomorph"]) \
-                if "glasses" in properties.keys() else BasicAppearanceOcclusionOut(id=appearance_node["id"],
-                                                                                   beard=properties["beard"],
-                                                                                   moustache=properties["moustache"])
+            properties["id"] = appearance_node["id"]
+            appearance = BasicAppearanceSomatotypeOut(**properties) if "glasses" in properties.keys() \
+                else BasicAppearanceOcclusionOut(**properties)
             appearances.append(appearance)
 
         return AppearancesOut(appearances=appearances)
@@ -146,21 +138,12 @@ class AppearanceService:
         Returns:
             Result of request as appearance object
         """
-        get_response = self.graph_api_service.get_node(appearance_id)
+        get_response = self.get_appearance(appearance_id)
 
-        if get_response["errors"] is not None:
-            return NotFoundByIdModel(id=appearance_id, errors=get_response["errors"])
-        if get_response["labels"][0] != "Appearance":
-            return NotFoundByIdModel(id=appearance_id, errors="Node not found.")
-
-        delete_response = self.graph_api_service.delete_node(appearance_id)
-
-        properties = {property["key"]: property["value"] for property in delete_response["properties"]}
-
-        return AppearanceSomatotypeOut(id=appearance_id, glasses=properties["glasses"],
-                                       ectomorph=properties["ectomorph"], endomorph=properties["endomorph"],
-                                       mesomorph=properties["mesomorph"]) if "glasses" in properties.keys() else \
-            AppearanceOcclusionOut(id=appearance_id, beard=properties["beard"], moustache=properties["moustache"])
+        if type(get_response) is NotFoundByIdModel:
+            return get_response
+        self.graph_api_service.delete_node(appearance_id)
+        return get_response
 
     def update_appearance_occlusion(self, appearance_id: int, appearance: AppearanceOcclusionIn):
         """
@@ -173,17 +156,18 @@ class AppearanceService:
         Returns:
             Result of request as appearance object
         """
-        get_response = self.graph_api_service.get_node(appearance_id)
+        get_response = self.get_appearance(appearance_id)
 
-        if get_response["errors"] is not None:
-            return NotFoundByIdModel(id=appearance_id, errors=get_response["errors"])
-        if get_response["labels"][0] != "Appearance" or \
-                get_response["properties"][0]["key"] not in ["beard", "moustache"]:
+        if type(get_response) is NotFoundByIdModel:
+            return get_response
+        if type(get_response) is AppearanceSomatotypeOut:
             return NotFoundByIdModel(id=appearance_id, errors="Node not found.")
 
         self.graph_api_service.create_properties(appearance_id, appearance)
 
-        return AppearanceOcclusionOut(id=appearance_id, beard=appearance.beard, moustache=appearance.moustache)
+        appearance_response = get_response.dict()
+        appearance_response.update(appearance)
+        return AppearanceOcclusionOut(**appearance_response)
 
     def update_appearance_somatotype(self, appearance_id: int, appearance: AppearanceSomatotypeIn):
         """
@@ -198,18 +182,17 @@ class AppearanceService:
         """
         if not 1 <= appearance.ectomorph <= 7 or not 1 <= appearance.endomorph <= 7 \
                 or not 1 <= appearance.mesomorph <= 7:
-            return AppearanceSomatotypeOut(glasses=appearance.glasses, ectomorph=appearance.ectomorph,
-                                           endomorph=appearance.endomorph, mesomorph=appearance.mesomorph,
-                                           errors="Scale range not between 1 and 7")
 
-        get_response = self.graph_api_service.get_node(appearance_id)
-        if get_response["errors"] is not None:
-            return NotFoundByIdModel(id=appearance_id, errors=get_response["errors"])
-        if get_response["labels"][0] != "Appearance" or \
-                get_response["properties"][0]["key"] in ["beard", "moustache"]:
+            return AppearanceSomatotypeOut(**appearance.dict(), errors="Scale range not between 1 and 7")
+
+        get_response = self.get_appearance(appearance_id)
+        if type(get_response) is NotFoundByIdModel:
+            return get_response
+        if type(get_response) is AppearanceOcclusionOut:
             return NotFoundByIdModel(id=appearance_id, errors="Node not found.")
 
         self.graph_api_service.create_properties(appearance_id, appearance)
 
-        return AppearanceSomatotypeOut(id=appearance_id, glasses=appearance.glasses, ectomorph=appearance.ectomorph,
-                                       endomorph=appearance.endomorph, mesomorph=appearance.mesomorph)
+        appearance_response = get_response.dict()
+        appearance_response.update(appearance)
+        return AppearanceSomatotypeOut(**appearance_response)
