@@ -27,11 +27,13 @@ class TestParticipantServiceGet(unittest.TestCase):
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
         additional_properties = [PropertyIn(key='identifier', value=5)]
-        participant = ParticipantRelationOut(name="test", sex='male', id=id_node,
+        participant = ParticipantOut(name="test", sex='male', id=id_node,
                                              additional_properties=additional_properties, relations=
-                                             [RelationInformation(second_node_id=19, name="testRelation")],
+                                             [RelationInformation(second_node_id=19, name="testRelation",
+                                                                  relation_id=0)],
                                              reversed_relations=
-                                             [RelationInformation(second_node_id=15, name="testReversedRelation")])
+                                             [RelationInformation(second_node_id=15, name="testReversedRelation",
+                                                                  relation_id=0)])
         participant_service = ParticipantService()
 
         result = participant_service.get_participant(id_node)

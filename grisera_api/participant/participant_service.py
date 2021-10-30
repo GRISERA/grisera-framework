@@ -1,6 +1,5 @@
 from graph_api_service import GraphApiService
-from participant.participant_model import ParticipantIn, ParticipantsOut, BasicParticipantOut, \
-    ParticipantRelationOut, ParticipantOut
+from participant.participant_model import ParticipantIn, ParticipantsOut, BasicParticipantOut, ParticipantOut
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
 
@@ -27,16 +26,14 @@ class ParticipantService:
         node_response = self.graph_api_service.create_node("Participant")
 
         if node_response["errors"] is not None:
-            return ParticipantOut(name="Test Test", errors=node_response["errors"])
+            return ParticipantOut(**participant.dict(), errors=node_response["errors"])
 
         participant_id = node_response["id"]
         properties_response = self.graph_api_service.create_properties(participant_id, participant)
         if properties_response["errors"] is not None:
-            return ParticipantOut(name="Test Test", errors=properties_response["errors"])
+            return ParticipantOut(**participant.dict(), errors=properties_response["errors"])
 
-        return ParticipantOut(name=participant.name, date_of_birth=participant.date_of_birth, sex=participant.sex,
-                              disorder=participant.disorder, id=participant_id,
-                              additional_properties=participant.additional_properties)
+        return ParticipantOut(**participant.dict(), id=participant_id)
 
     def get_participants(self):
         """
@@ -90,12 +87,13 @@ class ParticipantService:
         for relation in relations_response["relationships"]:
             if relation["start_node"] == participant_id:
                 participant['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                    name=relation["name"]))
+                                                                    name=relation["name"], relation_id=relation["id"]))
             else:
                 participant['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
-                                                                             name=relation["name"]))
+                                                                             name=relation["name"],
+                                                                             relation_id=relation["id"]))
 
-        return ParticipantRelationOut(**participant)
+        return ParticipantOut(**participant)
 
     def delete_participant(self, participant_id: int):
         """
@@ -107,22 +105,13 @@ class ParticipantService:
         Returns:
             Result of request as participant object
         """
-        get_response = self.graph_api_service.get_node(participant_id)
+        get_response = self.get_participant(participant_id)
 
-        if get_response["errors"] is not None:
-            return NotFoundByIdModel(id=participant_id, errors=get_response["errors"])
-        if get_response["labels"][0] != "Participant":
-            return NotFoundByIdModel(id=participant_id, errors="Node not found.")
+        if type(get_response) is NotFoundByIdModel:
+            return get_response
 
-        delete_response = self.graph_api_service.delete_node(participant_id)
-        participant = {'id': get_response['id'], 'additional_properties': []}
-        for property in delete_response["properties"]:
-            if property["key"] in ["name", "date_of_birth", "sex", "disorder"]:
-                participant[property["key"]] = property["value"]
-            else:
-                participant['additional_properties'].append({'key': property['key'], 'value': property['value']})
-
-        return ParticipantOut(**participant)
+        self.graph_api_service.delete_node(participant_id)
+        return get_response
 
     def update_participant(self, participant_id: int, participant: ParticipantIn):
         """
@@ -135,12 +124,10 @@ class ParticipantService:
         Returns:
             Result of request as participant object
         """
-        get_response = self.graph_api_service.get_node(participant_id)
+        get_response = self.get_participant(participant_id)
 
-        if get_response["errors"] is not None:
-            return NotFoundByIdModel(id=participant_id, errors=get_response["errors"])
-        if get_response["labels"][0] != "Participant":
-            return NotFoundByIdModel(id=participant_id, errors="Node not found.")
+        if type(get_response) is NotFoundByIdModel:
+            return get_response
 
         if participant.date_of_birth is not None:
             participant.date_of_birth = participant.date_of_birth.__str__()
@@ -148,6 +135,8 @@ class ParticipantService:
         self.graph_api_service.delete_node_properties(participant_id)
         self.graph_api_service.create_properties(participant_id, participant)
 
-        return ParticipantOut(name=participant.name, date_of_birth=participant.date_of_birth, sex=participant.sex,
-                              disorder=participant.disorder, id=participant_id,
-                              additional_properties=participant.additional_properties)
+        participant_result = {"id": participant_id, 'relations': get_response.relations,
+                              'reversed_relations': get_response.reversed_relations}
+        participant_result.update(participant.dict())
+
+        return ParticipantOut(**participant_result)

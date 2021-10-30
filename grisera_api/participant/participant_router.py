@@ -3,7 +3,7 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
 from typing import Union
-from participant.participant_model import ParticipantIn, ParticipantOut, ParticipantsOut, ParticipantRelationOut
+from participant.participant_model import ParticipantIn, ParticipantOut, ParticipantsOut
 from participant.participant_service import ParticipantService
 from models.not_found_model import NotFoundByIdModel
 
@@ -52,7 +52,7 @@ class ParticipantRouter:
         return get_response
 
     @router.get("/participants/{participant_id}", tags=["participants"],
-                response_model=Union[ParticipantRelationOut, NotFoundByIdModel])
+                response_model=Union[ParticipantOut, NotFoundByIdModel])
     async def get_participant(self, participant_id: int, response: Response):
         """
         Get participant from database
