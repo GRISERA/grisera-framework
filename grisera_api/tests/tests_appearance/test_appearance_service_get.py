@@ -25,9 +25,13 @@ class TestAppearanceServiceGet(unittest.TestCase):
                                                     {"start_node": 15, "end_node": id_node,
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
-        appearance = AppearanceOcclusionRelationOut(id=id_node, beard="Heavy", moustache="Heavy",
-                      relations=[RelationInformation(second_node_id=19, name="testRelation")],
-                      reversed_relations=[RelationInformation(second_node_id=15, name="testReversedRelation")])
+        appearance = AppearanceOcclusionOut(id=id_node, beard="Heavy", moustache="Heavy",
+                                            relations=[
+                                                RelationInformation(second_node_id=19, name="testRelation",
+                                                                    relation_id=0)],
+                                            reversed_relations=[
+                                                RelationInformation(second_node_id=15, name="testReversedRelation",
+                                                                    relation_id=0)])
         appearance_service = AppearanceService()
 
         result = appearance_service.get_appearance(id_node)
@@ -53,11 +57,13 @@ class TestAppearanceServiceGet(unittest.TestCase):
             {"start_node": 15, "end_node": id_node,
              "name": "testReversedRelation", "id": 0,
              "properties": None}]}
-        appearance = AppearanceSomatotypeRelationOut(id=id_node, glasses=True, ectomorph=1.5, endomorph=1.5,
-                                                     mesomorph=1.5, relations=
-                                                     [RelationInformation(second_node_id=19, name="testRelation")],
-                                                     reversed_relations=[
-                                                 RelationInformation(second_node_id=15, name="testReversedRelation")])
+        appearance = AppearanceSomatotypeOut(id=id_node, glasses=True, ectomorph=1.5, endomorph=1.5,
+                                             mesomorph=1.5, relations=[
+                                                 RelationInformation(second_node_id=19, name="testRelation",
+                                                                     relation_id=0)],
+                                             reversed_relations=[
+                                                 RelationInformation(second_node_id=15, name="testReversedRelation",
+                                                                     relation_id=0)])
         appearance_service = AppearanceService()
 
         result = appearance_service.get_appearance(id_node)

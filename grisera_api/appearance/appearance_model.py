@@ -34,18 +34,6 @@ class BasicAppearanceOcclusionOut(AppearanceOcclusionIn):
 
 class AppearanceOcclusionOut(BasicAppearanceOcclusionOut):
     """
-    Model of appearance occlusion to send to client as a result of request
-
-    Attributes:
-        errors (Optional[Any]): Optional errors appeared during query executions
-        links (Optional[list]): List of links available from api
-    """
-    errors: Optional[Any] = None
-    links: Optional[list] = None
-
-
-class AppearanceOcclusionRelationOut(BasicAppearanceOcclusionOut):
-    """
     Model of appearance occlusion with relationships to send to client as a result of request
 
     Attributes:
@@ -88,18 +76,6 @@ class BasicAppearanceSomatotypeOut(AppearanceSomatotypeIn):
     id: Optional[int]
 
 
-class AppearanceSomatotypeOut(BasicAppearanceSomatotypeOut):
-    """
-    Model of appearance somatotype to send to client as a result of request
-
-    Attributes:
-        errors (Optional[Any]): Optional errors appeared during query executions
-        links (Optional[list]): List of links available from api
-    """
-    errors: Optional[Any] = None
-    links: Optional[list] = None
-
-
 class AppearancesOut(BaseModel):
     """
     Model of appearances to send to client as a result of request
@@ -114,7 +90,7 @@ class AppearancesOut(BaseModel):
     links: Optional[list] = None
 
 
-class AppearanceSomatotypeRelationOut(BasicAppearanceSomatotypeOut):
+class AppearanceSomatotypeOut(BasicAppearanceSomatotypeOut):
     """
     Model of appearance somatotype with relationships to send to client as a result of request
 
