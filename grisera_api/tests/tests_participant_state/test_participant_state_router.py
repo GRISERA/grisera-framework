@@ -6,7 +6,7 @@ from participant.participant_model import ParticipantIn
 from participant_state.participant_state_router import *
 
 
-class TestParticipantStateRouterPost(unittest.TestCase):
+class TestParticipantStateRouter(unittest.TestCase):
 
     @mock.patch.object(ParticipantStateService, 'save_participant_state')
     def test_create_participant_state_without_error(self, save_participant_state_mock):
