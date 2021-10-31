@@ -43,8 +43,8 @@ class ParticipantStateService:
             self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                         end_node=participant_state.participant_id,
                                                         name="hasParticipant")
-        if participant_state.personality_id is not None:
-            # and type(self.personality_service.get_personality(participant_state.participant_id)) is not NotFoundByIdModel:
+        if participant_state.personality_id is not None and \
+                type(self.personality_service.get_personality(participant_state.participant_id)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                         end_node=participant_state.personality_id,
                                                         name="hasPersonality")
@@ -187,8 +187,8 @@ class ParticipantStateService:
             self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                         end_node=participant_state.participant_id,
                                                         name="hasParticipant")
-        if participant_state.personality_id is not None:
-            # and type(self.personality_service.get_personality(participant_state.participant_id)) is not NotFoundByIdModel:
+        if participant_state.personality_id is not None and \
+                type(self.personality_service.get_personality(participant_state.participant_id)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                         end_node=participant_state.personality_id,
                                                         name="hasPersonality")
