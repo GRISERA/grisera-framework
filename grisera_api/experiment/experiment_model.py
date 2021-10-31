@@ -48,10 +48,10 @@ class ExperimentsOut(BaseModel):
     Model of experiments to send to client as a result of request
 
     Attributes:
-    experiments (List[BasicParticipantOut]): Experiments from database
+    experiments (List[BasicExperimentOut]): Experiments from database
     errors (Optional[Any]): Optional errors appeared during query executions
     links (Optional[list]): List of links available from api
     """
-    participants: List[BasicExperimentOut] = []
+    experiments: List[BasicExperimentOut] = []
     errors: Optional[Any] = None
     links: Optional[list] = None
