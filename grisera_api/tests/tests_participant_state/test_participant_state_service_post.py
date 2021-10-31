@@ -54,7 +54,7 @@ class TestParticipantStateServicePost(unittest.TestCase):
         self.assertEqual(result, participant_state_out)
         create_node_mock.assert_called_once_with('`Participant State`')
         create_properties_mock.assert_called_once_with(id_node, participant_state_in)
-        create_relationships_mock.assert_has_calls(calls)
+        create_relationships_mock.assert_not_called()
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_participant_state_with_node_error(self, create_node_mock):
