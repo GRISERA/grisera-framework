@@ -14,7 +14,7 @@ class ExperimentIn(BaseModel):
     additional_properties (Optional[List[PropertyIn]]): Additional properties for experiment
     """
     experiment_name: str
-    additional_properties: Optional[List[PropertyIn]]
+    additional_properties: Optional[List[PropertyIn]] = []
 
 
 class BasicExperimentOut(ExperimentIn):
