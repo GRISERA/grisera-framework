@@ -155,6 +155,7 @@ class ParticipantStateService:
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
+        self.graph_api_service.delete_node_properties(participant_state_id)
         self.graph_api_service.create_properties(participant_state_id, participant_state)
 
         participant_state_result = {"id": participant_state_id, "relations": get_response.relations,
