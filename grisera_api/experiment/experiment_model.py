@@ -27,7 +27,7 @@ class BasicExperimentOut(ExperimentIn):
     id: Optional[int]
 
 
-class ExperimentOut(ExperimentIn):
+class ExperimentOut(BasicExperimentOut):
     """
     Model of experiment with relationships to send to client as a result of request
 
