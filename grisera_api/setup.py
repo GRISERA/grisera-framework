@@ -8,6 +8,8 @@ from measure_name.measure_name_service import MeasureNameService
 from measure_name.measure_name_model import MeasureNameIn, MeasureName
 from activity.activity_service import ActivityService
 from activity.activity_model import ActivityIn, Activity
+from arrangement.arrangement_service import ArrangementService
+from arrangement.arrangement_model import ArrangementIn, Arrangement
 import os
 from time import sleep
 
@@ -44,6 +46,24 @@ class SetupNodes:
              for channel_type in Type
              if channel_type.value not in created_types]
             os.remove("lock_channels")
+
+    def set_arrangements(self):
+        """
+        Initialize values of arrangement distances
+        """
+        if not os.path.exists("lock_arrangement"):
+            arrangement_service = ArrangementService()
+            open("lock_arrangement", "w").write("Busy")
+            sleep(60)
+            created_arrangements = \
+                [arrangement.arrangement_distance
+                 for arrangement in
+                 arrangement_service.get_arrangements().arrangements]
+            [arrangement_service.save_arrangement(
+                ArrangementIn(arrangement_type=arrangement.value[0], arrangement_distance=arrangement.value[1]))
+                for arrangement in Arrangement
+                if arrangement.value[1] not in created_arrangements]
+            os.remove("lock_arrangement")
 
     def set_modalities(self):
         """
@@ -90,4 +110,3 @@ class SetupNodes:
                 for measure_name in MeasureName
                 if measure_name.value[0] not in created_names]
             os.remove("lock_measure_names")
-

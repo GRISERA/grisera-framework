@@ -47,6 +47,7 @@ async def startup_event():
     startup = SetupNodes()
     startup.set_activities()
     startup.set_channels()
+    startup.set_arrangements()
     startup.set_modalities()
     startup.set_live_activities()
     startup.set_measure_names()
