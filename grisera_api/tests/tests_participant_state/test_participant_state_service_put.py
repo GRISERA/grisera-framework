@@ -44,7 +44,6 @@ class TestParticipantStateServicePut(unittest.TestCase):
         self.assertEqual(result, participant_state_out)
         get_node_mock.assert_has_calls(calls)
         create_properties_mock.assert_called_once_with(id_node, participant_state_in)
-        delete_node_properties_mock.assert_called_once_with(id_node)
         get_node_relationships_mock.assert_called_once_with(id_node)
 
     @mock.patch.object(GraphApiService, 'get_node')
