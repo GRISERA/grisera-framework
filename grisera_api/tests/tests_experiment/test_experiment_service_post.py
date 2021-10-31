@@ -38,7 +38,7 @@ class TestExperimentServicePost(unittest.TestCase):
         result = experiment_service.save_experiment(experiment)
 
         self.assertEqual(result, ExperimentOut(experiment_name="test", additional_properties=additional_properties,
-                                               id=id_node, errors=['error']))
+                                               errors=['error']))
         create_node_mock.assert_called_once_with('Experiment')
 
     @mock.patch.object(GraphApiService, 'create_node')
@@ -54,6 +54,6 @@ class TestExperimentServicePost(unittest.TestCase):
         result = experiment_service.save_experiment(experiment)
 
         self.assertEqual(result, ExperimentOut(experiment_name="test", additional_properties=additional_properties,
-                                               id=id_node, errors=['error']))
+                                               errors=['error']))
         create_node_mock.assert_called_once_with('Experiment')
         create_properties_mock.assert_called_once_with(id_node, experiment)

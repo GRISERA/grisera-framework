@@ -26,7 +26,7 @@ class TestExperimentServiceGet(unittest.TestCase):
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
         additional_properties = [PropertyIn(key='test', value="test")]
-        experiment = ExperimentOut(experiment_name="test", additional_properties=additional_properties,
+        experiment = ExperimentOut(experiment_name="test", additional_properties=additional_properties, id=id_node,
                                    relations=[RelationInformation(second_node_id=19, name="testRelation",
                                                                   relation_id=0)],
                                    reversed_relations=[RelationInformation(second_node_id=15,
@@ -70,8 +70,8 @@ class TestExperimentServiceGet(unittest.TestCase):
                                                   'properties': [{'key': 'experiment_name', 'value': 'test'}]},
                                                  {'id': 2, 'labels': ['Experiment'],
                                                   'properties': [{'key': 'experiment_name', 'value': 'test2'}]}]}
-        experiment_one = BasicExperimentOut(experiment_name="test")
-        experiment_two = BasicExperimentOut(experiment_name="test2")
+        experiment_one = BasicExperimentOut(experiment_name="test", id=1)
+        experiment_two = BasicExperimentOut(experiment_name="test2", id=2)
         experiments = ExperimentsOut(experiments=[experiment_one, experiment_two])
         experiment_service = ExperimentService()
 

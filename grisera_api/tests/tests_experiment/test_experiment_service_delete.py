@@ -27,7 +27,7 @@ class TestExperimentServiceDelete(unittest.TestCase):
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
         additional_properties = [PropertyIn(key="test", value="test")]
-        experiment = ExperimentOut(experiment_name="test", additional_properties=additional_properties,
+        experiment = ExperimentOut(experiment_name="test", additional_properties=additional_properties, id=id_node,
                                    relations=[RelationInformation(second_node_id=19, name="testRelation",
                                                                   relation_id=0)],
                                    reversed_relations=[RelationInformation(second_node_id=15,
