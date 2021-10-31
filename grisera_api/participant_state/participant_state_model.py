@@ -5,7 +5,7 @@ from property.property_model import PropertyIn
 from models.relation_information_model import RelationInformation
 
 
-class ParticipantStatePropertyIn(BaseModel):
+class ParticipantStateIn(BaseModel):
     """
     Model of participant state to acquire from client
 
@@ -17,27 +17,31 @@ class ParticipantStatePropertyIn(BaseModel):
     additional_properties: Optional[List[PropertyIn]]
 
 
-class ParticipantStateRelationIn(BaseModel):
+class ParticipantStateRelationIn(ParticipantStateIn):
     """
-    Model of participant state relations to acquire from client
+    Model of participant state with relations to acquire from client
 
     Attributes:
         participant_id (Optional[int]): Participant whose state is described
         personality_id (Optional[int]): Id of personality describing participant
         appearance_id (Optional[int]): Id of appearance describing participant
     """
-    participant_id: Optional[int] = None
+    participant_id: Optional[int]
     personality_id: Optional[int] = None
     appearance_id: Optional[int] = None
 
 
-class ParticipantStateIn(ParticipantStatePropertyIn, ParticipantStateRelationIn):
+class BasicParticipantStateRelationOut(ParticipantStateRelationIn):
     """
-    Full model of participant state to acquire from client
+    Basic model of participant state with relations
+
+    Attributes:
+        id (Optional[int]): Id of participant returned from graph api
     """
+    id: Optional[int]
 
 
-class BasicParticipantStateOut(ParticipantStatePropertyIn):
+class BasicParticipantStateOut(ParticipantStateIn):
     """
     Basic model of participant
 
@@ -47,7 +51,19 @@ class BasicParticipantStateOut(ParticipantStatePropertyIn):
     id: Optional[int]
 
 
-class ParticipantStateOut(BasicParticipantStateOut):
+class ParticipantStateOut(BasicParticipantStateRelationOut):
+    """
+    Model of participant state to send to client as a result of request
+
+    Attributes:
+        errors (Optional[Any]): Optional errors appeared during query executions
+        links (Optional[list]): List of links available from api
+    """
+    errors: Optional[Any] = None
+    links: Optional[list] = None
+
+
+class ParticipantStateRelationOut(BasicParticipantStateOut):
     """
     Model of participant state with relations to send to client as a result of request
 

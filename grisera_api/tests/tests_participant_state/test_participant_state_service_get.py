@@ -26,12 +26,11 @@ class TestParticipantStateServiceGet(unittest.TestCase):
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
         additional_properties = [PropertyIn(key='test', value='test2')]
-        participant_state = ParticipantStateOut(age=5, id=id_node,additional_properties=additional_properties,
-                                                relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                                               relation_id=0)],
-                                                reversed_relations=[RelationInformation(second_node_id=15,
-                                                                                        name="testReversedRelation",
-                                                                                        relation_id=0)])
+        participant_state = ParticipantStateRelationOut(age=5, id=id_node,additional_properties=additional_properties,
+                                                        relations=
+                                                        [RelationInformation(second_node_id=19, name="testRelation")],
+                                                        reversed_relations=
+                                                [RelationInformation(second_node_id=15, name="testReversedRelation")])
         participant_state_service = ParticipantStateService()
 
         result = participant_state_service.get_participant_state(id_node)

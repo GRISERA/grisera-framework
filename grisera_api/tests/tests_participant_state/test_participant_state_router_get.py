@@ -2,7 +2,7 @@ import asyncio
 import unittest
 import unittest.mock as mock
 from participant_state.participant_state_router import *
-from participant_state.participant_state_model import BasicParticipantStateOut, ParticipantStateOut
+from participant_state.participant_state_model import BasicParticipantStateOut, ParticipantStateRelationOut
 
 
 class TestParticipantStateRouterGet(unittest.TestCase):
@@ -10,26 +10,26 @@ class TestParticipantStateRouterGet(unittest.TestCase):
     @mock.patch.object(ParticipantStateService, 'get_participant_state')
     def test_get_participant_state_without_error(self, get_participant_state_mock):
         participant_state_id = 1
-        get_participant_state_mock.return_value = ParticipantStateOut(age=5)
+        get_participant_state_mock.return_value = ParticipantStateRelationOut(age=5)
         response = Response()
         participant_state_router = ParticipantStateRouter()
 
         result = asyncio.run(participant_state_router.get_participant_state(participant_state_id, response))
 
-        self.assertEqual(result, ParticipantStateOut(age=5, links=get_links(router)))
+        self.assertEqual(result, ParticipantStateRelationOut(age=5, links=get_links(router)))
         get_participant_state_mock.assert_called_once_with(participant_state_id)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(ParticipantStateService, 'get_participant_state')
     def test_get_participant_state_with_error(self, get_participant_state_mock):
-        get_participant_state_mock.return_value = ParticipantStateOut(age=5, errors={'errors': ['test']})
+        get_participant_state_mock.return_value = ParticipantStateRelationOut(age=5, errors={'errors': ['test']})
         response = Response()
         participant_state_id = 1
         participant_state_router = ParticipantStateRouter()
 
         result = asyncio.run(participant_state_router.get_participant_state(participant_state_id, response))
 
-        self.assertEqual(result, ParticipantStateOut(age=5, errors={'errors': ['test']},
+        self.assertEqual(result, ParticipantStateRelationOut(age=5, errors={'errors': ['test']},
                                                              links=get_links(router)))
         get_participant_state_mock.assert_called_once_with(participant_state_id)
         self.assertEqual(response.status_code, 404)
