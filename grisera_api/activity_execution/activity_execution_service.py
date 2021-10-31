@@ -32,7 +32,6 @@ class ActivityExecutionService:
         if node_response["errors"] is not None:
             return ActivityExecutionOut(activity=activity_execution.activity,
                                         arrangement_type=activity_execution.arrangement_type,
-                                        arrangement_distance=activity_execution.arrangement_distance,
                                         errors=node_response["errors"])
 
         activity_execution_id = node_response["id"]
@@ -44,10 +43,11 @@ class ActivityExecutionService:
                                                     end_node=activity_id, name="hasActivity")
 
         arrangements = self.arrangement_service.get_arrangements().arrangements
-        arrangement_id, arrangement_distance = \
-            next((arrangement.id, arrangement.arrangement_distance) for arrangement in arrangements
-                 if arrangement.arrangement_type == activity_execution.arrangement_type and
-                 arrangement.arrangement_distance == activity_execution.arrangement_distance)
+        arrangement_id = None
+        for arrangement in arrangements:
+            if arrangement.arrangement_type == activity_execution.arrangement_type and\
+                    arrangement.arrangement_distance == activity_execution.arrangement_distance:
+                arrangement_id = arrangement.id
 
         self.graph_api_service.create_relationships(start_node=activity_execution_id,
                                                     end_node=arrangement_id, name="hasArrangement")
@@ -58,11 +58,9 @@ class ActivityExecutionService:
         if properties_response["errors"] is not None:
             return ActivityExecutionOut(activity=activity_execution.activity,
                                         arrangement_type=activity_execution.arrangement_type,
-                                        arrangement_distance=activity_execution.arrangement_distance,
                                         errors=properties_response["errors"])
 
         return ActivityExecutionOut(activity=activity_execution.activity,
                                     arrangement_type=activity_execution.arrangement_type,
-                                    arrangement_distance=activity_execution.arrangement_distance,
                                     id=activity_execution_id,
                                     additional_properties=activity_execution.additional_properties)
