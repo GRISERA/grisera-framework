@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, Any, List
 from enum import Enum
-from property.property_model import PropertyIn
 from models.relation_information_model import RelationInformation
 
 
