@@ -6,7 +6,7 @@ from channel.channel_service import ChannelService
 from graph_api_service import GraphApiService
 
 
-class TestChannelService(unittest.TestCase):
+class TestChannelServicePost(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'create_node')
     @mock.patch.object(GraphApiService, 'create_properties')
@@ -50,29 +50,3 @@ class TestChannelService(unittest.TestCase):
         self.assertEqual(result, ChannelOut(type='Audio', errors=['error']))
         create_node_mock.assert_called_once_with('Channel')
         create_properties_mock.assert_called_once_with(id_node, channel)
-
-    @mock.patch.object(GraphApiService, 'get_nodes')
-    def test_get_channels_without_error(self, get_nodes_mock):
-        get_nodes_mock.return_value = {'nodes': [{'id': 1,
-                                                  'properties': [{'key': 'type', 'value': 'Audio'}]},
-                                                 {'id': 2,
-                                                  'properties': [{'key': 'type', 'value': 'ECG'}]}
-                                                 ],
-                                       "errors": None, 'links': None}
-        channel_service = ChannelService()
-
-        result = channel_service.get_channels()
-
-        get_nodes_mock.assert_called_once_with('Channel')
-        self.assertEqual(result, ChannelsOut(channels=[BasicChannelOut(id=1, type='Audio'),
-                                                       BasicChannelOut(id=2, type='ECG')]))
-
-    @mock.patch.object(GraphApiService, 'get_nodes')
-    def test_get_channels_with_error(self, get_nodes_mock):
-        get_nodes_mock.return_value = {'nodes': None, "errors": ['error'], 'links': None}
-        channel_service = ChannelService()
-
-        result = channel_service.get_channels()
-
-        get_nodes_mock.assert_called_once_with('Channel')
-        self.assertEqual(result, ChannelsOut(errors=['error']))
