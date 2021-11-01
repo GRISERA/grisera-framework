@@ -45,8 +45,11 @@ class MeasureNameService:
         get_response = self.graph_api_service.get_nodes("`Measure Name`")
         if get_response["errors"] is not None:
             return MeasureNamesOut(errors=get_response["errors"])
-        measure_names = [BasicMeasureNameOut(id=measure_name["id"], name=measure_name["properties"][0]["value"],
-                                             type=measure_name["properties"][1]["value"])
+        measure_names = [BasicMeasureNameOut(id=measure_name["id"],
+                                             **{measure_name["properties"][0]["key"]:
+                                                    measure_name["properties"][0]["value"],
+                                                measure_name["properties"][1]["key"]:
+                                                    measure_name["properties"][1]["value"]})
                          for measure_name in get_response["nodes"]]
 
         return MeasureNamesOut(measure_names=measure_names)
