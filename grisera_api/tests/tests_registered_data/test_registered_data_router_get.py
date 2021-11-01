@@ -44,14 +44,14 @@ class TestRegisteredDataRouterGet(unittest.TestCase):
 
     @mock.patch.object(RegisteredDataService, 'get_registered_data_nodes')
     def test_get_registered_data_nodes_without_error(self, get_registered_datas_mock):
-        get_registered_datas_mock.return_value = RegisteredDataNodesOut(registered_datas=[
+        get_registered_datas_mock.return_value = RegisteredDataNodesOut(registered_data_nodes=[
             BasicRegisteredDataOut(source='url', id=1), BasicRegisteredDataOut(source='url2', id=2)])
         response = Response()
         registered_data_router = RegisteredDataRouter()
 
         result = asyncio.run(registered_data_router.get_registered_data_nodes(response))
 
-        self.assertEqual(result, RegisteredDataNodesOut(registered_datas=[
+        self.assertEqual(result, RegisteredDataNodesOut(registered_data_nodes=[
             BasicRegisteredDataOut(source='url', id=1), BasicRegisteredDataOut(source='url2', id=2)],
             links=get_links(router)))
         get_registered_datas_mock.assert_called_once()
