@@ -70,8 +70,8 @@ class TestExperimentServiceGet(unittest.TestCase):
                                                   'properties': [{'key': 'experiment_name', 'value': 'test'}]},
                                                  {'id': 2, 'labels': ['Experiment'],
                                                   'properties': [{'key': 'experiment_name', 'value': 'test2'}]}]}
-        experiment_one = BasicExperimentOut(experiment_name="test", id=1)
-        experiment_two = BasicExperimentOut(experiment_name="test2", id=2)
+        experiment_one = BasicExperimentOut(experiment_name="test", id=1, additional_properties=[])
+        experiment_two = BasicExperimentOut(experiment_name="test2", id=2, additional_properties=[])
         experiments = ExperimentsOut(experiments=[experiment_one, experiment_two])
         experiment_service = ExperimentService()
 
