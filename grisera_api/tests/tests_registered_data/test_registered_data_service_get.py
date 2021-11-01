@@ -14,7 +14,7 @@ class TestRegisteredDataServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_get_registered_data_without_error(self, get_node_relationships_mock, get_node_mock):
         id_node = 1
-        get_node_mock.return_value = {'id': id_node, 'labels': ['`Registered data`'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Registered data'],
                                       'properties': [{'key': 'source', 'value': 'test'},
                                                      {'key': 'test', 'value': 'test'}],
                                       "errors": None, 'links': None}
