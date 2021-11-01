@@ -16,6 +16,8 @@ from time_series.time_series_router import router as time_series_router
 from measure.measure_router import router as measure_router
 from appearance.appearance_router import router as appearance_router
 from personality.personality_router import router as personality_router
+from modality.modality_router import router as modality_router
+from live_activity.live_activity_router import router as live_activity_router
 from setup import SetupNodes
 
 app = FastAPI(title="GRISERA API",
@@ -24,22 +26,24 @@ app = FastAPI(title="GRISERA API",
                           "creation.",
               version="0.1",
               )
-app.include_router(participant_router)
-app.include_router(experiment_router)
-app.include_router(author_router)
-app.include_router(publication_router)
 app.include_router(activity_execution_router)
-app.include_router(scenario_router)
+app.include_router(appearance_router)
+app.include_router(author_router)
+app.include_router(experiment_router)
+app.include_router(live_activity_router)
+app.include_router(measure_router)
+app.include_router(modality_router)
 app.include_router(observable_information_router)
+app.include_router(participant_router)
 app.include_router(participant_state_router)
 app.include_router(participation_router)
-app.include_router(registered_data_router)
+app.include_router(personality_router)
+app.include_router(publication_router)
 app.include_router(recording_router)
 app.include_router(registered_channel_router)
+app.include_router(registered_data_router)
+app.include_router(scenario_router)
 app.include_router(time_series_router)
-app.include_router(measure_router)
-app.include_router(appearance_router)
-app.include_router(personality_router)
 
 
 @app.on_event("startup")
