@@ -119,6 +119,18 @@ class GraphApiService:
         request_params = {}
         return self.delete(f"/nodes/{node_id}", request_params)
 
+    def delete_node_properties(self, node_id: int):
+        """
+        Send to the Graph API request to delete node properties
+
+        Args:
+            node_id (int): Id of node
+        Returns:
+            Result of request
+        """
+        request_params = {}
+        return self.delete(f"/nodes/{node_id}/properties", request_params)
+
     def create_properties(self, node_id: int, node_model: BaseModel):
         """
         Send to the Graph API request to create properties for given node

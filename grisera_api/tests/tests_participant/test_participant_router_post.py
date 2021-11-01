@@ -5,7 +5,7 @@ import unittest.mock as mock
 from participant.participant_router import *
 
 
-class TestParticipantRouter(unittest.TestCase):
+class TestParticipantRouterPost(unittest.TestCase):
 
     @mock.patch.object(ParticipantService, 'save_participant')
     def test_create_participant_without_error(self, save_participant_mock):
