@@ -1,5 +1,7 @@
 from graph_api_service import GraphApiService
 from live_activity.live_activity_model import LiveActivityIn, LiveActivityOut, LiveActivitiesOut, BasicLiveActivityOut
+from models.not_found_model import NotFoundByIdModel
+from models.relation_information_model import RelationInformation
 
 
 class LiveActivityService:
@@ -45,7 +47,43 @@ class LiveActivityService:
         get_response = self.graph_api_service.get_nodes("`Live Activity`")
         if get_response["errors"] is not None:
             return LiveActivitiesOut(errors=get_response["errors"])
-        live_activities = [BasicLiveActivityOut(id=live_activity["id"], live_activity=live_activity["properties"][0]["value"])
+        live_activities = [BasicLiveActivityOut(id=live_activity["id"],
+                                                live_activity=live_activity["properties"][0]["value"])
                            for live_activity in get_response["nodes"]]
 
         return LiveActivitiesOut(live_activities=live_activities)
+
+    def get_live_activity(self, live_activity_id: int):
+        """
+        Send request to graph api to get given live activity
+
+        Args:
+        live_activity_id (int): Id of live activity
+
+        Returns:
+            Result of request as live activity object
+        """
+        get_response = self.graph_api_service.get_node(live_activity_id)
+
+        if get_response["errors"] is not None:
+            return NotFoundByIdModel(id=live_activity_id, errors=get_response["errors"])
+        if get_response["labels"][0] != "Live Activity":
+            return NotFoundByIdModel(id=live_activity_id, errors="Node not found.")
+
+        live_activity = {'id': get_response['id'], 'relations': [], 'reversed_relations': []}
+        for property in get_response["properties"]:
+            live_activity[property["key"]] = property["value"]
+
+        relations_response = self.graph_api_service.get_node_relationships(live_activity_id)
+
+        for relation in relations_response["relationships"]:
+            if relation["start_node"] == live_activity_id:
+                live_activity['relations'].append(RelationInformation(second_node_id=relation["end_node"],
+                                                                      name=relation["name"],
+                                                                      relation_id=relation["id"]))
+            else:
+                live_activity['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
+                                                                               name=relation["name"],
+                                                                               relation_id=relation["id"]))
+
+        return LiveActivityOut(**live_activity)
