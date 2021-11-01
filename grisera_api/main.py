@@ -16,6 +16,7 @@ from time_series.time_series_router import router as time_series_router
 from measure.measure_router import router as measure_router
 from appearance.appearance_router import router as appearance_router
 from personality.personality_router import router as personality_router
+from activity.activity_router import router as activity_router
 from setup import SetupNodes
 
 app = FastAPI(title="GRISERA API",
@@ -28,6 +29,7 @@ app.include_router(participant_router)
 app.include_router(experiment_router)
 app.include_router(author_router)
 app.include_router(publication_router)
+app.include_router(activity_router)
 app.include_router(activity_execution_router)
 app.include_router(scenario_router)
 app.include_router(observable_information_router)
