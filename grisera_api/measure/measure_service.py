@@ -1,7 +1,7 @@
 from graph_api_service import GraphApiService
-from measure_name.measure_name_service import MeasureNameService
 from measure.measure_model import MeasurePropertyIn, BasicMeasureOut, \
     MeasuresOut, MeasureOut, MeasureIn, MeasureRelationIn
+from measure_name.measure_name_service import MeasureNameService
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
 
@@ -57,12 +57,11 @@ class MeasureService:
         measures = []
 
         for measure_node in get_response["nodes"]:
-            properties = {'id': measure_node['id'], 'additional_properties': []}
+            properties = {'id': measure_node['id']}
             for property in measure_node["properties"]:
-                if property["key"] == "age":
+                if property["key"] in ["data_type", "range"]:
                     properties[property["key"]] = property["value"]
-                else:
-                    properties['additional_properties'].append({'key': property['key'], 'value': property['value']})
+
             measure = BasicMeasureOut(**properties)
             measures.append(measure)
 
@@ -85,25 +84,23 @@ class MeasureService:
         if get_response["labels"][0] != "Measure":
             return NotFoundByIdModel(id=measure_id, errors="Node not found.")
 
-        measure = {'id': get_response['id'], 'additional_properties': [], 'relations': [],
-                             'reversed_relations': []}
+        measure = {'id': get_response['id'], 'relations': [],
+                   'reversed_relations': []}
         for property in get_response["properties"]:
-            if property["key"] == "age":
+            if property["key"] in ["data_type", "range"]:
                 measure[property["key"]] = property["value"]
-            else:
-                measure['additional_properties'].append({'key': property['key'], 'value': property['value']})
 
         relations_response = self.graph_api_service.get_node_relationships(measure_id)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == measure_id:
                 measure['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                          name=relation["name"],
-                                                                          relation_id=relation["id"]))
+                                                                name=relation["name"],
+                                                                relation_id=relation["id"]))
             else:
                 measure['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
-                                                                                   name=relation["name"],
-                                                                                   relation_id=relation["id"]))
+                                                                         name=relation["name"],
+                                                                         relation_id=relation["id"]))
 
         return MeasureOut(**measure)
 
@@ -145,13 +142,13 @@ class MeasureService:
         self.graph_api_service.create_properties(measure_id, measure)
 
         measure_result = {"id": measure_id, "relations": get_response.relations,
-                                    "reversed_relations": get_response.reversed_relations}
+                          "reversed_relations": get_response.reversed_relations}
         measure_result.update(measure.dict())
 
         return MeasureOut(**measure_result)
 
     def update_measure_relationships(self, measure_id: int,
-                                               measure: MeasureRelationIn):
+                                     measure: MeasureRelationIn):
         """
         Send request to graph api to update given measure
 
