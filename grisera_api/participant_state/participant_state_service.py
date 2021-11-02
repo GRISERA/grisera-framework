@@ -15,6 +15,8 @@ class ParticipantStateService:
     Attributes:
         graph_api_service (GraphApiService): Service used to communicate with Graph API
         participant_service (ParticipantService): Service to manage participant models
+        appearance_service (AppearanceService): Service to manage appearance models
+        personality_service (PersonalityService): Service to manage personality models
     """
     graph_api_service = GraphApiService()
     participant_service = ParticipantService()
