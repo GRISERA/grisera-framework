@@ -4,7 +4,7 @@ import unittest.mock as mock
 from personality.personality_router import *
 
 
-class TestPersonalityRouterPost(unittest.TestCase):
+class TestPersonalityRouter(unittest.TestCase):
 
     @mock.patch.object(PersonalityService, 'save_personality_big_five')
     def test_create_personality_big_five_without_error(self, save_personality_big_five_mock):
