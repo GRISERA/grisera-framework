@@ -14,6 +14,7 @@ class RegisteredChannelService:
     Attributes:
     graph_api_service (GraphApiService): Service used to communicate with Graph API
     channel_service (ChannelService): Service to send channel requests
+    registered_data_service (RegisteredDataService): Service to send registered data requests
     """
     graph_api_service = GraphApiService()
     channel_service = ChannelService()
