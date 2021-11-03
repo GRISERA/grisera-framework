@@ -6,7 +6,7 @@ from live_activity.live_activity_service import *
 from requests import Response
 
 
-class TestLiveActivityService(unittest.TestCase):
+class TestLiveActivityServicePost(unittest.TestCase):
 
     @mock.patch('graph_api_service.requests')
     def test_live_activity_post_service_without_error(self, mock_requests):
