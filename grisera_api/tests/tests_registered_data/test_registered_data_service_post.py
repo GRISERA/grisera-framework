@@ -6,7 +6,7 @@ from registered_data.registered_data_model import *
 from registered_data.registered_data_service import RegisteredDataService
 
 
-class TestRegisteredDataService(unittest.TestCase):
+class TestRegisteredDataServicePost(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'create_node')
     @mock.patch.object(GraphApiService, 'create_properties')

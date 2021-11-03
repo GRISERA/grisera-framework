@@ -5,7 +5,7 @@ import unittest.mock as mock
 from registered_data.registered_data_router import *
 
 
-class TestRegisteredDataRouter(unittest.TestCase):
+class TestRegisteredDataRouterPost(unittest.TestCase):
 
     @mock.patch.object(RegisteredDataService, 'save_registered_data')
     def test_create_registered_data_without_error(self, save_registered_data_mock):

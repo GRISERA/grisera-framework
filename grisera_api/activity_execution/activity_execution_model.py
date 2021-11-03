@@ -10,9 +10,13 @@ class ActivityExecutionIn(BaseModel):
 
     Attributes:
         activity (str): Type of the activity execution
+        arrangement_type (str) : Type of the arrangement
+        arrangement_distance (Optional[str]): Distance of the arrangement
         additional_properties (Optional[List[PropertyIn]]): Additional properties for activity execution
     """
     activity: str
+    arrangement_type: str
+    arrangement_distance: Optional[str]
     additional_properties: Optional[List[PropertyIn]]
 
 

@@ -1,5 +1,7 @@
 from graph_api_service import GraphApiService
 from modality.modality_model import ModalityIn, ModalityOut, ModalitiesOut, BasicModalityOut
+from models.not_found_model import NotFoundByIdModel
+from models.relation_information_model import RelationInformation
 
 
 class ModalityService:
@@ -43,9 +45,41 @@ class ModalityService:
             Result of request as list of modality objects
         """
         get_response = self.graph_api_service.get_nodes("Modality")
-        if get_response["errors"] is not None:
-            return ModalitiesOut(errors=get_response["errors"])
         modalities = [BasicModalityOut(id=modality["id"], modality=modality["properties"][0]["value"])
                       for modality in get_response["nodes"]]
 
         return ModalitiesOut(modalities=modalities)
+
+    def get_modality(self, modality_id: int):
+        """
+        Send request to graph api to get given modality
+
+        Args:
+        modality_id (int): Id of modality
+
+        Returns:
+            Result of request as modality object
+        """
+        get_response = self.graph_api_service.get_node(modality_id)
+
+        if get_response["errors"] is not None:
+            return NotFoundByIdModel(id=modality_id, errors=get_response["errors"])
+        if get_response["labels"][0] != "Modality":
+            return NotFoundByIdModel(id=modality_id, errors="Node not found.")
+
+        modality = {'id': get_response['id'], 'relations': [], 'reversed_relations': []}
+        for property in get_response["properties"]:
+            modality[property["key"]] = property["value"]
+
+        relations_response = self.graph_api_service.get_node_relationships(modality_id)
+
+        for relation in relations_response["relationships"]:
+            if relation["start_node"] == modality_id:
+                modality['relations'].append(RelationInformation(second_node_id=relation["end_node"],
+                                                                 name=relation["name"], relation_id=relation["id"]))
+            else:
+                modality['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
+                                                                          name=relation["name"],
+                                                                          relation_id=relation["id"]))
+
+        return ModalityOut(**modality)

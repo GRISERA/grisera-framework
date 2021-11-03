@@ -6,7 +6,7 @@ from modality.modality_service import *
 from requests import Response
 
 
-class TestModalityService(unittest.TestCase):
+class TestModalityServicePost(unittest.TestCase):
 
     @mock.patch('graph_api_service.requests')
     def test_modality_post_service_without_error(self, mock_requests):

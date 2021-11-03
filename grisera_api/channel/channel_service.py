@@ -1,5 +1,7 @@
 from graph_api_service import GraphApiService
 from channel.channel_model import ChannelIn, ChannelOut, ChannelsOut, BasicChannelOut
+from models.not_found_model import NotFoundByIdModel
+from models.relation_information_model import RelationInformation
 
 
 class ChannelService:
@@ -7,7 +9,7 @@ class ChannelService:
     Object to handle logic of channel requests
 
     Attributes:
-        graph_api_service (GraphApiService): Service used to communicate with Graph API
+    graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
     graph_api_service = GraphApiService()
 
@@ -47,3 +49,37 @@ class ChannelService:
                     for channel in get_response["nodes"]]
 
         return ChannelsOut(channels=channels)
+
+    def get_channel(self, channel_id: int):
+        """
+        Send request to graph api to get given channel
+
+        Args:
+        channel_id (int): Id of channel
+
+        Returns:
+            Result of request as channel object
+        """
+        get_response = self.graph_api_service.get_node(channel_id)
+
+        if get_response["errors"] is not None:
+            return NotFoundByIdModel(id=channel_id, errors=get_response["errors"])
+        if get_response["labels"][0] != "Channel":
+            return NotFoundByIdModel(id=channel_id, errors="Node not found.")
+
+        channel = {'id': get_response['id'], 'relations': [], 'reversed_relations': []}
+        for property in get_response["properties"]:
+            channel[property["key"]] = property["value"]
+
+        relations_response = self.graph_api_service.get_node_relationships(channel_id)
+
+        for relation in relations_response["relationships"]:
+            if relation["start_node"] == channel_id:
+                channel['relations'].append(RelationInformation(second_node_id=relation["end_node"],
+                                                                name=relation["name"], relation_id=relation["id"]))
+            else:
+                channel['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
+                                                                         name=relation["name"],
+                                                                         relation_id=relation["id"]))
+
+        return ChannelOut(**channel)
