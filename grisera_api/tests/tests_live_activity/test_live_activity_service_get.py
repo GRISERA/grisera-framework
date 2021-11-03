@@ -25,8 +25,7 @@ class TestLiveActivityServiceGet(unittest.TestCase):
                                                     {"start_node": 15, "end_node": id_node,
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
-        additional_properties = [PropertyIn(key='test', value="test")]
-        live_activity = LiveActivityOut(live_activity="test", additional_properties=additional_properties, id=id_node,
+        live_activity = LiveActivityOut(live_activity="test", id=id_node,
                                    relations=[RelationInformation(second_node_id=19, name="testRelation",
                                                                   relation_id=0)],
                                    reversed_relations=[RelationInformation(second_node_id=15,
@@ -71,8 +70,8 @@ class TestLiveActivityServiceGet(unittest.TestCase):
                                                  {'id': 2, 'labels': ['Live Activity'],
                                                   'properties': [{'key': 'live_activity', 'value': 'test2'}]}],
                                        'errors': None}
-        live_activity_one = BasicLiveActivityOut(live_activity="test", id=1, additional_properties=[])
-        live_activity_two = BasicLiveActivityOut(live_activity="test2", id=2, additional_properties=[])
+        live_activity_one = BasicLiveActivityOut(live_activity="test", id=1)
+        live_activity_two = BasicLiveActivityOut(live_activity="test2", id=2)
         live_activities = LiveActivitiesOut(live_activities=[live_activity_one, live_activity_two])
         live_activity_service = LiveActivityService()
 

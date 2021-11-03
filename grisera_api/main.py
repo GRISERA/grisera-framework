@@ -18,6 +18,7 @@ from recording.recording_router import router as recording_router
 from registered_channel.registered_channel_router import router as registered_channel_router
 from registered_data.registered_data_router import router as registered_data_router
 from scenario.scenario_router import router as scenario_router
+from measure_name.measure_name_router import router as measure_name_router
 from setup import SetupNodes
 from time_series.time_series_router import router as time_series_router
 
@@ -34,6 +35,7 @@ app.include_router(channel_router)
 app.include_router(experiment_router)
 app.include_router(live_activity_router)
 app.include_router(measure_router)
+app.include_router(measure_name_router)
 app.include_router(modality_router)
 app.include_router(observable_information_router)
 app.include_router(participant_router)
