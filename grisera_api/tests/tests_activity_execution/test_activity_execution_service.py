@@ -1,14 +1,13 @@
 import unittest
 import unittest.mock as mock
 
+from activity.activity_model import ActivitiesOut, BasicActivityOut
+from activity.activity_service import ActivityService
 from activity_execution.activity_execution_model import *
 from activity_execution.activity_execution_service import ActivityExecutionService
-from graph_api_service import GraphApiService
-
-from activity.activity_service import ActivityService
-from activity.activity_model import ActivitiesOut, BasicActivityOut
-from arrangement.arrangement_service import ArrangementService
 from arrangement.arrangement_model import ArrangementsOut, BasicArrangementOut
+from arrangement.arrangement_service import ArrangementService
+from graph_api_service import GraphApiService
 
 
 class TestActivityExecutionService(unittest.TestCase):
@@ -18,7 +17,8 @@ class TestActivityExecutionService(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'create_relationships')
     @mock.patch.object(ActivityService, 'get_activities')
     @mock.patch.object(ArrangementService, 'get_arrangements')
-    def test_save_activity_execution_without_error(self, get_arrangements_mock, get_activities_mock, create_relationships_mock,
+    def test_save_activity_execution_without_error(self, get_arrangements_mock, get_activities_mock,
+                                                   create_relationships_mock,
                                                    create_properties_mock, create_node_mock):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
@@ -66,18 +66,28 @@ class TestActivityExecutionService(unittest.TestCase):
                                                       , errors=['error']))
         create_node_mock.assert_called_once_with('ActivityExecution')
 
-    # @mock.patch.object(GraphApiService, 'create_node')
-    # @mock.patch.object(GraphApiService, 'create_properties')
-    # def test_save_activity_execution_with_properties_error(self, create_properties_mock, create_node_mock):
-    #     id_node = 1
-    #     create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
-    #     create_properties_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
-    #     activity_execution = ActivityExecutionIn(activity='group', arrangement_type='personal group')
-    #     activity_execution_service = ActivityExecutionService()
-    #
-    #     result = activity_execution_service.save_activity_execution(activity_execution)
-    #
-    #     self.assertEqual(result, ActivityExecutionOut(activity='group', arrangement_type='personal group',
-    #                                                   errors=['error']))
-    #     create_node_mock.assert_called_once_with('ActivityExecution')
-    #     create_properties_mock.assert_called_once_with(id_node, activity_execution)
+    @mock.patch.object(GraphApiService, 'create_node')
+    @mock.patch.object(GraphApiService, 'create_properties')
+    @mock.patch.object(GraphApiService, 'create_relationships')
+    @mock.patch.object(ActivityService, 'get_activities')
+    @mock.patch.object(ArrangementService, 'get_arrangements')
+    def test_save_activity_execution_with_properties_error(self, get_arrangements_mock, get_activities_mock,
+                                                           create_relationships_mock, create_properties_mock,
+                                                           create_node_mock):
+        id_node = 1
+        create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
+        create_properties_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
+        activity_execution = ActivityExecutionIn(activity='group', arrangement_type='personal group')
+        create_relationships_mock.return_value = {'id': 3, 'start_node': 1, "errors": None, 'links': None}
+        get_activities_mock.return_value = ActivitiesOut(activities=[BasicActivityOut(id=4, activity='group')])
+        create_relationships_mock.return_value = {'id': 5, 'start_node': 1, "errors": None, 'links': None}
+        get_arrangements_mock.return_value = \
+            ArrangementsOut(arrangements=[BasicArrangementOut(id=6, arrangement_type='personal group')])
+        activity_execution_service = ActivityExecutionService()
+
+        result = activity_execution_service.save_activity_execution(activity_execution)
+
+        self.assertEqual(result, ActivityExecutionOut(activity='group', arrangement_type='personal group',
+                                                      errors=['error']))
+        create_node_mock.assert_called_once_with('ActivityExecution')
+        create_properties_mock.assert_called_once_with(id_node, activity_execution)
