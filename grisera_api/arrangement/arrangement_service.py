@@ -1,5 +1,7 @@
 from graph_api_service import GraphApiService
 from arrangement.arrangement_model import ArrangementIn, ArrangementOut, ArrangementsOut, BasicArrangementOut
+from models.not_found_model import NotFoundByIdModel
+from models.relation_information_model import RelationInformation
 
 
 class ArrangementService:
@@ -7,7 +9,7 @@ class ArrangementService:
     Object to handle logic of arrangement requests
 
     Attributes:
-        graph_api_service (GraphApiService): Service used to communicate with Graph API
+    graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
     graph_api_service = GraphApiService()
 
@@ -62,3 +64,37 @@ class ArrangementService:
                                                         arrangement_distance=None))
 
         return ArrangementsOut(arrangements=arrangements)
+
+    def get_arrangement(self, arrangement_id: int):
+        """
+        Send request to graph api to get given arrangement
+
+        Args:
+            arrangement_id (int): Id of arrangement
+
+        Returns:
+            Result of request as arrangement object
+        """
+        get_response = self.graph_api_service.get_node(arrangement_id)
+
+        if get_response["errors"] is not None:
+            return NotFoundByIdModel(id=arrangement_id, errors=get_response["errors"])
+        if get_response["labels"][0] != "Arrangement":
+            return NotFoundByIdModel(id=arrangement_id, errors="Node not found.")
+
+        arrangement = {'id': get_response['id'], 'relations': [], 'reversed_relations': []}
+        for property in get_response["properties"]:
+            arrangement[property["key"]] = property["value"]
+
+        relations_response = self.graph_api_service.get_node_relationships(arrangement_id)
+
+        for relation in relations_response["relationships"]:
+            if relation["start_node"] == arrangement_id:
+                arrangement['relations'].append(RelationInformation(second_node_id=relation["end_node"],
+                                                                    name=relation["name"], relation_id=relation["id"]))
+            else:
+                arrangement['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
+                                                                             name=relation["name"],
+                                                                             relation_id=relation["id"]))
+
+        return ArrangementOut(**arrangement)

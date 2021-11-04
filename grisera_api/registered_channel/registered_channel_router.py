@@ -39,7 +39,7 @@ class RegisteredChannelRouter:
     @router.get("/registered_channels", tags=["registered channels"], response_model=RegisteredChannelsOut)
     async def get_registered_channels(self, response: Response):
         """
-        Get registered channelss from database
+        Get registered channels from database
         """
 
         get_response = self.registered_channel_service.get_registered_channels()
