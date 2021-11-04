@@ -1,8 +1,11 @@
+from typing import Union
+
 from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
-from activity_execution.activity_execution_model import ActivityExecutionIn, ActivityExecutionOut
+from models.not_found_model import NotFoundByIdModel
+from activity_execution.activity_execution_model import ActivityExecutionIn, ActivityExecutionOut, ActivityExecutionsOut
 from activity_execution.activity_execution_service import ActivityExecutionService
 
 router = InferringRouter()
@@ -14,14 +17,14 @@ class ActivityExecutionRouter:
     Class for routing activity_execution based requests
 
     Attributes:
-        activity_execution_service (ActivityExecutionService): Service instance for activity execution
+    activity_execution_service (ActivityExecutionService): Service instance for activity execution
     """
     activity_execution_service = ActivityExecutionService()
 
-    @router.post("/activity_execution", tags=["activity execution"], response_model=ActivityExecutionOut)
+    @router.post("/activity_executions", tags=["activity executions"], response_model=ActivityExecutionOut)
     async def create_activity_execution(self, activity_execution: ActivityExecutionIn, response: Response):
         """
-        Create activity_execution in database
+        Create activity execution in database
         """
         create_response = self.activity_execution_service.save_activity_execution(activity_execution)
         if create_response.errors is not None:
@@ -31,3 +34,65 @@ class ActivityExecutionRouter:
         create_response.links = get_links(router)
 
         return create_response
+
+    @router.get("/activity_executions", tags=["activity executions"], response_model=ActivityExecutionsOut)
+    async def get_activity_executions(self, response: Response):
+        """
+        Get activity executions from database
+        """
+
+        get_response = self.activity_execution_service.get_activity_executions()
+
+        # add links from hateoas
+        get_response.links = get_links(router)
+
+        return get_response
+
+    @router.get("/activity_executions/{activity_execution_id}", tags=["activity executions"],
+                response_model=Union[ActivityExecutionOut, NotFoundByIdModel])
+    async def get_activity_execution(self, activity_execution_id: int, response: Response):
+        """
+        Get activity executions from database
+        """
+
+        get_response = self.activity_execution_service.get_activity_execution(activity_execution_id)
+        if get_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        get_response.links = get_links(router)
+
+        return get_response
+
+    @router.delete("/activity_executions/{activity_execution_id}", tags=["activity executions"],
+                   response_model=Union[ActivityExecutionOut, NotFoundByIdModel])
+    async def delete_activity_execution(self, activity_execution_id: int, response: Response):
+        """
+        Delete activity executions from database
+        """
+        get_response = self.activity_execution_service.delete_activity_execution(activity_execution_id)
+        if get_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        get_response.links = get_links(router)
+
+        return get_response
+
+    @router.put("/activity_executions/{activity_execution_id}/relationships", tags=["activity executions"],
+                response_model=Union[ActivityExecutionOut, NotFoundByIdModel])
+    async def update_activity_execution_relationships(self, activity_execution_id: int,
+                                                      activity_execution: ActivityExecutionIn,
+                                                      response: Response):
+        """
+        Update activity executions relations in database
+        """
+        update_response = self.activity_execution_service.update_activity_execution_relationships(activity_execution_id,
+                                                                                                  activity_execution)
+        if update_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        update_response.links = get_links(router)
+
+        return update_response
