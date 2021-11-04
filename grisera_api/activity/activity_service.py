@@ -1,5 +1,7 @@
 from graph_api_service import GraphApiService
 from activity.activity_model import ActivityIn, ActivityOut, ActivitiesOut, BasicActivityOut
+from models.not_found_model import NotFoundByIdModel
+from models.relation_information_model import RelationInformation
 
 
 class ActivityService:
@@ -7,7 +9,7 @@ class ActivityService:
     Object to handle logic of activity requests
 
     Attributes:
-        graph_api_service (GraphApiService): Service used to communicate with Graph API
+    graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
     graph_api_service = GraphApiService()
 
@@ -49,3 +51,35 @@ class ActivityService:
                       for activity in get_response["nodes"]]
 
         return ActivitiesOut(activities=activities)
+
+    def get_activity(self, activity_id: int):
+        """
+        Send request to graph api to get given activity
+        Args:
+            activity_id (int): Id of activity
+        Returns:
+            Result of request as activity object
+        """
+        get_response = self.graph_api_service.get_node(activity_id)
+
+        if get_response["errors"] is not None:
+            return NotFoundByIdModel(id=activity_id, errors=get_response["errors"])
+        if get_response["labels"][0] != "Activity":
+            return NotFoundByIdModel(id=activity_id, errors="Node not found.")
+
+        activity = {'id': get_response['id'], 'relations': [], 'reversed_relations': []}
+        for property in get_response["properties"]:
+            activity[property["key"]] = property["value"]
+
+        relations_response = self.graph_api_service.get_node_relationships(activity_id)
+
+        for relation in relations_response["relationships"]:
+            if relation["start_node"] == activity_id:
+                activity['relations'].append(RelationInformation(second_node_id=relation["end_node"],
+                                                                 name=relation["name"], relation_id=relation["id"]))
+            else:
+                activity['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
+                                                                          name=relation["name"],
+                                                                          relation_id=relation["id"]))
+
+        return ActivityOut(**activity)
