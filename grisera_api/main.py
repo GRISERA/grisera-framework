@@ -18,14 +18,10 @@ from publication.publication_router import router as publication_router
 from recording.recording_router import router as recording_router
 from registered_channel.registered_channel_router import router as registered_channel_router
 from time_series.time_series_router import router as time_series_router
-from measure.measure_router import router as measure_router
-from appearance.appearance_router import router as appearance_router
-from personality.personality_router import router as personality_router
 from registered_data.registered_data_router import router as registered_data_router
 from scenario.scenario_router import router as scenario_router
 from measure_name.measure_name_router import router as measure_name_router
 from setup import SetupNodes
-from time_series.time_series_router import router as time_series_router
 
 app = FastAPI(title="GRISERA API",
               description="Graph Representation Integrating Signals for Emotion Recognition and Analysis (GRISERA) "
@@ -34,10 +30,6 @@ app = FastAPI(title="GRISERA API",
               version="0.1",
               )
 
-app.include_router(participant_router)
-app.include_router(experiment_router)
-app.include_router(author_router)
-app.include_router(publication_router)
 app.include_router(activity_router)
 app.include_router(activity_execution_router)
 app.include_router(appearance_router)
