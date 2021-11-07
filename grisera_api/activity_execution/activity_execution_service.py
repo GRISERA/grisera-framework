@@ -36,13 +36,15 @@ class ActivityExecutionService:
             return ActivityExecutionOut(errors=node_response["errors"])
         activity_execution_id = node_response["id"]
 
-        if activity_execution_id is not None and type(
-                self.activity_service.get_activity(activity_execution.activity_id)) is not NotFoundByIdModel:
+        if activity_execution.activity_id is not None and\
+                type(self.activity_service.get_activity(activity_execution.activity_id)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=activity_execution_id,
-                                                        end_node=activity_execution.activity_id, name="hasActivity")
+                                                        end_node=activity_execution.activity_id,
+                                                        name="hasActivity")
 
-        if activity_execution_id is not None and type(
-                self.arrangement_service.get_arrangement(activity_execution.arrangement_id)) is not NotFoundByIdModel:
+        if activity_execution.arrangement_id is not None and\
+                type(self.arrangement_service.get_arrangement(activity_execution.arrangement_id)) \
+                is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=activity_execution_id,
                                                         end_node=activity_execution.arrangement_id,
                                                         name="hasArrangement")
