@@ -3,6 +3,7 @@ import unittest
 import unittest.mock as mock
 
 from activity_execution.activity_execution_router import *
+from activity_execution.activity_execution_model import ActivityExecutionIn, ActivityExecutionOut, ActivityExecutionsOut
 
 
 class TestActivityExecutionRouterPost(unittest.TestCase):
@@ -13,7 +14,6 @@ class TestActivityExecutionRouterPost(unittest.TestCase):
     #     response = Response()
     #     activity_execution = ActivityExecutionIn(activity_id=3, arrangement_id=2)
     #     activity_execution_router = ActivityExecutionRouter()
-    #
     #     result = asyncio.run(activity_execution_router.create_activity_execution(activity_execution, response))
     #
     #     self.assertEqual(result, ActivityExecutionOut(id=1, links=get_links(router)))
@@ -24,7 +24,7 @@ class TestActivityExecutionRouterPost(unittest.TestCase):
     def test_create_activity_execution_with_error(self, save_activity_execution_mock):
         save_activity_execution_mock.return_value = ActivityExecutionOut(errors={'errors': ['test']})
         response = Response()
-        activity_execution = ActivityExecutionIn(activity_id=1, arrangement_id=2,)
+        activity_execution = ActivityExecutionIn(activity_id=1, arrangement_id=2)
         activity_execution_router = ActivityExecutionRouter()
 
         result = asyncio.run(activity_execution_router.create_activity_execution(activity_execution, response))
