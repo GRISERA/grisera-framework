@@ -5,7 +5,7 @@ import unittest.mock as mock
 from participation.participation_router import *
 
 
-class TestParticipationRouter(unittest.TestCase):
+class TestParticipationRouterPost(unittest.TestCase):
 
     @mock.patch.object(ParticipationService, 'save_participation')
     def test_create_participation_without_error(self, save_participation_mock):
