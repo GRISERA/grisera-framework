@@ -27,9 +27,9 @@ class TestParticipationServicePut(unittest.TestCase):
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
         get_node_mock.return_value = {'id': id_node, 'labels': ['Participation'],
-                                      'properties': [{'key': 'age', 'value': 5}, {'key': 'identifier', 'value': 5}],
+                                      'properties': None,
                                       "errors": None, 'links': None}
-        participation_in = ParticipationIn(activity_id=15, arrangement_id=19)
+        participation_in = ParticipationIn(activity_execution_id=15, participant_state_id=19)
         participation_out = ParticipationOut(id=id_node, relations=
                                  [RelationInformation(second_node_id=19, name="testRelation", relation_id=0)],
                                                     reversed_relations=
@@ -50,7 +50,7 @@ class TestParticipationServicePut(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        participation_in = ParticipationIn(activity_id=15, arrangement_id=19)
+        participation_in = ParticipationIn(activity_execution_id=15, participant_state_id=19)
         participation_service = ParticipationService()
 
         result = participation_service.update_participation_relationships(id_node, participation_in)
@@ -63,7 +63,7 @@ class TestParticipationServicePut(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        participation_in = ParticipationIn(activity_id=15, arrangement_id=19)
+        participation_in = ParticipationIn(activity_execution_id=15, participant_state_id=19)
         participation_service = ParticipationService()
 
         result = participation_service.update_participation_relationships(id_node, participation_in)

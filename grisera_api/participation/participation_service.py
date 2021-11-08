@@ -63,9 +63,6 @@ class ParticipationService:
 
         for participation_node in get_response["nodes"]:
             properties = {'id': participation_node['id']}
-            for property in participation_node["properties"]:
-                if property["key"] == "age":
-                    properties[property["key"]] = property["value"]
             participation = BasicParticipationOut(**properties)
             participations.append(participation)
 
@@ -88,9 +85,6 @@ class ParticipationService:
 
         participation = {'id': get_response['id'], 'relations': [],
                          'reversed_relations': []}
-        for property in get_response["properties"]:
-            if property["key"] == "age":
-                participation[property["key"]] = property["value"]
 
         relations_response = self.graph_api_service.get_node_relationships(participation_id)
 
@@ -126,7 +120,7 @@ class ParticipationService:
     def update_participation_relationships(self, participation_id: int,
                                            participation: ParticipationIn):
         """
-        Send request to graph api to update given participation
+        Send request to graph api to update given participation relationships
         Args:
             participation_id (int): Id of participation
             participation (ParticipationIn): Relationships to update
