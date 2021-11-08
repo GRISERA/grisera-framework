@@ -6,21 +6,21 @@ from participation.participation_model import *
 from participation.participation_service import ParticipationService
 
 
-class TestParticipationService(unittest.TestCase):
+class TestParticipationServicePost(unittest.TestCase):
 
     # @mock.patch.object(GraphApiService, 'create_node')
     # @mock.patch.object(GraphApiService, 'create_relationships')
     # def test_save_participant_without_error(self, create_relationships_mock, create_node_mock):
     #     id_node = 1
     #     create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
-    #     create_relationships_mock.return_value = {'id': 3, 'start_node': 1, "errors": None, 'links': None}
-    #     calls = [mock.call(id_node, 1, "hasActivityExecution"), mock.call(id_node, 2, "hasParticipantState")]
-    #     participation = ParticipationIn(activity_execution_id=1, participant_state_id=2)
+    #     create_relationships_mock.return_value = {'id': 4, 'start_node': 1, "errors": None, 'links': None}
+    #     calls = [mock.call(id_node, 2, "hasActivityExecution"), mock.call(id_node, 3, "hasParticipantState")]
+    #     participation = ParticipationIn(activity_execution_id=2, participant_state_id=3)
     #     participation_service = ParticipationService()
     #
     #     result = participation_service.save_participation(participation)
     #
-    #     self.assertEqual(result, ParticipationOut(activity_execution_id=1, participant_state_id=2, id=id_node))
+    #     self.assertEqual(result, ParticipationOut(activity_execution_id=2, participant_state_id=3, id=id_node))
     #     create_node_mock.assert_called_once_with('Participation')
     #     create_relationships_mock.assert_has_calls(calls)
 
