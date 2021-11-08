@@ -5,6 +5,7 @@ from graph_api_service import GraphApiService
 from models.not_found_model import *
 from activity_execution.activity_execution_model import *
 from activity_execution.activity_execution_service import ActivityExecutionService
+from property.property_model import *
 
 
 class TestActivityExecutionServiceGet(unittest.TestCase):
@@ -23,8 +24,9 @@ class TestActivityExecutionServiceGet(unittest.TestCase):
             {"start_node": 15, "end_node": id_node,
              "name": "testReversedRelation", "id": 0,
              "properties": None}]}
-        activity_execution = ActivityExecutionOut(id=id_node,
-                                                  relations=[RelationInformation(second_node_id=19, name="testRelation",
+        activity_execution = ActivityExecutionOut(additional_properties=[], id=id_node,
+                                                  relations=[RelationInformation(second_node_id=19,
+                                                                                 name="testRelation",
                                                                                  relation_id=0)],
                                                   reversed_relations=[RelationInformation(second_node_id=15,
                                                                                           name="testReversedRelation",
@@ -65,13 +67,13 @@ class TestActivityExecutionServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_activity_executions(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Activity Execution'],
-                                                  'properties': [{'key': 'age', 'value': 5},
-                                                                 {'key': 'test', 'value': 'test'}]},
+                                                  'properties': [{'key': 'test', 'value': 'test'}]},
                                                  {'id': 2, 'labels': ['Activity Execution'],
-                                                  'properties': [{'key': 'age', 'value': 10},
-                                                                 {'key': 'test2', 'value': 'test3'}]}]}
-        activity_execution_one = BasicActivityExecutionOut(id=1)
-        activity_execution_two = BasicActivityExecutionOut(id=2)
+                                                  'properties': [{'key': 'test2', 'value': 'test3'}]}]}
+        activity_execution_one = BasicActivityExecutionOut(additional_properties=[PropertyIn(key='test', value='test')],
+                                                           id=1)
+        activity_execution_two = BasicActivityExecutionOut(additional_properties=[PropertyIn(key='test2', value='test3')],
+                                                           id=2)
         activity_executions = ActivityExecutionsOut(
             activity_executions=[activity_execution_one, activity_execution_two])
         activity_executions_service = ActivityExecutionService()
