@@ -14,7 +14,8 @@ class TestRecordingServicePost(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_save_recording_without_errors(self, get_node_relationships_mock, get_node_mock,
-                                           create_relationships_mock, create_properties_mock, create_node_mock):
+                                                    create_relationships_mock, create_properties_mock,
+                                                    create_node_mock):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Recording'],
                                       'properties': [],
@@ -30,20 +31,23 @@ class TestRecordingServicePost(unittest.TestCase):
         create_properties_mock.return_value = {'id': id_node, 'errors': None, 'links': None}
         create_relationships_mock.return_value = {'start_node': 1, 'end_node': 2,
                                                   'name': 'hasParticipant', 'errors': None}
-        recording_in = RecordingIn(channel_id=2, registered_data_id=3)
-        recording_out = RecordingOut(relations=
-                                     [RelationInformation(second_node_id=19, name="testRelation",
-                                                          relation_id=0)],
-                                     reversed_relations=
-                                     [RelationInformation(second_node_id=15, name="testReversedRelation",
-                                                          relation_id=0)], id=id_node)
-        calls = [mock.call(1)]
+        additional_properties = []
+        recording_in = RecordingIn(participation_id=2, registered_channel_id=3)
+        recording_out = RecordingOut(additional_properties=additional_properties, relations=
+                                                      [RelationInformation(second_node_id=19, name="testRelation",
+                                                                           relation_id=0)],
+                                                      reversed_relations=
+                                                      [RelationInformation(second_node_id=15,
+                                                                           name="testReversedRelation",
+                                                                           relation_id=0)], id=id_node)
+        calls = [mock.call(2), mock.call(3), mock.call(1)]
         recording_service = RecordingService()
 
         result = recording_service.save_recording(recording_in)
 
         self.assertEqual(result, recording_out)
         create_node_mock.assert_called_once_with('Recording')
+        # create_properties_mock.assert_not_called()
         create_relationships_mock.assert_not_called()
         get_node_mock.assert_has_calls(calls)
 
@@ -51,10 +55,11 @@ class TestRecordingServicePost(unittest.TestCase):
     def test_save_recording_with_node_error(self, create_node_mock):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
-        recording = RecordingIn(channel_id=2, registered_data_id=3)
+        recording = RecordingIn()
         recording_service = RecordingService()
 
         result = recording_service.save_recording(recording)
 
         self.assertEqual(result, RecordingOut(errors=['error']))
         create_node_mock.assert_called_once_with('Recording')
+
