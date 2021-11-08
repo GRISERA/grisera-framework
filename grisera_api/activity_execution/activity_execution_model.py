@@ -6,21 +6,36 @@ from pydantic import BaseModel
 from property.property_model import PropertyIn
 
 
-class ActivityExecutionIn(BaseModel):
+class ActivityExecutionPropertyIn(BaseModel):
     """
     Model of activity execution to acquire from client
 
     Attributes:
-    activity_id (int): Id of activity
-    arrangement_id (int) : Id of arrangement
     additional_properties (Optional[List[PropertyIn]]): Additional properties for activity execution
     """
-    activity_id: int
-    arrangement_id: int
     additional_properties: Optional[List[PropertyIn]]
 
 
-class BasicActivityExecutionOut(BaseModel):
+class ActivityExecutionRelationIn(BaseModel):
+    """
+    Model of activity execution relations to acquire from client
+
+    Attributes:
+    activity_id (int): Id of activity
+    arrangement_id (int) : Id of arrangement
+    """
+    activity_id: int
+    arrangement_id: int
+
+
+class ActivityExecutionIn(ActivityExecutionPropertyIn, ActivityExecutionRelationIn):
+    """
+    Full model of activity execution to acquire from client
+
+    """
+
+
+class BasicActivityExecutionOut(ActivityExecutionPropertyIn):
     """
     Basic model of activity execution
 
