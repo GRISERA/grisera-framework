@@ -5,6 +5,7 @@ from graph_api_service import GraphApiService
 from models.not_found_model import *
 from recording.recording_model import *
 from recording.recording_service import RecordingService
+from property.property_model import *
 
 
 class TestRecordingServiceGet(unittest.TestCase):
@@ -23,8 +24,9 @@ class TestRecordingServiceGet(unittest.TestCase):
             {"start_node": 15, "end_node": id_node,
              "name": "testReversedRelation", "id": 0,
              "properties": None}]}
-        recording = RecordingOut(id=id_node,
-                                 relations=[RelationInformation(second_node_id=19, name="testRelation",
+        recording = RecordingOut(additional_properties=[], id=id_node,
+                                 relations=[RelationInformation(second_node_id=19,
+                                                                name="testRelation",
                                                                 relation_id=0)],
                                  reversed_relations=[RelationInformation(second_node_id=15,
                                                                          name="testReversedRelation",
@@ -65,13 +67,13 @@ class TestRecordingServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_recordings(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Recording'],
-                                                  'properties': [{'key': 'age', 'value': 5},
-                                                                 {'key': 'test', 'value': 'test'}]},
+                                                  'properties': [{'key': 'test', 'value': 'test'}]},
                                                  {'id': 2, 'labels': ['Recording'],
-                                                  'properties': [{'key': 'age', 'value': 10},
-                                                                 {'key': 'test2', 'value': 'test3'}]}]}
-        recording_one = BasicRecordingOut(id=1)
-        recording_two = BasicRecordingOut(id=2)
+                                                  'properties': [{'key': 'test2', 'value': 'test3'}]}]}
+        recording_one = BasicRecordingOut(additional_properties=[PropertyIn(key='test', value='test')],
+                                          id=1)
+        recording_two = BasicRecordingOut(additional_properties=[PropertyIn(key='test2', value='test3')],
+                                          id=2)
         recordings = RecordingsOut(
             recordings=[recording_one, recording_two])
         recordings_service = RecordingService()

@@ -5,18 +5,33 @@ from property.property_model import PropertyIn
 from pydantic import BaseModel
 
 
-class RecordingIn(BaseModel):
+class RecordingPropertyIn(BaseModel):
     """
     Model of recording to acquire from client
 
     Attributes:
+    additional_properties (Optional[List[PropertyIn]]): Additional properties for recording
+    """
+    additional_properties: Optional[List[PropertyIn]]
+
+
+class RecordingRelationIn(BaseModel):
+    """
+    Model of recording relations to acquire from client
+
+    Attributes:
     participation_id (Optional[int]) : id of participation
     registered_channel_id (Optional[int]): id of registered channel
-    additional_properties (Optional[List[PropertyIn]]): Additional properties for recording
     """
     participation_id: Optional[int]
     registered_channel_id: Optional[int]
-    additional_properties: Optional[List[PropertyIn]]
+
+
+class RecordingIn(RecordingPropertyIn, RecordingRelationIn):
+    """
+    Full model of recording to acquire from client
+
+    """
 
 
 class BasicRecordingOut(RecordingIn):
