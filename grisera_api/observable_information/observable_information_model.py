@@ -8,12 +8,12 @@ class ObservableInformationIn(BaseModel):
     Model of information observed during experiment
 
     Attributes:
-        modality (Modality): Type of observable information
-        live_activity (LiveActivity): Actions of a human body
-        recording_id (Optional[int]): Id of recording
+    modality_id (Optional[int]): Id od modality
+    live_activity_id (Optional[int]): Id of live activity
+    recording_id (Optional[int]): Id of recording
     """
-    modality: str
-    live_activity: str
+    modality_id: Optional[int]
+    live_activity_id: Optional[int]
     recording_id: Optional[int]
 
 

@@ -1,8 +1,11 @@
 from graph_api_service import GraphApiService
-from observable_information.observable_information_model import ObservableInformationIn, ObservableInformationOut
+from observable_information.observable_information_model import ObservableInformationIn, ObservableInformationOut, \
+    BasicObservableInformationOut, ObservableInformationsOut
 from modality.modality_service import ModalityService
 from live_activity.live_activity_service import LiveActivityService
 from recording.recording_service import RecordingService
+from models.not_found_model import NotFoundByIdModel
+from models.relation_information_model import RelationInformation
 
 
 class ObservableInformationService:
@@ -30,12 +33,10 @@ class ObservableInformationService:
         Returns:
             Result of request as observable information object
         """
-        node_response = self.graph_api_service.create_node("`Observable information`")
+        node_response = self.graph_api_service.create_node("`Observable Information`")
 
         if node_response["errors"] is not None:
-            return ObservableInformationOut(modality=observable_information.modality,
-                                            live_activity=observable_information.live_activity,
-                                            errors=node_response["errors"])
+            return ObservableInformationOut(errors=node_response["errors"])
 
         observable_information_id = node_response["id"]
 
@@ -72,9 +73,6 @@ class ObservableInformationService:
 
         for observable_information_node in get_response["nodes"]:
             properties = {'id': observable_information_node['id']}
-            for property in observable_information_node["properties"]:
-                if property["key"] == "age":
-                    properties[property["key"]] = property["value"]
             observable_information = BasicObservableInformationOut(**properties)
             observable_informations.append(observable_information)
 
@@ -97,9 +95,6 @@ class ObservableInformationService:
 
         observable_information = {'id': get_response['id'], 'relations': [],
                                   'reversed_relations': []}
-        for property in get_response["properties"]:
-            if property["key"] == "age":
-                observable_information[property["key"]] = property["value"]
 
         relations_response = self.graph_api_service.get_node_relationships(observable_information_id)
 
@@ -147,16 +142,23 @@ class ObservableInformationService:
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        if observable_information.channel_id is not None and \
-                type(self.channel_service.get_channel(observable_information.channel_id)) is not NotFoundByIdModel:
+        if observable_information.modality_id is not None and \
+                type(self.modality_service.get_modality(observable_information.modality_id)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=observable_information_id,
-                                                        end_node=observable_information.channel_id,
-                                                        name="hasChannel")
-        if observable_information.registered_data_id is not None and \
-                type(self.registered_data_service.get_registered_data(observable_information.registered_data_id)) \
-                is not NotFoundByIdModel:
+                                                        end_node=observable_information.modality_id, name="hasModality")
+
+        if observable_information.live_activity_id is not None and \
+                type(self.live_activity_service.get_live_activity(
+                    observable_information.live_activity_id)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=observable_information_id,
-                                                        end_node=observable_information.registered_data_id,
-                                                        name="hasRegisteredData")
+                                                        end_node=observable_information.live_activity_id,
+                                                        name="hasLiveActivity")
+
+        if observable_information.recording_id is not None and \
+                type(
+                    self.recording_service.get_recording(observable_information.recording_id)) is not NotFoundByIdModel:
+            self.graph_api_service.create_relationships(start_node=observable_information_id,
+                                                        end_node=observable_information.recording_id,
+                                                        name="hasRecording")
 
         return self.get_observable_information(observable_information_id)
