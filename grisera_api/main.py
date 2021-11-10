@@ -1,5 +1,6 @@
 from activity.activity_router import router as activity_router
 from activity_execution.activity_execution_router import router as activity_execution_router
+from arrangement.arrangement_router import router as arrangement_router
 from appearance.appearance_router import router as appearance_router
 from author.author_router import router as author_router
 from channel.channel_router import router as channel_router
@@ -33,6 +34,7 @@ app = FastAPI(title="GRISERA API",
 app.include_router(activity_router)
 app.include_router(activity_execution_router)
 app.include_router(appearance_router)
+app.include_router(arrangement_router)
 app.include_router(author_router)
 app.include_router(channel_router)
 app.include_router(experiment_router)
