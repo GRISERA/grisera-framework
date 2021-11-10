@@ -16,8 +16,8 @@ class TestScenarioService(unittest.TestCase):
         save_activity_execution_mock.return_value = activity_execution_out
         create_relationships_mock.return_value = activity_execution_out
         calls = [mock.call(2, 2, 'hasScenario')]
-        scenario = ScenarioIn(experiment_id=2, activity_executions=[ActivityExecutionIn(activity='group',
-                                                                                        arrangement_type='personal group')])
+        scenario = ScenarioIn(experiment_id=2, activity_executions=[ActivityExecutionIn(activity_id=1,
+                                                                                        arrangement_id=3)])
         scenario_service = ScenarioService()
 
         result = scenario_service.save_scenario(scenario)
@@ -33,17 +33,15 @@ class TestScenarioService(unittest.TestCase):
                                            get_node_relationships_mock, save_activity_execution_mock):
         get_node_relationships_mock.return_value = {'relationships': [{'start_node': 1, 'end_node': 2,
                                                                        'name': 'hasScenario', 'id': 0}]}
-        activity_execution = ActivityExecutionIn(activity='group', arrangement_type='personal group', identifier=0, name='Test')
-        save_activity_execution_mock.return_value = ActivityExecutionOut(activity='group',
-                                                                         arrangement_type='personal group',
+        activity_execution = ActivityExecutionIn(activity_id=1, arrangement_id=3, identifier=0, name='Test')
+        save_activity_execution_mock.return_value = ActivityExecutionOut(activity_id=1, arrangement_id=3,
                                                                          identifier=0, name='Test', id=3)
         calls = [mock.call(1, 3, 'hasScenario'), mock.call(3, 2, 'nextActivityExecution')]
         scenario_service = ScenarioService()
 
         result = scenario_service.add_activity_execution(1, activity_execution)
 
-        self.assertEqual(result, ActivityExecutionOut(activity='group', arrangement_type='personal group',
-                                                      identifier=0, name='Test', id=3))
+        self.assertEqual(result, ActivityExecutionOut(activity_id=1, arrangement_id=3, identifier=0, name='Test', id=3))
         create_relationships_mock.assert_has_calls(calls)
         delete_relationship_mock.assert_called_once_with(0)
         save_activity_execution_mock.assert_called_with(activity_execution)
@@ -57,7 +55,7 @@ class TestScenarioService(unittest.TestCase):
         get_node_relationships_mock.return_value = {'relationships': [{'start_node': 0, 'end_node': 1,
                                                                        'name': 'nextActivityExecution', 'id': 0}
                                                                       ]}
-        activity_execution = ActivityExecutionIn(activity='group', arrangement_type='personal group', identifier=0,
+        activity_execution = ActivityExecutionIn(activity_id=1, arrangement_id=3, identifier=0,
                                                  name='Test')
         save_activity_execution_mock.return_value = ActivityExecutionOut(activity='group',
                                                                          arrangement_type='personal group',
@@ -84,8 +82,7 @@ class TestScenarioService(unittest.TestCase):
                                                                       {'start_node': 2, 'end_node': 3,
                                                                        'name': 'nextActivityExecution', 'id': 1}
                                                                       ]}
-        activity_execution = ActivityExecutionIn(activity='group', arrangement_type='personal group',
-                                                 identifier=0, name='Test')
+        activity_execution = ActivityExecutionIn(activity_id=1, arrangement_id=3, identifier=0, name='Test')
         save_activity_execution_mock.return_value = ActivityExecutionOut(activity='group',
                                                                          arrangement_type='personal group',
                                                                          identifier=0, name='Test', id=4)

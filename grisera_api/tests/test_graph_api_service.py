@@ -95,14 +95,14 @@ class DatabaseServiceTestCase(unittest.TestCase):
     def test_create_properties(self, post_mock):
         post_mock.return_value = self.response_content
         node_id = 1
-        node_model = ActivityExecutionIn(activity='group', arrangement_type='personal group',
+        node_model = ActivityExecutionIn(activity_id=1, arrangement_id=2,
                                          identifier=1, additional_properties=[{'key': 'test', 'value': 'test'}])
 
         result = self.graph_api_service.create_properties(node_id, node_model)
 
         self.assertEqual(result, self.response_content)
-        post_mock.assert_called_with("/nodes/1/properties", [{'key': 'activity', 'value': 'group'},
-                                                             {'key':'arrangement_type', 'value':'personal group'},
+        post_mock.assert_called_with("/nodes/1/properties", [{'key': 'activity_id', 'value': 1},
+                                                             {'key':'arrangement_id', 'value': 2},
                                                              {'key': 'test', 'value': 'test'}])
 
     @mock.patch.object(GraphApiService, 'post')
