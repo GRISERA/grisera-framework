@@ -5,7 +5,8 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
 from models.not_found_model import NotFoundByIdModel
-from activity_execution.activity_execution_model import ActivityExecutionIn, ActivityExecutionOut, ActivityExecutionsOut
+from activity_execution.activity_execution_model import ActivityExecutionIn, ActivityExecutionOut, \
+    ActivityExecutionsOut, ActivityExecutionPropertyIn, ActivityExecutionRelationIn
 from activity_execution.activity_execution_service import ActivityExecutionService
 
 router = InferringRouter()
@@ -14,7 +15,7 @@ router = InferringRouter()
 @cbv(router)
 class ActivityExecutionRouter:
     """
-    Class for routing activity_execution based requests
+    Class for routing activity execution based requests
 
     Attributes:
     activity_execution_service (ActivityExecutionService): Service instance for activity execution
@@ -79,10 +80,28 @@ class ActivityExecutionRouter:
 
         return get_response
 
+    @router.put("/activity_executions/{activity_execution_id}", tags=["activity executions"],
+                response_model=Union[ActivityExecutionOut, NotFoundByIdModel])
+    async def update_activity_execution(self, activity_execution_id: int,
+                                        activity_execution: ActivityExecutionPropertyIn,
+                                        response: Response):
+        """
+        Update activity execution model in database
+        """
+        update_response = self.activity_execution_service.update_activity_execution(activity_execution_id,
+                                                                                    activity_execution)
+        if update_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        update_response.links = get_links(router)
+
+        return update_response
+
     @router.put("/activity_executions/{activity_execution_id}/relationships", tags=["activity executions"],
                 response_model=Union[ActivityExecutionOut, NotFoundByIdModel])
     async def update_activity_execution_relationships(self, activity_execution_id: int,
-                                                      activity_execution: ActivityExecutionIn,
+                                                      activity_execution: ActivityExecutionRelationIn,
                                                       response: Response):
         """
         Update activity executions relations in database

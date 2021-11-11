@@ -81,14 +81,13 @@ class ParticipationRouter:
 
     @router.put("/participations/{participation_id}/relationships", tags=["participations"],
                 response_model=Union[ParticipationOut, NotFoundByIdModel])
-    async def update_participation_relationships(self, participation_id: int,
-                                                      participation: ParticipationIn,
-                                                      response: Response):
+    async def update_participation_relationships(self, participation_id: int, participation: ParticipationIn,
+                                                 response: Response):
         """
         Update participations relations in database
         """
-        update_response = self.participation_service.update_participation_relationships(participation_id,
-                                                                                                  participation)
+        update_response = self.participation_service.update_participation_relationships(participation_id, participation)
+
         if update_response.errors is not None:
             response.status_code = 404
 

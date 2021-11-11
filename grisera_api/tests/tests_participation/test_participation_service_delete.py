@@ -16,7 +16,7 @@ class TestParticipationServiceDelete(unittest.TestCase):
                                                      delete_node_mock):
         id_node = 1
         delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Participation'],
-                                                                      'properties': [{'key': 'age', 'value': 5}],
+                                                                      'properties': None,
                                                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
             {"start_node": id_node, "end_node": 19,
@@ -25,12 +25,12 @@ class TestParticipationServiceDelete(unittest.TestCase):
             {"start_node": 15, "end_node": id_node,
              "name": "testReversedRelation", "id": 0,
              "properties": None}]}
-        participation = ParticipationOut(id=id_node, additional_properties=[],
-                                                  relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                                                 relation_id=0)],
-                                                  reversed_relations=[RelationInformation(second_node_id=15,
-                                                                                          name="testReversedRelation",
-                                                                                          relation_id=0)])
+        participation = ParticipationOut(id=id_node, relations=[RelationInformation(second_node_id=19,
+                                                                                    name="testRelation",
+                                                                                    relation_id=0)],
+                                         reversed_relations=[RelationInformation(second_node_id=15,
+                                                                                 name="testReversedRelation",
+                                                                                 relation_id=0)])
         participation_service = ParticipationService()
 
         result = participation_service.delete_participation(id_node)

@@ -65,11 +65,11 @@ class TestParticipationServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_participations(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Participation'],
-                                                  'properties': [{'key': 'age', 'value': 5},
-                                                                 {'key': 'test', 'value': 'test'}]},
+                                                  'properties': None},
                                                  {'id': 2, 'labels': ['Participation'],
-                                                  'properties': [{'key': 'age', 'value': 10},
-                                                                 {'key': 'test2', 'value': 'test3'}]}]}
+                                                  'properties': None
+                                                  }]}
+
         participation_one = BasicParticipationOut(id=1)
         participation_two = BasicParticipationOut(id=2)
         participations = ParticipationsOut(

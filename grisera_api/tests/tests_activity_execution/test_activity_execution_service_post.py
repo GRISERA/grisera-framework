@@ -31,8 +31,9 @@ class TestActivityExecutionServicePost(unittest.TestCase):
         create_properties_mock.return_value = {'id': id_node, 'errors': None, 'links': None}
         create_relationships_mock.return_value = {'start_node': 1, 'end_node': 2,
                                                   'name': 'hasParticipant', 'errors': None}
+        additional_properties = []
         activity_execution_in = ActivityExecutionIn(activity_id=2, arrangement_id=3)
-        activity_execution_out = ActivityExecutionOut(relations=
+        activity_execution_out = ActivityExecutionOut(additional_properties=additional_properties, relations=
                                                       [RelationInformation(second_node_id=19, name="testRelation",
                                                                            relation_id=0)],
                                                       reversed_relations=
