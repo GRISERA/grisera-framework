@@ -1,7 +1,9 @@
+from typing import Union
 from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
+from models.not_found_model import NotFoundByIdModel
 from scenario.scenario_model import ScenarioIn, ScenarioOut, OrderChangeIn, OrderChangeOut
 from scenario.scenario_service import ScenarioService
 from activity_execution.activity_execution_model import ActivityExecutionOut, ActivityExecutionIn
@@ -15,7 +17,7 @@ class ScenarioRouter:
     Class for routing scenario based requests
 
     Attributes:
-        scenario_service (ScenarioService): Service instance for scenarios
+    scenario_service (ScenarioService): Service instance for scenarios
     """
     scenario_service = ScenarioService()
 
@@ -34,7 +36,8 @@ class ScenarioRouter:
         return create_response
 
     @router.post("/scenarios/{previous_id}", tags=["scenarios"], response_model=ActivityExecutionOut)
-    async def add_activity_execution(self, previous_id: int, activity_execution: ActivityExecutionIn, response: Response):
+    async def add_activity_execution(self, previous_id: int, activity_execution: ActivityExecutionIn,
+                                     response: Response):
         """
         Add new activity execution to scenario
         """
@@ -74,3 +77,17 @@ class ScenarioRouter:
         delete_response.links = get_links(router)
 
         return delete_response
+
+    @router.get("/scenarios/{node_id}", tags=["scenarios"], response_model=Union[ScenarioOut, NotFoundByIdModel])
+    async def get_scenario(self, node_id: int, response: Response):
+        """
+        Get scenario from database
+        """
+        get_response = self.scenario_service.get_scenario(node_id)
+        if get_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        get_response.links = get_links(router)
+
+        return get_response
