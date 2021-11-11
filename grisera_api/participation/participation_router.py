@@ -95,4 +95,3 @@ class ParticipationRouter:
         update_response.links = get_links(router)
 
         return update_response
-

@@ -46,6 +46,7 @@ class ActivityExecutionService:
         if activity_execution.arrangement_id is not None and \
                 type(self.arrangement_service.get_arrangement(activity_execution.arrangement_id)) \
                 is not NotFoundByIdModel:
+
             self.graph_api_service.create_relationships(start_node=activity_execution_id,
                                                         end_node=activity_execution.arrangement_id,
                                                         name="hasArrangement")
