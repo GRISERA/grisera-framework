@@ -5,7 +5,7 @@ import unittest.mock as mock
 from recording.recording_router import *
 
 
-class TestRecordingRouter(unittest.TestCase):
+class TestRecordingRouterPost(unittest.TestCase):
 
     @mock.patch.object(RecordingService, 'save_recording')
     def test_create_recording_without_error(self, save_recording_mock):
@@ -24,7 +24,7 @@ class TestRecordingRouter(unittest.TestCase):
     @mock.patch.object(RecordingService, 'save_recording')
     def test_create_recording_with_error(self, save_recording_mock):
         save_recording_mock.return_value = RecordingOut(participation_id=3, registered_channel_id=2, id=1,
-                                                       errors={'errors': ['test']})
+                                                        errors={'errors': ['test']})
         response = Response()
         recording = RecordingIn(participation_id=3, registered_channel_id=2)
         recording_router = RecordingRouter()
