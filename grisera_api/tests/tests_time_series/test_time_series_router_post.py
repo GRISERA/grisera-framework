@@ -10,7 +10,7 @@ def return_time_series(*args, **kwargs):
     return time_series_out
 
 
-class TestTimeSeriesRouter(unittest.TestCase):
+class TestTimeSeriesRouterPost(unittest.TestCase):
 
     @mock.patch.object(TimeSeriesService, 'save_time_series')
     def test_create_time_series_without_error(self, save_time_series_mock):
