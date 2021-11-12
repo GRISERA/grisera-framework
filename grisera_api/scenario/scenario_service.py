@@ -2,6 +2,9 @@ from graph_api_service import GraphApiService
 from scenario.scenario_model import ScenarioIn, ScenarioOut, OrderChangeIn, OrderChangeOut
 from activity_execution.activity_execution_service import ActivityExecutionService
 from activity_execution.activity_execution_model import ActivityExecutionOut, PropertyIn, ActivityExecutionIn
+from experiment.experiment_service import ExperimentService
+from models.not_found_model import NotFoundByIdModel
+from models.relation_information_model import RelationInformation
 
 
 class ScenarioService:
@@ -9,11 +12,13 @@ class ScenarioService:
     Object to handle logic of scenarios requests
 
     Attributes:
-        graph_api_service (GraphApiService): Service used to communicate with Graph API
-        activity_execution_service (ActivityExecutionService): Service used to communicate with ActivityExecution
+    graph_api_service (GraphApiService): Service used to communicate with Graph API
+    activity_execution_service (ActivityExecutionService): Service used to communicate with ActivityExecution
+    experiment_service (ExperimentService): Service used to communicate with Experiment
     """
     graph_api_service = GraphApiService()
     activity_execution_service = ActivityExecutionService()
+    experiment_service = ExperimentService()
 
     def save_scenario(self, scenario: ScenarioIn):
         """
@@ -320,3 +325,144 @@ class ScenarioService:
         self.graph_api_service.create_relationships(start_node, end_node, relationships[0]['name'])
 
         return activity_execution_response
+
+    def get_scenario(self, node_id: int):
+        """
+        Send request to graph api to get activity executions and experiment from scenario
+
+        Args:
+            node_id (int): Id of experiment or activity execution which is included in scenario
+
+        Returns:
+            Result of request as Scenario object
+        """
+        get_response = self.graph_api_service.get_node(node_id)
+
+        if get_response["errors"] is not None:
+            return NotFoundByIdModel(id=node_id, errors=get_response["errors"])
+        if get_response["labels"][0] not in ["Activity Execution", "Experiment"]:
+            return NotFoundByIdModel(id=node_id, errors="Node not found.")
+
+        if get_response["labels"][0] == "Activity Execution":
+            return self.get_scenario_by_activity_execution(node_id)
+        elif get_response["labels"][0] == "Experiment":
+            return self.get_scenario_by_experiment(node_id)
+
+    def get_scenario_by_experiment(self, experiment_id: int):
+        """
+        Send request to graph api to get activity_executions from scenario which starts in experiment
+
+        Args:
+            experiment_id (int): Id of experiment where scenario starts
+
+        Returns:
+            Result of request as Scenario object
+        """
+        activity_executions = []
+
+        experiment = self.experiment_service.get_experiment(experiment_id)
+        if type(experiment) is NotFoundByIdModel:
+            return experiment
+
+        scenario = {'experiment_id': experiment_id, 'activity_executions': []}
+
+        for relation in experiment.relations:
+            if relation.name == "hasScenario":
+                self.get_scenario_after_activity_execution(relation.second_node_id, activity_executions)
+
+        [scenario['activity_executions'].append(a) for a in activity_executions if a not in scenario['activity_executions']]
+
+        return ScenarioOut(**scenario)
+
+    def get_scenario_by_activity_execution(self, activity_execution_id: int):
+        """
+        Send request to graph api to get activity_executions from scenario which has activity execution id incuded
+
+        Args:
+            activity_execution_id (int): Id of activity execution included in scenario
+
+        Returns:
+            Result of request as Scenario object
+        """
+        activity_executions = []
+        activity_executions_before = []
+
+        activity_execution = self.activity_execution_service.get_activity_execution(activity_execution_id)
+        if type(activity_execution) is NotFoundByIdModel:
+            return activity_execution
+
+        experiment_id = self.get_scenario_before_activity_execution(activity_execution_id, activity_executions_before)
+        [activity_executions.append(a) for a in activity_executions_before if a not in activity_executions]
+
+        activity_executions_after = []
+
+        self.get_scenario_after_activity_execution(activity_execution_id, activity_executions_after)
+        [activity_executions.append(a) for a in activity_executions_after if a not in activity_executions]
+
+        scenario = {'experiment_id': experiment_id,
+                    'activity_executions': []}
+
+        [scenario['activity_executions'].append(a) for a in activity_executions]
+
+        return ScenarioOut(**scenario)
+
+    def get_scenario_after_activity_execution(self, activity_execution_id: int, activity_executions: []):
+        """
+        Gets activity executions from scenario which are saved after activity_execution_id
+
+        Args:
+            activity_execution_id (int): Id of activity execution included in scenario
+            activity_executions: List of activity executions in scenario
+        """
+        activity_execution = self.activity_execution_service.get_activity_execution(activity_execution_id)
+
+        if type(activity_execution) is NotFoundByIdModel:
+            return activity_execution
+
+        activity_executions.append(activity_execution)
+
+        for relation in activity_execution.relations:
+            if relation.name == "nextActivityExecution":
+                activity_execution = self.activity_execution_service.get_activity_execution(relation.second_node_id)
+
+                if type(activity_execution) is NotFoundByIdModel:
+                    return activity_execution
+
+                activity_executions.append(activity_execution)
+                [self.get_scenario_after_activity_execution(activity_execution.id, activity_executions)
+                 for r in activity_execution.relations if r.name == "nextActivityExecution"]
+
+    def get_scenario_before_activity_execution(self, activity_execution_id: int, activity_executions: []):
+        """
+        Gets activity executions from scenario which are saved before activity_execution_id
+
+        Args:
+            activity_execution_id (int): Id of activity execution included in scenario
+            activity_executions: List of activity executions in scenario
+        """
+        activity_execution = self.activity_execution_service.get_activity_execution(activity_execution_id)
+        if type(activity_execution) is NotFoundByIdModel:
+            return activity_execution
+
+        activity_executions.append(activity_execution)
+
+        for relation in activity_execution.reversed_relations:
+
+            if relation.name == "nextActivityExecution":
+                activity_execution = self.activity_execution_service.get_activity_execution(relation.second_node_id)
+                if type(activity_execution) is NotFoundByIdModel:
+                    return activity_execution
+
+                activity_executions.append(activity_execution)
+                return self.get_scenario_before_activity_execution(activity_execution.id, activity_executions)
+
+            elif relation.name == "hasScenario":
+                experiment = self.experiment_service.get_experiment(relation.second_node_id)
+                if type(experiment) is NotFoundByIdModel:
+                    return experiment
+
+                return experiment.id
+
+
+
+
