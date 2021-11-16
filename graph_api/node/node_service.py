@@ -1,10 +1,8 @@
-import requests
-import string
-from requests.auth import HTTPBasicAuth
-from database_config import database
-from node.node_model import NodeIn, NodeOut
+from database_service import DatabaseService
+from node.node_model import NodeIn, NodeOut, BasicNodeOut, NodesOut
 from property.property_model import PropertyIn
 from typing import List
+from relationship.relationship_model import RelationshipsOut, BasicRelationshipOut
 
 
 class NodeService:
@@ -12,34 +10,10 @@ class NodeService:
     Object to handle logic of nodes requests
 
     Attributes:
-        database_url (str): URL to used database
-        database_auth (HTTPBasicAuth): Used to authenticate to database
+        db (DatabaseService): Handles communication with Neo4j database
     """
-    database_url = (database["address"] + database["commit_path"]) \
-        .replace("{database_name}", database["name"])
-    database_auth = HTTPBasicAuth(database["user"], database["passwd"])
 
-    def node_exists(self, node_id):
-        """
-        Check if node exists in the database
-
-        Args:
-            node_id(int): id of the node
-
-        Returns:
-            True - If there is a node in the database.
-            False - If there is not a node in the database.
-        """
-        check_node_statement = f"MATCH (n) where id(n) ={node_id} return n"
-
-        commit_body = {
-            "statements": [{"statement": check_node_statement}]
-        }
-        response = requests.post(url=self.database_url,
-                                 json=commit_body,
-                                 auth=self.database_auth).json()
-
-        return len(response['results'][0]['data']) == 1
+    db : DatabaseService = DatabaseService()
 
     def save_node(self, node: NodeIn):
         """
@@ -51,23 +25,94 @@ class NodeService:
         Returns:
             Result of request as node object
         """
-        create_template = string.Template("CREATE (n:$labels) RETURN n")
-        create_statement = create_template.substitute(
-            labels=":".join(list(node.labels))
-        )
+        response = self.db.create_node(node)
 
-        commit_body = {
-            "statements": [{"statement": create_statement}]
-        }
-
-        response = requests.post(url=self.database_url,
-                                 json=commit_body,
-                                 auth=self.database_auth).json()
         if len(response["errors"]) > 0:
             result = NodeOut(errors=response["errors"])
         else:
             node_id = response["results"][0]["data"][0]["meta"][0]["id"]
             result = NodeOut(id=node_id, labels=node.labels)
+
+        return result
+
+    def get_node(self, node_id: int):
+        """
+        Send request to database by its API to acquire node with given id
+
+        Args:
+            node_id (int): Id by which it is searched for in the database
+
+        Returns:
+            Acquired node in NodeOut model
+        """
+        response = self.db.get_node(node_id)
+
+        if len(response['results'][0]["data"]) == 0:
+            return NodeOut(errors="Node not found")
+
+        node = response['results'][0]["data"][0]
+        properties = [PropertyIn(key=property[0], value=property[1]) for property in node["row"][0].items()]
+        result = NodeOut(id=node_id, properties=properties, labels={node["row"][1][0]})
+
+        return result
+
+    def get_nodes(self, label: str):
+        """
+        Send request to database by its API to acquire all nodes with given label
+
+        Args:
+            label (str): Label by which it is searched for in the database
+
+        Returns:
+            List of acquired nodes in NodesOut model
+        """
+        response = self.db.get_nodes(label)
+
+        if len(response["errors"]) > 0:
+            return NodesOut(errors=response["errors"])
+
+        result = NodesOut(nodes=[])
+        for node in response["results"][0]["data"]:
+            properties = [PropertyIn(key=property[0], value=property[1]) for property in node["row"][0].items()]
+            result.nodes.append(BasicNodeOut(labels={label}, id=node["meta"][0]["id"], properties=properties))
+
+        return result
+
+    def delete_node(self, node_id: int):
+        """
+        Send request to database by its API to delete node with given id
+
+        Args:
+            node_id (int): Id of node
+        Returns:
+            Deleted node
+        """
+        node = self.get_node(node_id)
+        response = self.db.delete_node(node_id)
+        result = NodeOut(errors=response["errors"]) if len(response["errors"]) > 0 else \
+            NodeOut(id=node_id, labels=node.labels, properties=node.properties)
+
+        return result
+
+    def get_relationships(self, id: int):
+        """
+        Send request to database by its API to get node's relationships
+
+        Args:
+            id (int): Id of the node
+
+        Returns:
+            Result of request as list of relationships
+        """
+        response = self.db.get_relationships(id)
+
+        if len(response["errors"]) > 0:
+            result = RelationshipsOut(errors=response["errors"])
+        else:
+            response_data = response["results"][0]["data"]
+            relationships = [BasicRelationshipOut(start_node=relation["row"][0], end_node=relation["row"][1],
+                                                  id=relation["row"][3], name=relation["row"][2]) for relation in response_data]
+            result = RelationshipsOut(relationships=relationships)
 
         return result
 
@@ -77,31 +122,37 @@ class NodeService:
 
         Args:
             id (int): Id of the node
-
             properties (List[PropertyIn]): List of properties for the node of given id
 
         Returns:
             Result of request as node object
         """
-        if self.node_exists(id):
-            create_statement = f"MATCH (n) where id(n)={id} SET n = $props return n"
-            commit_body = {
-                "statements": [{"statement": create_statement,
-                                "parameters": {
-                                    "props": {
-                                        property.key: property.value for property in properties
-                                    }
-                                }}]
-            }
-            response = requests.post(url=self.database_url,
-                                     json=commit_body,
-                                     auth=self.database_auth).json()
+        if self.db.node_exists(id):
+            response = self.db.create_node_properties(id, properties)
             if len(response["errors"]) > 0:
                 result = NodeOut(errors=response["errors"])
             else:
-                node_id = response["results"][0]["data"][0]["meta"][0]["id"]
-                result = NodeOut(id=node_id, properties=properties)
+                response_data = response["results"][0]["data"][0]["row"]
+                response_properties = list((map(
+                    lambda property: PropertyIn(key=property[0], value=property[1]), response_data[1].items())))
+                result = NodeOut(labels=set(response_data[0]), id=id, properties=response_properties)
         else:
             result = NodeOut(id=id, errors={"errors": "not matching id"})
+
+        return result
+
+    def delete_node_properties(self, node_id: int):
+        """
+        Send request to database by its API to delete properties from node with given id
+
+        Args:
+            node_id (int): Id of node
+        Returns:
+            Deleted node
+        """
+        node = self.get_node(node_id)
+        response = self.db.delete_node_properties(node_id)
+        result = NodeOut(errors=response["errors"]) if len(response["errors"]) > 0 else \
+            NodeOut(id=node_id, labels=node.labels, properties=node.properties)
 
         return result
