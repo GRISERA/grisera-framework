@@ -8,11 +8,13 @@ class MeasurePropertyIn(BaseModel):
     Model of measure to acquire from client
 
     Attributes:
-    data_type (str): Type of data
+    datatype (str): Type of data
     range (str): Range of measure
+    unit (str): Datatype property which allows for defining unit of measure
     """
-    data_type: str
+    datatype: str
     range: str
+    unit: str
 
 
 class MeasureRelationIn(BaseModel):

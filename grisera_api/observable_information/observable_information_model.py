@@ -9,11 +9,11 @@ class ObservableInformationIn(BaseModel):
 
     Attributes:
     modality_id (Optional[int]): Id od modality
-    live_activity_id (Optional[int]): Id of live activity
+    life_activity_id (Optional[int]): Id of life activity
     recording_id (Optional[int]): Id of recording
     """
     modality_id: Optional[int]
-    live_activity_id: Optional[int]
+    life_activity_id: Optional[int]
     recording_id: Optional[int]
 
 
@@ -48,7 +48,7 @@ class ObservableInformationsOut(BaseModel):
     """
     Model of information observed during experiment to send to client as a result of request
     Attributes:
-    live_activities (List[BasicLiveActivityOut]): Live activities from database
+    life_activities (List[BasicLifeActivityOut]): Life activities from database
     errors (Optional[Any]): Optional errors appeared during query executions
     links (Optional[list]): List of links available from api
     """

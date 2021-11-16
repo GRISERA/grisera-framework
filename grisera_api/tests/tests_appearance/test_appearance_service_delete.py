@@ -16,7 +16,8 @@ class TestAppearanceServiceDelete(unittest.TestCase):
     def test_delete_appearance_occlusion_without_error(self, get_node_relationships_mock, get_node_mock, delete_node_mock):
         id_node = 1
         delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Appearance'],
-                                                                      'properties': [{'key': 'beard', 'value': "Heavy"},
+                                                                      'properties': [{'key': 'glasses', 'value': True},
+                                                                                     {'key': 'beard', 'value': "Heavy"},
                                                                                      {'key': 'moustache',
                                                                                       'value': "Heavy"}],
                                                                       'errors': None, 'links': None}
@@ -27,7 +28,7 @@ class TestAppearanceServiceDelete(unittest.TestCase):
             {"start_node": 15, "end_node": id_node,
              "name": "testReversedRelation", "id": 0,
              "properties": None}]}
-        appearance = AppearanceOcclusionOut(id=id_node, beard="Heavy", moustache="Heavy", relations=[
+        appearance = AppearanceOcclusionOut(id=id_node, glasses=True, beard="Heavy", moustache="Heavy", relations=[
                                                 RelationInformation(second_node_id=19, name="testRelation",
                                                                     relation_id=0)],
                                             reversed_relations=[
@@ -47,8 +48,7 @@ class TestAppearanceServiceDelete(unittest.TestCase):
     def test_delete_appearance_somatotype_without_error(self, get_node_relationships_mock, get_node_mock, delete_node_mock):
         id_node = 1
         delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Appearance'],
-                                                                      'properties': [{'key': 'glasses', 'value': True},
-                                                                                     {'key': 'ectomorph', 'value': 1.5},
+                                                                      'properties': [{'key': 'ectomorph', 'value': 1.5},
                                                                                      {'key': 'endomorph', 'value': 1.5},
                                                                                      {'key': 'mesomorph', 'value': 1.5}],
                                                                       'errors': None, 'links': None}
@@ -59,7 +59,7 @@ class TestAppearanceServiceDelete(unittest.TestCase):
             {"start_node": 15, "end_node": id_node,
              "name": "testReversedRelation", "id": 0,
              "properties": None}]}
-        appearance = AppearanceSomatotypeOut(id=id_node, glasses=True, ectomorph=1.5, endomorph=1.5, mesomorph=1.5,
+        appearance = AppearanceSomatotypeOut(id=id_node, ectomorph=1.5, endomorph=1.5, mesomorph=1.5,
                                              relations=[
                                                  RelationInformation(second_node_id=19, name="testRelation",
                                                                      relation_id=0)],

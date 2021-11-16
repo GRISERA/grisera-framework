@@ -4,7 +4,7 @@ from enum import Enum
 from models.relation_information_model import RelationInformation
 
 
-class LiveActivity(str, Enum):
+class LifeActivity(str, Enum):
     """
     Actions of a human body
 
@@ -28,17 +28,17 @@ class LiveActivity(str, Enum):
     brain_activity = "brain activity"
 
 
-class LiveActivityIn(BaseModel):
+class LifeActivityIn(BaseModel):
     """
     Model of actions of a human body observed during experiment
 
     Attributes:
-    live_activity (str): Actions of a human body
+    life_activity (str): Actions of a human body
     """
-    live_activity: str
+    life_activity: str
 
 
-class BasicLiveActivityOut(LiveActivityIn):
+class BasicLifeActivityOut(LifeActivityIn):
     """
     Model of actions of a human body during experiment in database
 
@@ -48,7 +48,7 @@ class BasicLiveActivityOut(LiveActivityIn):
     id: Optional[int]
 
 
-class LiveActivityOut(BasicLiveActivityOut):
+class LifeActivityOut(BasicLifeActivityOut):
     """
     Model of actions of a human body during experiment to send to client as a result of request
 
@@ -64,15 +64,15 @@ class LiveActivityOut(BasicLiveActivityOut):
     links: Optional[list] = None
 
 
-class LiveActivitiesOut(BaseModel):
+class LifeActivitiesOut(BaseModel):
     """
     Model of actions of a human body during experiment to send to client as a result of request
 
     Attributes:
-    live_activities (List[BasicLiveActivityOut]): Live activities from database
+    life_activities (List[BasicLifeActivityOut]): Life activities from database
     errors (Optional[Any]): Optional errors appeared during query executions
     links (Optional[list]): List of links available from api
     """
-    live_activities: List[BasicLiveActivityOut] = []
+    life_activities: List[BasicLifeActivityOut] = []
     errors: Optional[Any] = None
     links: Optional[list] = None

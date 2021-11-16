@@ -6,7 +6,7 @@ from channel.channel_router import router as channel_router
 from experiment.experiment_router import router as experiment_router
 from fastapi import FastAPI
 from hateoas import get_links
-from live_activity.live_activity_router import router as live_activity_router
+from life_activity.life_activity_router import router as life_activity_router
 from measure.measure_router import router as measure_router
 from modality.modality_router import router as modality_router
 from observable_information.observable_information_router import router as observable_information_router
@@ -35,7 +35,7 @@ app.include_router(appearance_router)
 app.include_router(arrangement_router)
 app.include_router(channel_router)
 app.include_router(experiment_router)
-app.include_router(live_activity_router)
+app.include_router(life_activity_router)
 app.include_router(measure_router)
 app.include_router(measure_name_router)
 app.include_router(modality_router)
@@ -58,7 +58,7 @@ async def startup_event():
     startup.set_channels()
     startup.set_arrangements()
     startup.set_modalities()
-    startup.set_live_activities()
+    startup.set_life_activities()
     startup.set_measure_names()
 
 

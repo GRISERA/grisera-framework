@@ -27,17 +27,18 @@ class AppearanceService:
         node_response = self.graph_api_service.create_node("Appearance")
 
         if node_response["errors"] is not None:
-            return AppearanceOcclusionOut(beard=appearance.beard, moustache=appearance.moustache,
-                                          errors=node_response["errors"])
+            return AppearanceOcclusionOut(glasses=appearance.glasses, beard=appearance.beard,
+                                          moustache=appearance.moustache, errors=node_response["errors"])
 
         appearance_id = node_response["id"]
 
         properties_response = self.graph_api_service.create_properties(appearance_id, appearance)
         if properties_response["errors"] is not None:
-            return AppearanceOcclusionOut(beard=appearance.beard, moustache=appearance.moustache,
-                                          errors=properties_response["errors"])
+            return AppearanceOcclusionOut(glasses=appearance.glasses, beard=appearance.beard,
+                                          moustache=appearance.moustache, errors=properties_response["errors"])
 
-        return AppearanceOcclusionOut(beard=appearance.beard, moustache=appearance.moustache, id=appearance_id)
+        return AppearanceOcclusionOut(glasses=appearance.glasses, beard=appearance.beard,
+                                      moustache=appearance.moustache, id=appearance_id)
 
     def save_appearance_somatotype(self, appearance: AppearanceSomatotypeIn):
         """
@@ -52,27 +53,24 @@ class AppearanceService:
 
         if not 1 <= appearance.ectomorph <= 7 or not 1 <= appearance.endomorph <= 7 \
                 or not 1 <= appearance.mesomorph <= 7:
-            return AppearanceSomatotypeOut(glasses=appearance.glasses, ectomorph=appearance.ectomorph,
-                                           endomorph=appearance.endomorph, mesomorph=appearance.mesomorph,
-                                           errors="Scale range not between 1 and 7")
+            return AppearanceSomatotypeOut(ectomorph=appearance.ectomorph, endomorph=appearance.endomorph,
+                                           mesomorph=appearance.mesomorph, errors="Scale range not between 1 and 7")
 
         node_response = self.graph_api_service.create_node("Appearance")
 
         if node_response["errors"] is not None:
-            return AppearanceSomatotypeOut(glasses=appearance.glasses, ectomorph=appearance.ectomorph,
-                                           endomorph=appearance.endomorph, mesomorph=appearance.mesomorph,
-                                           errors=node_response["errors"])
+            return AppearanceSomatotypeOut(ectomorph=appearance.ectomorph, endomorph=appearance.endomorph,
+                                           mesomorph=appearance.mesomorph, errors=node_response["errors"])
 
         appearance_id = node_response["id"]
 
         properties_response = self.graph_api_service.create_properties(appearance_id, appearance)
         if properties_response["errors"] is not None:
-            return AppearanceSomatotypeOut(glasses=appearance.glasses, ectomorph=appearance.ectomorph,
-                                           endomorph=appearance.endomorph, mesomorph=appearance.mesomorph,
-                                           errors=properties_response["errors"])
+            return AppearanceSomatotypeOut(ectomorph=appearance.ectomorph, endomorph=appearance.endomorph,
+                                           mesomorph=appearance.mesomorph,  errors=properties_response["errors"])
 
-        return AppearanceSomatotypeOut(glasses=appearance.glasses, ectomorph=appearance.ectomorph,
-                                       endomorph=appearance.endomorph, mesomorph=appearance.mesomorph, id=appearance_id)
+        return AppearanceSomatotypeOut(ectomorph=appearance.ectomorph, endomorph=appearance.endomorph,
+                                       mesomorph=appearance.mesomorph, id=appearance_id)
 
     def get_appearance(self, appearance_id: int):
         """
@@ -105,8 +103,8 @@ class AppearanceService:
                                                                             name=relation["name"],
                                                                             relation_id=relation["id"]))
 
-        return AppearanceSomatotypeOut(**appearance) if "glasses" in appearance.keys() \
-            else AppearanceOcclusionOut(**appearance)
+        return AppearanceOcclusionOut(**appearance) if "glasses" in appearance.keys() \
+            else AppearanceSomatotypeOut(**appearance)
 
     def get_appearances(self):
         """
@@ -122,8 +120,8 @@ class AppearanceService:
         for appearance_node in get_response["nodes"]:
             properties = {property["key"]: property["value"] for property in appearance_node["properties"]}
             properties["id"] = appearance_node["id"]
-            appearance = BasicAppearanceSomatotypeOut(**properties) if "glasses" in properties.keys() \
-                else BasicAppearanceOcclusionOut(**properties)
+            appearance = BasicAppearanceOcclusionOut(**properties) if "glasses" in properties.keys() \
+                else BasicAppearanceSomatotypeOut(**properties)
             appearances.append(appearance)
 
         return AppearancesOut(appearances=appearances)

@@ -2,8 +2,8 @@ from channel.channel_service import ChannelService
 from channel.channel_model import ChannelIn, Type
 from modality.modality_service import ModalityService
 from modality.modality_model import ModalityIn, Modality
-from live_activity.live_activity_service import LiveActivityService
-from live_activity.live_activity_model import LiveActivityIn, LiveActivity
+from life_activity.life_activity_service import LifeActivityService
+from life_activity.life_activity_model import LifeActivityIn, LifeActivity
 from measure_name.measure_name_service import MeasureNameService
 from measure_name.measure_name_model import MeasureNameIn, MeasureName
 from activity.activity_service import ActivityService
@@ -79,21 +79,21 @@ class SetupNodes:
              if modality_modality.value not in created_modalities]
             os.remove("lock_modalities")
 
-    def set_live_activities(self):
+    def set_life_activities(self):
         """
-        Initialize values of live activities
+        Initialize values of life activities
         """
-        live_activity_service = LiveActivityService()
-        if not os.path.exists("lock_live_activities"):
-            open("lock_live_activities", "w").write("Busy")
+        life_activity_service = LifeActivityService()
+        if not os.path.exists("lock_life_activities"):
+            open("lock_life_activities", "w").write("Busy")
             sleep(40)
-            created_types = [live_activity.live_activity for live_activity in
-                             live_activity_service.get_live_activities().live_activities]
+            created_types = [life_activity.life_activity for life_activity in
+                             life_activity_service.get_life_activities().life_activities]
 
-            [live_activity_service.save_live_activity(LiveActivityIn(live_activity=live_activity_live_activity.value))
-             for live_activity_live_activity in LiveActivity
-             if live_activity_live_activity.value not in created_types]
-            os.remove("lock_live_activities")
+            [life_activity_service.save_life_activity(LifeActivityIn(life_activity=life_activity_life_activity.value))
+             for life_activity_life_activity in LifeActivity
+             if life_activity_life_activity.value not in created_types]
+            os.remove("lock_life_activities")
 
     def set_measure_names(self):
         """

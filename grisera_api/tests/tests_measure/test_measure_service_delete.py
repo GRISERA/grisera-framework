@@ -16,8 +16,9 @@ class TestMeasureServiceDelete(unittest.TestCase):
         id_node = 1
         delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Measure'],
                                                                       'properties': [
-                                                                          {'key': 'data_type', 'value': 'Test'},
-                                                                          {'key': 'range', 'value': 'Unknown'}],
+                                                                          {'key': 'datatype', 'value': 'Test'},
+                                                                          {'key': 'range', 'value': 'Unknown'},
+                                                                          {'key': 'unit', 'value': 'cm'}],
                                                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
             {"start_node": id_node, "end_node": 19,
@@ -26,7 +27,7 @@ class TestMeasureServiceDelete(unittest.TestCase):
             {"start_node": 15, "end_node": id_node,
              "name": "testReversedRelation", "id": 0,
              "properties": None}]}
-        measure = MeasureOut(data_type="Test", range="Unknown", id=id_node,
+        measure = MeasureOut(datatype="Test", range="Unknown", unit="cm", id=id_node,
                              relations=[RelationInformation(second_node_id=19, name="testRelation",
                                                             relation_id=0)],
                              reversed_relations=[RelationInformation(second_node_id=15,

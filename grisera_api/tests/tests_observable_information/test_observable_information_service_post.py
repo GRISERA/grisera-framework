@@ -32,7 +32,7 @@ class TestObservableInformationServicePost(unittest.TestCase):
         create_relationships_mock.return_value = {'start_node': 1, 'end_node': 2,
                                                   'name': 'hasActivityExecution', 'errors': None}
 
-        observable_information_in = ObservableInformationIn(modality_id=2, live_activity_id=3)
+        observable_information_in = ObservableInformationIn(modality_id=2, life_activity_id=3)
         observable_information_out = ObservableInformationOut(relations=[RelationInformation(second_node_id=19,
                                                                             name="testRelation",
                                                                             relation_id=0)],
@@ -54,7 +54,7 @@ class TestObservableInformationServicePost(unittest.TestCase):
     def test_save_observable_information_with_node_error(self, create_node_mock):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
-        observable_information = ObservableInformationIn(modality_id=2, live_activity_id=3)
+        observable_information = ObservableInformationIn(modality_id=2, life_activity_id=3)
         observable_information_service = ObservableInformationService()
 
         result = observable_information_service.save_observable_information(observable_information)

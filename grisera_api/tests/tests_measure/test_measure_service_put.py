@@ -27,11 +27,12 @@ class TestMeasureServicePut(unittest.TestCase):
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
         get_node_mock.return_value = {'id': id_node, 'labels': ['Measure'],
-                                      'properties': [{'key': 'data_type', 'value': 'Test'},
-                                                                          {'key': 'range', 'value': 'Unknown'}],
+                                      'properties': [{'key': 'datatype', 'value': 'Test'},
+                                                                          {'key': 'range', 'value': 'Unknown'},
+                                                                          {'key': 'unit', 'value': 'cm'}],
                                       "errors": None, 'links': None}
-        measure_in = MeasurePropertyIn(data_type="Test", range="Unknown", id=id_node)
-        measure_out = MeasureOut(data_type="Test", range="Unknown", id=id_node, relations=
+        measure_in = MeasurePropertyIn(datatype="Test", range="Unknown", unit="cm", id=id_node)
+        measure_out = MeasureOut(datatype="Test", range="Unknown", unit="cm", id=id_node, relations=
                                  [RelationInformation(second_node_id=19, name="testRelation", relation_id=0)],
                                                     reversed_relations=
                                  [RelationInformation(second_node_id=15, name="testReversedRelation", relation_id=0)])
@@ -51,7 +52,7 @@ class TestMeasureServicePut(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        measure_in = MeasurePropertyIn(data_type="Test", range="Unknown")
+        measure_in = MeasurePropertyIn(datatype="Test", range="Unknown", unit="cm")
         measure_service = MeasureService()
 
         result = measure_service.update_measure(id_node, measure_in)
@@ -64,7 +65,7 @@ class TestMeasureServicePut(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        measure_in = MeasurePropertyIn(data_type="Test", range="Unknown")
+        measure_in = MeasurePropertyIn(datatype="Test", range="Unknown", unit="cm")
         measure_service = MeasureService()
 
         result = measure_service.update_measure(id_node, measure_in)

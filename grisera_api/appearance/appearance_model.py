@@ -15,11 +15,13 @@ class AppearanceOcclusionIn(BaseModel):
     Model of appearance occlusion to acquire from client
 
     Attributes:
+        glasses (bool): Does appearance contain glasses
         beard (FacialHair): Length of beard
         moustache (FacialHair): Length of moustache
     """
     beard: FacialHair
     moustache: FacialHair
+    glasses: bool
 
 
 class BasicAppearanceOcclusionOut(AppearanceOcclusionIn):
@@ -53,13 +55,11 @@ class AppearanceSomatotypeIn(BaseModel):
     Model of appearance somatotype to acquire from client
 
     Attributes:
-        glasses (bool): Does appearance contain glasses
         ectomorph (float): Range of ectomorph appearance measure
         endomorph (float): Range of endomorph appearance measure
         mesomorph (float): Range of mesomorph appearance measure
 
     """
-    glasses: bool
     ectomorph: float
     endomorph: float
     mesomorph: float
