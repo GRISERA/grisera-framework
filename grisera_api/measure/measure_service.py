@@ -59,7 +59,7 @@ class MeasureService:
         for measure_node in get_response["nodes"]:
             properties = {'id': measure_node['id']}
             for property in measure_node["properties"]:
-                if property["key"] in ["data_type", "range"]:
+                if property["key"] in ["datatype", "range", "unit"]:
                     properties[property["key"]] = property["value"]
 
             measure = BasicMeasureOut(**properties)
@@ -87,7 +87,7 @@ class MeasureService:
         measure = {'id': get_response['id'], 'relations': [],
                    'reversed_relations': []}
         for property in get_response["properties"]:
-            if property["key"] in ["data_type", "range"]:
+            if property["key"] in ["datatype", "range", "unit"]:
                 measure[property["key"]] = property["value"]
 
         relations_response = self.graph_api_service.get_node_relationships(measure_id)

@@ -15,7 +15,8 @@ class TestAppearanceServiceGet(unittest.TestCase):
     def test_get_appearance_occlusion_without_error(self, get_node_relationships_mock, get_node_mock):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Appearance'],
-                                      'properties': [{'key': 'beard', 'value': "Heavy"},
+                                      'properties': [{'key': 'glasses', 'value': True},
+                                                     {'key': 'beard', 'value': "Heavy"},
                                                      {'key': 'moustache', 'value': "Heavy"}],
                                       'errors': None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
@@ -25,7 +26,7 @@ class TestAppearanceServiceGet(unittest.TestCase):
                                                     {"start_node": 15, "end_node": id_node,
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
-        appearance = AppearanceOcclusionOut(id=id_node, beard="Heavy", moustache="Heavy",
+        appearance = AppearanceOcclusionOut(id=id_node, glasses=True, beard="Heavy", moustache="Heavy",
                                             relations=[
                                                 RelationInformation(second_node_id=19, name="testRelation",
                                                                     relation_id=0)],
@@ -45,8 +46,7 @@ class TestAppearanceServiceGet(unittest.TestCase):
     def test_get_appearance_somatotype_without_error(self, get_node_relationships_mock, get_node_mock):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Appearance'],
-                                      'properties': [{'key': 'glasses', 'value': True},
-                                                     {'key': 'ectomorph', 'value': 1.5},
+                                      'properties': [{'key': 'ectomorph', 'value': 1.5},
                                                      {'key': 'endomorph', 'value': 1.5},
                                                      {'key': 'mesomorph', 'value': 1.5}],
                                       'errors': None, 'links': None}
@@ -57,7 +57,7 @@ class TestAppearanceServiceGet(unittest.TestCase):
             {"start_node": 15, "end_node": id_node,
              "name": "testReversedRelation", "id": 0,
              "properties": None}]}
-        appearance = AppearanceSomatotypeOut(id=id_node, glasses=True, ectomorph=1.5, endomorph=1.5,
+        appearance = AppearanceSomatotypeOut(id=id_node, ectomorph=1.5, endomorph=1.5,
                                              mesomorph=1.5, relations=[
                                                  RelationInformation(second_node_id=19, name="testRelation",
                                                                      relation_id=0)],
@@ -100,15 +100,15 @@ class TestAppearanceServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_appearances(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Appearance'],
-                                                  'properties': [{'key': 'beard', 'value': "Heavy"},
+                                                  'properties': [{'key': 'glasses', 'value': True},
+                                                                 {'key': 'beard', 'value': "Heavy"},
                                                                  {'key': 'moustache', 'value': "Heavy"}]},
                                                  {'id': 2, 'labels': ['Appearance'],
-                                                  'properties': [{'key': 'glasses', 'value': True},
-                                                                 {'key': 'ectomorph', 'value': 1.5},
+                                                  'properties': [{'key': 'ectomorph', 'value': 1.5},
                                                                  {'key': 'endomorph', 'value': 1.5},
                                                                  {'key': 'mesomorph', 'value': 1.5}]}]}
-        appearance_occlusion = BasicAppearanceOcclusionOut(id=1, beard="Heavy", moustache="Heavy")
-        appearance_somatotype = BasicAppearanceSomatotypeOut(id=2, glasses=True, ectomorph=1.5,
+        appearance_occlusion = BasicAppearanceOcclusionOut(id=1, glasses=True, beard="Heavy", moustache="Heavy")
+        appearance_somatotype = BasicAppearanceSomatotypeOut(id=2, ectomorph=1.5,
                                                              endomorph=1.5, mesomorph=1.5)
         appearances = AppearancesOut(appearances=[appearance_occlusion, appearance_somatotype])
         appearance_service = AppearanceService()

@@ -38,7 +38,7 @@ class Modality(str, Enum):
     hrv = "HRV"
     muscle_tension = "muscle tension"
     skin_conductance = "skin conductance"
-    resp_intensity_and_period = "RESP intensity and period"
+    resp_intensity_and_period = "RESP intensity"
     peripheral_temperature = "peripheral temperature"
     neural_activity = "neural activity"
 

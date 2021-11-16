@@ -18,7 +18,8 @@ class TestAppearanceServicePut(unittest.TestCase):
         id_node = 1
         create_properties_mock.return_value = {}
         get_node_mock.return_value = {'id': id_node, 'labels': ['Appearance'],
-                                      'properties': [{'key': 'beard', 'value': "Heavy"},
+                                      'properties': [{'key': 'glasses', 'value': True},
+                                                     {'key': 'beard', 'value': "Heavy"},
                                                      {'key': 'moustache', 'value': "No"}],
                                       'errors': None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
@@ -28,8 +29,8 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                     {"start_node": 15, "end_node": id_node,
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
-        appearance_in = AppearanceOcclusionIn(beard="Heavy", moustache="No")
-        appearance_out = AppearanceOcclusionOut(id=id_node, beard="Heavy", moustache="No", relations=[
+        appearance_in = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="No")
+        appearance_out = AppearanceOcclusionOut(id=id_node, glasses=True, beard="Heavy", moustache="No", relations=[
                                                 RelationInformation(second_node_id=19, name="testRelation",
                                                                     relation_id=0)],
                                                 reversed_relations=[
@@ -51,8 +52,7 @@ class TestAppearanceServicePut(unittest.TestCase):
         id_node = 1
         create_properties_mock.return_value = {}
         get_node_mock.return_value = {'id': id_node, 'labels': ['Appearance'],
-                                      'properties': [{'key': 'glasses', 'value': True},
-                                                     {'key': 'ectomorph', 'value': 1.5},
+                                      'properties': [{'key': 'ectomorph', 'value': 1.5},
                                                      {'key': 'endomorph', 'value': 1.5},
                                                      {'key': 'mesomorph', 'value': 1.5}],
                                       'errors': None, 'links': None}
@@ -63,8 +63,8 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                     {"start_node": 15, "end_node": id_node,
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
-        appearance_in = AppearanceSomatotypeIn(glasses=True, ectomorph=1.5, endomorph=1.5, mesomorph=1.5)
-        appearance_out = AppearanceSomatotypeOut(id=id_node, glasses=True, ectomorph=1.5, endomorph=1.5, mesomorph=1.5,
+        appearance_in = AppearanceSomatotypeIn(ectomorph=1.5, endomorph=1.5, mesomorph=1.5)
+        appearance_out = AppearanceSomatotypeOut(id=id_node, ectomorph=1.5, endomorph=1.5, mesomorph=1.5,
                                                  relations=[
                                                      RelationInformation(second_node_id=19, name="testRelation",
                                                                          relation_id=0)],
@@ -94,7 +94,7 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        appearance_in = AppearanceOcclusionIn(beard="Heavy", moustache="No")
+        appearance_in = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="No")
         appearance_service = AppearanceService()
 
         result = appearance_service.update_appearance_occlusion(id_node, appearance_in)
@@ -116,7 +116,7 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        appearance_in = AppearanceSomatotypeIn(glasses=True, ectomorph=1.5, endomorph=1.5, mesomorph=1.5)
+        appearance_in = AppearanceSomatotypeIn(ectomorph=1.5, endomorph=1.5, mesomorph=1.5)
         appearance_service = AppearanceService()
 
         result = appearance_service.update_appearance_somatotype(id_node, appearance_in)
@@ -137,7 +137,7 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        appearance_in = AppearanceOcclusionIn(beard="Heavy", moustache="No")
+        appearance_in = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="No")
         appearance_service = AppearanceService()
 
         result = appearance_service.update_appearance_occlusion(id_node, appearance_in)
@@ -158,7 +158,7 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        appearance_in = AppearanceSomatotypeIn(glasses=True, ectomorph=1.5, endomorph=1.5, mesomorph=1.5)
+        appearance_in = AppearanceSomatotypeIn(ectomorph=1.5, endomorph=1.5, mesomorph=1.5)
         appearance_service = AppearanceService()
 
         result = appearance_service.update_appearance_somatotype(id_node, appearance_in)
@@ -168,8 +168,8 @@ class TestAppearanceServicePut(unittest.TestCase):
 
     def test_update_appearance_somatotype_with_wrong_range(self):
         id_node = 1
-        appearance_in = AppearanceSomatotypeIn(glasses=True, ectomorph=0.5, endomorph=1.5, mesomorph=1.5)
-        appearance_out = AppearanceSomatotypeOut(glasses=True, ectomorph=0.5, endomorph=1.5, mesomorph=1.5,
+        appearance_in = AppearanceSomatotypeIn(ectomorph=0.5, endomorph=1.5, mesomorph=1.5)
+        appearance_out = AppearanceSomatotypeOut(ectomorph=0.5, endomorph=1.5, mesomorph=1.5,
                                                  errors="Scale range not between 1 and 7")
         appearance_service = AppearanceService()
 

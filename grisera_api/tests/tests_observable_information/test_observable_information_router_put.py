@@ -12,7 +12,7 @@ class TestObservableInformationRouterPut(unittest.TestCase):
         id_node = 1
         update_observable_information_relationships_mock.return_value = ObservableInformationOut(id=id_node)
         response = Response()
-        observable_information_in = ObservableInformationIn(modality_id=2, live_activity_id=3)
+        observable_information_in = ObservableInformationIn(modality_id=2, life_activity_id=3)
         observable_information_out = ObservableInformationOut(id=id_node, links=get_links(router))
         observable_information_router = ObservableInformationRouter()
 
@@ -28,7 +28,7 @@ class TestObservableInformationRouterPut(unittest.TestCase):
         id_node = 1
         update_observable_information_relationships_mock.return_value = ObservableInformationOut(id=id_node, errors="error")
         response = Response()
-        observable_information_in = ObservableInformationIn(modality_id=2, live_activity_id=3)
+        observable_information_in = ObservableInformationIn(modality_id=2, life_activity_id=3)
         observable_information_out = ObservableInformationOut(id=id_node, errors="error", links=get_links(router))
         observable_information_router = ObservableInformationRouter()
 

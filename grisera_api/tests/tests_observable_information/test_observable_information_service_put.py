@@ -29,7 +29,7 @@ class TestObservableInformationServicePut(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Observable Information'],
                                       'properties': None,
                                       "errors": None, 'links': None}
-        observable_information_in = ObservableInformationIn(modality_id=15, live_activity_id=19)
+        observable_information_in = ObservableInformationIn(modality_id=15, life_activity_id=19)
         observable_information_out = ObservableInformationOut(id=id_node, relations=
                                  [RelationInformation(second_node_id=19, name="testRelation", relation_id=0)],
                                                     reversed_relations=
@@ -50,7 +50,7 @@ class TestObservableInformationServicePut(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        observable_information_in = ObservableInformationIn(modality_id=15, live_activity_id=19)
+        observable_information_in = ObservableInformationIn(modality_id=15, life_activity_id=19)
         observable_information_service = ObservableInformationService()
 
         result = observable_information_service.update_observable_information_relationships(id_node, observable_information_in)
@@ -63,7 +63,7 @@ class TestObservableInformationServicePut(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        observable_information_in = ObservableInformationIn(modality_id=15, live_activity_id=19)
+        observable_information_in = ObservableInformationIn(modality_id=15, life_activity_id=19)
         observable_information_service = ObservableInformationService()
 
         result = observable_information_service.update_observable_information_relationships(id_node, observable_information_in)

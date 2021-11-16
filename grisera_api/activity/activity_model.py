@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import Optional, Any, List
 from enum import Enum
 from models.relation_information_model import RelationInformation
+from property.property_model import PropertyIn
 
 
 class Activity(str, Enum):
@@ -24,8 +25,10 @@ class ActivityIn(BaseModel):
 
     Attributes:
     activity (str): Type of activity
+    additional_properties (Optional[List[PropertyIn]]): Additional properties for activity
     """
     activity: str
+    additional_properties: Optional[List[PropertyIn]]
 
 
 class BasicActivityOut(ActivityIn):

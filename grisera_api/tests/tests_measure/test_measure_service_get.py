@@ -15,8 +15,9 @@ class TestMeasureServiceGet(unittest.TestCase):
     def test_get_measure_without_error(self, get_node_relationships_mock, get_node_mock):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Measure'],
-                                      'properties': [{'key': 'data_type', 'value': 'Test'},
-                                                                          {'key': 'range', 'value': 'Unknown'}],
+                                      'properties': [{'key': 'datatype', 'value': 'Test'},
+                                                                          {'key': 'range', 'value': 'Unknown'},
+                                                                          {'key': 'unit', 'value': 'cm'}],
                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
                                                     {"start_node": id_node, "end_node": 19,
@@ -25,7 +26,7 @@ class TestMeasureServiceGet(unittest.TestCase):
                                                     {"start_node": 15, "end_node": id_node,
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
-        measure = MeasureOut(data_type="Test", range="Unknown", id=id_node,
+        measure = MeasureOut(datatype="Test", range="Unknown", unit="cm", id=id_node,
                                                 relations=[RelationInformation(second_node_id=19, name="testRelation",
                                                                                relation_id=0)],
                                                 reversed_relations=[RelationInformation(second_node_id=15,
@@ -67,13 +68,15 @@ class TestMeasureServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_measures(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Measure'],
-                                                  'properties': [{'key': 'data_type', 'value': 'Test'},
-                                                                          {'key': 'range', 'value': 'Unknown'}]},
+                                                  'properties': [{'key': 'datatype', 'value': 'Test'},
+                                                                          {'key': 'range', 'value': 'Unknown'},
+                                                                          {'key': 'unit', 'value': 'cm'}]},
                                                  {'id': 2, 'labels': ['Measure'],
-                                                  'properties': [{'key': 'data_type', 'value': 'Test'},
-                                                                          {'key': 'range', 'value': 'Unknown'}]}]}
-        measure_one = BasicMeasureOut(id=1, data_type="Test", range="Unknown")
-        measure_two = BasicMeasureOut(id=2, data_type="Test", range="Unknown")
+                                                  'properties': [{'key': 'datatype', 'value': 'Test'},
+                                                                          {'key': 'range', 'value': 'Unknown'},
+                                                                          {'key': 'unit', 'value': 'cm'}]}]}
+        measure_one = BasicMeasureOut(id=1, datatype="Test", range="Unknown", unit="cm")
+        measure_two = BasicMeasureOut(id=2, datatype="Test", range="Unknown", unit="cm")
         measures = MeasuresOut(measures=[measure_one, measure_two])
         measures_service = MeasureService()
 

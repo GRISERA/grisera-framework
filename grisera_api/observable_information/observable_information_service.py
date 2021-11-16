@@ -2,7 +2,7 @@ from graph_api_service import GraphApiService
 from observable_information.observable_information_model import ObservableInformationIn, ObservableInformationOut, \
     BasicObservableInformationOut, ObservableInformationsOut
 from modality.modality_service import ModalityService
-from live_activity.live_activity_service import LiveActivityService
+from life_activity.life_activity_service import LifeActivityService
 from recording.recording_service import RecordingService
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
@@ -15,12 +15,12 @@ class ObservableInformationService:
     Attributes:
     graph_api_service (GraphApiService): Service used to communicate with Graph API
     modality_service (ModalityService): Service used to communicate with Modality
-    live_activity_service (LiveActivityService): Service used to communicate with Live Activity
+    life_activity_service (LifeActivityService): Service used to communicate with Life Activity
     recording_service (RecordingService): Service used to communicate with Recording
     """
     graph_api_service = GraphApiService()
     modality_service = ModalityService()
-    live_activity_service = LiveActivityService()
+    life_activity_service = LifeActivityService()
     recording_service = RecordingService()
 
     def save_observable_information(self, observable_information: ObservableInformationIn):
@@ -45,12 +45,12 @@ class ObservableInformationService:
             self.graph_api_service.create_relationships(start_node=observable_information_id,
                                                         end_node=observable_information.modality_id, name="hasModality")
 
-        if observable_information.live_activity_id is not None and \
-                type(self.live_activity_service.get_live_activity(
-                    observable_information.live_activity_id)) is not NotFoundByIdModel:
+        if observable_information.life_activity_id is not None and \
+                type(self.life_activity_service.get_life_activity(
+                    observable_information.life_activity_id)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=observable_information_id,
-                                                        end_node=observable_information.live_activity_id,
-                                                        name="hasLiveActivity")
+                                                        end_node=observable_information.life_activity_id,
+                                                        name="hasLifeActivity")
 
         if observable_information.recording_id is not None and \
                 type(
@@ -147,12 +147,12 @@ class ObservableInformationService:
             self.graph_api_service.create_relationships(start_node=observable_information_id,
                                                         end_node=observable_information.modality_id, name="hasModality")
 
-        if observable_information.live_activity_id is not None and \
-                type(self.live_activity_service.get_live_activity(
-                    observable_information.live_activity_id)) is not NotFoundByIdModel:
+        if observable_information.life_activity_id is not None and \
+                type(self.life_activity_service.get_life_activity(
+                    observable_information.life_activity_id)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=observable_information_id,
-                                                        end_node=observable_information.live_activity_id,
-                                                        name="hasLiveActivity")
+                                                        end_node=observable_information.life_activity_id,
+                                                        name="hasLifeActivity")
 
         if observable_information.recording_id is not None and \
                 type(
