@@ -48,7 +48,7 @@ class RegisteredDataNodesOut(BaseModel):
     Model of registered data nodes to send to client as a result of request
 
     Attributes:
-    registered_data_nodes (List[BasicRegisteredDataOut]): Registered data nodes from database
+    registered_data_nodes (List[BasicRegisteredDataOut]): Registered Data nodes from database
     errors (Optional[Any]): Optional errors appeared during query executions
     links (Optional[list]): List of links available from api
     """
