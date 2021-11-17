@@ -20,7 +20,7 @@ class TestAppearanceServicePut(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Appearance'],
                                       'properties': [{'key': 'glasses', 'value': True},
                                                      {'key': 'beard', 'value': "Heavy"},
-                                                     {'key': 'moustache', 'value': "No"}],
+                                                     {'key': 'moustache', 'value': "None"}],
                                       'errors': None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
                                                     {"start_node": id_node, "end_node": 19,
@@ -29,8 +29,8 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                     {"start_node": 15, "end_node": id_node,
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
-        appearance_in = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="No")
-        appearance_out = AppearanceOcclusionOut(id=id_node, glasses=True, beard="Heavy", moustache="No", relations=[
+        appearance_in = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="None")
+        appearance_out = AppearanceOcclusionOut(id=id_node, glasses=True, beard="Heavy", moustache="None", relations=[
                                                 RelationInformation(second_node_id=19, name="testRelation",
                                                                     relation_id=0)],
                                                 reversed_relations=[
@@ -94,7 +94,7 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        appearance_in = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="No")
+        appearance_in = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="None")
         appearance_service = AppearanceService()
 
         result = appearance_service.update_appearance_occlusion(id_node, appearance_in)
@@ -137,7 +137,7 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                      "name": "testReversedRelation", "id": 0,
                                                      "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        appearance_in = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="No")
+        appearance_in = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="None")
         appearance_service = AppearanceService()
 
         result = appearance_service.update_appearance_occlusion(id_node, appearance_in)
