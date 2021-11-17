@@ -1,3 +1,5 @@
+import os
+from time import sleep
 from activity.activity_router import router as activity_router
 from activity_execution.activity_execution_router import router as activity_execution_router
 from arrangement.arrangement_router import router as arrangement_router
@@ -54,12 +56,17 @@ app.include_router(time_series_router)
 @app.on_event("startup")
 async def startup_event():
     startup = SetupNodes()
-    startup.set_activities()
-    startup.set_channels()
-    startup.set_arrangements()
-    startup.set_modalities()
-    startup.set_life_activities()
-    startup.set_measure_names()
+    sleep(40)
+    if not os.path.exists("lock"):
+        open("lock", "w").write("Busy")
+        sleep(40)
+        startup.set_activities()
+        startup.set_channels()
+        startup.set_arrangements()
+        startup.set_modalities()
+        startup.set_life_activities()
+        startup.set_measure_names()
+        os.remove("lock")
 
 
 @app.get("/", tags=["root"])

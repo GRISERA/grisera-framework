@@ -24,8 +24,8 @@ class ActivityExecutionRelationIn(BaseModel):
     activity_id (int): Id of activity
     arrangement_id (int) : Id of arrangement
     """
-    activity_id: int
-    arrangement_id: int
+    activity_id: Optional[int]
+    arrangement_id: Optional[int]
 
 
 class ActivityExecutionIn(ActivityExecutionPropertyIn, ActivityExecutionRelationIn):
