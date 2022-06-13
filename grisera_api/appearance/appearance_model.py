@@ -7,7 +7,7 @@ from models.relation_information_model import RelationInformation
 class FacialHair(str, Enum):
     heavy = "Heavy"
     some = "Some"
-    no = "No"
+    no = "None"
 
 
 class AppearanceOcclusionIn(BaseModel):

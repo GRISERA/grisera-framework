@@ -14,7 +14,7 @@ class TestRegisteredDataServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_get_registered_data_without_error(self, get_node_relationships_mock, get_node_mock):
         id_node = 1
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Registered data'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Data'],
                                       'properties': [{'key': 'source', 'value': 'test'},
                                                      {'key': 'test', 'value': 'test'}],
                                       "errors": None, 'links': None}
@@ -66,9 +66,9 @@ class TestRegisteredDataServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_registered_data_nodes(self, get_nodes_mock):
-        get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['`Registered data`'],
+        get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['`Registered Data`'],
                                                   'properties': [{'key': 'source', 'value': 'test'}]},
-                                                 {'id': 2, 'labels': ['`Registered data`'],
+                                                 {'id': 2, 'labels': ['`Registered Data`'],
                                                   'properties': [{'key': 'source', 'value': 'test2'}]}]}
         registered_data_one = BasicRegisteredDataOut(source="test", id=1, additional_properties=[])
         registered_data_two = BasicRegisteredDataOut(source="test2", id=2, additional_properties=[])
@@ -78,7 +78,7 @@ class TestRegisteredDataServiceGet(unittest.TestCase):
         result = registered_data_service.get_registered_data_nodes()
 
         self.assertEqual(result, registered_data_nodes)
-        get_nodes_mock.assert_called_once_with("`Registered data`")
+        get_nodes_mock.assert_called_once_with("`Registered Data`")
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_registered_data_nodes_empty(self, get_nodes_mock):
@@ -89,4 +89,4 @@ class TestRegisteredDataServiceGet(unittest.TestCase):
         result = registered_data_service.get_registered_data_nodes()
 
         self.assertEqual(result, registered_data_nodes)
-        get_nodes_mock.assert_called_once_with("`Registered data`")
+        get_nodes_mock.assert_called_once_with("`Registered Data`")
