@@ -1,6 +1,10 @@
+from typing import Union
+from fastapi import Query
 import requests
 from requests.auth import HTTPBasicAuth
 from database_config import database
+from datetime import date
+from typing import List, Union
 
 
 class DatabaseService:
@@ -101,18 +105,38 @@ class DatabaseService:
         get_statement = f"MATCH (n) WHERE id(n)={node_id} RETURN n, labels(n)"
         return self.post_statement(get_statement)
 
-    def get_nodes(self, label):
+    def get_nodes(
+            self,
+            label,
+            properties_keys: Union[List[str], None] = Query(default=None),
+            properties_values: Union[List[str], None] = Query(default=None),
+    ):
         """
         Send to the database request to get nodes with given label
-
         Args:
+            properties_keys: properties keys to search
+            properties_values: properties values to search
             label (): label to search by
-
         Returns:
             Result of request
         """
-        get_statement = "MATCH (n: {label}) RETURN n".format(
-            label=label)
+
+        adicional_properties = ""
+
+        if properties_keys and properties_values and len(properties_keys) == len(properties_values):
+            properties_dictionary = dict(zip(properties_keys, properties_values))
+
+            for key in properties_dictionary.keys():
+                value = properties_dictionary[key]
+                adicional_properties += ", {key}: '{value}' ".format(
+                    key=key, value=value
+                )
+
+        get_statement = (
+            "MATCH (n: {label} {{ {adicional_properties} }}) RETURN n".format(
+                label=label, adicional_properties=adicional_properties
+            )
+        )
         return self.post_statement(get_statement)
 
     def delete_node(self, node_id):

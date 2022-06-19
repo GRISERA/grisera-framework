@@ -1,4 +1,6 @@
-from fastapi import Response
+from datetime import date
+from typing import List
+from fastapi import Query, Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
@@ -39,13 +41,43 @@ class ParticipantRouter:
         return create_response
 
     @router.get("/participants", tags=["participants"], response_model=ParticipantsOut)
-    async def get_participants(self, response: Response):
+    async def get_participants(
+            self,
+            response: Response,
+            name: Union[str, None] = None,
+            sex: Union[str, None] = None,
+            disorder: Union[str, None] = None,
+            date_of_birth: Union[date, None] = None,
+            properties_keys: Union[List[str], None] = Query(default=None),
+            properties_values: Union[List[str], None] = Query(default=None)
+    ):
         """
         Get participants from database
         """
 
-        get_response = self.participant_service.get_participants()
+        if not properties_keys or not properties_values:
+            properties_keys = []
+            properties_values = []
 
+        if name:
+            properties_keys.append("name")
+            properties_values.append(name)
+
+        if sex:
+            properties_keys.append("sex")
+            properties_values.append(sex)
+
+        if disorder:
+            properties_keys.append("disorder")
+            properties_values.append(disorder)
+
+        if date_of_birth:
+            properties_keys.append("date_of_birth")
+            properties_values.append(date_of_birth)
+
+        get_response = self.participant_service.get_participants(
+            properties_keys=properties_keys, properties_values=properties_values
+        )
         # add links from hateoas
         get_response.links = get_links(router)
 

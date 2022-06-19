@@ -1,7 +1,16 @@
 from graph_api_service import GraphApiService
-from participant.participant_model import ParticipantIn, ParticipantsOut, BasicParticipantOut, ParticipantOut
+from participant.participant_model import (
+    ParticipantIn,
+    ParticipantsOut,
+    BasicParticipantOut,
+    ParticipantOut,
+)
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
+from typing import Union
+from typing import List
+from fastapi import Query, Response
+
 
 
 class ParticipantService:
@@ -35,24 +44,34 @@ class ParticipantService:
 
         return ParticipantOut(**participant.dict(), id=participant_id)
 
-    def get_participants(self):
+    def get_participants(
+            self,
+            properties_keys: Union[List[str], None] = Query(default=None),
+            properties_values: Union[List[str], None] = Query(default=None),
+    ):
         """
         Send request to graph api to get participants
 
         Returns:
             Result of request as list of participants objects
         """
-        get_response = self.graph_api_service.get_nodes("Participant")
+        get_response = self.graph_api_service.get_nodes(
+            "Participant",
+            properties_keys=properties_keys,
+            properties_values=properties_values,
+        )
 
         participants = []
 
         for participant_node in get_response["nodes"]:
-            properties = {'id': participant_node['id'], 'additional_properties': []}
+            properties = {"id": participant_node["id"], "additional_properties": []}
             for property in participant_node["properties"]:
                 if property["key"] in ["name", "date_of_birth", "sex", "disorder"]:
                     properties[property["key"]] = property["value"]
                 else:
-                    properties['additional_properties'].append({'key': property['key'], 'value': property['value']})
+                    properties["additional_properties"].append(
+                        {"key": property["key"], "value": property["value"]}
+                    )
             participant = BasicParticipantOut(**properties)
             participants.append(participant)
 

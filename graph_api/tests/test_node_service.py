@@ -58,25 +58,29 @@ class NodeServiceTestCase(unittest.TestCase):
     @mock.patch.object(DatabaseService, 'get_nodes')
     def test_get_nodes_without_error(self, get_nodes_mock):
         get_nodes_mock.return_value = {'results': [{'data': [{'row': [{}], 'meta': [{'id': '5'}]}]}],
-                                      'errors': []}
+                                       'errors': []}
         label = "Test"
+        properties_keys = list[str]
+        properties_values = list[str]
         node_service = NodeService()
 
-        result = node_service.get_nodes(label)
+        result = node_service.get_nodes(label, properties_keys, properties_values)
 
         self.assertEqual(result, NodesOut(nodes=[BasicNodeOut(id=5, labels={"Test"}, properties=[])]))
-        get_nodes_mock.assert_called_once_with(label)
+        get_nodes_mock.assert_called_once_with(label, properties_keys, properties_values)
 
     @mock.patch.object(DatabaseService, 'get_nodes')
     def test_get_nodes_with_error(self, get_nodes_mock):
         get_nodes_mock.return_value = {'results': [{'data': [{'meta': [{}]}]}], 'errors': ['error']}
         label = "Test"
+        properties_keys = list[str]
+        properties_values = list[str]
         node_service = NodeService()
 
-        result = node_service.get_nodes(label)
+        result = node_service.get_nodes(label, properties_keys, properties_values)
 
         self.assertEqual(result, NodesOut(errors=['error']))
-        get_nodes_mock.assert_called_once_with(label)
+        get_nodes_mock.assert_called_once_with(label, properties_keys, properties_values)
 
     @mock.patch.object(NodeService, 'get_node')
     @mock.patch.object(DatabaseService, 'delete_node')

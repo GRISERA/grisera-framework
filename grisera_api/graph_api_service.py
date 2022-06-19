@@ -1,6 +1,9 @@
 import requests
 from graph_api_config import graph_api_address
 from pydantic import BaseModel
+from typing import Union
+from typing import List
+from fastapi import Query
 
 
 class GraphApiService:
@@ -72,16 +75,26 @@ class GraphApiService:
         request_body = {"labels": [label]}
         return self.post("/nodes", request_body)
 
-    def get_nodes(self, label: str):
+    def get_nodes(
+            self,
+            label: str,
+            properties_keys: Union[List[str], None] = Query(default=None),
+            properties_values: Union[List[str], None] = Query(default=None),
+    ):
         """
         Send to the Graph API request to get nodes with given label
-
         Args:
             label (str): Label of nodes
+            properties_values: values of nodes properties
+            properties_keys: keys of nodes properties
         Returns:
             Result of request
         """
-        request_params = {"label": label}
+        request_params = {
+            "label": label,
+            "properties_keys": properties_keys,
+            "properties_values": properties_values,
+        }
         return self.get("/nodes", request_params)
 
     def get_node(self, id: int):

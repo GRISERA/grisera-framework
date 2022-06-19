@@ -100,10 +100,12 @@ class DatabaseServiceTestCase(unittest.TestCase):
     @mock.patch('database_service.requests')
     def test_get_nodes(self, requests_mock):
         requests_mock.post.return_value = self.response
-        commit_body = {"statements": [{"statement": "MATCH (n: Test) RETURN n"}]}
+        properties_keys = ["string"]
+        properties_values = ["string"]
+        commit_body = {"statements": [{"statement": "MATCH (n: Test { , string: 'string'  }) RETURN n"}]}
         label = "Test"
 
-        result = self.database_service.get_nodes(label)
+        result = self.database_service.get_nodes(label, properties_keys, properties_values)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,

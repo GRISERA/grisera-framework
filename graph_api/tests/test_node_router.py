@@ -111,12 +111,14 @@ class NodeRouterTestCase(unittest.TestCase):
         get_nodes_mock.side_effect = return_nodes
         response = Response()
         label = "Test"
+        properties_keys = list[str]
+        properties_values = list[str]
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.get_nodes(label, response))
+        result = asyncio.run(node_router.get_nodes(label, response, properties_keys, properties_values))
 
         self.assertEqual(result, NodesOut(nodes=[BasicNodeOut(id=5, labels={label})], links=get_links(router)))
-        get_nodes_mock.assert_called_with(label)
+        get_nodes_mock.assert_called_with(label, properties_keys=properties_keys, properties_values=properties_values)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(NodeService, 'get_nodes')
@@ -124,12 +126,15 @@ class NodeRouterTestCase(unittest.TestCase):
         get_nodes_mock.return_value = NodesOut(errors='error')
         response = Response()
         label = "Test"
+        properties_keys = list[str]
+        properties_values = list[str]
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.get_nodes(label, response))
+        result = asyncio.run(node_router.get_nodes(label, response, properties_keys=properties_keys,
+                                                   properties_values=properties_values))
 
         self.assertEqual(result, NodesOut(errors='error', links=get_links(router)))
-        get_nodes_mock.assert_called_with(label)
+        get_nodes_mock.assert_called_with(label, properties_keys=properties_keys, properties_values=properties_values)
         self.assertEqual(response.status_code, 422)
 
     @mock.patch.object(NodeService, 'save_properties')
