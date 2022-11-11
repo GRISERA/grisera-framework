@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from hateoas import get_links
 
 app = FastAPI(title="Ontology API",
               description="Ontology API is reference implementation for creating, manipulating and serialising Ontologies for the GRISERA framework.",
