@@ -24,16 +24,7 @@ class PersonalityService:
         Returns:
             Result of request as personality big five object
         """
-
-        if not 0 <= personality.agreeableness <= 1 or not 0 <= personality.conscientiousness <= 1 or \
-           not 0 <= personality.extroversion <= 1 or not 0 <= personality.neuroticism <= 1 or \
-           not 0 <= personality.openess <= 1:
-            return PersonalityBigFiveOut(**personality.dict(), errors="Value not between 0 and 1")
-
-        node_response = self.graph_api_service.create_node("Personality")
-        personality_id = node_response["id"]
-        self.graph_api_service.create_properties(personality_id, personality)
-        return PersonalityBigFiveOut(**personality.dict(), id=personality_id)
+        raise Exception("save_personality_big_five not implemented yet")
 
     def save_personality_panas(self, personality: PersonalityPanasIn):
         """
@@ -45,14 +36,7 @@ class PersonalityService:
         Returns:
             Result of request as personality panas object
         """
-        if not 0 <= personality.negative_affect <= 1 or not 0 <= personality.positive_affect <= 1:
-            return PersonalityPanasOut(**personality.dict(), errors="Value not between 0 and 1")
-
-        node_response = self.graph_api_service.create_node("Personality")
-        personality_id = node_response["id"]
-        self.graph_api_service.create_properties(personality_id, personality)
-
-        return PersonalityPanasOut(**personality.dict(), id=personality_id)
+        raise Exception("save_personality_panas not implemented yet")
 
     def get_personality(self, personality_id: int):
         """
@@ -64,29 +48,7 @@ class PersonalityService:
         Returns:
             Result of request as personality object
         """
-        get_response = self.graph_api_service.get_node(personality_id)
-
-        if get_response["errors"] is not None:
-            return NotFoundByIdModel(id=personality_id, errors=get_response["errors"])
-        if get_response["labels"][0] != "Personality":
-            return NotFoundByIdModel(id=personality_id, errors="Node not found.")
-
-        personality = {'id': personality_id, 'relations': [], 'reversed_relations': []}
-        personality.update({property["key"]: property["value"] for property in get_response["properties"]})
-
-        relations_response = self.graph_api_service.get_node_relationships(personality_id)
-
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == personality_id:
-                personality["relations"].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                    name=relation["name"], relation_id=relation["id"]))
-            else:
-                personality["reversed_relations"].append(RelationInformation(second_node_id=relation["start_node"],
-                                                                             name=relation["name"],
-                                                                             relation_id=relation["id"]))
-
-        return PersonalityPanasOut(**personality) if "negative_affect" in personality.keys() \
-            else PersonalityBigFiveOut(**personality)
+        raise Exception("get_personality not implemented yet")
 
     def get_personalities(self):
         """
@@ -95,18 +57,7 @@ class PersonalityService:
         Returns:
             Result of request as list of personalities objects
         """
-        get_response = self.graph_api_service.get_nodes("Personality")
-
-        personalities = []
-
-        for personality_node in get_response["nodes"]:
-            properties = {property["key"]: property["value"] for property in personality_node["properties"]}
-            properties["id"] = personality_node["id"]
-            personality = BasicPersonalityPanasOut(**properties) if "negative_affect" in properties.keys() \
-                else BasicPersonalityBigFiveOut(**properties)
-            personalities.append(personality)
-
-        return PersonalitiesOut(personalities=personalities)
+        raise Exception("get_personalities not implemented yet")
 
     def delete_personality(self, personality_id: int):
         """
@@ -118,12 +69,7 @@ class PersonalityService:
         Returns:
             Result of request as personality object
         """
-        get_response = self.get_personality(personality_id)
-
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
-        self.graph_api_service.delete_node(personality_id)
-        return get_response
+        raise Exception("delete_personality not implemented yet")
 
     def update_personality_big_five(self, personality_id: int, personality: PersonalityBigFiveIn):
         """
@@ -136,21 +82,7 @@ class PersonalityService:
         Returns:
             Result of request as personality object
         """
-        if not 0 <= personality.agreeableness <= 1 or not 0 <= personality.conscientiousness <= 1 or \
-           not 0 <= personality.extroversion <= 1 or not 0 <= personality.neuroticism <= 1 or \
-           not 0 <= personality.openess <= 1:
-            return PersonalityBigFiveOut(**personality.dict(), errors="Value not between 0 and 1")
-
-        get_response = self.get_personality(personality_id)
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
-        if type(get_response) is PersonalityPanasOut:
-            return NotFoundByIdModel(id=personality_id, errors="Node not found.")
-
-        self.graph_api_service.create_properties(personality_id, personality)
-        personality_response = get_response.dict()
-        personality_response.update(personality)
-        return PersonalityBigFiveOut(**personality_response)
+        raise Exception("update_personality_big_five not implemented yet")
 
     def update_personality_panas(self, personality_id: int, personality: PersonalityPanasIn):
         """
@@ -163,17 +95,4 @@ class PersonalityService:
         Returns:
             Result of request as personality object
         """
-        if not 0 <= personality.negative_affect <= 1 or not 0 <= personality.positive_affect <= 1:
-            return PersonalityPanasOut(**personality.dict(), errors="Value not between 0 and 1")
-
-        get_response = self.get_personality(personality_id)
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
-        if type(get_response) is PersonalityBigFiveOut:
-            return NotFoundByIdModel(id=personality_id, errors="Node not found.")
-
-        self.graph_api_service.create_properties(personality_id, personality)
-
-        personality_response = get_response.dict()
-        personality_response.update(personality)
-        return PersonalityPanasOut(**personality_response)
+        raise Exception("update_personality_panas not implemented yet")

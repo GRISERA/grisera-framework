@@ -30,26 +30,7 @@ class ParticipationService:
         Returns:
             Result of request as participation object
         """
-        node_response = self.graph_api_service.create_node("Participation")
-
-        if node_response["errors"] is not None:
-            return ParticipationOut(errors=node_response["errors"])
-
-        participation_id = node_response["id"]
-
-        if participation.activity_execution_id is not None and \
-                type(self.activity_execution_service.get_activity_execution(participation.activity_execution_id)) \
-                is not NotFoundByIdModel:
-            self.graph_api_service.create_relationships(participation_id, participation.activity_execution_id,
-                                                        "hasActivityExecution")
-
-        if participation.participant_state_id is not None and \
-                type(self.participant_state_service.get_participant_state(participation.participant_state_id)) \
-                is not NotFoundByIdModel:
-            self.graph_api_service.create_relationships(participation_id, participation.participant_state_id,
-                                                        "hasParticipantState")
-
-        return self.get_participation(participation_id)
+        raise Exception("save_participation not implemented yet")
 
     def get_participations(self):
         """
@@ -57,16 +38,7 @@ class ParticipationService:
         Returns:
             Result of request as list of participation objects
         """
-        get_response = self.graph_api_service.get_nodes("Participation")
-
-        participations = []
-
-        for participation_node in get_response["nodes"]:
-            properties = {'id': participation_node['id']}
-            participation = BasicParticipationOut(**properties)
-            participations.append(participation)
-
-        return ParticipationsOut(participations=participations)
+        raise Exception("get_participations not implemented yet")
 
     def get_participation(self, participation_id: int):
         """
@@ -76,30 +48,7 @@ class ParticipationService:
         Returns:
             Result of request as participation object
         """
-        get_response = self.graph_api_service.get_node(participation_id)
-
-        if get_response["errors"] is not None:
-            return NotFoundByIdModel(id=participation_id, errors=get_response["errors"])
-        if get_response["labels"][0] != "Participation":
-            return NotFoundByIdModel(id=participation_id, errors="Node not found.")
-
-        participation = {'id': get_response['id'], 'relations': [],
-                         'reversed_relations': []}
-
-        relations_response = self.graph_api_service.get_node_relationships(participation_id)
-
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == participation_id:
-                participation['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                      name=relation["name"],
-                                                                      relation_id=relation["id"]))
-            else:
-                participation['reversed_relations'].append(
-                    RelationInformation(second_node_id=relation["start_node"],
-                                        name=relation["name"],
-                                        relation_id=relation["id"]))
-
-        return ParticipationOut(**participation)
+        raise Exception("get_participation not implemented yet")
 
     def delete_participation(self, participation_id: int):
         """
@@ -109,13 +58,7 @@ class ParticipationService:
         Returns:
             Result of request as participation object
         """
-        get_response = self.get_participation(participation_id)
-
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
-
-        self.graph_api_service.delete_node(participation_id)
-        return get_response
+        raise Exception("delete_participation not implemented yet")
 
     def update_participation_relationships(self, participation_id: int,
                                            participation: ParticipationIn):
@@ -127,21 +70,4 @@ class ParticipationService:
         Returns:
             Result of request as participation object
         """
-        get_response = self.get_participation(participation_id)
-
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
-
-        if participation.activity_execution_id is not None and \
-                type(self.activity_execution_service.get_activity_execution(participation.activity_execution_id)) \
-                is not NotFoundByIdModel:
-            self.graph_api_service.create_relationships(participation_id, participation.activity_execution_id,
-                                                        "hasActivityExecution")
-
-        if participation.participant_state_id is not None and \
-                type(self.participant_state_service.get_participant_state(participation.participant_state_id)) \
-                is not NotFoundByIdModel:
-            self.graph_api_service.create_relationships(participation_id, participation.participant_state_id,
-                                                        "hasParticipantState")
-
-        return self.get_participation(participation_id)
+        raise Exception("update_participation_relationships not implemented yet")

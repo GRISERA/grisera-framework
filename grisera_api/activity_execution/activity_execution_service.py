@@ -30,31 +30,7 @@ class ActivityExecutionService:
         Returns:
             Result of request as activity execution object
         """
-        node_response = self.graph_api_service.create_node("`Activity Execution`")
-
-        if node_response["errors"] is not None:
-            return ActivityExecutionOut(**activity_execution.dict(), errors=node_response["errors"])
-
-        activity_execution_id = node_response["id"]
-
-        if activity_execution.activity_id is not None and \
-                type(self.activity_service.get_activity(activity_execution.activity_id)) is not NotFoundByIdModel:
-            self.graph_api_service.create_relationships(start_node=activity_execution_id,
-                                                        end_node=activity_execution.activity_id,
-                                                        name="hasActivity")
-
-        if activity_execution.arrangement_id is not None and \
-                type(self.arrangement_service.get_arrangement(activity_execution.arrangement_id)) \
-                is not NotFoundByIdModel:
-
-            self.graph_api_service.create_relationships(start_node=activity_execution_id,
-                                                        end_node=activity_execution.arrangement_id,
-                                                        name="hasArrangement")
-
-        activity_execution.activity_id = activity_execution.arrangement_id = None
-        self.graph_api_service.create_properties(activity_execution_id, activity_execution)
-
-        return self.get_activity_execution(activity_execution_id)
+        raise Exception("save_activity_execution not implemented yet")
 
     def get_activity_executions(self):
         """
@@ -63,17 +39,7 @@ class ActivityExecutionService:
         Returns:
             Result of request as list of activity executions objects
         """
-        get_response = self.graph_api_service.get_nodes("`Activity Execution`")
-
-        activity_executions = []
-        for activity_execution_node in get_response["nodes"]:
-            properties = {'id': activity_execution_node['id'], 'additional_properties': []}
-            for property in activity_execution_node["properties"]:
-                properties['additional_properties'].append({'key': property['key'], 'value': property['value']})
-            activity_execution = BasicActivityExecutionOut(**properties)
-            activity_executions.append(activity_execution)
-
-        return ActivityExecutionsOut(activity_executions=activity_executions)
+        raise Exception("get_activity_executions not implemented yet")
 
     def get_activity_execution(self, activity_execution_id: int):
         """
@@ -85,32 +51,7 @@ class ActivityExecutionService:
         Returns:
             Result of request as activity execution object
         """
-        get_response = self.graph_api_service.get_node(activity_execution_id)
-
-        if get_response["errors"] is not None:
-            return NotFoundByIdModel(id=activity_execution_id, errors=get_response["errors"])
-        if get_response["labels"][0] != "Activity Execution":
-            return NotFoundByIdModel(id=activity_execution_id, errors="Node not found.")
-
-        activity_execution = {'id': get_response['id'], 'additional_properties': [], 'relations': [],
-                              'reversed_relations': []}
-        for property in get_response["properties"]:
-            activity_execution['additional_properties'].append({'key': property['key'], 'value': property['value']})
-
-        relations_response = self.graph_api_service.get_node_relationships(activity_execution_id)
-
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == activity_execution_id:
-                activity_execution['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                           name=relation["name"],
-                                                                           relation_id=relation["id"]))
-            else:
-                activity_execution['reversed_relations'].append(
-                    RelationInformation(second_node_id=relation["start_node"],
-                                        name=relation["name"],
-                                        relation_id=relation["id"]))
-
-        return ActivityExecutionOut(**activity_execution)
+        raise Exception("get_activity_execution not implemented yet")
 
     def delete_activity_execution(self, activity_execution_id: int):
         """
@@ -120,13 +61,7 @@ class ActivityExecutionService:
         Returns:
             Result of request as activity execution object
         """
-        get_response = self.get_activity_execution(activity_execution_id)
-
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
-
-        self.graph_api_service.delete_node(activity_execution_id)
-        return get_response
+        raise Exception("delete_activity_execution not implemented yet")
 
     def update_activity_execution(self, activity_execution_id: int, activity_execution: ActivityExecutionPropertyIn):
         """
@@ -137,19 +72,7 @@ class ActivityExecutionService:
         Returns:
             Result of request as participant state object
         """
-        get_response = self.get_activity_execution(activity_execution_id)
-
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
-
-        self.graph_api_service.delete_node_properties(activity_execution_id)
-        self.graph_api_service.create_properties(activity_execution_id, activity_execution)
-
-        activity_execution_result = {"id": activity_execution_id, "relations": get_response.relations,
-                                     "reversed_relations": get_response.reversed_relations}
-        activity_execution_result.update(activity_execution.dict())
-
-        return ActivityExecutionOut(**activity_execution_result)
+        raise Exception("update_activity_execution not implemented yet")
 
     def update_activity_execution_relationships(self, activity_execution_id: int,
                                                 activity_execution: ActivityExecutionRelationIn):
@@ -161,21 +84,4 @@ class ActivityExecutionService:
         Returns:
             Result of request as activity execution object
         """
-        get_response = self.get_activity_execution(activity_execution_id)
-
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
-
-        if activity_execution.activity_id is not None and \
-                type(self.activity_service.get_activity(activity_execution.activity_id)) is not NotFoundByIdModel:
-            self.graph_api_service.create_relationships(start_node=activity_execution_id,
-                                                        end_node=activity_execution.activity_id,
-                                                        name="hasActivity")
-        if activity_execution.arrangement_id is not None and \
-                type(self.arrangement_service.get_arrangement(activity_execution.arrangement_id)) \
-                is not NotFoundByIdModel:
-            self.graph_api_service.create_relationships(start_node=activity_execution_id,
-                                                        end_node=activity_execution.arrangement_id,
-                                                        name="hasArrangement")
-
-        return self.get_activity_execution(activity_execution_id)
+        raise Exception("update_activity_execution_relationships not implemented yet")
