@@ -23,20 +23,7 @@ class ActivityService:
         Returns:
             Result of request as activity object
         """
-
-        node_response = self.graph_api_service.create_node("Activity")
-
-        if node_response["errors"] is not None:
-            return ActivityOut(activity=activity.activity, errors=node_response["errors"])
-
-        activity_id = node_response["id"]
-
-        properties_response = self.graph_api_service.create_properties(activity_id, activity)
-        if properties_response["errors"] is not None:
-            return ActivityOut(activity=activity.activity, errors=properties_response["errors"])
-
-        return ActivityOut(activity=activity.activity, id=activity_id)
-
+        print("save_activity not implemented yet")
     def get_activities(self):
         """
         Send request to graph api to get all activities
@@ -44,14 +31,7 @@ class ActivityService:
         Returns:
             Result of request as list of activity objects
         """
-        get_response = self.graph_api_service.get_nodes("Activity")
-        if get_response["errors"] is not None:
-            return ActivitiesOut(errors=get_response["errors"])
-        activities = [BasicActivityOut(id=activity["id"], activity=activity["properties"][0]["value"])
-                      for activity in get_response["nodes"]]
-
-        return ActivitiesOut(activities=activities)
-
+        raise Exception("get_activities not implemented yet")
     def get_activity(self, activity_id: int):
         """
         Send request to graph api to get given activity
@@ -60,26 +40,5 @@ class ActivityService:
         Returns:
             Result of request as activity object
         """
-        get_response = self.graph_api_service.get_node(activity_id)
+        print("get_activity not implemented yet")
 
-        if get_response["errors"] is not None:
-            return NotFoundByIdModel(id=activity_id, errors=get_response["errors"])
-        if get_response["labels"][0] != "Activity":
-            return NotFoundByIdModel(id=activity_id, errors="Node not found.")
-
-        activity = {'id': get_response['id'], 'relations': [], 'reversed_relations': []}
-        for property in get_response["properties"]:
-            activity[property["key"]] = property["value"]
-
-        relations_response = self.graph_api_service.get_node_relationships(activity_id)
-
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == activity_id:
-                activity['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                 name=relation["name"], relation_id=relation["id"]))
-            else:
-                activity['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
-                                                                          name=relation["name"],
-                                                                          relation_id=relation["id"]))
-
-        return ActivityOut(**activity)
