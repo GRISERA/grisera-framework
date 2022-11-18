@@ -9,6 +9,7 @@ base_iri = "http://www.semanticweb.org/GRISERA/contextualOntology"
 def create_model(filePath):
     model = get_ontology('file://'+filePath).load()
     # TODO zapisać model i id w naszej śmiesznej strukturze
+    jakas_nowa_zmienna = 123
     model_id = 0
     return model_id
 
