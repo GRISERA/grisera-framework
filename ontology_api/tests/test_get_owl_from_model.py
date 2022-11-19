@@ -20,8 +20,9 @@ class TestGetGetOwlFromModel(unittest.TestCase):
         self.assertEqual(content1, content2)
 
     def test_get_owl_from_model_incorrect_path(self):
+        models.clear()
         models[1] = get_ontology("https://road.affectivese.org/documentation/owlAC.owl")
         with self.assertRaises(Exception) as context:
-            get_owl_from_model(1, path="D:/Users")
+            get_owl_from_model(1, path="E:/Users")
         self.assertTrue("Incorrect path", context.exception)
         models.clear()
