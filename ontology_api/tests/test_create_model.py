@@ -10,7 +10,7 @@ class CreateModelTestCase(unittest.TestCase):
 
     @mock.patch('functions.functions','create_model')
     def test_create_model_without_error(self):
-        my_path = "D:\\owlAC_testParticipant.owl"
+        my_path = "tests\\owlAC_testParticipant.owl"
         models.clear()
 
         result = create_model(my_path)
