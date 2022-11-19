@@ -1,23 +1,35 @@
 from owlready2 import *
 
-# TODO jakaś śmieszna struktra zawierajaca wygenerowane modele i ich id, czyli pewnie jakaś mapa/dictionary
+
 models = dict()
 
 # model podstawowy
 base_iri = "http://www.semanticweb.org/GRISERA/contextualOntology"
 
 
-def create_model(filePath):
-    model = get_ontology('file://' + filePath).load()
-    # TODO zapisać model i id w naszej śmiesznej strukturze
-    model_id = 0
+def generate_id():
+    for id in range(len(models), -1, -1):
+        if id in models.keys():
+            pass
+        else:
+            return id
+
+
+def create_model(file_path) -> int:
+    try:
+        model = get_ontology(file_path).load()
+    except OSError:
+        raise Exception("Cannot open file")
+    model_id = generate_id()
+    models[model_id] = model
     return model_id
 
 
 def create_base_model():
-    # TODO trzeba jakos zmienić bo tu bierzemy po iri a nie file. Najłatwiej zduplikować kod create_model
-    #      ale może warto to jakoś sprytniej zrobić
-    return create_model(base_iri)
+    model = get_ontology(base_iri)
+    model_id = generate_id()
+    models[model_id] = model
+    return model_id
 
 
 def add_instance(instance, class_name, model_id):
@@ -26,14 +38,19 @@ def add_instance(instance, class_name, model_id):
     class_name(instance, namespace=models[model_id])
     return
 
-
-def get_model(model_id):
-    # TODO znaleźć model o danym id, zapisać go do pliku OWL i zwrocic ten plik (w jakiej formie? nie wiem).
-    return
+def get_owl_from_model(model_id, path="tmp_owl"):
+    model = find_model_by_id(model_id)
+    try:
+        model.save(path + "/" + model.name + str(model_id) + ".owl")
+    except OSError:
+        raise Exception("Incorrect path")
+    try:
+        return open(path + "/" + model.name + str(model_id) + ".owl", "r")
+    except OSError:
+        raise Exception("Could not find model")
 
 
 # Zwraca model ontologii z naszej śmiesznej struktury i go zwraca
 def find_model_by_id(model_id):
-    return
+    return models[model_id]
 
-# TODO TESTY!!!
