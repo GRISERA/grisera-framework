@@ -25,9 +25,10 @@ def create_model(file_path) -> int:
 
 
 def create_base_model():
-    # TODO trzeba jakos zmienić bo tu bierzemy po iri a nie file. Najłatwiej zduplikować kod create_model
-    #      ale może warto to jakoś sprytniej zrobić
-    return create_model(base_iri)
+    model = get_ontology(base_iri)
+    model_id = generate_id()
+    models[model_id] = model
+    return model_id
 
 def add_instance(instance, class_name, model_id):
     # TODO znaleźć model o danym id, wrzucić tam instancję
