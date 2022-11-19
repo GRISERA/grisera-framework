@@ -8,7 +8,7 @@ from functions.functions import models
 
 class CreateModelTestCase(unittest.TestCase):
 
-    @mock.patch('functions.functions','create_model')
+
     def test_create_model_without_error(self):
         my_path = "tests\\owlAC_testParticipant.owl"
         models.clear()
@@ -17,23 +17,23 @@ class CreateModelTestCase(unittest.TestCase):
 
         self.assertEqual(result , 0)
 
-    @mock.patch('functions.functions', 'create_model')
+
     def test_create_model_with_error(self):
-        my_path = "D:\\xd.owl"
+        my_path = "xd.owl"
 
         result = create_model(my_path)
 
         self.assertEqual(result, "Cannot open file")
 
-    @mock.patch('functions.functions', 'create_model')
+
     def test_create_model_without_error_add_more(self):
-        my_path = "D:\\owlAC_testParticipant.owl"
+        my_path = "tests\\owlAC_testParticipant.owl"
         models.clear()
         create_model(my_path)
         create_model(my_path)
         create_model(my_path)
-        create_model(my_path)
+        models.pop(2)
 
         result = create_model(my_path)
 
-        self.assertEqual(result, 4)
+        self.assertEqual(result, 2)
