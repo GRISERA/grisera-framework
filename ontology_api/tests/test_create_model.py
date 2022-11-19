@@ -10,24 +10,25 @@ class CreateModelTestCase(unittest.TestCase):
 
 
     def test_create_model_without_error(self):
-        my_path = "tests\\owlAC_testParticipant.owl"
+        my_path = "tests\\test_owl\\owlAC_testParticipant.owl"
         models.clear()
 
         result = create_model(my_path)
 
         self.assertEqual(result , 0)
+        models.clear()
 
 
     def test_create_model_with_error(self):
         my_path = "xd.owl"
-
-        result = create_model(my_path)
-
-        self.assertEqual(result, "Cannot open file")
+        with self.assertRaises(Exception) as context:
+            result = create_model(my_path)
+        self.assertTrue("Cannot open file", context.exception)
+        models.clear()
 
 
     def test_create_model_without_error_add_more(self):
-        my_path = "tests\\owlAC_testParticipant.owl"
+        my_path = "tests\\test_owl\\owlAC_testParticipant.owl"
         models.clear()
         create_model(my_path)
         create_model(my_path)
@@ -37,3 +38,4 @@ class CreateModelTestCase(unittest.TestCase):
         result = create_model(my_path)
 
         self.assertEqual(result, 2)
+        models.clear()
