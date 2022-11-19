@@ -6,19 +6,21 @@ models = dict()
 # model podstawowy
 base_iri = "http://www.semanticweb.org/GRISERA/contextualOntology"
 
-def create_model(file_path) -> int:
-    try:
-        model = get_ontology('file://'+file_path).load()
-    except Exception:
-        return "Cannot open file"
-    # TODO zapisać model i id w naszej śmiesznej strukturze
+def generate_id():
     for id in range(len(models), -1, -1):
         if id in models.keys():
             pass
         else:
-            model_id = id
-            models[model_id] = model
-            break
+            return id
+
+
+def create_model(file_path) -> int:
+    try:
+        model = get_ontology(file_path).load()
+    except Exception:
+        return "Cannot open file"
+    model_id = generate_id()
+    models[model_id] = model
     return model_id
 
 
