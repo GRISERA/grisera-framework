@@ -6,6 +6,7 @@ models = dict()
 # model podstawowy
 base_iri = "http://www.semanticweb.org/GRISERA/contextualOntology"
 
+
 def generate_id():
     for id in range(len(models), -1, -1):
         if id in models.keys():
@@ -30,8 +31,11 @@ def create_base_model():
     models[model_id] = model
     return model_id
 
+
 def add_instance(instance, class_name, model_id):
-    # TODO znaleźć model o danym id, wrzucić tam instancję
+    if model_id not in models:
+        raise Exception("Model with id " + str(model_id) + " doesn't exist")
+    class_name(instance, namespace=models[model_id])
     return
 
 def get_owl_from_model(model_id, path="tmp_owl"):
@@ -44,6 +48,7 @@ def get_owl_from_model(model_id, path="tmp_owl"):
         return open(path + "/" + model.name + str(model_id) + ".owl", "r")
     except OSError:
         raise Exception("Could not find model")
+
 
 # Zwraca model ontologii z naszej śmiesznej struktury i go zwraca
 def find_model_by_id(model_id):
