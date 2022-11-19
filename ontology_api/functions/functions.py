@@ -6,11 +6,23 @@ models = dict()
 # model podstawowy
 base_iri = "http://www.semanticweb.org/GRISERA/contextualOntology"
 
-def create_model(filePath):
-    model = get_ontology('file://'+filePath).load()
-    # TODO zapisać model i id w naszej śmiesznej strukturze
-    model_id = 0
+def generate_id():
+    for id in range(len(models), -1, -1):
+        if id in models.keys():
+            pass
+        else:
+            return id
+
+
+def create_model(file_path) -> int:
+    try:
+        model = get_ontology(file_path).load()
+    except Exception:
+        return "Cannot open file"
+    model_id = generate_id()
+    models[model_id] = model
     return model_id
+
 
 def create_base_model():
     # TODO trzeba jakos zmienić bo tu bierzemy po iri a nie file. Najłatwiej zduplikować kod create_model
