@@ -18,7 +18,7 @@ def create_model(file_path) -> int:
         else:
             model_id = id
             models[model_id] = model
-        break
+            break
     return model_id
 
 
