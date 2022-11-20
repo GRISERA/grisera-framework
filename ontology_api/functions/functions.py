@@ -49,8 +49,6 @@ def get_owl_from_model(model_id, path="tmp_owl"):
     except OSError:
         raise Exception("Could not find model")
 
-
-# Zwraca model ontologii z naszej śmiesznej struktury i go zwraca
 def find_model_by_id(model_id):
     return models[model_id]
 
