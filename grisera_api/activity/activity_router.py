@@ -19,6 +19,7 @@ class ActivityRouter:
     Attributes:
     activity_service (ActivityService): Service instance for activity
     """
+
     activity_service = None
 
     # dependency injection in the constructor
