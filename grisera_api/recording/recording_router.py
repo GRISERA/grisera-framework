@@ -19,7 +19,11 @@ class RecordingRouter:
     Attributes:
     recording_service (RecordingService): Service instance for recording
     """
-    recording_service = RecordingService()
+    recording_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, recording_service):
+        self.recording_service = recording_service
 
     @router.post("/recordings", tags=["recordings"], response_model=RecordingOut)
     async def create_recording(self, recording: RecordingIn, response: Response):

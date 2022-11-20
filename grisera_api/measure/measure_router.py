@@ -18,7 +18,11 @@ class MeasureRouter:
     Attributes:
         measure_service (MeasureService): Service instance for measures
     """
-    measure_service = MeasureService()
+    measure_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, measure_service):
+        self.measure_service = measure_service
 
     @router.post("/measures", tags=["measures"], response_model=MeasureOut)
     async def create_measure(self, measure: MeasureIn, response: Response):

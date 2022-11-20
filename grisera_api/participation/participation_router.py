@@ -19,7 +19,11 @@ class ParticipationRouter:
     Attributes:
     participation_service (ParticipationService): Service instance for participation
     """
-    participation_service = ParticipationService()
+    participation_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, participation_service):
+        self.participation_service = participation_service
 
     @router.post("/participations", tags=["participations"], response_model=ParticipationOut)
     async def create_participation(self, participation: ParticipationIn, response: Response):

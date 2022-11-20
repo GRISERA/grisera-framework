@@ -19,7 +19,11 @@ class ParticipantStateRouter:
     Attributes:
         participant_state_service (ParticipantStateService): Service instance for participants' states
     """
-    participant_state_service = ParticipantStateService()
+    participant_state_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, participant_state_service):
+        self.participant_state_service = participant_state_service
 
     @router.post("/participant_state", tags=["participant state"], response_model=ParticipantStateOut)
     async def create_participant_state(self, participant_state: ParticipantStateIn, response: Response):

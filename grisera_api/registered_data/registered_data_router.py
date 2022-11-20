@@ -20,7 +20,11 @@ class RegisteredDataRouter:
     Attributes:
     registered_data_service (RegisteredDataService): Service instance for registered data
     """
-    registered_data_service = RegisteredDataService()
+    registered_data_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, registered_data_service):
+        self.registered_data_service = registered_data_service
 
     @router.post("/registered_data", tags=["registered data"], response_model=RegisteredDataOut)
     async def create_registered_data(self, registered_data: RegisteredDataIn, response: Response):

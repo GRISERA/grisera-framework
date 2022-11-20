@@ -20,7 +20,12 @@ class ActivityExecutionRouter:
     Attributes:
     activity_execution_service (ActivityExecutionService): Service instance for activity execution
     """
-    activity_execution_service = ActivityExecutionService()
+
+    activity_execution_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, activity_execution_service):
+        self.activity_execution_service = activity_execution_service
 
     @router.post("/activity_executions", tags=["activity executions"], response_model=ActivityExecutionOut)
     async def create_activity_execution(self, activity_execution: ActivityExecutionIn, response: Response):

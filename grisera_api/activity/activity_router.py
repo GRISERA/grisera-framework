@@ -19,7 +19,11 @@ class ActivityRouter:
     Attributes:
     activity_service (ActivityService): Service instance for activity
     """
-    activity_service = ActivityService()
+    activity_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, activity_service):
+        self.activity_service = activity_service
 
     @router.get("/activities/{activity_id}", tags=["activities"],
                 response_model=Union[ActivityOut, NotFoundByIdModel])
