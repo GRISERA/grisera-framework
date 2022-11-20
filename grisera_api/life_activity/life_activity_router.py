@@ -19,7 +19,11 @@ class LifeActivityRouter:
     Attributes:
     life_activity_service (LifeActivityService): Service instance for life activity
     """
-    life_activity_service = LifeActivityService()
+    life_activity_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, life_activity_service):
+        self.life_activity_service = life_activity_service
 
     @router.get("/life_activities/{life_activity_id}", tags=["life activities"],
                 response_model=Union[LifeActivityOut, NotFoundByIdModel])

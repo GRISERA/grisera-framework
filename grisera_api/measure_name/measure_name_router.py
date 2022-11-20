@@ -19,7 +19,11 @@ class MeasureNameRouter:
     Attributes:
     measure_name_service (MeasureNameService): Service instance for measure name
     """
-    measure_name_service = MeasureNameService()
+    measure_name_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, measure_name_service):
+        self.measure_name_service = measure_name_service
 
     @router.get("/measure_names/{measure_name_id}", tags=["measure names"],
                 response_model=Union[MeasureNameOut, NotFoundByIdModel])

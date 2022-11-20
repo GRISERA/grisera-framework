@@ -20,7 +20,11 @@ class ObservableInformationRouter:
     Attributes:
     observable_information_service (ObservableInformationService): Service instance for observable information
     """
-    observable_information_service = ObservableInformationService()
+    observable_information_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, observable_information_service):
+        self.observable_information_service = observable_information_service
 
     @router.post("/observable_information", tags=["observable information"], response_model=ObservableInformationOut)
     async def create_observable_information(self, observable_information: ObservableInformationIn, response: Response):

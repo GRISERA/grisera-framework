@@ -19,7 +19,11 @@ class ChannelRouter:
     Attributes:
     channel_service (ChannelService): Service instance for channel
     """
-    channel_service = ChannelService()
+    channel_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, channel_service):
+        self.channel_service = channel_service
 
     @router.get("/channels/{channel_id}", tags=["channels"],
                 response_model=Union[ChannelOut, NotFoundByIdModel])

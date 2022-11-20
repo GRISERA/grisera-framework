@@ -20,7 +20,11 @@ class PersonalityRouter:
     Attributes:
         personality_service (PersonalityService): Service instance for personality
     """
-    personality_service = PersonalityService()
+    personality_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, personality_service):
+        self.personality_service = personality_service
 
     @router.post("/personality/big_five_model", tags=["personality"], response_model=PersonalityBigFiveOut)
     async def create_personality_big_five(self, personality: PersonalityBigFiveIn, response: Response):
