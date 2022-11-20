@@ -19,7 +19,11 @@ class AppearanceRouter:
     Attributes:
         appearance_service (AppearanceService): Service instance for appearance
     """
-    appearance_service = AppearanceService()
+    appearance_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, appearance_service):
+        self.appearance_service = appearance_service
 
     @router.post("/appearance/occlusion_model", tags=["appearance"], response_model=AppearanceOcclusionOut)
     async def create_appearance_occlusion(self, appearance: AppearanceOcclusionIn, response: Response):

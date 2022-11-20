@@ -19,7 +19,11 @@ class ArrangementRouter:
     Attributes:
     arrangement_service (ArrangementService): Service instance for arrangement
     """
-    arrangement_service = ArrangementService()
+    arrangement_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, arrangement_service):
+        self.arrangement_service = arrangement_service
 
     @router.get("/arrangements/{arrangement_id}", tags=["arrangements"],
                 response_model=Union[ArrangementOut, NotFoundByIdModel])

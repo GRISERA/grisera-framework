@@ -19,7 +19,11 @@ class ScenarioRouter:
     Attributes:
     scenario_service (ScenarioService): Service instance for scenarios
     """
-    scenario_service = ScenarioService()
+    scenario_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, scenario_service):
+        self.scenario_service = scenario_service
 
     @router.post("/scenarios", tags=["scenarios"], response_model=ScenarioOut)
     async def create_scenario(self, scenario: ScenarioIn, response: Response):

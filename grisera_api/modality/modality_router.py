@@ -19,7 +19,11 @@ class ModalityRouter:
     Attributes:
     modality_service (ModalityService): Service instance for modality
     """
-    modality_service = ModalityService()
+    modality_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, modality_service):
+        self.modality_service = modality_service
 
     @router.get("/modalities/{modality_id}", tags=["modalities"],
                 response_model=Union[ModalityOut, NotFoundByIdModel])

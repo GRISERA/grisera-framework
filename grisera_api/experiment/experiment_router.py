@@ -18,7 +18,11 @@ class ExperimentRouter:
     Attributes:
         experiment_service (ExperimentService): Service instance for experiments
     """
-    experiment_service = ExperimentService()
+    experiment_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, experiment_service):
+        self.experiment_service = experiment_service
 
     @router.post("/experiments", tags=["experiments"], response_model=ExperimentOut)
     async def create_experiment(self, experiment: ExperimentIn, response: Response):

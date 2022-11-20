@@ -19,7 +19,11 @@ class TimeSeriesRouter:
     Attributes:
         time_series_service (TimeSeriesService): Service instance for time series
     """
-    time_series_service = TimeSeriesService()
+    time_series_service = None
+
+    # dependency injection in the constructor
+    def __init__(self, time_series_service):
+        self.time_series_service = time_series_service
 
     @router.post("/time_series", tags=["time series"], response_model=TimeSeriesOut)
     async def create_time_series(self, time_series: TimeSeriesIn, response: Response):
