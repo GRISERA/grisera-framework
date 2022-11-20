@@ -23,6 +23,7 @@ from registered_data.registered_data_router import router as registered_data_rou
 from scenario.scenario_router import router as scenario_router
 from measure_name.measure_name_router import router as measure_name_router
 from setup import SetupNodes
+from graph_api_config import *
 
 app = FastAPI(title="GRISERA API",
               description="Graph Representation Integrating Signals for Emotion Recognition and Analysis (GRISERA) "
@@ -31,26 +32,51 @@ app = FastAPI(title="GRISERA API",
               version="0.1",
               )
 
-app.include_router(activity_router)
-app.include_router(activity_execution_router)
-app.include_router(appearance_router)
-app.include_router(arrangement_router)
-app.include_router(channel_router)
-app.include_router(experiment_router)
-app.include_router(life_activity_router)
-app.include_router(measure_router)
-app.include_router(measure_name_router)
-app.include_router(modality_router)
-app.include_router(observable_information_router)
-app.include_router(participant_router)
-app.include_router(participant_state_router)
-app.include_router(participation_router)
-app.include_router(personality_router)
-app.include_router(recording_router)
-app.include_router(registered_channel_router)
-app.include_router(registered_data_router)
-app.include_router(scenario_router)
-app.include_router(time_series_router)
+if graph_api_controller_class_type == 'default':
+    activity_service = ActivityService()
+    app.include_router(activity_router(activity_service))
+    app.include_router(activity_execution_router)
+    app.include_router(appearance_router)
+    app.include_router(arrangement_router)
+    app.include_router(channel_router)
+    app.include_router(experiment_router)
+    app.include_router(life_activity_router)
+    app.include_router(measure_router)
+    app.include_router(measure_name_router)
+    app.include_router(modality_router)
+    app.include_router(observable_information_router)
+    app.include_router(participant_router)
+    app.include_router(participant_state_router)
+    app.include_router(participation_router)
+    app.include_router(personality_router)
+    app.include_router(recording_router)
+    app.include_router(registered_channel_router)
+    app.include_router(registered_data_router)
+    app.include_router(scenario_router)
+    app.include_router(time_series_router)
+
+elif graph_api_controller_class_type == 'graphdb':
+    activity_service = ActivityServiceGraphDB()
+    app.include_router(activity_router(activity_service))
+    app.include_router(activity_execution_router)
+    app.include_router(appearance_router)
+    app.include_router(arrangement_router)
+    app.include_router(channel_router)
+    app.include_router(experiment_router)
+    app.include_router(life_activity_router)
+    app.include_router(measure_router)
+    app.include_router(measure_name_router)
+    app.include_router(modality_router)
+    app.include_router(observable_information_router)
+    app.include_router(participant_router)
+    app.include_router(participant_state_router)
+    app.include_router(participation_router)
+    app.include_router(personality_router)
+    app.include_router(recording_router)
+    app.include_router(registered_channel_router)
+    app.include_router(registered_data_router)
+    app.include_router(scenario_router)
+    app.include_router(time_series_router)
 
 
 @app.on_event("startup")
