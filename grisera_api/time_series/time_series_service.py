@@ -214,50 +214,69 @@ class TimeSeriesService:
                 time_series['relations'].append(RelationInformation(second_node_id=relation["end_node"],
                                                                     name=relation["name"],
                                                                     relation_id=relation["id"]))
-                if relation["name"] == "hasSignal":
-                    time_series['signal_values'] = self.get_signal_values(relation["end_node"])
             else:
                 time_series['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
                                                                              name=relation["name"],
                                                                              relation_id=relation["id"]))
-
+        time_series['signal_values'] = self.get_signal_values(time_series_id)
         return TimeSeriesOut(**time_series)
 
-    def get_signal_values(self, first_signal_value_id: int):
+    def get_signal_values(self, time_series_id: int):
         """
         Send requests to graph api to get all signal values
 
         Args:
-            first_signal_value_id (int): Id of the first signal value
+            time_series_id (int): id of the time series
 
         Returns:
             Array of signal value objects
         """
+
+        # MATCH(n_0:`Time Series`)-[:`hasSignal`]->(n_1)-[:`next`*0..]->(n_2:`Signal Value`)-[:`inSec`]->(n_3:`Timestamp`) WHERE ID(n_0)=205 RETURN n_2,LABELS(n_2),n_3,LABELS(n_3)
+        # MATCH (n_0)-[:`hasSignal`]->(n_1),(n_1)-[:`next`*0..]->(n_2),(n_2)-[:`inSec`]->(n_3),(n_0:`Time Series`),(n_1:`Signal Value`),(n_2:`Signal Value`),(n_3:`Timestamp`) WHERE ID(n_0)=205 RETURN n_2,LABELS(n_2),n_3,LABELS(n_3)
+        query = {
+            "nodes": [
+                {
+                    "id": time_series_id,
+                    "label": "Time Series"
+                },
+                {
+                    "label": "Signal Value"
+                },
+                {
+                    "label": "Signal Value",
+                    "result": True
+                },
+                {
+                    "label": "Timestamp",
+                    "result": True
+                }
+            ],
+            "relations": [
+                {
+                    "begin_node_index": 0,
+                    "end_node_index": 1,
+                    "label": "hasSignal"
+                },
+                {
+                    "begin_node_index": 1,
+                    "end_node_index": 2,
+                    "label": "next",
+                    "min_count": 0
+                },
+                {
+                    "begin_node_index": 2,
+                    "end_node_index": 3,
+                    "label": "inSec"
+                }
+            ]
+        }
+        # https://www.convertonline.io/convert/json-to-query-string
+        response = self.graph_api_service.get_nodes_by_query(query)
+        print(response)
         signal_values = []
-        current_signal_node_id = first_signal_value_id
-        while current_signal_node_id is not None:
-            signal_value_get_response = self.graph_api_service.get_node(current_signal_node_id)
-
-            if signal_value_get_response["errors"] is not None:
-                return NotFoundByIdModel(id=current_signal_node_id, errors=signal_value_get_response["errors"])
-
-            signal_value_node_relations_response = self.graph_api_service.get_node_relationships(current_signal_node_id)
-
-            next_signal_node_id = None
-            for signal_value_node_relation in signal_value_node_relations_response["relationships"]:
-                if signal_value_node_relation["start_node"] == current_signal_node_id:
-                    if signal_value_node_relation["name"] == "next":
-                        next_signal_node_id = signal_value_node_relation["end_node"]
-                    if signal_value_node_relation["name"] == "inSec":
-                        timestamp_get_response = self.graph_api_service.get_node(signal_value_node_relation["end_node"])
-
-                        if timestamp_get_response["errors"] is not None:
-                            return NotFoundByIdModel(id=signal_value_node_relation["end_node"],
-                                                     errors=timestamp_get_response["errors"])
-                        signal_values.append({'id': signal_value_get_response['id'],
-                                              'properties': signal_value_get_response['properties'],
-                                              'timestamp': timestamp_get_response['properties']})
-            current_signal_node_id = next_signal_node_id
+        for row in response["rows"]:
+            signal_values.append({'signal_value': row[0], 'timestamp': row[1]})
         return signal_values
 
     def delete_time_series(self, time_series_id: int):

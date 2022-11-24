@@ -1,6 +1,48 @@
 from typing import Set, Optional, Any, List
+
 from pydantic import BaseModel
+
 from property.property_model import PropertyIn
+
+
+class NodeQueryIn(BaseModel):
+    """
+    Model of node to acquire from client
+
+    Attributes:
+        id (Optional[int]): id of node in graph DB
+        label (Optional[int]): label of node in graph DB
+    """
+    id: Optional[int]
+    label: Optional[str]
+    result = False
+
+
+class RelationQueryIn(BaseModel):
+    """
+    Model of relation query to acquire from client
+
+    Attributes:
+        begin_node_index (Optional[int]): id of begin node in relation in graph DB
+        end_node_index (Optional[int]): id of end node in relation in graph DB
+        label (Optional[int]): label of relation in graph DB
+    """
+    begin_node_index: Optional[int]
+    end_node_index: Optional[int]
+    min_count: Optional[int]
+    label: Optional[str]
+
+
+class NodeRowsQueryIn(BaseModel):
+    """
+    Model of node query to acquire from client
+
+    Attributes:
+        nodes (Optional[List[NodeQueryIn]]): List of nodes in graph DB
+        relations (Optional[List[RelationQueryIn]]): List of relations in graph DB
+    """
+    nodes: Optional[List[NodeQueryIn]] = []
+    relations: Optional[List[RelationQueryIn]] = []
 
 
 class NodeIn(BaseModel):
@@ -47,5 +89,19 @@ class NodesOut(BaseModel):
         links (Optional[list): Hateoas implementation
     """
     nodes: Optional[List[BasicNodeOut]] = None
+    errors: Optional[Any] = None
+    links: Optional[List] = None
+
+
+class NodeRowsOut(BaseModel):
+    """
+    Model of list of rows with nodes
+
+    Attributes:
+        rows (Optional[List[List[[BasicNodeOut]]]): List of rows of nodes to send
+        errors (Optional[Any]): Optional errors appeared during query executions
+        links (Optional[list): Hateoas implementation
+    """
+    rows: Optional[List[List[BasicNodeOut]]] = None
     errors: Optional[Any] = None
     links: Optional[List] = None

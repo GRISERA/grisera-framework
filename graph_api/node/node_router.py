@@ -1,12 +1,15 @@
+from typing import List
+
 from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
-from node.node_model import NodeIn, NodeOut, NodesOut
-from node.node_service import NodeService
+
 from hateoas import get_links
-from typing import List
+from node.node_model import NodeIn, NodeOut, NodesOut, NodeRowsOut, NodeRowsQueryIn
+from node.node_service import NodeService
 from property.property_model import PropertyIn
 from relationship.relationship_model import RelationshipsOut
+
 router = InferringRouter()
 
 
@@ -53,6 +56,19 @@ class NodeRouter:
         Get nodes with same label as given
         """
         nodes = self.node_service.get_nodes(label)
+        if nodes.errors is not None:
+            response.status_code = 422
+
+        nodes.links = get_links(router)
+
+        return nodes
+
+    @router.post("/nodes_query", tags=["nodes"], response_model=NodeRowsOut)
+    async def get_nodes_by_query(self, query: NodeRowsQueryIn, response: Response):
+        """
+        Get nodes with same query as given
+        """
+        nodes = self.node_service.get_nodes_by_query(query)
         if nodes.errors is not None:
             response.status_code = 422
 

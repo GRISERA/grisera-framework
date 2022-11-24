@@ -1,6 +1,7 @@
 import requests
-from graph_api_config import graph_api_address
 from pydantic import BaseModel
+
+from graph_api_config import graph_api_address
 
 
 class GraphApiService:
@@ -83,6 +84,17 @@ class GraphApiService:
         """
         request_params = {"label": label}
         return self.get("/nodes", request_params)
+
+    def get_nodes_by_query(self, query):
+        """
+        Send to the Graph API request to get nodes with given label
+
+        Args:
+            query (): Query
+        Returns:
+            Result of request
+        """
+        return self.post("/nodes_query", query)
 
     def get_node(self, id: int):
         """
