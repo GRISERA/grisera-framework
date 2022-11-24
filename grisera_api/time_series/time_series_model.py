@@ -49,10 +49,13 @@ class SignalIn(BaseModel):
 
     Attributes:
         timestamp (int): Timestamp of signal measure in milliseconds
-
+        start_timestamp (int): Timestamp of begin signal measure in milliseconds
+        end_timestamp (int): Timestamp of end signal measure in milliseconds
         signal (SignalValueIn): Value of signal
     """
-    timestamp: int
+    timestamp: Optional[int]
+    start_timestamp: Optional[int]
+    end_timestamp: Optional[int]
     value: Union[str, float]
 
 

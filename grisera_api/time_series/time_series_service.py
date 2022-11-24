@@ -7,7 +7,7 @@ from models.relation_information_model import RelationInformation
 from observable_information.observable_information_service import ObservableInformationService
 from time_series.time_series_model import TimeSeriesPropertyIn, BasicTimeSeriesOut, \
     TimeSeriesNodesOut, TimeSeriesOut, TimeSeriesIn, TimeSeriesRelationIn, SignalValueNodesIn, TimestampNodesIn, \
-    SignalIn
+    SignalIn, Type
 
 
 class TimeSeriesService:
@@ -55,7 +55,7 @@ class TimeSeriesService:
         time_series.observable_information_id = time_series.measure_id = None
         self.graph_api_service.create_properties(time_series_id, time_series)
 
-        errors = self.save_signal_values(time_series.signal_values, time_series_id, 53)
+        errors = self.save_signal_values(time_series.signal_values, time_series_id, 53, time_series.type)
         if errors is not None:
             return TimeSeriesOut(**time_series.dict(), errors=errors)
 
@@ -84,7 +84,8 @@ class TimeSeriesService:
                     return node_property["value"]
         return None
 
-    def save_signal_values(self, signal_values: List[SignalIn], time_series_id: int, experiment_id: int):
+    def save_signal_values(self, signal_values: List[SignalIn], time_series_id: int, experiment_id: int,
+                           timestamp_type: Type):
         previous_signal_value_id = None
 
         timestamp, experiment_timestamp_relation_id = self.get_neighbour_node(experiment_id, "takes")
@@ -92,44 +93,51 @@ class TimeSeriesService:
         previous_timestamp_timestamp_relation_id = None
 
         for signal_value in signal_values:
-            while timestamp is not None and int(
-                    self.get_node_property(timestamp, "timestamp")) < signal_value.timestamp:
-                previous_timestamp_id = timestamp["id"]
-                experiment_timestamp_relation_id = None
-                timestamp, previous_timestamp_timestamp_relation_id = self.get_neighbour_node(timestamp["id"], "next")
-
-            if timestamp is None or int(self.get_node_property(timestamp, "timestamp")) != signal_value.timestamp:
-                timestamp_node_response = self.graph_api_service.create_node("`Timestamp`")
-
-                if timestamp_node_response["errors"] is not None:
-                    return timestamp_node_response["errors"]
-
-                new_timestamp_id = timestamp_node_response["id"]
-
-                timestamp_properties_response = self.graph_api_service.create_properties(new_timestamp_id,
-                                                                                         TimestampNodesIn(
-                                                                                             timestamp=signal_value.timestamp))
-                if timestamp_properties_response["errors"] is not None:
-                    return timestamp_properties_response["errors"]
-
-                if previous_timestamp_id is None:
-                    self.graph_api_service.create_relationships(start_node=experiment_id,
-                                                                end_node=new_timestamp_id,
-                                                                name="takes")
-                else:
-                    self.graph_api_service.create_relationships(start_node=previous_timestamp_id,
-                                                                end_node=new_timestamp_id,
-                                                                name="next")
+            timestamp_values = [signal_value.timestamp] if timestamp_type == Type.timestamp else [
+                signal_value.start_timestamp, signal_value.end_timestamp]
+            epoch_start_timestamp_id = None
+            for timestamp_value in timestamp_values:
                 if timestamp is not None:
-                    self.graph_api_service.create_relationships(start_node=new_timestamp_id,
-                                                                end_node=timestamp["id"],
-                                                                name="next")
-                if previous_timestamp_timestamp_relation_id is not None:
-                    self.graph_api_service.delete_relationship(previous_timestamp_timestamp_relation_id)
-                elif experiment_timestamp_relation_id is not None:
-                    self.graph_api_service.delete_relationship(experiment_timestamp_relation_id)
+                    epoch_start_timestamp_id = timestamp["id"]
+                while timestamp is not None and int(
+                        self.get_node_property(timestamp, "timestamp")) < timestamp_value:
+                    previous_timestamp_id = timestamp["id"]
+                    experiment_timestamp_relation_id = None
+                    timestamp, previous_timestamp_timestamp_relation_id = self.get_neighbour_node(timestamp["id"],
+                                                                                                  "next")
 
-                timestamp = self.graph_api_service.get_node(new_timestamp_id)
+                if timestamp is None or int(self.get_node_property(timestamp, "timestamp")) != timestamp_value:
+                    timestamp_node_response = self.graph_api_service.create_node("`Timestamp`")
+
+                    if timestamp_node_response["errors"] is not None:
+                        return timestamp_node_response["errors"]
+
+                    new_timestamp_id = timestamp_node_response["id"]
+
+                    timestamp_properties_response = self.graph_api_service.create_properties(new_timestamp_id,
+                                                                                             TimestampNodesIn(
+                                                                                                 timestamp=timestamp_value))
+                    if timestamp_properties_response["errors"] is not None:
+                        return timestamp_properties_response["errors"]
+
+                    if previous_timestamp_id is None:
+                        self.graph_api_service.create_relationships(start_node=experiment_id,
+                                                                    end_node=new_timestamp_id,
+                                                                    name="takes")
+                    else:
+                        self.graph_api_service.create_relationships(start_node=previous_timestamp_id,
+                                                                    end_node=new_timestamp_id,
+                                                                    name="next")
+                    if timestamp is not None:
+                        self.graph_api_service.create_relationships(start_node=new_timestamp_id,
+                                                                    end_node=timestamp["id"],
+                                                                    name="next")
+                    if previous_timestamp_timestamp_relation_id is not None:
+                        self.graph_api_service.delete_relationship(previous_timestamp_timestamp_relation_id)
+                    elif experiment_timestamp_relation_id is not None:
+                        self.graph_api_service.delete_relationship(experiment_timestamp_relation_id)
+
+                    timestamp = self.graph_api_service.get_node(new_timestamp_id)
 
             signal_value_node_response = self.graph_api_service.create_node("`Signal Value`")
 
@@ -152,9 +160,17 @@ class TimeSeriesService:
                 self.graph_api_service.create_relationships(start_node=previous_signal_value_id,
                                                             end_node=signal_value_id,
                                                             name="next")
-            self.graph_api_service.create_relationships(start_node=signal_value_id,
-                                                        end_node=timestamp["id"],
-                                                        name="inSec")
+            if timestamp_type == Type.timestamp:
+                self.graph_api_service.create_relationships(start_node=timestamp["id"],
+                                                            end_node=signal_value_id,
+                                                            name="inSec")
+            else:
+                self.graph_api_service.create_relationships(start_node=epoch_start_timestamp_id,
+                                                            end_node=signal_value_id,
+                                                            name="startInSec")
+                self.graph_api_service.create_relationships(start_node=timestamp["id"],
+                                                            end_node=signal_value_id,
+                                                            name="endInSec")
 
             previous_signal_value_id = signal_value_id
         return None
@@ -218,15 +234,16 @@ class TimeSeriesService:
                 time_series['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
                                                                              name=relation["name"],
                                                                              relation_id=relation["id"]))
-        time_series['signal_values'] = self.get_signal_values(time_series_id)
+        time_series['signal_values'] = self.get_signal_values(time_series_id, time_series['type'])
         return TimeSeriesOut(**time_series)
 
-    def get_signal_values(self, time_series_id: int):
+    def get_signal_values(self, time_series_id: int, time_series_type: str):
         """
         Send requests to graph api to get all signal values
 
         Args:
             time_series_id (int): id of the time series
+            time_series_type (str): type of the time series
 
         Returns:
             Array of signal value objects
@@ -234,7 +251,8 @@ class TimeSeriesService:
 
         # MATCH(n_0:`Time Series`)-[:`hasSignal`]->(n_1)-[:`next`*0..]->(n_2:`Signal Value`)-[:`inSec`]->(n_3:`Timestamp`) WHERE ID(n_0)=205 RETURN n_2,LABELS(n_2),n_3,LABELS(n_3)
         # MATCH (n_0)-[:`hasSignal`]->(n_1),(n_1)-[:`next`*0..]->(n_2),(n_2)-[:`inSec`]->(n_3),(n_0:`Time Series`),(n_1:`Signal Value`),(n_2:`Signal Value`),(n_3:`Timestamp`) WHERE ID(n_0)=205 RETURN n_2,LABELS(n_2),n_3,LABELS(n_3)
-        query = {
+        print(time_series_type)
+        query_timestamp = {
             "nodes": [
                 {
                     "id": time_series_id,
@@ -265,18 +283,68 @@ class TimeSeriesService:
                     "min_count": 0
                 },
                 {
-                    "begin_node_index": 2,
-                    "end_node_index": 3,
+                    "begin_node_index": 3,
+                    "end_node_index": 2,
                     "label": "inSec"
                 }
             ]
         }
+        query_epoch = {
+            "nodes": [
+                {
+                    "id": time_series_id,
+                    "label": "Time Series"
+                },
+                {
+                    "label": "Signal Value"
+                },
+                {
+                    "label": "Signal Value",
+                    "result": True
+                },
+                {
+                    "label": "Timestamp",
+                    "result": True
+                },
+                {
+                    "label": "Timestamp",
+                    "result": True
+                }
+            ],
+            "relations": [
+                {
+                    "begin_node_index": 0,
+                    "end_node_index": 1,
+                    "label": "hasSignal"
+                },
+                {
+                    "begin_node_index": 1,
+                    "end_node_index": 2,
+                    "label": "next",
+                    "min_count": 0
+                },
+                {
+                    "begin_node_index": 3,
+                    "end_node_index": 2,
+                    "label": "startInSec"
+                },
+                {
+                    "begin_node_index": 4,
+                    "end_node_index": 2,
+                    "label": "endInSec"
+                }
+            ]
+        }
         # https://www.convertonline.io/convert/json-to-query-string
-        response = self.graph_api_service.get_nodes_by_query(query)
+        response = self.graph_api_service.get_nodes_by_query(
+            query_timestamp if time_series_type == Type.timestamp.value else query_epoch)
         print(response)
         signal_values = []
         for row in response["rows"]:
-            signal_values.append({'signal_value': row[0], 'timestamp': row[1]})
+            if time_series_type == Type.timestamp:
+                signal_values.append({'signal_value': row[0], 'timestamp': row[1]})
+            else:
+                signal_values.append({'signal_value': row[0], 'start_timestamp': row[1], 'end_timestamp': row[2]})
         return signal_values
 
     def delete_time_series(self, time_series_id: int):
