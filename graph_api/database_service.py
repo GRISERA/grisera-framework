@@ -160,7 +160,6 @@ class DatabaseService:
         if len(return_list) > 0:
             get_statement += " RETURN " + ",".join(
                 [node_label + ",LABELS(" + node_label + ")" for node_label in return_list])
-        print(get_statement)
         return self.post_statement(get_statement)
 
     def delete_node(self, node_id):

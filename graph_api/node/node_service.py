@@ -95,7 +95,6 @@ class NodeService:
             return NodeRowsOut(errors=response["errors"])
 
         result = NodeRowsOut(rows=[])
-        print(response)
 
         for nodes in response["results"][0]["data"]:
             row = []

@@ -55,7 +55,15 @@ class TimeSeriesService:
         time_series.observable_information_id = time_series.measure_id = None
         self.graph_api_service.create_properties(time_series_id, time_series)
 
-        errors = self.save_signal_values(time_series.signal_values, time_series_id, 53, time_series.type)
+        # if time_series.observable_information_id is not None:
+        #     recording_id = self.get_neighbour_node_id(time_series.observable_information_id, "hasRecording")
+        #     if recording_id is not None:
+        #         participation_id = self.get_neighbour_node_id(time_series.observable_information_id, "hasParticipation")
+        #         if participation_id is not None:
+        #             activity_execution_id = self.get_neighbour_node_id(time_series.observable_information_id,
+        #                                                           "hasActivityExecution")
+
+        errors = self.save_signal_values(time_series.signal_values, time_series_id, 23, time_series.type)
         if errors is not None:
             return TimeSeriesOut(**time_series.dict(), errors=errors)
 
@@ -234,7 +242,7 @@ class TimeSeriesService:
                 time_series['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
                                                                              name=relation["name"],
                                                                              relation_id=relation["id"]))
-        time_series['signal_values'] = self.get_signal_values(time_series_id, time_series['type'])
+        # time_series['signal_values'] = self.get_signal_values(time_series_id, time_series['type'])
         return TimeSeriesOut(**time_series)
 
     def get_signal_values(self, time_series_id: int, time_series_type: str):
@@ -249,9 +257,6 @@ class TimeSeriesService:
             Array of signal value objects
         """
 
-        # MATCH(n_0:`Time Series`)-[:`hasSignal`]->(n_1)-[:`next`*0..]->(n_2:`Signal Value`)-[:`inSec`]->(n_3:`Timestamp`) WHERE ID(n_0)=205 RETURN n_2,LABELS(n_2),n_3,LABELS(n_3)
-        # MATCH (n_0)-[:`hasSignal`]->(n_1),(n_1)-[:`next`*0..]->(n_2),(n_2)-[:`inSec`]->(n_3),(n_0:`Time Series`),(n_1:`Signal Value`),(n_2:`Signal Value`),(n_3:`Timestamp`) WHERE ID(n_0)=205 RETURN n_2,LABELS(n_2),n_3,LABELS(n_3)
-        print(time_series_type)
         query_timestamp = {
             "nodes": [
                 {
@@ -335,10 +340,8 @@ class TimeSeriesService:
                 }
             ]
         }
-        # https://www.convertonline.io/convert/json-to-query-string
         response = self.graph_api_service.get_nodes_by_query(
             query_timestamp if time_series_type == Type.timestamp.value else query_epoch)
-        print(response)
         signal_values = []
         for row in response["rows"]:
             if time_series_type == Type.timestamp:
