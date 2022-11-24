@@ -1,15 +1,18 @@
 import os
 from time import sleep
+
+from fastapi import FastAPI
+
 from activity.activity_router import router as activity_router
 from activity_execution.activity_execution_router import router as activity_execution_router
-from arrangement.arrangement_router import router as arrangement_router
 from appearance.appearance_router import router as appearance_router
+from arrangement.arrangement_router import router as arrangement_router
 from channel.channel_router import router as channel_router
 from experiment.experiment_router import router as experiment_router
-from fastapi import FastAPI
 from hateoas import get_links
 from life_activity.life_activity_router import router as life_activity_router
 from measure.measure_router import router as measure_router
+from measure_name.measure_name_router import router as measure_name_router
 from modality.modality_router import router as modality_router
 from observable_information.observable_information_router import router as observable_information_router
 from participant.participant_router import router as participant_router
@@ -18,11 +21,10 @@ from participation.participation_router import router as participation_router
 from personality.personality_router import router as personality_router
 from recording.recording_router import router as recording_router
 from registered_channel.registered_channel_router import router as registered_channel_router
-from time_series.time_series_router import router as time_series_router
 from registered_data.registered_data_router import router as registered_data_router
 from scenario.scenario_router import router as scenario_router
-from measure_name.measure_name_router import router as measure_name_router
 from setup import SetupNodes
+from time_series.time_series_router import router as time_series_router
 
 app = FastAPI(title="GRISERA API",
               description="Graph Representation Integrating Signals for Emotion Recognition and Analysis (GRISERA) "

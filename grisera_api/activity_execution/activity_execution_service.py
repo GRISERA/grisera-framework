@@ -1,10 +1,10 @@
-from graph_api_service import GraphApiService
-from activity.activity_service import ActivityService
-from arrangement.arrangement_service import ArrangementService
 from activity_execution.activity_execution_model import ActivityExecutionPropertyIn, ActivityExecutionRelationIn, \
     ActivityExecutionIn, ActivityExecutionOut, ActivityExecutionsOut, BasicActivityExecutionOut
+from arrangement.arrangement_service import ArrangementService
+from graph_api_service import GraphApiService
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
+from services import Services
 
 
 class ActivityExecutionService:
@@ -17,8 +17,10 @@ class ActivityExecutionService:
     arrangement_service (ArrangementService): Service used to communicate with Arrangement
     """
     graph_api_service = GraphApiService()
-    activity_service = ActivityService()
     arrangement_service = ArrangementService()
+
+    def __init__(self):
+        self.activity_service = Services().activity_service()
 
     def save_activity_execution(self, activity_execution: ActivityExecutionIn):
         """
@@ -30,6 +32,7 @@ class ActivityExecutionService:
         Returns:
             Result of request as activity execution object
         """
+
         node_response = self.graph_api_service.create_node("`Activity Execution`")
 
         if node_response["errors"] is not None:
@@ -46,7 +49,6 @@ class ActivityExecutionService:
         if activity_execution.arrangement_id is not None and \
                 type(self.arrangement_service.get_arrangement(activity_execution.arrangement_id)) \
                 is not NotFoundByIdModel:
-
             self.graph_api_service.create_relationships(start_node=activity_execution_id,
                                                         end_node=activity_execution.arrangement_id,
                                                         name="hasArrangement")
