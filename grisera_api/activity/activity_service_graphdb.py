@@ -1,6 +1,6 @@
-from activity.activity_service import ActivityService
 from graph_api_service import GraphApiService
 from activity.activity_model import ActivityIn, ActivityOut, ActivitiesOut, BasicActivityOut
+from activity.activity_service import ActivityService
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
 

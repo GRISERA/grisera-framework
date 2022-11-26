@@ -8,16 +8,9 @@ from models.relation_information_model import RelationInformation
 
 class RecordingService:
     """
-    Object to handle logic of recording requests
+    Abstract class to handle logic of recording requests
 
-    Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
-    participation_service (ParticipationService): Service to send participation requests
-    registered_channel_service(RegisteredChannelService): Service to send registered channel requests
     """
-    graph_api_service = GraphApiService()
-    participation_service = ParticipationService()
-    registered_channel_service = RegisteredChannelService()
 
     def save_recording(self, recording: RecordingIn):
         """
@@ -29,7 +22,7 @@ class RecordingService:
         Returns:
             Result of request as recording object
         """
-        print("save_recording not implemented yet")
+        raise Exception("save_recording not implemented yet")
 
     def get_recordings(self):
         """
@@ -37,7 +30,7 @@ class RecordingService:
         Returns:
             Result of request as list of recordings objects
         """
-        print("get_recordings not implemented yet")
+        raise Exception("get_recordings not implemented yet")
 
     def get_recording(self, recording_id: int):
         """
@@ -47,7 +40,7 @@ class RecordingService:
         Returns:
             Result of request as recording object
         """
-        print("get_recording not implemented yet")
+        raise Exception("get_recording not implemented yet")
 
     def delete_recording(self, recording_id: int):
         """
@@ -57,7 +50,7 @@ class RecordingService:
         Returns:
             Result of request as recording object
         """
-        print("delete_recording not implemented yet")
+        raise Exception("delete_recording not implemented yet")
 
     def update_recording(self, recording_id: int, recording: RecordingPropertyIn):
         """
@@ -68,7 +61,7 @@ class RecordingService:
         Returns:
             Result of request as participant state object
         """
-        print("update_recording not implemented yet")
+        raise Exception("update_recording not implemented yet")
     
     def update_recording_relationships(self, recording_id: int,
                                        recording: RecordingIn):
@@ -80,4 +73,4 @@ class RecordingService:
         Returns:
             Result of request as recording object
         """
-        print("update_recording_relationships not implemented yet")
+        raise Exception("update_recording_relationships not implemented yet")

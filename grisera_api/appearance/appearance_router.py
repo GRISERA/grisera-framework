@@ -7,6 +7,7 @@ from appearance.appearance_model import AppearanceOcclusionIn, AppearanceOcclusi
      AppearanceSomatotypeIn, AppearanceSomatotypeOut, BasicAppearanceSomatotypeOut, AppearancesOut
 from appearance.appearance_service import AppearanceService
 from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 router = InferringRouter()
 
@@ -19,11 +20,9 @@ class AppearanceRouter:
     Attributes:
         appearance_service (AppearanceService): Service instance for appearance
     """
-    appearance_service = None
 
-    # dependency injection in the constructor
-    def __init__(self, appearance_service):
-        self.appearance_service = appearance_service
+    def __init__(self):
+        self.appearance_service = Services().appearance_service()
 
     @router.post("/appearance/occlusion_model", tags=["appearance"], response_model=AppearanceOcclusionOut)
     async def create_appearance_occlusion(self, appearance: AppearanceOcclusionIn, response: Response):

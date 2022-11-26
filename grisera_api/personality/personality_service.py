@@ -7,12 +7,9 @@ from models.not_found_model import NotFoundByIdModel
 
 class PersonalityService:
     """
-    Object to handle logic of personality requests
+    Abstract class to handle logic of personality requests
 
-    Attributes:
-        graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
-    graph_api_service = GraphApiService()
 
     def save_personality_big_five(self, personality: PersonalityBigFiveIn):
         """
@@ -24,7 +21,7 @@ class PersonalityService:
         Returns:
             Result of request as personality big five object
         """
-        print("save_personality_big_five not implemented yet")
+        raise Exception("save_personality_big_five not implemented yet")
 
     def save_personality_panas(self, personality: PersonalityPanasIn):
         """
@@ -36,7 +33,7 @@ class PersonalityService:
         Returns:
             Result of request as personality panas object
         """
-        print("save_personality_panas not implemented yet")
+        raise Exception("save_personality_panas not implemented yet")
 
     def get_personality(self, personality_id: int):
         """
@@ -48,7 +45,7 @@ class PersonalityService:
         Returns:
             Result of request as personality object
         """
-        print("get_personality not implemented yet")
+        raise Exception("get_personality not implemented yet")
 
     def get_personalities(self):
         """
@@ -57,7 +54,7 @@ class PersonalityService:
         Returns:
             Result of request as list of personalities objects
         """
-        print("get_personalities not implemented yet")
+        raise Exception("get_personalities not implemented yet")
 
     def delete_personality(self, personality_id: int):
         """
@@ -69,7 +66,7 @@ class PersonalityService:
         Returns:
             Result of request as personality object
         """
-        print("delete_personality not implemented yet")
+        raise Exception("delete_personality not implemented yet")
 
     def update_personality_big_five(self, personality_id: int, personality: PersonalityBigFiveIn):
         """
@@ -82,7 +79,7 @@ class PersonalityService:
         Returns:
             Result of request as personality object
         """
-        print("update_personality_big_five not implemented yet")
+        raise Exception("update_personality_big_five not implemented yet")
 
     def update_personality_panas(self, personality_id: int, personality: PersonalityPanasIn):
         """
@@ -95,4 +92,4 @@ class PersonalityService:
         Returns:
             Result of request as personality object
         """
-        print("update_personality_panas not implemented yet")
+        raise Exception("update_personality_panas not implemented yet")

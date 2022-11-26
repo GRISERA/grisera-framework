@@ -10,18 +10,9 @@ from models.relation_information_model import RelationInformation
 
 class ParticipantStateService:
     """
-    Object to handle logic of participant state requests
+    Abstract class to handle logic of participant state requests
 
-    Attributes:
-        graph_api_service (GraphApiService): Service used to communicate with Graph API
-        participant_service (ParticipantService): Service to manage participant models
-        appearance_service (AppearanceService): Service to manage appearance models
-        personality_service (PersonalityService): Service to manage personality models
     """
-    graph_api_service = GraphApiService()
-    participant_service = ParticipantService()
-    appearance_service = AppearanceService()
-    personality_service = PersonalityService()
 
     def save_participant_state(self, participant_state: ParticipantStateIn):
         """
@@ -33,7 +24,7 @@ class ParticipantStateService:
         Returns:
             Result of request as participant state object
         """
-        print("save_participant_state not implemented yet")
+        raise Exception("save_participant_state not implemented yet")
 
     def get_participant_states(self):
         """
@@ -42,7 +33,7 @@ class ParticipantStateService:
         Returns:
             Result of request as list of participant states objects
         """
-        print("get_participant_states not implemented yet")
+        raise Exception("get_participant_states not implemented yet")
 
     def get_participant_state(self, participant_state_id: int):
         """
@@ -54,7 +45,7 @@ class ParticipantStateService:
         Returns:
             Result of request as participant state object
         """
-        print("get_participant_state not implemented yet")
+        raise Exception("get_participant_state not implemented yet")
 
     def delete_participant_state(self, participant_state_id: int):
         """
@@ -66,7 +57,7 @@ class ParticipantStateService:
         Returns:
             Result of request as participant state object
         """
-        print("delete_participant_state not implemented yet")
+        raise Exception("delete_participant_state not implemented yet")
 
     def update_participant_state(self, participant_state_id: int, participant_state: ParticipantStatePropertyIn):
         """
@@ -79,7 +70,7 @@ class ParticipantStateService:
         Returns:
             Result of request as participant state object
         """
-        print("update_participant_state not implemented yet")
+        raise Exception("update_participant_state not implemented yet")
 
     def update_participant_state_relationships(self, participant_state_id: int,
                                                participant_state: ParticipantStateRelationIn):
@@ -93,4 +84,4 @@ class ParticipantStateService:
         Returns:
             Result of request as participant state object
         """
-        print("update_participant_state_relationships not implemented yet")
+        raise Exception("update_participant_state_relationships not implemented yet")

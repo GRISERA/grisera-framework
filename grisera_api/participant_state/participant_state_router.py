@@ -7,6 +7,7 @@ from participant_state.participant_state_model import ParticipantStateIn, Partic
 from participant_state.participant_state_service import ParticipantStateService
 from typing import Union
 from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 router = InferringRouter()
 
@@ -19,11 +20,9 @@ class ParticipantStateRouter:
     Attributes:
         participant_state_service (ParticipantStateService): Service instance for participants' states
     """
-    participant_state_service = None
 
-    # dependency injection in the constructor
-    def __init__(self, participant_state_service):
-        self.participant_state_service = participant_state_service
+    def __init__(self):
+        self.participant_state_service = Services().participant_state_service()
 
     @router.post("/participant_state", tags=["participant state"], response_model=ParticipantStateOut)
     async def create_participant_state(self, participant_state: ParticipantStateIn, response: Response):

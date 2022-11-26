@@ -1,17 +1,11 @@
-from graph_api_service import GraphApiService
-from activity.activity_model import ActivityIn, ActivityOut, ActivitiesOut, BasicActivityOut
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from activity.activity_model import ActivityIn
 
 
 class ActivityService:
     """
-    Object to handle logic of activity requests
+    Abstract class to handle logic of activity requests
 
-    Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
-    graph_api_service = GraphApiService()
 
     def save_activity(self, activity: ActivityIn):
         """
@@ -23,7 +17,8 @@ class ActivityService:
         Returns:
             Result of request as activity object
         """
-        print("save_activity not implemented yet")
+        raise Exception("Reference to an abstract class.")
+
     def get_activities(self):
         """
         Send request to graph api to get all activities
@@ -31,7 +26,8 @@ class ActivityService:
         Returns:
             Result of request as list of activity objects
         """
-        raise Exception("get_activities not implemented yet")
+        raise Exception("Reference to an abstract class.")
+
     def get_activity(self, activity_id: int):
         """
         Send request to graph api to get given activity
@@ -40,5 +36,4 @@ class ActivityService:
         Returns:
             Result of request as activity object
         """
-        print("get_activity not implemented yet")
-
+        raise Exception("Reference to an abstract class.")

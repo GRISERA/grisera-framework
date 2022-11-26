@@ -6,12 +6,9 @@ from models.relation_information_model import RelationInformation
 
 class ChannelService:
     """
-    Object to handle logic of channel requests
+    Abstract class to handle logic of channel requests
 
-    Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
-    graph_api_service = GraphApiService()
 
     def save_channel(self, channel: ChannelIn):
         """
@@ -23,7 +20,7 @@ class ChannelService:
         Returns:
             Result of request as channel object
         """
-        print("save_channel not implemented yet")
+        raise Exception("save_channel not implemented yet")
 
     def get_channels(self):
         """
@@ -32,7 +29,7 @@ class ChannelService:
         Returns:
             Result of request as list of channel objects
         """
-        print("get_channels not implemented yet")
+        raise Exception("get_channels not implemented yet")
 
     def get_channel(self, channel_id: int):
         """
@@ -44,4 +41,4 @@ class ChannelService:
         Returns:
             Result of request as channel object
         """
-        print("get_channel not implemented yet")
+        raise Exception("get_channel not implemented yet")

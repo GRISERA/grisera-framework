@@ -9,16 +9,9 @@ from models.relation_information_model import RelationInformation
 
 class TimeSeriesService:
     """
-    Object to handle logic of time series requests
+    Abstract class to handle logic of time series requests
 
-    Attributes:
-        graph_api_service (GraphApiService): Service used to communicate with Graph API
-        measure_service (MeasureService): Service to manage measure models
-        observable_information_service (ObservableInformationService): Service to manage observable information models
     """
-    graph_api_service = GraphApiService()
-    measure_service = MeasureService()
-    observable_information_service = ObservableInformationService()
 
     def save_time_series(self, time_series: TimeSeriesIn):
         """
@@ -30,7 +23,7 @@ class TimeSeriesService:
         Returns:
             Result of request as time series object
         """
-        print("save_time_series not implemented yet")
+        raise Exception("save_time_series not implemented yet")
 
     def get_time_series_nodes(self):
         """
@@ -39,7 +32,7 @@ class TimeSeriesService:
         Returns:
             Result of request as list of time series nodes objects
         """
-        print("get_time_series_nodes not implemented yet")
+        raise Exception("get_time_series_nodes not implemented yet")
 
     def get_time_series(self, time_series_id: int):
         """
@@ -51,7 +44,7 @@ class TimeSeriesService:
         Returns:
             Result of request as time series object
         """
-        print("get_time_series not implemented yet")
+        raise Exception("get_time_series not implemented yet")
 
     def delete_time_series(self, time_series_id: int):
         """
@@ -63,7 +56,7 @@ class TimeSeriesService:
         Returns:
             Result of request as time series object
         """
-        print("delete_time_series not implemented yet")
+        raise Exception("delete_time_series not implemented yet")
 
     def update_time_series(self, time_series_id: int, time_series: TimeSeriesPropertyIn):
         """
@@ -76,7 +69,7 @@ class TimeSeriesService:
         Returns:
             Result of request as time series object
         """
-        print("update_time_series not implemented yet")
+        raise Exception("update_time_series not implemented yet")
 
     def update_time_series_relationships(self, time_series_id: int,
                                                time_series: TimeSeriesRelationIn):
@@ -90,4 +83,4 @@ class TimeSeriesService:
         Returns:
             Result of request as time series object
         """
-        print("update_time_series_relationships not implemented yet")
+        raise Exception("update_time_series_relationships not implemented yet")

@@ -7,6 +7,7 @@ from hateoas import get_links
 from models.not_found_model import NotFoundByIdModel
 from recording.recording_model import RecordingPropertyIn, RecordingRelationIn, RecordingIn, RecordingOut, RecordingsOut
 from recording.recording_service import RecordingService
+from services import Services
 
 router = InferringRouter()
 
@@ -17,13 +18,11 @@ class RecordingRouter:
     Class for routing recording based requests
 
     Attributes:
-    recording_service (RecordingService): Service instance for recording
+        recording_service (RecordingService): Service instance for recording
     """
-    recording_service = None
 
-    # dependency injection in the constructor
-    def __init__(self, recording_service):
-        self.recording_service = recording_service
+    def __init__(self):
+        self.recording_service = Services().recording_service()
 
     @router.post("/recordings", tags=["recordings"], response_model=RecordingOut)
     async def create_recording(self, recording: RecordingIn, response: Response):
