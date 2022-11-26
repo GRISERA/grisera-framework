@@ -2,7 +2,7 @@ import unittest
 import unittest.mock as mock
 
 from appearance.appearance_model import *
-from appearance.appearance_service import AppearanceService
+from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -18,7 +18,7 @@ class TestAppearanceServicePost(unittest.TestCase):
                                                                              {'key': 'moustache', 'value': "Heavy"}],
                                                "errors": None, 'links': None}
         appearance = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="Heavy")
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.save_appearance_occlusion(appearance)
 
@@ -31,7 +31,7 @@ class TestAppearanceServicePost(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         appearance = AppearanceOcclusionIn(glasses=False, beard="Heavy", moustache="Heavy")
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.save_appearance_occlusion(appearance)
 
@@ -45,7 +45,7 @@ class TestAppearanceServicePost(unittest.TestCase):
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         appearance = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="Heavy")
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.save_appearance_occlusion(appearance)
 
@@ -63,7 +63,7 @@ class TestAppearanceServicePost(unittest.TestCase):
                                                                              {'key': 'mesomorph', 'value': 1.5}],
                                                "errors": None, 'links': None}
         appearance = AppearanceSomatotypeIn(ectomorph=1.5, endomorph=1.5, mesomorph=1.5)
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.save_appearance_somatotype(appearance)
 
@@ -77,7 +77,7 @@ class TestAppearanceServicePost(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         appearance = AppearanceSomatotypeIn(ectomorph=1.5, endomorph=1.5, mesomorph=1.5)
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.save_appearance_somatotype(appearance)
 
@@ -92,7 +92,7 @@ class TestAppearanceServicePost(unittest.TestCase):
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         appearance = AppearanceSomatotypeIn(ectomorph=1.5, endomorph=1.5, mesomorph=1.5)
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.save_appearance_somatotype(appearance)
 

@@ -3,11 +3,12 @@ import unittest
 import unittest.mock as mock
 
 from participation.participation_router import *
+from participation.participation_service_graphdb import ParticipationServiceGraphDB
 
 
 class TestParticipationRouterDelete(unittest.TestCase):
 
-    @mock.patch.object(ParticipationService, 'delete_participation')
+    @mock.patch.object(ParticipationServiceGraphDB, 'delete_participation')
     def test_delete_participation_without_error(self, delete_participation_mock):
         participation_id = 1
         delete_participation_mock.return_value = ParticipationOut(id=participation_id)
@@ -20,7 +21,7 @@ class TestParticipationRouterDelete(unittest.TestCase):
         delete_participation_mock.assert_called_once_with(participation_id)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(ParticipationService, 'delete_participation')
+    @mock.patch.object(ParticipationServiceGraphDB, 'delete_participation')
     def test_delete_participation_with_error(self, delete_participation_mock):
         delete_participation_mock.return_value = ParticipationOut(errors={'errors': ['test']})
         response = Response()

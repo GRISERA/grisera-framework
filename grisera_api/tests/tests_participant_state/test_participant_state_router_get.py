@@ -3,11 +3,12 @@ import unittest
 import unittest.mock as mock
 from participant_state.participant_state_router import *
 from participant_state.participant_state_model import BasicParticipantStateOut, ParticipantStateOut
+from participant_state.participant_state_service_graphdb import ParticipantStateServiceGraphDB
 
 
 class TestParticipantStateRouterGet(unittest.TestCase):
 
-    @mock.patch.object(ParticipantStateService, 'get_participant_state')
+    @mock.patch.object(ParticipantStateServiceGraphDB, 'get_participant_state')
     def test_get_participant_state_without_error(self, get_participant_state_mock):
         participant_state_id = 1
         get_participant_state_mock.return_value = ParticipantStateOut(age=5)
@@ -20,7 +21,7 @@ class TestParticipantStateRouterGet(unittest.TestCase):
         get_participant_state_mock.assert_called_once_with(participant_state_id)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(ParticipantStateService, 'get_participant_state')
+    @mock.patch.object(ParticipantStateServiceGraphDB, 'get_participant_state')
     def test_get_participant_state_with_error(self, get_participant_state_mock):
         get_participant_state_mock.return_value = ParticipantStateOut(age=5, errors={'errors': ['test']})
         response = Response()
@@ -34,7 +35,7 @@ class TestParticipantStateRouterGet(unittest.TestCase):
         get_participant_state_mock.assert_called_once_with(participant_state_id)
         self.assertEqual(response.status_code, 404)
 
-    @mock.patch.object(ParticipantStateService, 'get_participant_states')
+    @mock.patch.object(ParticipantStateServiceGraphDB, 'get_participant_states')
     def test_get_participants_state_without_error(self, get_participant_states_mock):
         get_participant_states_mock.return_value = ParticipantStatesOut(participant_states=[
             BasicParticipantStateOut(age=5, id=1),

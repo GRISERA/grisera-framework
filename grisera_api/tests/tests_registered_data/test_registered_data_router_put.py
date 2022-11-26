@@ -3,11 +3,12 @@ import unittest
 import unittest.mock as mock
 from registered_data.registered_data_router import *
 from property.property_model import PropertyIn
+from registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
 
 
 class TestRegisteredDataRouterPut(unittest.TestCase):
 
-    @mock.patch.object(RegisteredDataService, 'update_registered_data')
+    @mock.patch.object(RegisteredDataServiceGraphDB, 'update_registered_data')
     def test_update_registered_data_without_error(self, update_registered_data_mock):
         registered_data_id = 1
         additional_properties = [PropertyIn(key="test", value="test")]
@@ -25,7 +26,7 @@ class TestRegisteredDataRouterPut(unittest.TestCase):
         update_registered_data_mock.assert_called_once_with(registered_data_id, registered_data)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(RegisteredDataService, 'update_registered_data')
+    @mock.patch.object(RegisteredDataServiceGraphDB, 'update_registered_data')
     def test_update_registered_data_with_error(self, update_registered_data_mock):
         registered_data_id = 1
         update_registered_data_mock.return_value = RegisteredDataOut(source='url', errors={'errors': ['test']})

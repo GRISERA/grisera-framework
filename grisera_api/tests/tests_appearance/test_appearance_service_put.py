@@ -4,7 +4,7 @@ import unittest.mock as mock
 from appearance.appearance_model import *
 from models.not_found_model import *
 
-from appearance.appearance_service import AppearanceService
+from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -36,7 +36,7 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                 reversed_relations=[
                                                 RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                     relation_id=0)])
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.update_appearance_occlusion(id_node, appearance_in)
 
@@ -72,7 +72,7 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                      RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                          relation_id=0)]
                                                  )
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.update_appearance_somatotype(id_node, appearance_in)
 
@@ -95,7 +95,7 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                      "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         appearance_in = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="None")
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.update_appearance_occlusion(id_node, appearance_in)
 
@@ -117,7 +117,7 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                      "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         appearance_in = AppearanceSomatotypeIn(ectomorph=1.5, endomorph=1.5, mesomorph=1.5)
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.update_appearance_somatotype(id_node, appearance_in)
 
@@ -138,7 +138,7 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                      "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         appearance_in = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="None")
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.update_appearance_occlusion(id_node, appearance_in)
 
@@ -159,7 +159,7 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                      "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         appearance_in = AppearanceSomatotypeIn(ectomorph=1.5, endomorph=1.5, mesomorph=1.5)
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.update_appearance_somatotype(id_node, appearance_in)
 
@@ -171,7 +171,7 @@ class TestAppearanceServicePut(unittest.TestCase):
         appearance_in = AppearanceSomatotypeIn(ectomorph=0.5, endomorph=1.5, mesomorph=1.5)
         appearance_out = AppearanceSomatotypeOut(ectomorph=0.5, endomorph=1.5, mesomorph=1.5,
                                                  errors="Scale range not between 1 and 7")
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.update_appearance_somatotype(id_node, appearance_in)
 

@@ -2,12 +2,13 @@ import asyncio
 import unittest
 import unittest.mock as mock
 from experiment.experiment_router import *
+from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
 from property.property_model import PropertyIn
 
 
 class TestExperimentRouterPut(unittest.TestCase):
 
-    @mock.patch.object(ExperimentService, 'update_experiment')
+    @mock.patch.object(ExperimentServiceGraphDB, 'update_experiment')
     def test_update_experiment_without_error(self, update_experiment_mock):
         experiment_id = 1
         update_experiment_mock.return_value = ExperimentOut(experiment_name="test",
@@ -25,7 +26,7 @@ class TestExperimentRouterPut(unittest.TestCase):
         update_experiment_mock.assert_called_once_with(experiment_id, experiment)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(ExperimentService, 'update_experiment')
+    @mock.patch.object(ExperimentServiceGraphDB, 'update_experiment')
     def test_update_experiment_with_error(self, update_experiment_mock):
         experiment_id = 1
         update_experiment_mock.return_value = ExperimentOut(experiment_name="test", errors={'errors': ['test']})

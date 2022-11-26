@@ -3,7 +3,7 @@ import unittest
 import unittest.mock as mock
 
 from measure_name.measure_name_model import *
-from measure_name.measure_name_service import *
+from measure_name.measure_name_service_graphdb import *
 from requests import Response
 
 
@@ -16,7 +16,7 @@ class TestMeasureNameServicePost(unittest.TestCase):
                                         'links': None}).encode('utf-8')
         mock_requests.post.return_value = response
         measure_name = MeasureNameIn(name="Familiarity", type="Addional emotions measure")
-        measure_name_service = MeasureNameService()
+        measure_name_service = MeasureNameServiceGraphDB()
 
         result = measure_name_service.save_measure_name(measure_name)
 
@@ -29,7 +29,7 @@ class TestMeasureNameServicePost(unittest.TestCase):
                                         'links': None}).encode('utf-8')
         mock_requests.post.return_value = response
         measure_name = MeasureNameIn(name="Familiarity", type="Addional emotions measure")
-        measure_name_service = MeasureNameService()
+        measure_name_service = MeasureNameServiceGraphDB()
 
         result = measure_name_service.save_measure_name(measure_name)
 

@@ -2,11 +2,12 @@ import asyncio
 import unittest
 import unittest.mock as mock
 from time_series.time_series_router import *
+from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 
 
 class TestTimeSeriesRouterPut(unittest.TestCase):
 
-    @mock.patch.object(TimeSeriesService, 'update_time_series')
+    @mock.patch.object(TimeSeriesServiceGraphDB, 'update_time_series')
     def test_update_time_series_without_error(self, update_time_series_mock):
         time_series_id = 1
         update_time_series_mock.return_value = TimeSeriesOut(id=1, type="Epoch", source="cos")
@@ -21,7 +22,7 @@ class TestTimeSeriesRouterPut(unittest.TestCase):
         update_time_series_mock.assert_called_once_with(time_series_id, time_series)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(TimeSeriesService, 'update_time_series')
+    @mock.patch.object(TimeSeriesServiceGraphDB, 'update_time_series')
     def test_update_time_series_with_error(self, update_time_series_mock):
         time_series_id = 1
         update_time_series_mock.return_value = TimeSeriesOut(id=1, type="Epoch", source="cos", errors={'errors': ['test']})
@@ -37,7 +38,7 @@ class TestTimeSeriesRouterPut(unittest.TestCase):
         update_time_series_mock.assert_called_once_with(time_series_id, time_series)
         self.assertEqual(response.status_code, 404)
 
-    @mock.patch.object(TimeSeriesService, 'update_time_series_relationships')
+    @mock.patch.object(TimeSeriesServiceGraphDB, 'update_time_series_relationships')
     def test_update_time_series_relationships_without_error(self, update_time_series_relationships_mock):
         id_node = 1
         update_time_series_relationships_mock.return_value = TimeSeriesOut(id=1, type="Epoch", source="cos")
@@ -53,7 +54,7 @@ class TestTimeSeriesRouterPut(unittest.TestCase):
         update_time_series_relationships_mock.assert_called_once_with(id_node, time_series_in)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(TimeSeriesService, 'update_time_series_relationships')
+    @mock.patch.object(TimeSeriesServiceGraphDB, 'update_time_series_relationships')
     def test_update_time_series_relationships_with_error(self, update_time_series_relationships_mock):
         id_node = 1
         update_time_series_relationships_mock.return_value = TimeSeriesOut(id=1, type="Epoch", source="cos",

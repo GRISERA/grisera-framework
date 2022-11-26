@@ -4,11 +4,12 @@ import unittest.mock as mock
 
 from registered_channel.registered_channel_model import *
 from registered_channel.registered_channel_router import *
+from registered_channel.registered_channel_service_graphdb import RegisteredChannelServiceGraphDB
 
 
 class TestRegisteredChannelRouterGet(unittest.TestCase):
 
-    @mock.patch.object(RegisteredChannelService, 'get_registered_channel')
+    @mock.patch.object(RegisteredChannelServiceGraphDB, 'get_registered_channel')
     def test_get_registered_channel_without_error(self, get_registered_channel_mock):
         registered_channel_id = 1
         get_registered_channel_mock.return_value = RegisteredChannelOut(id=registered_channel_id)
@@ -21,7 +22,7 @@ class TestRegisteredChannelRouterGet(unittest.TestCase):
         get_registered_channel_mock.assert_called_once_with(registered_channel_id)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(RegisteredChannelService, 'get_registered_channel')
+    @mock.patch.object(RegisteredChannelServiceGraphDB, 'get_registered_channel')
     def test_get_registered_channel_with_error(self, get_registered_channel_mock):
         get_registered_channel_mock.return_value = RegisteredChannelOut(errors={'errors': ['test']})
         response = Response()
@@ -35,7 +36,7 @@ class TestRegisteredChannelRouterGet(unittest.TestCase):
         get_registered_channel_mock.assert_called_once_with(registered_channel_id)
         self.assertEqual(response.status_code, 404)
 
-    @mock.patch.object(RegisteredChannelService, 'get_registered_channels')
+    @mock.patch.object(RegisteredChannelServiceGraphDB, 'get_registered_channels')
     def test_get_registered_channels_without_error(self, get_registered_channels_mock):
         get_registered_channels_mock.return_value = RegisteredChannelsOut(registered_channels=[
             BasicRegisteredChannelOut(id=1),

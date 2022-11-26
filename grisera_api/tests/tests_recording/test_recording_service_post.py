@@ -3,7 +3,7 @@ import unittest.mock as mock
 
 from graph_api_service import GraphApiService
 from recording.recording_model import *
-from recording.recording_service import RecordingService
+from recording.recording_service_graphdb import RecordingServiceGraphDB
 
 
 class TestRecordingServicePost(unittest.TestCase):
@@ -41,7 +41,7 @@ class TestRecordingServicePost(unittest.TestCase):
                                                                            name="testReversedRelation",
                                                                            relation_id=0)], id=id_node)
         calls = [mock.call(2), mock.call(3), mock.call(1)]
-        recording_service = RecordingService()
+        recording_service = RecordingServiceGraphDB()
 
         result = recording_service.save_recording(recording_in)
 
@@ -56,7 +56,7 @@ class TestRecordingServicePost(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         recording = RecordingIn()
-        recording_service = RecordingService()
+        recording_service = RecordingServiceGraphDB()
 
         result = recording_service.save_recording(recording)
 

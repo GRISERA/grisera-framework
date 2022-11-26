@@ -4,7 +4,7 @@ import unittest.mock as mock
 from graph_api_service import GraphApiService
 from models.not_found_model import *
 from participation.participation_model import *
-from participation.participation_service import ParticipationService
+from participation.participation_service_graphdb import ParticipationServiceGraphDB
 
 
 class TestParticipationServiceGet(unittest.TestCase):
@@ -29,7 +29,7 @@ class TestParticipationServiceGet(unittest.TestCase):
                                                   reversed_relations=[RelationInformation(second_node_id=15,
                                                                                           name="testReversedRelation",
                                                                                           relation_id=0)])
-        participation_service = ParticipationService()
+        participation_service = ParticipationServiceGraphDB()
 
         result = participation_service.get_participation(id_node)
 
@@ -43,7 +43,7 @@ class TestParticipationServiceGet(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        participation_service = ParticipationService()
+        participation_service = ParticipationServiceGraphDB()
 
         result = participation_service.get_participation(id_node)
 
@@ -55,7 +55,7 @@ class TestParticipationServiceGet(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        participation_service = ParticipationService()
+        participation_service = ParticipationServiceGraphDB()
 
         result = participation_service.get_participation(id_node)
 
@@ -74,7 +74,7 @@ class TestParticipationServiceGet(unittest.TestCase):
         participation_two = BasicParticipationOut(id=2)
         participations = ParticipationsOut(
             participations=[participation_one, participation_two])
-        participations_service = ParticipationService()
+        participations_service = ParticipationServiceGraphDB()
 
         result = participations_service.get_participations()
 
@@ -85,7 +85,7 @@ class TestParticipationServiceGet(unittest.TestCase):
     def test_get_participations_empty(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': []}
         participations = ParticipationsOut(participation=[])
-        participations_service = ParticipationService()
+        participations_service = ParticipationServiceGraphDB()
 
         result = participations_service.get_participations()
 

@@ -3,11 +3,12 @@ import unittest
 import unittest.mock as mock
 
 from activity_execution.activity_execution_router import *
+from activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
 
 
 class TestActivityExecutionRouterDelete(unittest.TestCase):
 
-    @mock.patch.object(ActivityExecutionService, 'delete_activity_execution')
+    @mock.patch.object(ActivityExecutionServiceGraphDB, 'delete_activity_execution')
     def test_delete_activity_execution_without_error(self, delete_activity_execution_mock):
         activity_execution_id = 1
         delete_activity_execution_mock.return_value = ActivityExecutionOut(id=activity_execution_id)
@@ -20,7 +21,7 @@ class TestActivityExecutionRouterDelete(unittest.TestCase):
         delete_activity_execution_mock.assert_called_once_with(activity_execution_id)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(ActivityExecutionService, 'delete_activity_execution')
+    @mock.patch.object(ActivityExecutionServiceGraphDB, 'delete_activity_execution')
     def test_delete_activity_execution_with_error(self, delete_activity_execution_mock):
         delete_activity_execution_mock.return_value = ActivityExecutionOut(errors={'errors': ['test']})
         response = Response()

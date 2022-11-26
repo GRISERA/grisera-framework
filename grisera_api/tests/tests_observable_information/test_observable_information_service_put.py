@@ -4,7 +4,7 @@ import unittest.mock as mock
 from observable_information.observable_information_model import *
 from models.not_found_model import *
 
-from observable_information.observable_information_service import ObservableInformationService
+from observable_information.observable_information_service_graphdb import ObservableInformationServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -35,7 +35,7 @@ class TestObservableInformationServicePut(unittest.TestCase):
                                                     reversed_relations=
                                  [RelationInformation(second_node_id=15, name="testReversedRelation", relation_id=0)])
         calls = [mock.call(1)]
-        observable_information_service = ObservableInformationService()
+        observable_information_service = ObservableInformationServiceGraphDB()
 
         result = observable_information_service.update_observable_information_relationships(id_node, observable_information_in)
 
@@ -51,7 +51,7 @@ class TestObservableInformationServicePut(unittest.TestCase):
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         observable_information_in = ObservableInformationIn(modality_id=15, life_activity_id=19)
-        observable_information_service = ObservableInformationService()
+        observable_information_service = ObservableInformationServiceGraphDB()
 
         result = observable_information_service.update_observable_information_relationships(id_node, observable_information_in)
 
@@ -64,7 +64,7 @@ class TestObservableInformationServicePut(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         observable_information_in = ObservableInformationIn(modality_id=15, life_activity_id=19)
-        observable_information_service = ObservableInformationService()
+        observable_information_service = ObservableInformationServiceGraphDB()
 
         result = observable_information_service.update_observable_information_relationships(id_node, observable_information_in)
 

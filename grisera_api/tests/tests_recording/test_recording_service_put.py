@@ -4,7 +4,7 @@ import unittest.mock as mock
 from recording.recording_model import *
 from models.not_found_model import *
 
-from recording.recording_service import RecordingService
+from recording.recording_service_graphdb import RecordingServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -39,7 +39,7 @@ class TestRecordingServicePut(unittest.TestCase):
                                                                                              name="testReversedRelation",
                                                                                              relation_id=0)])
         calls = [mock.call(1)]
-        recording_service = RecordingService()
+        recording_service = RecordingServiceGraphDB()
 
         result = recording_service.update_recording(id_node, recording_in)
 
@@ -56,7 +56,7 @@ class TestRecordingServicePut(unittest.TestCase):
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         additional_properties = [PropertyIn(key='identifier', value=5)]
         recording_in = RecordingPropertyIn(id=id_node, additional_properties=additional_properties)
-        recording_service = RecordingService()
+        recording_service = RecordingServiceGraphDB()
 
         result = recording_service.update_recording(id_node, recording_in)
 
@@ -70,7 +70,7 @@ class TestRecordingServicePut(unittest.TestCase):
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         additional_properties = [PropertyIn(key='identifier', value=5)]
         recording_in = RecordingPropertyIn(id=id_node, additional_properties=additional_properties)
-        recording_service = RecordingService()
+        recording_service = RecordingServiceGraphDB()
 
         result = recording_service.update_recording(id_node, recording_in)
 

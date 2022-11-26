@@ -3,7 +3,7 @@ import unittest.mock as mock
 
 from graph_api_service import GraphApiService
 from participant_state.participant_state_model import *
-from participant_state.participant_state_service import ParticipantStateService, ParticipantService
+from participant_state.participant_state_service_graphdb import ParticipantStateServiceGraphDB, ParticipantServiceGraphDB
 
 
 def relationship_function(*args, **kwargs):
@@ -47,7 +47,7 @@ class TestParticipantStateServicePost(unittest.TestCase):
                                                     [RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                          relation_id=0)], id=1)
         calls = [mock.call(end_node=3, start_node=1, name="hasPersonality")]
-        participant_state_service = ParticipantStateService()
+        participant_state_service = ParticipantStateServiceGraphDB()
 
         result = participant_state_service.save_participant_state(participant_state_in)
 
@@ -61,7 +61,7 @@ class TestParticipantStateServicePost(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         participant_state = ParticipantStateIn(age=5, participant_id=1, personality_id=2)
-        participant_state_service = ParticipantStateService()
+        participant_state_service = ParticipantStateServiceGraphDB()
 
         result = participant_state_service.save_participant_state(participant_state)
 

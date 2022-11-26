@@ -4,7 +4,7 @@ import unittest.mock as mock
 from life_activity.life_activity_model import *
 from models.not_found_model import *
 
-from life_activity.life_activity_service import LifeActivityService
+from life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -30,7 +30,7 @@ class TestLifeActivityServiceGet(unittest.TestCase):
                                                                   relation_id=0)],
                                    reversed_relations=[RelationInformation(second_node_id=15,
                                                                            name="testReversedRelation", relation_id=0)])
-        life_activity_service = LifeActivityService()
+        life_activity_service = LifeActivityServiceGraphDB()
 
         result = life_activity_service.get_life_activity(id_node)
 
@@ -44,7 +44,7 @@ class TestLifeActivityServiceGet(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        life_activity_service = LifeActivityService()
+        life_activity_service = LifeActivityServiceGraphDB()
 
         result = life_activity_service.get_life_activity(id_node)
 
@@ -56,7 +56,7 @@ class TestLifeActivityServiceGet(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        life_activity_service = LifeActivityService()
+        life_activity_service = LifeActivityServiceGraphDB()
 
         result = life_activity_service.get_life_activity(id_node)
 
@@ -73,7 +73,7 @@ class TestLifeActivityServiceGet(unittest.TestCase):
         life_activity_one = BasicLifeActivityOut(life_activity="test", id=1)
         life_activity_two = BasicLifeActivityOut(life_activity="test2", id=2)
         life_activities = LifeActivitiesOut(life_activities=[life_activity_one, life_activity_two])
-        life_activity_service = LifeActivityService()
+        life_activity_service = LifeActivityServiceGraphDB()
 
         result = life_activity_service.get_life_activities()
 
@@ -84,7 +84,7 @@ class TestLifeActivityServiceGet(unittest.TestCase):
     def test_get_life_activities_empty(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': [], 'errors': None}
         life_activities = LifeActivitiesOut(life_activities=[])
-        life_activity_service = LifeActivityService()
+        life_activity_service = LifeActivityServiceGraphDB()
 
         result = life_activity_service.get_life_activities()
 

@@ -4,7 +4,7 @@ import unittest.mock as mock
 from graph_api_service import GraphApiService
 from models.not_found_model import *
 from observable_information.observable_information_model import *
-from observable_information.observable_information_service import ObservableInformationService
+from observable_information.observable_information_service_graphdb import ObservableInformationServiceGraphDB
 
 
 class TestObservableInformationServiceDelete(unittest.TestCase):
@@ -31,7 +31,7 @@ class TestObservableInformationServiceDelete(unittest.TestCase):
                                          reversed_relations=[RelationInformation(second_node_id=15,
                                                                                  name="testReversedRelation",
                                                                                  relation_id=0)])
-        observable_information_service = ObservableInformationService()
+        observable_information_service = ObservableInformationServiceGraphDB()
 
         result = observable_information_service.delete_observable_information(id_node)
 
@@ -45,7 +45,7 @@ class TestObservableInformationServiceDelete(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        observable_information_service = ObservableInformationService()
+        observable_information_service = ObservableInformationServiceGraphDB()
 
         result = observable_information_service.delete_observable_information(id_node)
 
@@ -57,7 +57,7 @@ class TestObservableInformationServiceDelete(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        observable_information_service = ObservableInformationService()
+        observable_information_service = ObservableInformationServiceGraphDB()
 
         result = observable_information_service.delete_observable_information(id_node)
 
