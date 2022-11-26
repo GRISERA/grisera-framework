@@ -6,12 +6,9 @@ from models.relation_information_model import RelationInformation
 
 class LifeActivityService:
     """
-    Object to handle logic of life activity requests
+    Abstract class to handle logic of life activity requests
 
-    Attributes:
-        graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
-    graph_api_service = GraphApiService()
 
     def save_life_activity(self, life_activity: LifeActivityIn):
         """
@@ -23,7 +20,7 @@ class LifeActivityService:
         Returns:
             Result of request as life activity object
         """
-        print("save_life_activity not implemented yet")
+        raise Exception("save_life_activity not implemented yet")
 
     def get_life_activities(self):
         """
@@ -32,7 +29,7 @@ class LifeActivityService:
         Returns:
             Result of request as list of life activity objects
         """
-        print("get_life_activities not implemented yet")
+        raise Exception("get_life_activities not implemented yet")
 
     def get_life_activity(self, life_activity_id: int):
         """
@@ -44,4 +41,4 @@ class LifeActivityService:
         Returns:
             Result of request as life activity object
         """
-        print("get_life_activity not implemented yet")
+        raise Exception("get_life_activity not implemented yet")

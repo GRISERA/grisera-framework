@@ -6,12 +6,9 @@ from models.relation_information_model import RelationInformation
 
 class ModalityService:
     """
-    Object to handle logic of modality requests
+    Abstract class to handle logic of modality requests
 
-    Attributes:
-        graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
-    graph_api_service = GraphApiService()
 
     def save_modality(self, modality: ModalityIn):
         """
@@ -23,7 +20,7 @@ class ModalityService:
         Returns:
             Result of request as modality object
         """
-        print("save_modality not implemented yet")
+        raise Exception("save_modality not implemented yet")
 
     def get_modalities(self):
         """
@@ -32,7 +29,7 @@ class ModalityService:
         Returns:
             Result of request as list of modality objects
         """
-        print("get_modalities not implemented yet")
+        raise Exception("get_modalities not implemented yet")
 
     def get_modality(self, modality_id: int):
         """
@@ -44,4 +41,4 @@ class ModalityService:
         Returns:
             Result of request as modality object
         """
-        print("get_modality not implemented yet")
+        raise Exception("get_modality not implemented yet")

@@ -6,12 +6,9 @@ from models.relation_information_model import RelationInformation
 
 class MeasureNameService:
     """
-    Object to handle logic of measure name requests
+    Abstract class to handle logic of measure name requests
 
-    Attributes:
-        graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
-    graph_api_service = GraphApiService()
 
     def save_measure_name(self, measure_name: MeasureNameIn):
         """
@@ -23,9 +20,8 @@ class MeasureNameService:
         Returns:
             Result of request as measure name object
         """
-        
-        print("save_measure_name not implemented yet")
-        
+
+        raise Exception("save_measure_name not implemented yet")
 
     def get_measure_names(self):
         """
@@ -34,7 +30,7 @@ class MeasureNameService:
         Returns:
             Result of request as list of measure name objects
         """
-        print("get_measure_names not implemented yet")
+        raise Exception("get_measure_names not implemented yet")
 
     def get_measure_name(self, measure_name_id: int):
         """
@@ -46,4 +42,4 @@ class MeasureNameService:
         Returns:
             Result of request as measure name object
         """
-        print("get_measure_name not implemented yet")
+        raise Exception("get_measure_name not implemented yet")

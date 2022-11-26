@@ -1,24 +1,16 @@
-from graph_api_service import GraphApiService
-from activity.activity_service import ActivityService
-from arrangement.arrangement_service import ArrangementService
 from activity_execution.activity_execution_model import ActivityExecutionPropertyIn, ActivityExecutionRelationIn, \
     ActivityExecutionIn, ActivityExecutionOut, ActivityExecutionsOut, BasicActivityExecutionOut
+from arrangement.arrangement_service import ArrangementService
+from graph_api_service import GraphApiService
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
 
 
 class ActivityExecutionService:
     """
-    Object to handle logic of activities requests
+    Abstract class to handle logic of activities requests
 
-    Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
-    activity_service (ActivityService): Service used to communicate with Activity
-    arrangement_service (ArrangementService): Service used to communicate with Arrangement
     """
-    graph_api_service = GraphApiService()
-    activity_service = ActivityService()
-    arrangement_service = ArrangementService()
 
     def save_activity_execution(self, activity_execution: ActivityExecutionIn):
         """
@@ -30,7 +22,7 @@ class ActivityExecutionService:
         Returns:
             Result of request as activity execution object
         """
-        print("save_activity_execution not implemented yet")
+        raise Exception("Reference to an abstract class.")
 
     def get_activity_executions(self):
         """
@@ -39,7 +31,8 @@ class ActivityExecutionService:
         Returns:
             Result of request as list of activity executions objects
         """
-        print("get_activity_executions not implemented yet")
+
+        raise Exception("Reference to an abstract class.")
 
     def get_activity_execution(self, activity_execution_id: int):
         """
@@ -51,7 +44,7 @@ class ActivityExecutionService:
         Returns:
             Result of request as activity execution object
         """
-        print("get_activity_execution not implemented yet")
+        raise Exception("Reference to an abstract class.")
 
     def delete_activity_execution(self, activity_execution_id: int):
         """
@@ -61,7 +54,7 @@ class ActivityExecutionService:
         Returns:
             Result of request as activity execution object
         """
-        print("delete_activity_execution not implemented yet")
+        raise Exception("Reference to an abstract class.")
 
     def update_activity_execution(self, activity_execution_id: int, activity_execution: ActivityExecutionPropertyIn):
         """
@@ -72,7 +65,7 @@ class ActivityExecutionService:
         Returns:
             Result of request as participant state object
         """
-        print("update_activity_execution not implemented yet")
+        raise Exception("Reference to an abstract class.")
 
     def update_activity_execution_relationships(self, activity_execution_id: int,
                                                 activity_execution: ActivityExecutionRelationIn):
@@ -84,4 +77,4 @@ class ActivityExecutionService:
         Returns:
             Result of request as activity execution object
         """
-        print("update_activity_execution_relationships not implemented yet")
+        raise Exception("Reference to an abstract class.")

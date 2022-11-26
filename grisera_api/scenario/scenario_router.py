@@ -7,6 +7,7 @@ from models.not_found_model import NotFoundByIdModel
 from scenario.scenario_model import ScenarioIn, ScenarioOut, OrderChangeIn, OrderChangeOut
 from scenario.scenario_service import ScenarioService
 from activity_execution.activity_execution_model import ActivityExecutionOut, ActivityExecutionIn
+from services import Services
 
 router = InferringRouter()
 
@@ -17,13 +18,10 @@ class ScenarioRouter:
     Class for routing scenario based requests
 
     Attributes:
-    scenario_service (ScenarioService): Service instance for scenarios
+        scenario_service (ScenarioService): Service instance for scenarios
     """
-    scenario_service = None
-
-    # dependency injection in the constructor
-    def __init__(self, scenario_service):
-        self.scenario_service = scenario_service
+    def __init__(self):
+        self.scenario_service = Services().scenario_service()
 
     @router.post("/scenarios", tags=["scenarios"], response_model=ScenarioOut)
     async def create_scenario(self, scenario: ScenarioIn, response: Response):

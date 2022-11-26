@@ -8,6 +8,7 @@ from registered_data.registered_data_model import RegisteredDataIn, RegisteredDa
     RegisteredDataNodesOut
 from registered_data.registered_data_service import RegisteredDataService
 from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 router = InferringRouter()
 
@@ -18,13 +19,11 @@ class RegisteredDataRouter:
     Class for routing registered data based requests
 
     Attributes:
-    registered_data_service (RegisteredDataService): Service instance for registered data
+        registered_data_service (RegisteredDataService): Service instance for registered data
     """
-    registered_data_service = None
 
-    # dependency injection in the constructor
-    def __init__(self, registered_data_service):
-        self.registered_data_service = registered_data_service
+    def __init__(self):
+        self.registered_data_service = Services().registered_data_service()
 
     @router.post("/registered_data", tags=["registered data"], response_model=RegisteredDataOut)
     async def create_registered_data(self, registered_data: RegisteredDataIn, response: Response):

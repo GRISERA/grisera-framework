@@ -6,13 +6,10 @@ from models.relation_information_model import RelationInformation
 
 class ExperimentService:
     """
-    Object to handle logic of experiments requests
+    Abstract class to handle logic of experiments requests
 
-    Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
-    graph_api_service = GraphApiService()
-    
+
     def save_experiment(self, experiment: ExperimentIn):
         """
         Send request to graph api to create new experiment
@@ -23,7 +20,7 @@ class ExperimentService:
         Returns:
             Result of request as experiment object
         """
-        print("save_experiment not implemented yet")
+        raise Exception("save_experiment not implemented yet")
 
     def get_experiments(self):
         """
@@ -32,7 +29,7 @@ class ExperimentService:
         Returns:
             Result of request as list of experiments objects
         """
-        print("get_experiments not implemented yet")
+        raise Exception("get_experiments not implemented yet")
 
     def get_experiment(self, experiment_id: int):
         """
@@ -44,7 +41,7 @@ class ExperimentService:
         Returns:
             Result of request as experiment object
         """
-        print("get_experiment not implemented yet")
+        raise Exception("get_experiment not implemented yet")
 
     def delete_experiment(self, experiment_id: int):
         """
@@ -56,7 +53,7 @@ class ExperimentService:
         Returns:
             Result of request as experiment object
         """
-        print("delete_experiment not implemented yet")
+        raise Exception("delete_experiment not implemented yet")
 
     def update_experiment(self, experiment_id: int, experiment: ExperimentIn):
         """
@@ -69,4 +66,4 @@ class ExperimentService:
         Returns:
             Result of request as experiment object
         """
-        print("update_experiment not implemented yet")
+        raise Exception("update_experiment not implemented yet")

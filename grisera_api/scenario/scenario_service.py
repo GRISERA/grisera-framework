@@ -9,16 +9,9 @@ from models.relation_information_model import RelationInformation
 
 class ScenarioService:
     """
-    Object to handle logic of scenarios requests
+    Abstract class to handle logic of scenarios requests
 
-    Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
-    activity_execution_service (ActivityExecutionService): Service used to communicate with ActivityExecution
-    experiment_service (ExperimentService): Service used to communicate with Experiment
     """
-    graph_api_service = GraphApiService()
-    activity_execution_service = ActivityExecutionService()
-    experiment_service = ExperimentService()
 
     def save_scenario(self, scenario: ScenarioIn):
         """
@@ -30,7 +23,7 @@ class ScenarioService:
         Returns:
             Result of request as scenario object
         """
-        print("save_scenario not implemented yet")
+        raise Exception("save_scenario not implemented yet")
 
     def add_activity_execution(self, previous_id: int, activity_execution: ActivityExecutionIn):
         """
@@ -43,7 +36,7 @@ class ScenarioService:
         Returns:
             Result of request as activity_execution object
         """
-        print("add_activity_execution not implemented yet")
+        raise Exception("add_activity_execution not implemented yet")
 
     def change_order_middle_with_last(self, middle_id, last_id, middle_relationships, last_relationships):
         """
@@ -56,7 +49,7 @@ class ScenarioService:
                 last_relationships: Relationships of the last node
             Returns:
         """
-        print("change_order_middle_with_last not implemented yet")
+        raise Exception("change_order_middle_with_last not implemented yet")
 
     def change_order_middle_with_middle(self, middle_id, last_id, middle_relationships, last_relationships):
         """
@@ -69,7 +62,7 @@ class ScenarioService:
                 last_relationships: Relationships of the last node
             Returns:
         """
-        print("change_order_middle_with_middle not implemented yet")
+        raise Exception("change_order_middle_with_middle not implemented yet")
 
     def what_order(self, previous_relationships, activity_execution_relationships):
         """
@@ -82,7 +75,7 @@ class ScenarioService:
                 True when is the first in order
                 False when is the second in order
         """
-        print("what_order not implemented yet")
+        raise Exception("what_order not implemented yet")
 
     def swap_order_in_relationships_array(self, relationships, node_id):
         """
@@ -93,7 +86,7 @@ class ScenarioService:
             Returns:
                 relationships: List of relationships in specified order
         """
-        print("swap_order_in_relationships_array not implemented yet")
+        raise Exception("swap_order_in_relationships_array not implemented yet")
 
     def change_order(self, order_change: OrderChangeIn):
         """
@@ -105,7 +98,7 @@ class ScenarioService:
         Returns:
             Result of request as changed order ids
         """
-        print("change_order not implemented yet")
+        raise Exception("change_order not implemented yet")
 
     def delete_activity_execution(self, activity_execution_id: int):
         """
@@ -117,7 +110,7 @@ class ScenarioService:
         Returns:
             Result of request as activity_execution object
         """
-        print("delete_activity_execution not implemented yet")
+        raise Exception("delete_activity_execution not implemented yet")
 
     def get_scenario(self, node_id: int):
         """
@@ -129,7 +122,7 @@ class ScenarioService:
         Returns:
             Result of request as Scenario object
         """
-        print("get_scenario not implemented yet")
+        raise Exception("get_scenario not implemented yet")
 
     def get_scenario_by_experiment(self, experiment_id: int):
         """
@@ -141,7 +134,7 @@ class ScenarioService:
         Returns:
             Result of request as Scenario object
         """
-        print("get_scenario_by_experiment not implemented yet")
+        raise Exception("get_scenario_by_experiment not implemented yet")
 
     def get_scenario_by_activity_execution(self, activity_execution_id: int):
         """
@@ -153,7 +146,7 @@ class ScenarioService:
         Returns:
             Result of request as Scenario object
         """
-        print("get_scenario_by_activity_execution not implemented yet")
+        raise Exception("get_scenario_by_activity_execution not implemented yet")
 
     def get_scenario_after_activity_execution(self, activity_execution_id: int, activity_executions: []):
         """
@@ -163,7 +156,7 @@ class ScenarioService:
             activity_execution_id (int): Id of activity execution included in scenario
             activity_executions: List of activity executions in scenario
         """
-        print("get_scenario_after_activity_execution not implemented yet")
+        raise Exception("get_scenario_after_activity_execution not implemented yet")
 
     def get_scenario_before_activity_execution(self, activity_execution_id: int, activity_executions: []):
         """
@@ -173,7 +166,7 @@ class ScenarioService:
             activity_execution_id (int): Id of activity execution included in scenario
             activity_executions: List of activity executions in scenario
         """
-        print("get_scenario_before_activity_execution not implemented yet")
+        raise Exception("get_scenario_before_activity_execution not implemented yet")
 
 
 
