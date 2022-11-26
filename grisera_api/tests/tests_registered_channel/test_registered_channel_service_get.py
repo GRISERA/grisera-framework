@@ -4,7 +4,7 @@ import unittest.mock as mock
 from graph_api_service import GraphApiService
 from models.not_found_model import *
 from registered_channel.registered_channel_model import *
-from registered_channel.registered_channel_service import RegisteredChannelService
+from registered_channel.registered_channel_service_graphdb import RegisteredChannelServiceGraphDB
 
 
 class TestRegisteredChannelServiceGet(unittest.TestCase):
@@ -29,7 +29,7 @@ class TestRegisteredChannelServiceGet(unittest.TestCase):
                                                   reversed_relations=[RelationInformation(second_node_id=15,
                                                                                           name="testReversedRelation",
                                                                                           relation_id=0)])
-        registered_channel_service = RegisteredChannelService()
+        registered_channel_service = RegisteredChannelServiceGraphDB()
 
         result = registered_channel_service.get_registered_channel(id_node)
 
@@ -43,7 +43,7 @@ class TestRegisteredChannelServiceGet(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        registered_channel_service = RegisteredChannelService()
+        registered_channel_service = RegisteredChannelServiceGraphDB()
 
         result = registered_channel_service.get_registered_channel(id_node)
 
@@ -55,7 +55,7 @@ class TestRegisteredChannelServiceGet(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        registered_channel_service = RegisteredChannelService()
+        registered_channel_service = RegisteredChannelServiceGraphDB()
 
         result = registered_channel_service.get_registered_channel(id_node)
 
@@ -74,7 +74,7 @@ class TestRegisteredChannelServiceGet(unittest.TestCase):
         registered_channel_two = BasicRegisteredChannelOut(id=2)
         registered_channels = RegisteredChannelsOut(
             registered_channels=[registered_channel_one, registered_channel_two])
-        registered_channels_service = RegisteredChannelService()
+        registered_channels_service = RegisteredChannelServiceGraphDB()
 
         result = registered_channels_service.get_registered_channels()
 
@@ -85,7 +85,7 @@ class TestRegisteredChannelServiceGet(unittest.TestCase):
     def test_get_registered_channels_empty(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': []}
         registered_channels = RegisteredChannelsOut(registered_channel=[])
-        registered_channels_service = RegisteredChannelService()
+        registered_channels_service = RegisteredChannelServiceGraphDB()
 
         result = registered_channels_service.get_registered_channels()
 

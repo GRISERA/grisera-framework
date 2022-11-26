@@ -155,9 +155,9 @@ class Services:
 
     def registered_channel_service(self) -> RegisteredChannelService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return ParticipationServiceGraphDB()
+            return RegisteredChannelServiceGraphDB()
         else:
-            return ParticipationService
+            return RegisteredChannelService
 
     def registered_data_service(self) -> RegisteredDataService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:

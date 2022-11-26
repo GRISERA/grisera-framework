@@ -2,7 +2,7 @@ import unittest
 import unittest.mock as mock
 
 from channel.channel_model import *
-from channel.channel_service import ChannelService
+from channel.channel_service_graphdb import ChannelServiceGraphDB
 from graph_api_service import GraphApiService
 from models.not_found_model import *
 
@@ -29,7 +29,7 @@ class TestChannelServiceGet(unittest.TestCase):
                                                             relation_id=0)],
                              reversed_relations=[RelationInformation(second_node_id=15,
                                                                      name="testReversedRelation", relation_id=0)])
-        channel_service = ChannelService()
+        channel_service = ChannelServiceGraphDB()
 
         result = channel_service.get_channel(id_node)
 
@@ -43,7 +43,7 @@ class TestChannelServiceGet(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        channel_service = ChannelService()
+        channel_service = ChannelServiceGraphDB()
 
         result = channel_service.get_channel(id_node)
 
@@ -55,7 +55,7 @@ class TestChannelServiceGet(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        channel_service = ChannelService()
+        channel_service = ChannelServiceGraphDB()
 
         result = channel_service.get_channel(id_node)
 
@@ -72,7 +72,7 @@ class TestChannelServiceGet(unittest.TestCase):
         channel_one = BasicChannelOut(type="test", id=1)
         channel_two = BasicChannelOut(type="test2", id=2)
         channels = ChannelsOut(channels=[channel_one, channel_two])
-        channel_service = ChannelService()
+        channel_service = ChannelServiceGraphDB()
 
         result = channel_service.get_channels()
 
@@ -83,7 +83,7 @@ class TestChannelServiceGet(unittest.TestCase):
     def test_get_channels_empty(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': [], 'errors': None}
         channels = ChannelsOut(channels=[])
-        channel_service = ChannelService()
+        channel_service = ChannelServiceGraphDB()
 
         result = channel_service.get_channels()
 

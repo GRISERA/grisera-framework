@@ -3,12 +3,12 @@ import unittest.mock as mock
 
 from graph_api_service import GraphApiService
 from scenario.scenario_model import *
-from scenario.scenario_service import ScenarioService, ActivityExecutionService
+from scenario.scenario_service_graphdb import ScenarioServiceGraphDB, ActivityExecutionServiceGraphDB
 
 
 class TestScenarioService(unittest.TestCase):
 
-    @mock.patch.object(ActivityExecutionService, 'save_activity_execution')
+    @mock.patch.object(ActivityExecutionServiceGraphDB, 'save_activity_execution')
     @mock.patch.object(GraphApiService, 'create_relationships')
     def test_save_scenario_without_error(self, create_relationships_mock, save_activity_execution_mock):
         id_node = 1
@@ -18,14 +18,14 @@ class TestScenarioService(unittest.TestCase):
         calls = [mock.call(2, 2, 'hasScenario')]
         scenario = ScenarioIn(experiment_id=2, activity_executions=[ActivityExecutionIn(activity_id=1,
                                                                                         arrangement_id=3)])
-        scenario_service = ScenarioService()
+        scenario_service = ScenarioServiceGraphDB()
 
         result = scenario_service.save_scenario(scenario)
 
         self.assertEqual(result, ScenarioOut(experiment_id=2, activity_executions=[activity_execution_out], id=id_node))
         create_relationships_mock.assert_has_calls(calls)
 
-    @mock.patch.object(ActivityExecutionService, 'save_activity_execution')
+    @mock.patch.object(ActivityExecutionServiceGraphDB, 'save_activity_execution')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     @mock.patch.object(GraphApiService, 'create_relationships')
     @mock.patch.object(GraphApiService, 'delete_relationship')
@@ -37,7 +37,7 @@ class TestScenarioService(unittest.TestCase):
         save_activity_execution_mock.return_value = ActivityExecutionOut(activity_id=1, arrangement_id=3,
                                                                          identifier=0, name='Test', id=3)
         calls = [mock.call(1, 3, 'hasScenario'), mock.call(3, 2, 'nextActivityExecution')]
-        scenario_service = ScenarioService()
+        scenario_service = ScenarioServiceGraphDB()
 
         result = scenario_service.add_activity_execution(1, activity_execution)
 
@@ -46,7 +46,7 @@ class TestScenarioService(unittest.TestCase):
         delete_relationship_mock.assert_called_once_with(0)
         save_activity_execution_mock.assert_called_with(activity_execution)
 
-    @mock.patch.object(ActivityExecutionService, 'save_activity_execution')
+    @mock.patch.object(ActivityExecutionServiceGraphDB, 'save_activity_execution')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     @mock.patch.object(GraphApiService, 'create_relationships')
     @mock.patch.object(GraphApiService, 'delete_relationship')
@@ -61,7 +61,7 @@ class TestScenarioService(unittest.TestCase):
                                                                          arrangement_type='personal group',
                                                                          identifier=0, name='Test', id=3)
         calls = [mock.call(1, 3, 'nextActivityExecution')]
-        scenario_service = ScenarioService()
+        scenario_service = ScenarioServiceGraphDB()
 
         result = scenario_service.add_activity_execution(1, activity_execution)
 
@@ -71,7 +71,7 @@ class TestScenarioService(unittest.TestCase):
         delete_relationship_mock.assert_not_called()
         save_activity_execution_mock.assert_called_with(activity_execution)
 
-    @mock.patch.object(ActivityExecutionService, 'save_activity_execution')
+    @mock.patch.object(ActivityExecutionServiceGraphDB, 'save_activity_execution')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     @mock.patch.object(GraphApiService, 'create_relationships')
     @mock.patch.object(GraphApiService, 'delete_relationship')
@@ -87,7 +87,7 @@ class TestScenarioService(unittest.TestCase):
                                                                          arrangement_type='personal group',
                                                                          identifier=0, name='Test', id=4)
         calls = [mock.call(2, 4, 'nextActivityExecution'), mock.call(4, 3, 'nextActivityExecution')]
-        scenario_service = ScenarioService()
+        scenario_service = ScenarioServiceGraphDB()
 
         result = scenario_service.add_activity_execution(2, activity_execution)
 

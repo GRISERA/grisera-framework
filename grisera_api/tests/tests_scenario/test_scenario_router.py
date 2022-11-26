@@ -4,11 +4,12 @@ import unittest.mock as mock
 
 from activity_execution.activity_execution_model import ActivityExecutionIn, ActivityExecutionOut
 from scenario.scenario_router import *
+from scenario.scenario_service_graphdb import ScenarioServiceGraphDB
 
 
 class TestScenarioRouter(unittest.TestCase):
 
-    @mock.patch.object(ScenarioService, 'save_scenario')
+    @mock.patch.object(ScenarioServiceGraphDB, 'save_scenario')
     def test_create_scenario_without_error(self, save_scenario_mock):
         save_scenario_mock.return_value = ScenarioOut(experiment_id=2, activity_executions=
         [ActivityExecutionOut(activity='group', arrangement_type='personal group')], id=1)
@@ -25,7 +26,7 @@ class TestScenarioRouter(unittest.TestCase):
         save_scenario_mock.assert_called_once_with(scenario)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(ScenarioService, 'save_scenario')
+    @mock.patch.object(ScenarioServiceGraphDB, 'save_scenario')
     def test_create_scenario_with_error(self, save_scenario_mock):
         save_scenario_mock.return_value = ScenarioOut(experiment_id=2,
                                                       activity_executions=
@@ -46,7 +47,7 @@ class TestScenarioRouter(unittest.TestCase):
         save_scenario_mock.assert_called_once_with(scenario)
         self.assertEqual(response.status_code, 422)
 
-    @mock.patch.object(ScenarioService, 'add_activity_execution')
+    @mock.patch.object(ScenarioServiceGraphDB, 'add_activity_execution')
     def test_add_activity_execution_without_error(self, add_activity_execution_mock):
         add_activity_execution_mock.return_value = ActivityExecutionOut(activity_id=1, arrangement_id=3, id=1)
         response = Response()
@@ -60,7 +61,7 @@ class TestScenarioRouter(unittest.TestCase):
         add_activity_execution_mock.assert_called_once_with(1, activity_execution)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(ScenarioService, 'add_activity_execution')
+    @mock.patch.object(ScenarioServiceGraphDB, 'add_activity_execution')
     def test_add_activity_execution_with_error(self, add_activity_execution_mock):
         add_activity_execution_mock.return_value = ActivityExecutionOut(activity_id=1, arrangement_id=3,
                                                                         errors={'errors': ['test']})

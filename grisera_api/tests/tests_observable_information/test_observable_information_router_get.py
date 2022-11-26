@@ -4,11 +4,12 @@ import unittest.mock as mock
 
 from observable_information.observable_information_model import *
 from observable_information.observable_information_router import *
+from observable_information.observable_information_service_graphdb import ObservableInformationServiceGraphDB
 
 
 class TestObservableInformationRouterGet(unittest.TestCase):
 
-    @mock.patch.object(ObservableInformationService, 'get_observable_information')
+    @mock.patch.object(ObservableInformationServiceGraphDB, 'get_observable_information')
     def test_get_observable_information_without_error(self, get_observable_information_mock):
         observable_information_id = 1
         get_observable_information_mock.return_value = ObservableInformationOut(id=observable_information_id)
@@ -21,7 +22,7 @@ class TestObservableInformationRouterGet(unittest.TestCase):
         get_observable_information_mock.assert_called_once_with(observable_information_id)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(ObservableInformationService, 'get_observable_information')
+    @mock.patch.object(ObservableInformationServiceGraphDB, 'get_observable_information')
     def test_get_observable_information_with_error(self, get_observable_information_mock):
         get_observable_information_mock.return_value = ObservableInformationOut(errors={'errors': ['test']})
         response = Response()
@@ -35,7 +36,7 @@ class TestObservableInformationRouterGet(unittest.TestCase):
         get_observable_information_mock.assert_called_once_with(observable_information_id)
         self.assertEqual(response.status_code, 404)
 
-    @mock.patch.object(ObservableInformationService, 'get_observable_informations')
+    @mock.patch.object(ObservableInformationServiceGraphDB, 'get_observable_informations')
     def test_get_observable_informations_without_error(self, get_observable_informations_mock):
         get_observable_informations_mock.return_value = ObservableInformationsOut(observable_informations=[
             BasicObservableInformationOut(id=1),

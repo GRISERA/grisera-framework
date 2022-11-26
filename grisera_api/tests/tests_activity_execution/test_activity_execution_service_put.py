@@ -4,7 +4,7 @@ import unittest.mock as mock
 from activity_execution.activity_execution_model import *
 from models.not_found_model import *
 
-from activity_execution.activity_execution_service import ActivityExecutionService
+from activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -39,7 +39,7 @@ class TestActivityExecutionServicePut(unittest.TestCase):
                                                                                              name="testReversedRelation",
                                                                                              relation_id=0)])
         calls = [mock.call(1)]
-        activity_execution_service = ActivityExecutionService()
+        activity_execution_service = ActivityExecutionServiceGraphDB()
 
         result = activity_execution_service.update_activity_execution(id_node, activity_execution_in)
 
@@ -57,7 +57,7 @@ class TestActivityExecutionServicePut(unittest.TestCase):
         additional_properties = [PropertyIn(key='identifier', value=5)]
         activity_execution_in = ActivityExecutionPropertyIn(id=id_node,
                                                             additional_properties=additional_properties)
-        activity_execution_service = ActivityExecutionService()
+        activity_execution_service = ActivityExecutionServiceGraphDB()
 
         result = activity_execution_service.update_activity_execution(id_node, activity_execution_in)
 
@@ -72,7 +72,7 @@ class TestActivityExecutionServicePut(unittest.TestCase):
         additional_properties = [PropertyIn(key='identifier', value=5)]
         activity_execution_in = ActivityExecutionPropertyIn(id=id_node,
                                                             additional_properties=additional_properties)
-        activity_execution_service = ActivityExecutionService()
+        activity_execution_service = ActivityExecutionServiceGraphDB()
 
         result = activity_execution_service.update_activity_execution(id_node, activity_execution_in)
 

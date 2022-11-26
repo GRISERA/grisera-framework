@@ -4,7 +4,7 @@ import unittest.mock as mock
 from participant.participant_model import *
 from models.not_found_model import *
 
-from participant.participant_service import ParticipantService
+from participant.participant_service_graphdb import ParticipantServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -34,7 +34,7 @@ class TestParticipantServiceDelete(unittest.TestCase):
                                      reversed_relations=
                                      [RelationInformation(second_node_id=15, name="testReversedRelation", relation_id=0)]
                                      )
-        participant_service = ParticipantService()
+        participant_service = ParticipantServiceGraphDB()
 
         result = participant_service.delete_participant(id_node)
 
@@ -48,7 +48,7 @@ class TestParticipantServiceDelete(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        participant_service = ParticipantService()
+        participant_service = ParticipantServiceGraphDB()
 
         result = participant_service.delete_participant(id_node)
 
@@ -60,7 +60,7 @@ class TestParticipantServiceDelete(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        participant_service = ParticipantService()
+        participant_service = ParticipantServiceGraphDB()
 
         result = participant_service.delete_participant(id_node)
 

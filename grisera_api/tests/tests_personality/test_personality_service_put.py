@@ -4,7 +4,7 @@ import unittest.mock as mock
 from personality.personality_model import *
 from models.not_found_model import *
 
-from personality.personality_service import PersonalityService
+from personality.personality_service_graphdb import PersonalityServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -41,7 +41,7 @@ class TestPersonalityServicePut(unittest.TestCase):
                                             reversed_relations=[
                                                 RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                     relation_id=0)])
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.update_personality_big_five(id_node, personality_in)
 
@@ -74,7 +74,7 @@ class TestPersonalityServicePut(unittest.TestCase):
                                           reversed_relations=[
                                               RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                   relation_id=0)])
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.update_personality_panas(id_node, personality_in)
 
@@ -98,7 +98,7 @@ class TestPersonalityServicePut(unittest.TestCase):
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         personality_in = PersonalityBigFiveIn(agreeableness=0.5, conscientiousness=0.5, extroversion=0.5,
                                               neuroticism=0.5, openess=0.5)
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.update_personality_big_five(id_node, personality_in)
 
@@ -120,7 +120,7 @@ class TestPersonalityServicePut(unittest.TestCase):
                                                      "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         personality_in = PersonalityPanasIn(negative_affect=0.5, positive_affect=0.5)
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.update_personality_panas(id_node, personality_in)
 
@@ -142,7 +142,7 @@ class TestPersonalityServicePut(unittest.TestCase):
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         personality_in = PersonalityBigFiveIn(agreeableness=0.5, conscientiousness=0.5, extroversion=0.5,
                                               neuroticism=0.5, openess=0.5)
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.update_personality_big_five(id_node, personality_in)
 
@@ -163,7 +163,7 @@ class TestPersonalityServicePut(unittest.TestCase):
                                                      "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         personality_in = PersonalityPanasIn(negative_affect=0.5, positive_affect=0.5)
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.update_personality_panas(id_node, personality_in)
 
@@ -177,7 +177,7 @@ class TestPersonalityServicePut(unittest.TestCase):
                                               openess=2.5)
         personality_out = PersonalityBigFiveOut(agreeableness=2.5, conscientiousness=2.5, extroversion=2.5,
                                                 neuroticism=2.5, openess=2.5, errors="Value not between 0 and 1")
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.update_personality_big_five(id_node, personality_in)
 

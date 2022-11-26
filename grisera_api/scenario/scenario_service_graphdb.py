@@ -1,8 +1,8 @@
 from graph_api_service import GraphApiService
 from scenario.scenario_model import ScenarioIn, ScenarioOut, OrderChangeIn, OrderChangeOut
-from activity_execution.activity_execution_service import ActivityExecutionService
+from activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
 from activity_execution.activity_execution_model import ActivityExecutionOut, PropertyIn, ActivityExecutionIn
-from experiment.experiment_service import ExperimentService
+from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
 from scenario.scenario_service import ScenarioService
@@ -18,8 +18,8 @@ class ScenarioServiceGraphDB(ScenarioService):
     experiment_service (ExperimentService): Service used to communicate with Experiment
     """
     graph_api_service = GraphApiService()
-    activity_execution_service = ActivityExecutionService()
-    experiment_service = ExperimentService()
+    activity_execution_service = ActivityExecutionServiceGraphDB()
+    experiment_service = ExperimentServiceGraphDB()
 
     def save_scenario(self, scenario: ScenarioIn):
         """

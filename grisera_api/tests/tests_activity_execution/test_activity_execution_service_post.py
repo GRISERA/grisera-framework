@@ -3,7 +3,7 @@ import unittest.mock as mock
 
 from graph_api_service import GraphApiService
 from activity_execution.activity_execution_model import *
-from activity_execution.activity_execution_service import ActivityExecutionService
+from activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
 
 
 class TestActivityExecutionServicePost(unittest.TestCase):
@@ -41,7 +41,7 @@ class TestActivityExecutionServicePost(unittest.TestCase):
                                                                            name="testReversedRelation",
                                                                            relation_id=0)], id=id_node)
         calls = [mock.call(2), mock.call(3), mock.call(1)]
-        activity_execution_service = ActivityExecutionService()
+        activity_execution_service = ActivityExecutionServiceGraphDB()
 
         result = activity_execution_service.save_activity_execution(activity_execution_in)
 
@@ -56,7 +56,7 @@ class TestActivityExecutionServicePost(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         activity_execution = ActivityExecutionIn(activity_id=2, arrangement_id=3)
-        activity_execution_service = ActivityExecutionService()
+        activity_execution_service = ActivityExecutionServiceGraphDB()
 
         result = activity_execution_service.save_activity_execution(activity_execution)
 

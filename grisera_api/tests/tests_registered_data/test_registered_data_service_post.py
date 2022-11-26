@@ -3,7 +3,7 @@ import unittest.mock as mock
 
 from graph_api_service import GraphApiService
 from registered_data.registered_data_model import *
-from registered_data.registered_data_service import RegisteredDataService
+from registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
 
 
 class TestRegisteredDataServicePost(unittest.TestCase):
@@ -17,7 +17,7 @@ class TestRegisteredDataServicePost(unittest.TestCase):
                                                "errors": None, 'links': None}
         additional_properties = [PropertyIn(key='testkey', value='testvalue')]
         registered_data = RegisteredDataIn(source='url', additional_properties=additional_properties)
-        registered_data_service = RegisteredDataService()
+        registered_data_service = RegisteredDataServiceGraphDB()
 
         result = registered_data_service.save_registered_data(registered_data)
 
@@ -30,7 +30,7 @@ class TestRegisteredDataServicePost(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         registered_data = RegisteredDataIn(source='url')
-        registered_data_service = RegisteredDataService()
+        registered_data_service = RegisteredDataServiceGraphDB()
 
         result = registered_data_service.save_registered_data(registered_data)
 
@@ -44,7 +44,7 @@ class TestRegisteredDataServicePost(unittest.TestCase):
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         registered_data = RegisteredDataIn(source='url')
-        registered_data_service = RegisteredDataService()
+        registered_data_service = RegisteredDataServiceGraphDB()
 
         result = registered_data_service.save_registered_data(registered_data)
 

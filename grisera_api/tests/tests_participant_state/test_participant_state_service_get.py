@@ -4,7 +4,7 @@ import unittest.mock as mock
 from participant_state.participant_state_model import *
 from models.not_found_model import *
 
-from participant_state.participant_state_service import ParticipantStateService
+from participant_state.participant_state_service_graphdb import ParticipantStateServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -32,7 +32,7 @@ class TestParticipantStateServiceGet(unittest.TestCase):
                                                 reversed_relations=[RelationInformation(second_node_id=15,
                                                                                         name="testReversedRelation",
                                                                                         relation_id=0)])
-        participant_state_service = ParticipantStateService()
+        participant_state_service = ParticipantStateServiceGraphDB()
 
         result = participant_state_service.get_participant_state(id_node)
 
@@ -46,7 +46,7 @@ class TestParticipantStateServiceGet(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        participant_state_service = ParticipantStateService()
+        participant_state_service = ParticipantStateServiceGraphDB()
 
         result = participant_state_service.get_participant_state(id_node)
 
@@ -58,7 +58,7 @@ class TestParticipantStateServiceGet(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        participant_state_service = ParticipantStateService()
+        participant_state_service = ParticipantStateServiceGraphDB()
 
         result = participant_state_service.get_participant_state(id_node)
 
@@ -78,7 +78,7 @@ class TestParticipantStateServiceGet(unittest.TestCase):
         participant_state_two = BasicParticipantStateOut(id=2, age=10, additional_properties=[
             PropertyIn(key='test2', value='test3')])
         participant_states = ParticipantStatesOut(participant_states=[participant_state_one, participant_state_two])
-        participant_states_service = ParticipantStateService()
+        participant_states_service = ParticipantStateServiceGraphDB()
 
         result = participant_states_service.get_participant_states()
 
@@ -89,7 +89,7 @@ class TestParticipantStateServiceGet(unittest.TestCase):
     def test_get_participant_states_empty(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': []}
         participant_states = ParticipantStatesOut(participant_state=[])
-        participant_states_service = ParticipantStateService()
+        participant_states_service = ParticipantStateServiceGraphDB()
 
         result = participant_states_service.get_participant_states()
 

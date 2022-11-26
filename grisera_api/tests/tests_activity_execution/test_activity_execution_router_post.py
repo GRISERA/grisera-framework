@@ -2,6 +2,7 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
+from activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
 from participant.participant_model import ParticipantIn
 from activity_execution.activity_execution_model import *
 from activity_execution.activity_execution_router import *
@@ -9,7 +10,7 @@ from activity_execution.activity_execution_router import *
 
 class TestActivityExecutionRouterPost(unittest.TestCase):
 
-    @mock.patch.object(ActivityExecutionService, 'save_activity_execution')
+    @mock.patch.object(ActivityExecutionServiceGraphDB, 'save_activity_execution')
     def test_create_activity_execution_without_error(self, save_activity_execution_mock):
         save_activity_execution_mock.return_value = ActivityExecutionOut(id=1)
         response = Response()
@@ -22,7 +23,7 @@ class TestActivityExecutionRouterPost(unittest.TestCase):
         save_activity_execution_mock.assert_called_once_with(activity_execution)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(ActivityExecutionService, 'save_activity_execution')
+    @mock.patch.object(ActivityExecutionServiceGraphDB, 'save_activity_execution')
     def test_create_activity_execution_with_error(self, save_activity_execution_mock):
         save_activity_execution_mock.return_value = ActivityExecutionOut(errors={'errors': ['test']})
         response = Response()

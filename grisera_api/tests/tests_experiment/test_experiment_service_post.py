@@ -3,7 +3,7 @@ import unittest.mock as mock
 
 from graph_api_service import GraphApiService
 from experiment.experiment_model import *
-from experiment.experiment_service import ExperimentService
+from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
 
 
 class TestExperimentServicePost(unittest.TestCase):
@@ -18,7 +18,7 @@ class TestExperimentServicePost(unittest.TestCase):
                                                "errors": None, 'links': None}
         additional_properties = [PropertyIn(key='test', value='test')]
         experiment = ExperimentIn(experiment_name="test", additional_properties=additional_properties)
-        experiment_service = ExperimentService()
+        experiment_service = ExperimentServiceGraphDB()
 
         result = experiment_service.save_experiment(experiment)
 
@@ -33,7 +33,7 @@ class TestExperimentServicePost(unittest.TestCase):
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         additional_properties = [PropertyIn(key='test', value='test')]
         experiment = ExperimentIn(experiment_name="test", additional_properties=additional_properties)
-        experiment_service = ExperimentService()
+        experiment_service = ExperimentServiceGraphDB()
 
         result = experiment_service.save_experiment(experiment)
 
@@ -49,7 +49,7 @@ class TestExperimentServicePost(unittest.TestCase):
         create_properties_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         additional_properties = [PropertyIn(key='test', value='test')]
         experiment = ExperimentIn(experiment_name="test", additional_properties=additional_properties)
-        experiment_service = ExperimentService()
+        experiment_service = ExperimentServiceGraphDB()
 
         result = experiment_service.save_experiment(experiment)
 

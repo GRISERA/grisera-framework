@@ -1,7 +1,7 @@
 from activity_execution.activity_execution_service import ActivityExecutionService
 from graph_api_service import GraphApiService
-from activity.activity_service import ActivityService
-from arrangement.arrangement_service import ArrangementService
+from activity.activity_service_graphdb import ActivityServiceGraphDB
+from arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
 from activity_execution.activity_execution_model import ActivityExecutionPropertyIn, ActivityExecutionRelationIn, \
     ActivityExecutionIn, ActivityExecutionOut, ActivityExecutionsOut, BasicActivityExecutionOut
 from models.not_found_model import NotFoundByIdModel
@@ -18,8 +18,8 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
     arrangement_service (ArrangementService): Service used to communicate with Arrangement
     """
     graph_api_service = GraphApiService()
-    activity_service = ActivityService()
-    arrangement_service = ArrangementService()
+    activity_service = ActivityServiceGraphDB()
+    arrangement_service = ArrangementServiceGraphDB()
 
     def save_activity_execution(self, activity_execution: ActivityExecutionIn):
         """

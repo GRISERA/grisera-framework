@@ -2,7 +2,7 @@ import unittest
 import unittest.mock as mock
 
 from activity.activity_model import *
-from activity.activity_service import ActivityService
+from activity.activity_service_graphdb import ActivityServiceGraphDB
 from graph_api_service import GraphApiService
 from models.not_found_model import *
 
@@ -29,7 +29,7 @@ class TestActivityServiceGet(unittest.TestCase):
                                                               relation_id=0)],
                                reversed_relations=[RelationInformation(second_node_id=15,
                                                                        name="testReversedRelation", relation_id=0)])
-        activity_service = ActivityService()
+        activity_service = ActivityServiceGraphDB()
 
         result = activity_service.get_activity(id_node)
 
@@ -43,7 +43,7 @@ class TestActivityServiceGet(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        activity_service = ActivityService()
+        activity_service = ActivityServiceGraphDB()
 
         result = activity_service.get_activity(id_node)
 
@@ -55,7 +55,7 @@ class TestActivityServiceGet(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        activity_service = ActivityService()
+        activity_service = ActivityServiceGraphDB()
 
         result = activity_service.get_activity(id_node)
 
@@ -72,7 +72,7 @@ class TestActivityServiceGet(unittest.TestCase):
         activity_one = BasicActivityOut(activity="test", id=1)
         activity_two = BasicActivityOut(activity="test2", id=2)
         activities = ActivitiesOut(activities=[activity_one, activity_two])
-        activity_service = ActivityService()
+        activity_service = ActivityServiceGraphDB()
 
         result = activity_service.get_activities()
 
@@ -83,7 +83,7 @@ class TestActivityServiceGet(unittest.TestCase):
     def test_get_activities_empty(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': [], 'errors': None}
         activities = ActivitiesOut(activities=[])
-        activity_service = ActivityService()
+        activity_service = ActivityServiceGraphDB()
 
         result = activity_service.get_activities()
 

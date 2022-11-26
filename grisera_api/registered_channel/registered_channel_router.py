@@ -7,7 +7,7 @@ from hateoas import get_links
 from models.not_found_model import NotFoundByIdModel
 from registered_channel.registered_channel_model import RegisteredChannelIn, RegisteredChannelsOut, \
     RegisteredChannelOut
-from registered_channel.registered_channel_service import RegisteredChannelService
+from registered_channel.registered_channel_service_graphdb import RegisteredChannelServiceGraphDB
 from services import Services
 
 router = InferringRouter()
@@ -23,7 +23,7 @@ class RegisteredChannelRouter:
     """
 
     def __init__(self):
-        self.registered_channel = Services().registered_channel()
+        self.registered_channel_service = Services().registered_channel_service()
 
     @router.post("/registered_channels", tags=["registered channels"], response_model=RegisteredChannelOut)
     async def create_registered_channel(self, registered_channel: RegisteredChannelIn, response: Response):

@@ -3,11 +3,12 @@ import unittest
 import unittest.mock as mock
 
 from measure.measure_router import *
+from measure.measure_service_graphdb import MeasureServiceGraphDB
 
 
 class TestMeasureRouterDelete(unittest.TestCase):
 
-    @mock.patch.object(MeasureService, 'delete_measure')
+    @mock.patch.object(MeasureServiceGraphDB, 'delete_measure')
     def test_delete_measure_without_error(self, delete_measure_mock):
         measure_id = 1
         delete_measure_mock.return_value = MeasureOut(datatype="Test", range="Unknown", unit="cm", id=measure_id)
@@ -20,7 +21,7 @@ class TestMeasureRouterDelete(unittest.TestCase):
         delete_measure_mock.assert_called_once_with(measure_id)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(MeasureService, 'delete_measure')
+    @mock.patch.object(MeasureServiceGraphDB, 'delete_measure')
     def test_delete_measure_with_error(self, delete_measure_mock):
         delete_measure_mock.return_value = MeasureOut(datatype="Test", range="Unknown", unit="cm", errors={'errors': ['test']})
         response = Response()

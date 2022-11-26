@@ -3,11 +3,12 @@ import unittest
 import unittest.mock as mock
 from time_series.time_series_router import *
 from time_series.time_series_model import BasicTimeSeriesOut, TimeSeriesOut
+from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 
 
 class TestTimeSeriesRouterGet(unittest.TestCase):
 
-    @mock.patch.object(TimeSeriesService, 'get_time_series')
+    @mock.patch.object(TimeSeriesServiceGraphDB, 'get_time_series')
     def test_get_time_series_without_error(self, get_time_series_mock):
         time_series_id = 1
         get_time_series_mock.return_value = TimeSeriesOut(type="Epoch", source="cos")
@@ -20,7 +21,7 @@ class TestTimeSeriesRouterGet(unittest.TestCase):
         get_time_series_mock.assert_called_once_with(time_series_id)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(TimeSeriesService, 'get_time_series')
+    @mock.patch.object(TimeSeriesServiceGraphDB, 'get_time_series')
     def test_get_time_series_with_error(self, get_time_series_mock):
         get_time_series_mock.return_value = TimeSeriesOut(type="Epoch", source="cos", errors={'errors': ['test']})
         response = Response()
@@ -34,7 +35,7 @@ class TestTimeSeriesRouterGet(unittest.TestCase):
         get_time_series_mock.assert_called_once_with(time_series_id)
         self.assertEqual(response.status_code, 404)
 
-    @mock.patch.object(TimeSeriesService, 'get_time_series_nodes')
+    @mock.patch.object(TimeSeriesServiceGraphDB, 'get_time_series_nodes')
     def test_get_time_series_nodes_without_error(self, get_time_series_nodes_mock):
         get_time_series_nodes_mock.return_value = TimeSeriesNodesOut(time_series_nodes=[
             TimeSeriesOut(type="Epoch", source="cos"),

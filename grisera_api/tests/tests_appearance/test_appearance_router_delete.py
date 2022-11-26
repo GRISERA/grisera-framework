@@ -2,11 +2,12 @@ import asyncio
 import unittest
 import unittest.mock as mock
 from appearance.appearance_router import *
+from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 
 
 class TestAppearanceRouterDelete(unittest.TestCase):
 
-    @mock.patch.object(AppearanceService, 'delete_appearance')
+    @mock.patch.object(AppearanceServiceGraphDB, 'delete_appearance')
     def test_delete_appearance_without_error(self, delete_appearance_mock):
         appearance_id = 1
         delete_appearance_mock.return_value = AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy", id=appearance_id)
@@ -20,7 +21,7 @@ class TestAppearanceRouterDelete(unittest.TestCase):
         delete_appearance_mock.assert_called_once_with(appearance_id)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(AppearanceService, 'delete_appearance')
+    @mock.patch.object(AppearanceServiceGraphDB, 'delete_appearance')
     def test_delete_appearance_with_error(self, delete_appearance_mock):
         delete_appearance_mock.return_value = AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy",
                                                                      errors={'errors': ['test']})

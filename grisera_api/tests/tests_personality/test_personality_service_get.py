@@ -4,7 +4,7 @@ import unittest.mock as mock
 from personality.personality_model import *
 from models.not_found_model import *
 
-from personality.personality_service import PersonalityService
+from personality.personality_service_graphdb import PersonalityServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -35,7 +35,7 @@ class TestPersonalityServiceGet(unittest.TestCase):
                                             reversed_relations=[
                                                 RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                     relation_id=0)])
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.get_personality(id_node)
 
@@ -64,7 +64,7 @@ class TestPersonalityServiceGet(unittest.TestCase):
                                           reversed_relations=[
                                                 RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                     relation_id=0)])
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.get_personality(id_node)
 
@@ -78,7 +78,7 @@ class TestPersonalityServiceGet(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.get_personality(id_node)
 
@@ -90,7 +90,7 @@ class TestPersonalityServiceGet(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.get_personality(id_node)
 
@@ -112,7 +112,7 @@ class TestPersonalityServiceGet(unittest.TestCase):
                                                           neuroticism=2.5, openess=2.5, id=1)
         personality_panas = BasicPersonalityPanasOut(negative_affect=0.5, positive_affect=0.5, id=2)
         personalities = PersonalitiesOut(personalities=[personality_big_five, personality_panas])
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.get_personalities()
 
@@ -123,7 +123,7 @@ class TestPersonalityServiceGet(unittest.TestCase):
     def test_get_personalities_empty(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': []}
         personalities = PersonalitiesOut(personality=[])
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.get_personalities()
 

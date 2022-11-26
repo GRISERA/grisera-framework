@@ -3,11 +3,12 @@ import unittest
 import unittest.mock as mock
 
 from measure.measure_router import *
+from measure.measure_service_graphdb import MeasureServiceGraphDB
 
 
 class TestMeasureRouterPost(unittest.TestCase):
 
-    @mock.patch.object(MeasureService, 'save_measure')
+    @mock.patch.object(MeasureServiceGraphDB, 'save_measure')
     def test_create_measure_without_error(self, save_measure_mock):
         save_measure_mock.return_value = MeasureOut(datatype="Test", range="Unknown", unit="cm", id=1)
         response = Response()
@@ -21,7 +22,7 @@ class TestMeasureRouterPost(unittest.TestCase):
         save_measure_mock.assert_called_once_with(measure)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(MeasureService, 'save_measure')
+    @mock.patch.object(MeasureServiceGraphDB, 'save_measure')
     def test_create_measure_with_error(self, save_measure_mock):
         save_measure_mock.return_value = MeasureOut(datatype="Test",
                                                     range="Unknown", unit="cm", errors={'errors': ['test']})

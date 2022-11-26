@@ -4,7 +4,7 @@ import unittest.mock as mock
 from participant_state.participant_state_model import *
 from models.not_found_model import *
 
-from participant_state.participant_state_service import ParticipantStateService
+from participant_state.participant_state_service_graphdb import ParticipantStateServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -37,7 +37,7 @@ class TestParticipantStateServicePut(unittest.TestCase):
                                  [RelationInformation(second_node_id=15, name="testReversedRelation", relation_id=0)],
                                  additional_properties=additional_properties)
         calls = [mock.call(1)]
-        participant_state_service = ParticipantStateService()
+        participant_state_service = ParticipantStateServiceGraphDB()
 
         result = participant_state_service.update_participant_state(id_node, participant_state_in)
 
@@ -54,7 +54,7 @@ class TestParticipantStateServicePut(unittest.TestCase):
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         additional_properties = [PropertyIn(key='identifier', value=5)]
         participant_state_in = ParticipantStatePropertyIn(age=5, id=id_node, additional_properties=additional_properties)
-        participant_state_service = ParticipantStateService()
+        participant_state_service = ParticipantStateServiceGraphDB()
 
         result = participant_state_service.update_participant_state(id_node, participant_state_in)
 
@@ -68,7 +68,7 @@ class TestParticipantStateServicePut(unittest.TestCase):
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         additional_properties = [PropertyIn(key='identifier', value=5)]
         participant_state_in = ParticipantStatePropertyIn(age=5, id=id_node, additional_properties=additional_properties)
-        participant_state_service = ParticipantStateService()
+        participant_state_service = ParticipantStateServiceGraphDB()
 
         result = participant_state_service.update_participant_state(id_node, participant_state_in)
 

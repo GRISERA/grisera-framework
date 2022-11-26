@@ -3,7 +3,7 @@ import unittest.mock as mock
 
 from graph_api_service import GraphApiService
 from time_series.time_series_model import *
-from time_series.time_series_service import TimeSeriesService, ObservableInformationService, MeasureService
+from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB, ObservableInformationServiceGraphDB, MeasureServiceGraphDB
 
 
 def relationship_function(*args, **kwargs):
@@ -46,7 +46,7 @@ class TestTimeSeriesServicePost(unittest.TestCase):
                                                     [RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                          relation_id=0)])
         calls = [mock.call(end_node=3, start_node=1, name="hasMeasure")]
-        time_series_service = TimeSeriesService()
+        time_series_service = TimeSeriesServiceGraphDB()
 
         result = time_series_service.save_time_series(time_series_in)
 
@@ -60,7 +60,7 @@ class TestTimeSeriesServicePost(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         time_series = TimeSeriesIn(type="Epoch", source="cos", observable_information_id=1, measure_id=2)
-        time_series_service = TimeSeriesService()
+        time_series_service = TimeSeriesServiceGraphDB()
 
         result = time_series_service.save_time_series(time_series)
 

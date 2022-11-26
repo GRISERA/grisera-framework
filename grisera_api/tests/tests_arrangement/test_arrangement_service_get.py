@@ -2,7 +2,7 @@ import unittest
 import unittest.mock as mock
 
 from arrangement.arrangement_model import *
-from arrangement.arrangement_service import ArrangementService
+from arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
 from graph_api_service import GraphApiService
 from models.not_found_model import *
 
@@ -31,7 +31,7 @@ class TestArrangementServiceGet(unittest.TestCase):
                                      reversed_relations=[RelationInformation(second_node_id=15,
                                                                              name="testReversedRelation",
                                                                              relation_id=0)])
-        arrangement_service = ArrangementService()
+        arrangement_service = ArrangementServiceGraphDB()
 
         result = arrangement_service.get_arrangement(id_node)
 
@@ -45,7 +45,7 @@ class TestArrangementServiceGet(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        arrangement_service = ArrangementService()
+        arrangement_service = ArrangementServiceGraphDB()
 
         result = arrangement_service.get_arrangement(id_node)
 
@@ -57,7 +57,7 @@ class TestArrangementServiceGet(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        arrangement_service = ArrangementService()
+        arrangement_service = ArrangementServiceGraphDB()
 
         result = arrangement_service.get_arrangement(id_node)
 
@@ -74,7 +74,7 @@ class TestArrangementServiceGet(unittest.TestCase):
         arrangement_one = BasicArrangementOut(arrangement_type="test",  id=1)
         arrangement_two = BasicArrangementOut(arrangement_type="test2",  id=2)
         arrangements = ArrangementsOut(arrangements=[arrangement_one, arrangement_two])
-        arrangement_service = ArrangementService()
+        arrangement_service = ArrangementServiceGraphDB()
 
         result = arrangement_service.get_arrangements()
 
@@ -85,7 +85,7 @@ class TestArrangementServiceGet(unittest.TestCase):
     def test_get_arrangements_empty(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': [], 'errors': None}
         arrangements = ArrangementsOut(arrangements=[])
-        arrangement_service = ArrangementService()
+        arrangement_service = ArrangementServiceGraphDB()
 
         result = arrangement_service.get_arrangements()
 

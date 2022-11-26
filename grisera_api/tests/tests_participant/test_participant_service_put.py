@@ -4,7 +4,7 @@ import unittest.mock as mock
 from participant.participant_model import *
 from models.not_found_model import *
 
-from participant.participant_service import ParticipantService
+from participant.participant_service_graphdb import ParticipantServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -39,7 +39,7 @@ class TestParticipantServicePut(unittest.TestCase):
                                              reversed_relations=
                                              [RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                   relation_id=0)])
-        participant_service = ParticipantService()
+        participant_service = ParticipantServiceGraphDB()
 
         result = participant_service.update_participant(id_node, participant_in)
 
@@ -56,7 +56,7 @@ class TestParticipantServicePut(unittest.TestCase):
         additional_properties = [PropertyIn(key='identifier', value=5)]
         participant_in = ParticipantIn(name="test", sex='male', id=id_node,
                                        additional_properties=additional_properties)
-        participant_service = ParticipantService()
+        participant_service = ParticipantServiceGraphDB()
 
         result = participant_service.update_participant(id_node, participant_in)
 
@@ -71,7 +71,7 @@ class TestParticipantServicePut(unittest.TestCase):
         additional_properties = [PropertyIn(key='identifier', value=5)]
         participant_in = ParticipantIn(name="test", sex='male', id=id_node,
                                        additional_properties=additional_properties)
-        participant_service = ParticipantService()
+        participant_service = ParticipantServiceGraphDB()
 
         result = participant_service.update_participant(id_node, participant_in)
 

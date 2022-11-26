@@ -4,7 +4,7 @@ import unittest.mock as mock
 from experiment.experiment_model import *
 from models.not_found_model import *
 
-from experiment.experiment_service import ExperimentService
+from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -38,7 +38,7 @@ class TestExperimentServicePut(unittest.TestCase):
                                        reversed_relations=
                                        [RelationInformation(second_node_id=15, name="testReversedRelation",
                                                             relation_id=0)])
-        experiment_service = ExperimentService()
+        experiment_service = ExperimentServiceGraphDB()
 
         result = experiment_service.update_experiment(id_node, experiment_in)
 
@@ -53,7 +53,7 @@ class TestExperimentServicePut(unittest.TestCase):
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         experiment_in = ExperimentIn(experiment_name="test")
-        experiment_service = ExperimentService()
+        experiment_service = ExperimentServiceGraphDB()
 
         result = experiment_service.update_experiment(id_node, experiment_in)
 
@@ -66,7 +66,7 @@ class TestExperimentServicePut(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         experiment_in = ExperimentIn(experiment_name="test")
-        experiment_service = ExperimentService()
+        experiment_service = ExperimentServiceGraphDB()
 
         result = experiment_service.update_experiment(id_node, experiment_in)
 

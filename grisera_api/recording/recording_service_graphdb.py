@@ -1,7 +1,7 @@
 from graph_api_service import GraphApiService
-from participation.participation_service import ParticipationService
+from participation.participation_service_graphdb import ParticipationServiceGraphDB
 from recording.recording_service import RecordingService
-from registered_channel.registered_channel_service import RegisteredChannelService
+from registered_channel.registered_channel_service_graphdb import RegisteredChannelServiceGraphDB
 from recording.recording_model import RecordingPropertyIn, RecordingRelationIn, RecordingIn, BasicRecordingOut, RecordingOut, RecordingsOut
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
@@ -17,8 +17,8 @@ class RecordingServiceGraphDB(RecordingService):
     registered_channel_service(RegisteredChannelService): Service to send registered channel requests
     """
     graph_api_service = GraphApiService()
-    participation_service = ParticipationService()
-    registered_channel_service = RegisteredChannelService()
+    participation_service = ParticipationServiceGraphDB()
+    registered_channel_service = RegisteredChannelServiceGraphDB()
 
     def save_recording(self, recording: RecordingIn):
         """
