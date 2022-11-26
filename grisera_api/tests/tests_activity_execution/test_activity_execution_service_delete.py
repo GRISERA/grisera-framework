@@ -4,7 +4,7 @@ import unittest.mock as mock
 from activity_execution.activity_execution_model import *
 from models.not_found_model import *
 
-from activity_execution.activity_execution_service import ActivityExecutionService
+from activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -32,7 +32,7 @@ class TestActivityExecutionServiceDelete(unittest.TestCase):
                                                   reversed_relations=[RelationInformation(second_node_id=15,
                                                                                           name="testReversedRelation",
                                                                                           relation_id=0)])
-        activity_execution_service = ActivityExecutionService()
+        activity_execution_service = ActivityExecutionServiceGraphDB()
 
         result = activity_execution_service.delete_activity_execution(id_node)
 
@@ -46,7 +46,7 @@ class TestActivityExecutionServiceDelete(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        activity_execution_service = ActivityExecutionService()
+        activity_execution_service = ActivityExecutionServiceGraphDB()
 
         result = activity_execution_service.delete_activity_execution(id_node)
 
@@ -58,7 +58,7 @@ class TestActivityExecutionServiceDelete(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        activity_execution_service = ActivityExecutionService()
+        activity_execution_service = ActivityExecutionServiceGraphDB()
 
         result = activity_execution_service.delete_activity_execution(id_node)
 

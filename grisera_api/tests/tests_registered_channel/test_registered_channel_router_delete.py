@@ -3,11 +3,12 @@ import unittest
 import unittest.mock as mock
 
 from registered_channel.registered_channel_router import *
+from registered_channel.registered_channel_service_graphdb import RegisteredChannelServiceGraphDB
 
 
 class TestRegisteredChannelRouterDelete(unittest.TestCase):
 
-    @mock.patch.object(RegisteredChannelService, 'delete_registered_channel')
+    @mock.patch.object(RegisteredChannelServiceGraphDB, 'delete_registered_channel')
     def test_delete_registered_channel_without_error(self, delete_registered_channel_mock):
         registered_channel_id = 1
         delete_registered_channel_mock.return_value = RegisteredChannelOut(id=registered_channel_id)
@@ -20,7 +21,7 @@ class TestRegisteredChannelRouterDelete(unittest.TestCase):
         delete_registered_channel_mock.assert_called_once_with(registered_channel_id)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(RegisteredChannelService, 'delete_registered_channel')
+    @mock.patch.object(RegisteredChannelServiceGraphDB, 'delete_registered_channel')
     def test_delete_registered_channel_with_error(self, delete_registered_channel_mock):
         delete_registered_channel_mock.return_value = RegisteredChannelOut(errors={'errors': ['test']})
         response = Response()

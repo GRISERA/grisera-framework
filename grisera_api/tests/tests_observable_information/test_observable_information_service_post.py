@@ -3,7 +3,7 @@ import unittest.mock as mock
 
 from graph_api_service import GraphApiService
 from observable_information.observable_information_model import *
-from observable_information.observable_information_service import ObservableInformationService
+from observable_information.observable_information_service_graphdb import ObservableInformationServiceGraphDB
 
 
 class TestObservableInformationServicePost(unittest.TestCase):
@@ -40,7 +40,7 @@ class TestObservableInformationServicePost(unittest.TestCase):
                                                                                      name="testReversedRelation",
                                                                                      relation_id=0)], id=id_node)
         calls = [mock.call(2), mock.call(3), mock.call(1)]
-        observable_information_service = ObservableInformationService()
+        observable_information_service = ObservableInformationServiceGraphDB()
 
         result = observable_information_service.save_observable_information(observable_information_in)
 
@@ -55,7 +55,7 @@ class TestObservableInformationServicePost(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         observable_information = ObservableInformationIn(modality_id=2, life_activity_id=3)
-        observable_information_service = ObservableInformationService()
+        observable_information_service = ObservableInformationServiceGraphDB()
 
         result = observable_information_service.save_observable_information(observable_information)
 

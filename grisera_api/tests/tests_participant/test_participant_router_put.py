@@ -2,11 +2,12 @@ import asyncio
 import unittest
 import unittest.mock as mock
 from participant.participant_router import *
+from participant.participant_service_graphdb import ParticipantServiceGraphDB
 
 
 class TestParticipantRouterPut(unittest.TestCase):
 
-    @mock.patch.object(ParticipantService, 'update_participant')
+    @mock.patch.object(ParticipantServiceGraphDB, 'update_participant')
     def test_update_participant_without_error(self, update_participant_mock):
         participant_id = 1
         update_participant_mock.return_value = ParticipantOut(name="Test Test", sex='male', id=participant_id)
@@ -21,7 +22,7 @@ class TestParticipantRouterPut(unittest.TestCase):
         update_participant_mock.assert_called_once_with(participant_id, participant)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(ParticipantService, 'update_participant')
+    @mock.patch.object(ParticipantServiceGraphDB, 'update_participant')
     def test_update_participant_with_error(self, update_participant_mock):
         participant_id = 1
         update_participant_mock.return_value = ParticipantOut(name="Test Test", sex='male', errors={'errors': ['test']})

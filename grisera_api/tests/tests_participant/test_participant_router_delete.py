@@ -2,11 +2,12 @@ import asyncio
 import unittest
 import unittest.mock as mock
 from participant.participant_router import *
+from participant.participant_service_graphdb import ParticipantServiceGraphDB
 
 
 class TestParticipantRouterDelete(unittest.TestCase):
 
-    @mock.patch.object(ParticipantService, 'delete_participant')
+    @mock.patch.object(ParticipantServiceGraphDB, 'delete_participant')
     def test_delete_participant_without_error(self, delete_participant_mock):
         participant_id = 1
         delete_participant_mock.return_value = ParticipantOut(name="Test Test", sex='male', id=participant_id)
@@ -20,7 +21,7 @@ class TestParticipantRouterDelete(unittest.TestCase):
         delete_participant_mock.assert_called_once_with(participant_id)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(ParticipantService, 'delete_participant')
+    @mock.patch.object(ParticipantServiceGraphDB, 'delete_participant')
     def test_delete_participant_with_error(self, delete_participant_mock):
         delete_participant_mock.return_value = ParticipantOut(name="Test Test", sex='male', errors={'errors': ['test']})
         response = Response()

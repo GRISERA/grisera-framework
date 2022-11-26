@@ -2,7 +2,7 @@ import unittest
 import unittest.mock as mock
 
 from personality.personality_model import *
-from personality.personality_service import PersonalityService
+from personality.personality_service_graphdb import PersonalityServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -21,7 +21,7 @@ class TestPersonalityServicePost(unittest.TestCase):
                                                "errors": None, 'links': None}
         personality = PersonalityBigFiveIn(agreeableness=0.5, conscientiousness=0.5, extroversion=0.5,
                                            neuroticism=0.5, openess=0.5)
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.save_personality_big_five(personality)
 
@@ -39,7 +39,7 @@ class TestPersonalityServicePost(unittest.TestCase):
                                                                              {'key': 'positive_affect', 'value': 0.5}],
                                                "errors": None, 'links': None}
         personality = PersonalityPanasIn(negative_affect=0.5, positive_affect=0.5)
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.save_personality_panas(personality)
 

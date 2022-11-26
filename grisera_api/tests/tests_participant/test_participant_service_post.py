@@ -3,7 +3,7 @@ import unittest.mock as mock
 
 from graph_api_service import GraphApiService
 from participant.participant_model import *
-from participant.participant_service import ParticipantService
+from participant.participant_service_graphdb import ParticipantServiceGraphDB
 
 
 class TestParticipantServicePost(unittest.TestCase):
@@ -18,7 +18,7 @@ class TestParticipantServicePost(unittest.TestCase):
                                                "errors": None, 'links': None}
         additional_properties = [PropertyIn(key='testkey', value='testvalue')]
         participant = ParticipantIn(name="Test Test", sex='male', additional_properties=additional_properties)
-        participant_service = ParticipantService()
+        participant_service = ParticipantServiceGraphDB()
 
         result = participant_service.save_participant(participant)
 
@@ -32,7 +32,7 @@ class TestParticipantServicePost(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         participant = ParticipantIn(name="Test Test", sex='male',)
-        participant_service = ParticipantService()
+        participant_service = ParticipantServiceGraphDB()
 
         result = participant_service.save_participant(participant)
 
@@ -46,7 +46,7 @@ class TestParticipantServicePost(unittest.TestCase):
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         participant = ParticipantIn(name="Test Test", sex='male')
-        participant_service = ParticipantService()
+        participant_service = ParticipantServiceGraphDB()
 
         result = participant_service.save_participant(participant)
 

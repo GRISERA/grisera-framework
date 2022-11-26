@@ -4,7 +4,7 @@ import unittest.mock as mock
 from registered_data.registered_data_model import *
 from models.not_found_model import *
 
-from registered_data.registered_data_service import RegisteredDataService
+from registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -38,7 +38,7 @@ class TestRegisteredDataServicePut(unittest.TestCase):
                                        reversed_relations=
                                        [RelationInformation(second_node_id=15, name="testReversedRelation",
                                                             relation_id=0)])
-        registered_data_service = RegisteredDataService()
+        registered_data_service = RegisteredDataServiceGraphDB()
 
         result = registered_data_service.update_registered_data(id_node, registered_data_in)
 
@@ -53,7 +53,7 @@ class TestRegisteredDataServicePut(unittest.TestCase):
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         registered_data_in = RegisteredDataIn(source="test")
-        registered_data_service = RegisteredDataService()
+        registered_data_service = RegisteredDataServiceGraphDB()
 
         result = registered_data_service.update_registered_data(id_node, registered_data_in)
 
@@ -66,7 +66,7 @@ class TestRegisteredDataServicePut(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         registered_data_in = RegisteredDataIn(source="test")
-        registered_data_service = RegisteredDataService()
+        registered_data_service = RegisteredDataServiceGraphDB()
 
         result = registered_data_service.update_registered_data(id_node, registered_data_in)
 

@@ -3,12 +3,13 @@ import unittest
 import unittest.mock as mock
 from experiment.experiment_router import *
 from experiment.experiment_model import BasicExperimentOut
+from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
 from property.property_model import PropertyIn
 
 
 class TestExperimentRouterGet(unittest.TestCase):
 
-    @mock.patch.object(ExperimentService, 'get_experiment')
+    @mock.patch.object(ExperimentServiceGraphDB, 'get_experiment')
     def test_get_experiment_without_error(self, get_experiment_mock):
         experiment_id = 1
         get_experiment_mock.return_value = ExperimentOut(experiment_name="test",
@@ -25,7 +26,7 @@ class TestExperimentRouterGet(unittest.TestCase):
         get_experiment_mock.assert_called_once_with(experiment_id)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(ExperimentService, 'get_experiment')
+    @mock.patch.object(ExperimentServiceGraphDB, 'get_experiment')
     def test_get_experiment_with_error(self, get_experiment_mock):
         get_experiment_mock.return_value = ExperimentOut(experiment_name="test",
                                                          additional_properties=[PropertyIn(key="test", value="test")],
@@ -42,7 +43,7 @@ class TestExperimentRouterGet(unittest.TestCase):
         get_experiment_mock.assert_called_once_with(experiment_id)
         self.assertEqual(response.status_code, 404)
 
-    @mock.patch.object(ExperimentService, 'get_experiments')
+    @mock.patch.object(ExperimentServiceGraphDB, 'get_experiments')
     def test_get_experiments_without_error(self, get_experiments_mock):
         get_experiments_mock.return_value = ExperimentsOut(experiments=[
             BasicExperimentOut(experiment_name="test", id=1),

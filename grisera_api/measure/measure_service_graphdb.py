@@ -2,7 +2,7 @@ from graph_api_service import GraphApiService
 from measure.measure_model import MeasurePropertyIn, BasicMeasureOut, \
     MeasuresOut, MeasureOut, MeasureIn, MeasureRelationIn
 from measure.measure_service import MeasureService
-from measure_name.measure_name_service import MeasureNameService
+from measure_name.measure_name_service_graphdb import MeasureNameServiceGraphDB
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
 
@@ -16,7 +16,7 @@ class MeasureServiceGraphDB(MeasureService):
         measure_name_service (MeasureNameService): Service to manage measure name models
     """
     graph_api_service = GraphApiService()
-    measure_name_service = MeasureNameService()
+    measure_name_service = MeasureNameServiceGraphDB()
 
     def save_measure(self, measure: MeasureIn):
         """

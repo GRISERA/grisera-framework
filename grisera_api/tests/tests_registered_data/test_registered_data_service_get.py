@@ -4,7 +4,7 @@ import unittest.mock as mock
 from registered_data.registered_data_model import *
 from models.not_found_model import *
 
-from registered_data.registered_data_service import RegisteredDataService
+from registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -31,7 +31,7 @@ class TestRegisteredDataServiceGet(unittest.TestCase):
                                                                   relation_id=0)],
                                    reversed_relations=[RelationInformation(second_node_id=15,
                                                                            name="testReversedRelation", relation_id=0)])
-        registered_data_service = RegisteredDataService()
+        registered_data_service = RegisteredDataServiceGraphDB()
 
         result = registered_data_service.get_registered_data(id_node)
 
@@ -45,7 +45,7 @@ class TestRegisteredDataServiceGet(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        registered_data_service = RegisteredDataService()
+        registered_data_service = RegisteredDataServiceGraphDB()
 
         result = registered_data_service.get_registered_data(id_node)
 
@@ -57,7 +57,7 @@ class TestRegisteredDataServiceGet(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        registered_data_service = RegisteredDataService()
+        registered_data_service = RegisteredDataServiceGraphDB()
 
         result = registered_data_service.get_registered_data(id_node)
 
@@ -73,7 +73,7 @@ class TestRegisteredDataServiceGet(unittest.TestCase):
         registered_data_one = BasicRegisteredDataOut(source="test", id=1, additional_properties=[])
         registered_data_two = BasicRegisteredDataOut(source="test2", id=2, additional_properties=[])
         registered_data_nodes = RegisteredDataNodesOut(registered_data_nodes=[registered_data_one, registered_data_two])
-        registered_data_service = RegisteredDataService()
+        registered_data_service = RegisteredDataServiceGraphDB()
 
         result = registered_data_service.get_registered_data_nodes()
 
@@ -84,7 +84,7 @@ class TestRegisteredDataServiceGet(unittest.TestCase):
     def test_get_registered_data_nodes_empty(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': []}
         registered_data_nodes = RegisteredDataNodesOut(registered_data_nodes=[])
-        registered_data_service = RegisteredDataService()
+        registered_data_service = RegisteredDataServiceGraphDB()
 
         result = registered_data_service.get_registered_data_nodes()
 

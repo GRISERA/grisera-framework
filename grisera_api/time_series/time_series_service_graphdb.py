@@ -1,6 +1,6 @@
 from graph_api_service import GraphApiService
-from measure.measure_service import MeasureService
-from observable_information.observable_information_service import ObservableInformationService
+from measure.measure_service_graphdb import MeasureServiceGraphDB
+from observable_information.observable_information_service_graphdb import ObservableInformationServiceGraphDB
 from time_series.time_series_model import TimeSeriesPropertyIn, BasicTimeSeriesOut, \
     TimeSeriesNodesOut, TimeSeriesOut, TimeSeriesIn, TimeSeriesRelationIn
 from models.not_found_model import NotFoundByIdModel
@@ -18,8 +18,8 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         observable_information_service (ObservableInformationService): Service to manage observable information models
     """
     graph_api_service = GraphApiService()
-    measure_service = MeasureService()
-    observable_information_service = ObservableInformationService()
+    measure_service = MeasureServiceGraphDB()
+    observable_information_service = ObservableInformationServiceGraphDB()
 
     def save_time_series(self, time_series: TimeSeriesIn):
         """

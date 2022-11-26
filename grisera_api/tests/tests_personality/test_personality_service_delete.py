@@ -4,7 +4,7 @@ import unittest.mock as mock
 from personality.personality_model import *
 from models.not_found_model import *
 
-from personality.personality_service import PersonalityService
+from personality.personality_service_graphdb import PersonalityServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -36,7 +36,7 @@ class TestPersonalityServiceDelete(unittest.TestCase):
                                             reversed_relations=[
                                                 RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                     relation_id=0)])
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.delete_personality(id_node)
 
@@ -66,7 +66,7 @@ class TestPersonalityServiceDelete(unittest.TestCase):
                                           reversed_relations=[
                                               RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                   relation_id=0)])
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.delete_personality(id_node)
 
@@ -88,7 +88,7 @@ class TestPersonalityServiceDelete(unittest.TestCase):
              "name": "testReversedRelation", "id": 0,
              "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.delete_personality(id_node)
 
@@ -108,7 +108,7 @@ class TestPersonalityServiceDelete(unittest.TestCase):
              "name": "testReversedRelation", "id": 0,
              "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        personality_service = PersonalityService()
+        personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.delete_personality(id_node)
 

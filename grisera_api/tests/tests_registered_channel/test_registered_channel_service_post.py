@@ -3,7 +3,7 @@ import unittest.mock as mock
 
 from graph_api_service import GraphApiService
 from registered_channel.registered_channel_model import *
-from registered_channel.registered_channel_service import RegisteredChannelService
+from registered_channel.registered_channel_service_graphdb import RegisteredChannelServiceGraphDB
 
 
 class TestRegisteredChannelServicePost(unittest.TestCase):
@@ -38,7 +38,7 @@ class TestRegisteredChannelServicePost(unittest.TestCase):
                                                     [RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                          relation_id=0)], id=id_node)
         calls = [mock.call(2), mock.call(3), mock.call(1)]
-        registered_channel_service = RegisteredChannelService()
+        registered_channel_service = RegisteredChannelServiceGraphDB()
 
         result = registered_channel_service.save_registered_channel(registered_channel_in)
 
@@ -53,7 +53,7 @@ class TestRegisteredChannelServicePost(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         registered_channel = RegisteredChannelIn(channel_id=2, registered_data_id=3)
-        registered_channel_service = RegisteredChannelService()
+        registered_channel_service = RegisteredChannelServiceGraphDB()
 
         result = registered_channel_service.save_registered_channel(registered_channel)
 

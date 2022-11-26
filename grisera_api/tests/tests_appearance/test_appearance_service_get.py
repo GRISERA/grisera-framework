@@ -4,7 +4,7 @@ import unittest.mock as mock
 from appearance.appearance_model import *
 from models.not_found_model import *
 
-from appearance.appearance_service import AppearanceService
+from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -33,7 +33,7 @@ class TestAppearanceServiceGet(unittest.TestCase):
                                             reversed_relations=[
                                                 RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                     relation_id=0)])
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.get_appearance(id_node)
 
@@ -64,7 +64,7 @@ class TestAppearanceServiceGet(unittest.TestCase):
                                              reversed_relations=[
                                                  RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                      relation_id=0)])
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.get_appearance(id_node)
 
@@ -78,7 +78,7 @@ class TestAppearanceServiceGet(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.get_appearance(id_node)
 
@@ -90,7 +90,7 @@ class TestAppearanceServiceGet(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.get_appearance(id_node)
 
@@ -111,7 +111,7 @@ class TestAppearanceServiceGet(unittest.TestCase):
         appearance_somatotype = BasicAppearanceSomatotypeOut(id=2, ectomorph=1.5,
                                                              endomorph=1.5, mesomorph=1.5)
         appearances = AppearancesOut(appearances=[appearance_occlusion, appearance_somatotype])
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.get_appearances()
 
@@ -122,7 +122,7 @@ class TestAppearanceServiceGet(unittest.TestCase):
     def test_get_appearances_empty(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': []}
         appearances = AppearancesOut(appearances=[])
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.get_appearances()
 

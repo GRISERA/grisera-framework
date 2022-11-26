@@ -4,7 +4,7 @@ import unittest.mock as mock
 from appearance.appearance_model import *
 from models.not_found_model import *
 
-from appearance.appearance_service import AppearanceService
+from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -34,7 +34,7 @@ class TestAppearanceServiceDelete(unittest.TestCase):
                                             reversed_relations=[
                                                 RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                     relation_id=0)])
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.delete_appearance(id_node)
 
@@ -67,7 +67,7 @@ class TestAppearanceServiceDelete(unittest.TestCase):
                                                  RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                      relation_id=0)]
                                              )
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.delete_appearance(id_node)
 
@@ -89,7 +89,7 @@ class TestAppearanceServiceDelete(unittest.TestCase):
              "name": "testReversedRelation", "id": 0,
              "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.delete_appearance(id_node)
 
@@ -109,7 +109,7 @@ class TestAppearanceServiceDelete(unittest.TestCase):
              "name": "testReversedRelation", "id": 0,
              "properties": None}]}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        appearance_service = AppearanceService()
+        appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.delete_appearance(id_node)
 

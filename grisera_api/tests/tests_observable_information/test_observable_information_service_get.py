@@ -4,7 +4,7 @@ import unittest.mock as mock
 from graph_api_service import GraphApiService
 from models.not_found_model import *
 from observable_information.observable_information_model import *
-from observable_information.observable_information_service import ObservableInformationService
+from observable_information.observable_information_service_graphdb import ObservableInformationServiceGraphDB
 
 
 class TestObservableInformationServiceGet(unittest.TestCase):
@@ -29,7 +29,7 @@ class TestObservableInformationServiceGet(unittest.TestCase):
                                                   reversed_relations=[RelationInformation(second_node_id=15,
                                                                                           name="testReversedRelation",
                                                                                           relation_id=0)])
-        observable_information_service = ObservableInformationService()
+        observable_information_service = ObservableInformationServiceGraphDB()
 
         result = observable_information_service.get_observable_information(id_node)
 
@@ -43,7 +43,7 @@ class TestObservableInformationServiceGet(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        observable_information_service = ObservableInformationService()
+        observable_information_service = ObservableInformationServiceGraphDB()
 
         result = observable_information_service.get_observable_information(id_node)
 
@@ -55,7 +55,7 @@ class TestObservableInformationServiceGet(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        observable_information_service = ObservableInformationService()
+        observable_information_service = ObservableInformationServiceGraphDB()
 
         result = observable_information_service.get_observable_information(id_node)
 
@@ -74,7 +74,7 @@ class TestObservableInformationServiceGet(unittest.TestCase):
         observable_information_two = BasicObservableInformationOut(id=2)
         observable_informations = ObservableInformationsOut(
             observable_informations=[observable_information_one, observable_information_two])
-        observable_informations_service = ObservableInformationService()
+        observable_informations_service = ObservableInformationServiceGraphDB()
 
         result = observable_informations_service.get_observable_informations()
 
@@ -85,7 +85,7 @@ class TestObservableInformationServiceGet(unittest.TestCase):
     def test_get_observable_informations_empty(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': []}
         observable_informations = ObservableInformationsOut(observable_information=[])
-        observable_informations_service = ObservableInformationService()
+        observable_informations_service = ObservableInformationServiceGraphDB()
 
         result = observable_informations_service.get_observable_informations()
 

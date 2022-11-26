@@ -3,7 +3,7 @@ import unittest.mock as mock
 
 from graph_api_service import GraphApiService
 from measure.measure_model import *
-from measure.measure_service import MeasureService
+from measure.measure_service_graphdb import MeasureServiceGraphDB
 from models.not_found_model import *
 
 
@@ -33,7 +33,7 @@ class TestMeasureServiceDelete(unittest.TestCase):
                              reversed_relations=[RelationInformation(second_node_id=15,
                                                                      name="testReversedRelation",
                                                                      relation_id=0)])
-        measure_service = MeasureService()
+        measure_service = MeasureServiceGraphDB()
 
         result = measure_service.delete_measure(id_node)
 
@@ -47,7 +47,7 @@ class TestMeasureServiceDelete(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        measure_service = MeasureService()
+        measure_service = MeasureServiceGraphDB()
 
         result = measure_service.delete_measure(id_node)
 
@@ -59,7 +59,7 @@ class TestMeasureServiceDelete(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        measure_service = MeasureService()
+        measure_service = MeasureServiceGraphDB()
 
         result = measure_service.delete_measure(id_node)
 

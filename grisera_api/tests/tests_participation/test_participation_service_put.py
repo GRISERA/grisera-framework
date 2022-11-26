@@ -4,7 +4,7 @@ import unittest.mock as mock
 from participation.participation_model import *
 from models.not_found_model import *
 
-from participation.participation_service import ParticipationService
+from participation.participation_service_graphdb import ParticipationServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -35,7 +35,7 @@ class TestParticipationServicePut(unittest.TestCase):
                                                     reversed_relations=
                                  [RelationInformation(second_node_id=15, name="testReversedRelation", relation_id=0)])
         calls = [mock.call(1)]
-        participation_service = ParticipationService()
+        participation_service = ParticipationServiceGraphDB()
 
         result = participation_service.update_participation_relationships(id_node, participation_in)
 
@@ -51,7 +51,7 @@ class TestParticipationServicePut(unittest.TestCase):
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         participation_in = ParticipationIn(activity_execution_id=15, participant_state_id=19)
-        participation_service = ParticipationService()
+        participation_service = ParticipationServiceGraphDB()
 
         result = participation_service.update_participation_relationships(id_node, participation_in)
 
@@ -64,7 +64,7 @@ class TestParticipationServicePut(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         participation_in = ParticipationIn(activity_execution_id=15, participant_state_id=19)
-        participation_service = ParticipationService()
+        participation_service = ParticipationServiceGraphDB()
 
         result = participation_service.update_participation_relationships(id_node, participation_in)
 

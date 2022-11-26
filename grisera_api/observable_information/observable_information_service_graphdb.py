@@ -1,10 +1,10 @@
 from graph_api_service import GraphApiService
 from observable_information.observable_information_model import ObservableInformationIn, ObservableInformationOut, \
     BasicObservableInformationOut, ObservableInformationsOut
-from modality.modality_service import ModalityService
-from life_activity.life_activity_service import LifeActivityService
+from modality.modality_service_graphdb import ModalityServiceGraphDB
+from life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
 from observable_information.observable_information_service import ObservableInformationService
-from recording.recording_service import RecordingService
+from recording.recording_service_graphdb import RecordingServiceGraphDB
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
 
@@ -20,9 +20,9 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
     recording_service (RecordingService): Service used to communicate with Recording
     """
     graph_api_service = GraphApiService()
-    modality_service = ModalityService()
-    life_activity_service = LifeActivityService()
-    recording_service = RecordingService()
+    modality_service = ModalityServiceGraphDB()
+    life_activity_service = LifeActivityServiceGraphDB()
+    recording_service = RecordingServiceGraphDB()
 
     def save_observable_information(self, observable_information: ObservableInformationIn):
         """
