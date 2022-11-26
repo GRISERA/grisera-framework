@@ -3,7 +3,7 @@ import unittest.mock as mock
 
 from graph_api_service import GraphApiService
 from participation.participation_model import *
-from participation.participation_service import ParticipationService
+from participation.participation_service_graphdb import ParticipationServiceGraphDB
 
 
 class TestParticipationServicePost(unittest.TestCase):
@@ -40,7 +40,7 @@ class TestParticipationServicePost(unittest.TestCase):
                                                                                      name="testReversedRelation",
                                                                                      relation_id=0)], id=id_node)
         calls = [mock.call(2), mock.call(3), mock.call(1)]
-        participation_service = ParticipationService()
+        participation_service = ParticipationServiceGraphDB()
 
         result = participation_service.save_participation(participation_in)
 
@@ -55,7 +55,7 @@ class TestParticipationServicePost(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         participation = ParticipationIn(activity_execution_id=2, participant_state_id=3)
-        participation_service = ParticipationService()
+        participation_service = ParticipationServiceGraphDB()
 
         result = participation_service.save_participation(participation)
 

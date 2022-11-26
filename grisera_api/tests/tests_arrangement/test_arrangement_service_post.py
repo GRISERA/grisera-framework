@@ -2,7 +2,7 @@ import unittest
 import unittest.mock as mock
 
 from arrangement.arrangement_model import *
-from arrangement.arrangement_service import ArrangementService
+from arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -19,7 +19,7 @@ class TestArrangementServicePost(unittest.TestCase):
                                                                               'value': 'intimate zone'}],
                                                "errors": None, 'links': None}
         arrangement = ArrangementIn(arrangement_type='personal two persons', arrangement_distance='intimate zone')
-        arrangement_service = ArrangementService()
+        arrangement_service = ArrangementServiceGraphDB()
 
         result = arrangement_service.save_arrangement(arrangement)
 
@@ -32,7 +32,7 @@ class TestArrangementServicePost(unittest.TestCase):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         arrangement = ArrangementIn(arrangement_type='personal two persons', arrangement_distance='intimate zone')
-        arrangement_service = ArrangementService()
+        arrangement_service = ArrangementServiceGraphDB()
 
         result = arrangement_service.save_arrangement(arrangement)
 
@@ -46,7 +46,7 @@ class TestArrangementServicePost(unittest.TestCase):
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         arrangement = ArrangementIn(arrangement_type='personal two persons', arrangement_distance='intimate zone')
-        arrangement_service = ArrangementService()
+        arrangement_service = ArrangementServiceGraphDB()
 
         result = arrangement_service.save_arrangement(arrangement)
 
@@ -64,7 +64,7 @@ class TestArrangementServicePost(unittest.TestCase):
     #                                                              {'key': 'arrangement_distance', 'value': 'intimate zone'}]}
     #                                              ],
     #                                    "errors": None, 'links': None}
-    #     arrangement_service = ArrangementService()
+    #     arrangement_service = ArrangementServiceGraphDB()
     #
     #     result = arrangement_service.get_arrangements()
     #
@@ -75,7 +75,7 @@ class TestArrangementServicePost(unittest.TestCase):
     # @mock.patch.object(GraphApiService, 'get_nodes')
     # def test_get_arrangements_with_error(self, get_nodes_mock):
     #     get_nodes_mock.return_value = {'nodes': None, "errors": ['error'], 'links': None}
-    #     arrangement_service = ArrangementService()
+    #     arrangement_service = ArrangementServiceGraphDB()
     #
     #     result = arrangement_service.get_arrangements()
     #

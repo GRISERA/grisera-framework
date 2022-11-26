@@ -4,7 +4,7 @@ import unittest.mock as mock
 from measure.measure_model import *
 from models.not_found_model import *
 
-from measure.measure_service import MeasureService
+from measure.measure_service_graphdb import MeasureServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -37,7 +37,7 @@ class TestMeasureServicePut(unittest.TestCase):
                                                     reversed_relations=
                                  [RelationInformation(second_node_id=15, name="testReversedRelation", relation_id=0)])
         calls = [mock.call(1)]
-        measure_service = MeasureService()
+        measure_service = MeasureServiceGraphDB()
 
         result = measure_service.update_measure(id_node, measure_in)
 
@@ -53,7 +53,7 @@ class TestMeasureServicePut(unittest.TestCase):
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         measure_in = MeasurePropertyIn(datatype="Test", range="Unknown", unit="cm")
-        measure_service = MeasureService()
+        measure_service = MeasureServiceGraphDB()
 
         result = measure_service.update_measure(id_node, measure_in)
 
@@ -66,7 +66,7 @@ class TestMeasureServicePut(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         measure_in = MeasurePropertyIn(datatype="Test", range="Unknown", unit="cm")
-        measure_service = MeasureService()
+        measure_service = MeasureServiceGraphDB()
 
         result = measure_service.update_measure(id_node, measure_in)
 

@@ -4,7 +4,7 @@ import unittest.mock as mock
 from experiment.experiment_model import *
 from models.not_found_model import *
 
-from experiment.experiment_service import ExperimentService
+from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -31,7 +31,7 @@ class TestExperimentServiceGet(unittest.TestCase):
                                                                   relation_id=0)],
                                    reversed_relations=[RelationInformation(second_node_id=15,
                                                                            name="testReversedRelation", relation_id=0)])
-        experiment_service = ExperimentService()
+        experiment_service = ExperimentServiceGraphDB()
 
         result = experiment_service.get_experiment(id_node)
 
@@ -45,7 +45,7 @@ class TestExperimentServiceGet(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        experiment_service = ExperimentService()
+        experiment_service = ExperimentServiceGraphDB()
 
         result = experiment_service.get_experiment(id_node)
 
@@ -57,7 +57,7 @@ class TestExperimentServiceGet(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        experiment_service = ExperimentService()
+        experiment_service = ExperimentServiceGraphDB()
 
         result = experiment_service.get_experiment(id_node)
 
@@ -73,7 +73,7 @@ class TestExperimentServiceGet(unittest.TestCase):
         experiment_one = BasicExperimentOut(experiment_name="test", id=1, additional_properties=[])
         experiment_two = BasicExperimentOut(experiment_name="test2", id=2, additional_properties=[])
         experiments = ExperimentsOut(experiments=[experiment_one, experiment_two])
-        experiment_service = ExperimentService()
+        experiment_service = ExperimentServiceGraphDB()
 
         result = experiment_service.get_experiments()
 
@@ -84,7 +84,7 @@ class TestExperimentServiceGet(unittest.TestCase):
     def test_get_experiments_empty(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': []}
         experiments = ExperimentsOut(experiments=[])
-        experiment_service = ExperimentService()
+        experiment_service = ExperimentServiceGraphDB()
 
         result = experiment_service.get_experiments()
 

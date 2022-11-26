@@ -1,6 +1,6 @@
 from graph_api_service import GraphApiService
-from activity_execution.activity_execution_service import ActivityExecutionService
-from participant_state.participant_state_service import ParticipantStateService
+from activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
+from participant_state.participant_state_service_graphdb import ParticipantStateServiceGraphDB
 from participation.participation_model import ParticipationIn, ParticipationOut, ParticipationsOut, \
     BasicParticipationOut
 from models.not_found_model import NotFoundByIdModel
@@ -18,8 +18,8 @@ class ParticipationServiceGraphDB(ParticipationService):
     participant_state_service (ParticipantStateService): Service to send participant state requests
     """
     graph_api_service = GraphApiService()
-    activity_execution_service = ActivityExecutionService()
-    participant_state_service = ParticipantStateService()
+    activity_execution_service = ActivityExecutionServiceGraphDB()
+    participant_state_service = ParticipantStateServiceGraphDB()
 
     def save_participation(self, participation: ParticipationIn):
         """

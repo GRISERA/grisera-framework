@@ -2,11 +2,12 @@ import asyncio
 import unittest
 import unittest.mock as mock
 from appearance.appearance_router import *
+from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 
 
 class TestAppearanceRouterGet(unittest.TestCase):
 
-    @mock.patch.object(AppearanceService, 'get_appearance')
+    @mock.patch.object(AppearanceServiceGraphDB, 'get_appearance')
     def test_get_appearance_without_error(self, get_appearance_mock):
         appearance_id = 1
         get_appearance_mock.return_value = AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy", id=appearance_id)
@@ -20,7 +21,7 @@ class TestAppearanceRouterGet(unittest.TestCase):
         get_appearance_mock.assert_called_once_with(appearance_id)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(AppearanceService, 'get_appearance')
+    @mock.patch.object(AppearanceServiceGraphDB, 'get_appearance')
     def test_get_appearance_with_error(self, get_appearance_mock):
         get_appearance_mock.return_value = AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy",
                                                                   errors={'errors': ['test']})
@@ -35,7 +36,7 @@ class TestAppearanceRouterGet(unittest.TestCase):
         get_appearance_mock.assert_called_once_with(appearance_id)
         self.assertEqual(response.status_code, 404)
 
-    @mock.patch.object(AppearanceService, 'get_appearances')
+    @mock.patch.object(AppearanceServiceGraphDB, 'get_appearances')
     def test_get_appearances_without_error(self, get_appearances_mock):
         get_appearances_mock.return_value = AppearancesOut(appearances=[
             BasicAppearanceOcclusionOut(id=1, glasses=False, beard="Heavy", moustache="Heavy"),

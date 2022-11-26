@@ -4,7 +4,7 @@ import unittest.mock as mock
 from modality.modality_model import *
 from models.not_found_model import *
 
-from modality.modality_service import ModalityService
+from modality.modality_service_graphdb import ModalityServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -29,7 +29,7 @@ class TestModalityServiceGet(unittest.TestCase):
                                relations=[RelationInformation(second_node_id=19, name="testRelation", relation_id=0)],
                                reversed_relations=[RelationInformation(second_node_id=15, name="testReversedRelation", 
                                                                        relation_id=0)])
-        modality_service = ModalityService()
+        modality_service = ModalityServiceGraphDB()
 
         result = modality_service.get_modality(id_node)
 
@@ -43,7 +43,7 @@ class TestModalityServiceGet(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        modality_service = ModalityService()
+        modality_service = ModalityServiceGraphDB()
 
         result = modality_service.get_modality(id_node)
 
@@ -55,7 +55,7 @@ class TestModalityServiceGet(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        modality_service = ModalityService()
+        modality_service = ModalityServiceGraphDB()
 
         result = modality_service.get_modality(id_node)
 
@@ -71,7 +71,7 @@ class TestModalityServiceGet(unittest.TestCase):
         modality_one = BasicModalityOut(modality="test", id=1)
         modality_two = BasicModalityOut(modality="test2", id=2)
         modalities = ModalitiesOut(modalities=[modality_one, modality_two])
-        modality_service = ModalityService()
+        modality_service = ModalityServiceGraphDB()
 
         result = modality_service.get_modalities()
 
@@ -82,7 +82,7 @@ class TestModalityServiceGet(unittest.TestCase):
     def test_get_modalities_empty(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': []}
         modalities = ModalitiesOut(modalities=[])
-        modality_service = ModalityService()
+        modality_service = ModalityServiceGraphDB()
 
         result = modality_service.get_modalities()
 

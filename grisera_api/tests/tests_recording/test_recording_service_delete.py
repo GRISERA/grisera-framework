@@ -4,7 +4,7 @@ import unittest.mock as mock
 from recording.recording_model import *
 from models.not_found_model import *
 
-from recording.recording_service import RecordingService
+from recording.recording_service_graphdb import RecordingServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -32,7 +32,7 @@ class TestRecordingServiceDelete(unittest.TestCase):
                                                   reversed_relations=[RelationInformation(second_node_id=15,
                                                                                           name="testReversedRelation",
                                                                                           relation_id=0)])
-        recording_service = RecordingService()
+        recording_service = RecordingServiceGraphDB()
 
         result = recording_service.delete_recording(id_node)
 
@@ -46,7 +46,7 @@ class TestRecordingServiceDelete(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
-        recording_service = RecordingService()
+        recording_service = RecordingServiceGraphDB()
 
         result = recording_service.delete_recording(id_node)
 
@@ -58,7 +58,7 @@ class TestRecordingServiceDelete(unittest.TestCase):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
-        recording_service = RecordingService()
+        recording_service = RecordingServiceGraphDB()
 
         result = recording_service.delete_recording(id_node)
 

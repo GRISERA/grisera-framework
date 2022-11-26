@@ -4,11 +4,12 @@ import unittest.mock as mock
 
 from participation.participation_model import *
 from participation.participation_router import *
+from participation.participation_service_graphdb import ParticipationServiceGraphDB
 
 
 class TestParticipationRouterGet(unittest.TestCase):
 
-    @mock.patch.object(ParticipationService, 'get_participation')
+    @mock.patch.object(ParticipationServiceGraphDB, 'get_participation')
     def test_get_participation_without_error(self, get_participation_mock):
         participation_id = 1
         get_participation_mock.return_value = ParticipationOut(id=participation_id)
@@ -21,7 +22,7 @@ class TestParticipationRouterGet(unittest.TestCase):
         get_participation_mock.assert_called_once_with(participation_id)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(ParticipationService, 'get_participation')
+    @mock.patch.object(ParticipationServiceGraphDB, 'get_participation')
     def test_get_participation_with_error(self, get_participation_mock):
         get_participation_mock.return_value = ParticipationOut(errors={'errors': ['test']})
         response = Response()
@@ -35,7 +36,7 @@ class TestParticipationRouterGet(unittest.TestCase):
         get_participation_mock.assert_called_once_with(participation_id)
         self.assertEqual(response.status_code, 404)
 
-    @mock.patch.object(ParticipationService, 'get_participations')
+    @mock.patch.object(ParticipationServiceGraphDB, 'get_participations')
     def test_get_participations_without_error(self, get_participations_mock):
         get_participations_mock.return_value = ParticipationsOut(participations=[
             BasicParticipationOut(id=1),

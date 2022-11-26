@@ -2,7 +2,7 @@ import json
 import unittest
 import unittest.mock as mock
 from modality.modality_model import *
-from modality.modality_service import *
+from modality.modality_service_graphdb import *
 from requests import Response
 
 
@@ -15,7 +15,7 @@ class TestModalityServicePost(unittest.TestCase):
                                         'links': None}).encode('utf-8')
         mock_requests.post.return_value = response
         modality = ModalityIn(modality="motion")
-        modality_service = ModalityService()
+        modality_service = ModalityServiceGraphDB()
 
         result = modality_service.save_modality(modality)
 
@@ -28,7 +28,7 @@ class TestModalityServicePost(unittest.TestCase):
                                         'links': None}).encode('utf-8')
         mock_requests.post.return_value = response
         modality = ModalityIn(modality="motion")
-        modality_service = ModalityService()
+        modality_service = ModalityServiceGraphDB()
 
         result = modality_service.save_modality(modality)
 

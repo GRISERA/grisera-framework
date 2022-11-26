@@ -4,7 +4,7 @@ import unittest.mock as mock
 from time_series.time_series_model import *
 from models.not_found_model import *
 
-from time_series.time_series_service import TimeSeriesService
+from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 from graph_api_service import GraphApiService
 
 
@@ -38,7 +38,7 @@ class TestTimeSeriesServicePut(unittest.TestCase):
                                  [RelationInformation(second_node_id=15, name="testReversedRelation", relation_id=0)],
                                  additional_properties=additional_properties)
         calls = [mock.call(1)]
-        time_series_service = TimeSeriesService()
+        time_series_service = TimeSeriesServiceGraphDB()
 
         result = time_series_service.update_time_series(id_node, time_series_in)
 
@@ -55,7 +55,7 @@ class TestTimeSeriesServicePut(unittest.TestCase):
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         additional_properties = [PropertyIn(key='identifier', value=5)]
         time_series_in = TimeSeriesPropertyIn(type="Epoch", source="cos", additional_properties=additional_properties)
-        time_series_service = TimeSeriesService()
+        time_series_service = TimeSeriesServiceGraphDB()
 
         result = time_series_service.update_time_series(id_node, time_series_in)
 
@@ -69,7 +69,7 @@ class TestTimeSeriesServicePut(unittest.TestCase):
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         additional_properties = [PropertyIn(key='identifier', value=5)]
         time_series_in = TimeSeriesPropertyIn(type="Epoch", source="cos", id=id_node, additional_properties=additional_properties)
-        time_series_service = TimeSeriesService()
+        time_series_service = TimeSeriesServiceGraphDB()
 
         result = time_series_service.update_time_series(id_node, time_series_in)
 

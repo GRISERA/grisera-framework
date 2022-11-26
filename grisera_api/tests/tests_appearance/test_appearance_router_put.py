@@ -2,11 +2,12 @@ import asyncio
 import unittest
 import unittest.mock as mock
 from appearance.appearance_router import *
+from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 
 
 class TestAppearanceRouterPut(unittest.TestCase):
 
-    @mock.patch.object(AppearanceService, 'update_appearance_occlusion')
+    @mock.patch.object(AppearanceServiceGraphDB, 'update_appearance_occlusion')
     def test_update_appearance_occlusion_without_error(self, update_appearance_occlusion_mock):
         appearance_id = 1
         update_appearance_occlusion_mock.return_value = AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy",
@@ -22,7 +23,7 @@ class TestAppearanceRouterPut(unittest.TestCase):
         update_appearance_occlusion_mock.assert_called_once_with(appearance_id, appearance)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(AppearanceService, 'update_appearance_occlusion')
+    @mock.patch.object(AppearanceServiceGraphDB, 'update_appearance_occlusion')
     def test_update_appearance_occlusion_with_error(self, update_appearance_occlusion_mock):
         appearance_id = 1
         update_appearance_occlusion_mock.return_value = AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy",
@@ -38,7 +39,7 @@ class TestAppearanceRouterPut(unittest.TestCase):
         update_appearance_occlusion_mock.assert_called_once_with(appearance_id, appearance)
         self.assertEqual(response.status_code, 404)
 
-    @mock.patch.object(AppearanceService, 'update_appearance_somatotype')
+    @mock.patch.object(AppearanceServiceGraphDB, 'update_appearance_somatotype')
     def test_update_appearance_somatotype_without_error(self, update_appearance_somatotype_mock):
         appearance_id = 1
         update_appearance_somatotype_mock.return_value = AppearanceSomatotypeOut(ectomorph=2.7,
@@ -55,7 +56,7 @@ class TestAppearanceRouterPut(unittest.TestCase):
         update_appearance_somatotype_mock.assert_called_once_with(appearance_id, appearance)
         self.assertEqual(response.status_code, 200)
 
-    @mock.patch.object(AppearanceService, 'update_appearance_somatotype')
+    @mock.patch.object(AppearanceServiceGraphDB, 'update_appearance_somatotype')
     def test_update_appearance_somatotype_with_error(self, update_appearance_somatotype_mock):
         update_appearance_somatotype_mock.return_value = AppearanceSomatotypeOut(ectomorph=2.7,
                                                                                  endomorph=1.6, mesomorph=3.8,

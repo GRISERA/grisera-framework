@@ -2,7 +2,7 @@ import json
 import unittest
 import unittest.mock as mock
 from life_activity.life_activity_model import *
-from life_activity.life_activity_service import *
+from life_activity.life_activity_service_graphdb import *
 from requests import Response
 
 
@@ -15,7 +15,7 @@ class TestLifeActivityServicePost(unittest.TestCase):
                                         'links': None}).encode('utf-8')
         mock_requests.post.return_value = response
         life_activity = LifeActivityIn(life_activity="movement")
-        life_activity_service = LifeActivityService()
+        life_activity_service = LifeActivityServiceGraphDB()
 
         result = life_activity_service.save_life_activity(life_activity)
 
@@ -28,7 +28,7 @@ class TestLifeActivityServicePost(unittest.TestCase):
                                         'links': None}).encode('utf-8')
         mock_requests.post.return_value = response
         life_activity = LifeActivityIn(life_activity="movement")
-        life_activity_service = LifeActivityService()
+        life_activity_service = LifeActivityServiceGraphDB()
 
         result = life_activity_service.save_life_activity(life_activity)
 

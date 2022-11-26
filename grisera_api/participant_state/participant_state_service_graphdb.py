@@ -1,8 +1,8 @@
 from graph_api_service import GraphApiService
-from participant.participant_service import ParticipantService
+from participant.participant_service_graphdb import ParticipantServiceGraphDB
 from participant_state.participant_state_service import ParticipantStateService
-from personality.personality_service import PersonalityService
-from appearance.appearance_service import AppearanceService
+from personality.personality_service_graphdb import PersonalityServiceGraphDB
+from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 from participant_state.participant_state_model import ParticipantStatePropertyIn, BasicParticipantStateOut, \
     ParticipantStatesOut, ParticipantStateOut, ParticipantStateIn, ParticipantStateRelationIn
 from models.not_found_model import NotFoundByIdModel
@@ -20,9 +20,9 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         personality_service (PersonalityService): Service to manage personality models
     """
     graph_api_service = GraphApiService()
-    participant_service = ParticipantService()
-    appearance_service = AppearanceService()
-    personality_service = PersonalityService()
+    participant_service = ParticipantServiceGraphDB()
+    appearance_service = AppearanceServiceGraphDB()
+    personality_service = PersonalityServiceGraphDB()
 
     def save_participant_state(self, participant_state: ParticipantStateIn):
         """

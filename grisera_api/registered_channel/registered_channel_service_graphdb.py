@@ -1,7 +1,7 @@
 from graph_api_service import GraphApiService
-from channel.channel_service import ChannelService
+from channel.channel_service_graphdb import ChannelServiceGraphDB
 from registered_channel.registered_channel_service import RegisteredChannelService
-from registered_data.registered_data_service import RegisteredDataService
+from registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
 from registered_channel.registered_channel_model import BasicRegisteredChannelOut, RegisteredChannelsOut, \
     RegisteredChannelOut, RegisteredChannelIn
 from models.not_found_model import NotFoundByIdModel
@@ -18,8 +18,8 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
     registered_data_service (RegisteredDataService): Service to send registered data requests
     """
     graph_api_service = GraphApiService()
-    channel_service = ChannelService()
-    registered_data_service = RegisteredDataService()
+    channel_service = ChannelServiceGraphDB()
+    registered_data_service = RegisteredDataServiceGraphDB()
 
     def save_registered_channel(self, registered_channel: RegisteredChannelIn):
         """
