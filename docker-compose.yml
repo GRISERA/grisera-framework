@@ -24,4 +24,4 @@ services:
     environment:
       - GRAPH_API_HOST=host.docker.internal
       - GRAPH_API_PORT=18080
-      - graph_api_controller_class_type = "default" # "default" or "graphdb"
+      - PERSISTENCE_TYPE=1

@@ -9,16 +9,9 @@ from models.relation_information_model import RelationInformation
 
 class RegisteredChannelService:
     """
-    Object to handle logic of registered channels requests
+    Abstract class to handle logic of registered channels requests
 
-    Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
-    channel_service (ChannelService): Service to send channel requests
-    registered_data_service (RegisteredDataService): Service to send registered data requests
     """
-    graph_api_service = GraphApiService()
-    channel_service = ChannelService()
-    registered_data_service = RegisteredDataService()
 
     def save_registered_channel(self, registered_channel: RegisteredChannelIn):
         """
@@ -30,7 +23,7 @@ class RegisteredChannelService:
         Returns:
             Result of request as registered channel object
         """
-        print("save_registered_channel not implemented yet")
+        raise Exception("save_registered_channel not implemented yet")
 
     def get_registered_channels(self):
         """
@@ -39,7 +32,7 @@ class RegisteredChannelService:
         Returns:
             Result of request as list of registered channels objects
         """
-        print("get_registered_channels not implemented yet")
+        raise Exception("get_registered_channels not implemented yet")
 
     def get_registered_channel(self, registered_channel_id: int):
         """
@@ -51,7 +44,7 @@ class RegisteredChannelService:
         Returns:
             Result of request as registered channel object
         """
-        print("get_registered_channel not implemented yet")
+        raise Exception("get_registered_channel not implemented yet")
 
     def delete_registered_channel(self, registered_channel_id: int):
         """
@@ -63,7 +56,7 @@ class RegisteredChannelService:
         Returns:
             Result of request as registered channel object
         """
-        print("delete_registered_channel not implemented yet")
+        raise Exception("delete_registered_channel not implemented yet")
 
     def update_registered_channel_relationships(self, registered_channel_id: int,
                                                 registered_channel: RegisteredChannelIn):
@@ -77,4 +70,4 @@ class RegisteredChannelService:
         Returns:
             Result of request as registered channel object
         """
-        print("update_registered_channel_relationships not implemented yet")
+        raise Exception("update_registered_channel_relationships not implemented yet")

@@ -6,12 +6,9 @@ from models.relation_information_model import RelationInformation
 
 class ArrangementService:
     """
-    Object to handle logic of arrangement requests
+    Abstract class to handle logic of arrangement requests
 
-    Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
-    graph_api_service = GraphApiService()
 
     def save_arrangement(self, arrangement: ArrangementIn):
         """
@@ -23,7 +20,7 @@ class ArrangementService:
         Returns:
             Result of request as arrangement object
         """
-        print("save_arrangement not implemented yet")
+        raise Exception("save_arrangement not implemented yet")
 
     def get_arrangements(self):
         """
@@ -32,7 +29,7 @@ class ArrangementService:
         Returns:
             Result of request as list of arrangement objects
         """
-        print("get_arrangements not implemented yet")
+        raise Exception("get_arrangements not implemented yet")
 
     def get_arrangement(self, arrangement_id: int):
         """
@@ -44,4 +41,4 @@ class ArrangementService:
         Returns:
             Result of request as arrangement object
         """
-        print("get_arrangement not implemented yet")
+        raise Exception("get_arrangement not implemented yet")

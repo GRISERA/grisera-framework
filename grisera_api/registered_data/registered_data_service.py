@@ -7,12 +7,9 @@ from models.relation_information_model import RelationInformation
 
 class RegisteredDataService:
     """
-    Object to handle logic of registered data requests
+    Abstract class to handle logic of registered data requests
 
-    Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
-    graph_api_service = GraphApiService()
 
     def save_registered_data(self, registered_data: RegisteredDataIn):
         """
@@ -24,7 +21,7 @@ class RegisteredDataService:
         Returns:
             Result of request as registered data object
         """
-        print("save_registered_data not implemented yet")
+        raise Exception("save_registered_data not implemented yet")
 
     def get_registered_data_nodes(self):
         """
@@ -33,7 +30,7 @@ class RegisteredDataService:
         Returns:
             Result of request as list of registered_data_nodes objects
         """
-        print("get_registered_data_nodes not implemented yet")
+        raise Exception("get_registered_data_nodes not implemented yet")
 
     def get_registered_data(self, registered_data_id: int):
         """
@@ -45,7 +42,7 @@ class RegisteredDataService:
         Returns:
             Result of request as registered data object
         """
-        print("get_registered_data not implemented yet")
+        raise Exception("get_registered_data not implemented yet")
 
     def delete_registered_data(self, registered_data_id: int):
         """
@@ -57,7 +54,7 @@ class RegisteredDataService:
         Returns:
             Result of request as registered data object
         """
-        print("delete_registered_data not implemented yet")
+        raise Exception("delete_registered_data not implemented yet")
 
     def update_registered_data(self, registered_data_id: int, registered_data: RegisteredDataIn):
         """
@@ -70,4 +67,4 @@ class RegisteredDataService:
         Returns:
             Result of request as registered data object
         """
-        print("update_registered_data not implemented yet")
+        raise Exception("update_registered_data not implemented yet")

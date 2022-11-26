@@ -8,6 +8,7 @@ from observable_information.observable_information_model import ObservableInform
     BasicObservableInformationOut, ObservableInformationsOut
 from observable_information.observable_information_service import ObservableInformationService
 from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 router = InferringRouter()
 
@@ -18,13 +19,11 @@ class ObservableInformationRouter:
     Class for routing observable information based requests
 
     Attributes:
-    observable_information_service (ObservableInformationService): Service instance for observable information
+        observable_information_service (ObservableInformationService): Service instance for observable information
     """
-    observable_information_service = None
 
-    # dependency injection in the constructor
-    def __init__(self, observable_information_service):
-        self.observable_information_service = observable_information_service
+    def __init__(self):
+        self.observable_information_service = Services().observable_information_service()
 
     @router.post("/observable_information", tags=["observable information"], response_model=ObservableInformationOut)
     async def create_observable_information(self, observable_information: ObservableInformationIn, response: Response):

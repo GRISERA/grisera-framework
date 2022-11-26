@@ -6,12 +6,9 @@ from models.relation_information_model import RelationInformation
 
 class ParticipantService:
     """
-    Object to handle logic of participants requests
+    Abstract class to handle logic of participants requests
 
-    Attributes:
-        graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
-    graph_api_service = GraphApiService()
 
     def save_participant(self, participant: ParticipantIn):
         """
@@ -23,7 +20,7 @@ class ParticipantService:
         Returns:
             Result of request as participant object
         """
-        print("save_participant not implemented yet")
+        raise Exception("save_participant not implemented yet")
 
     def get_participants(self):
         """
@@ -32,7 +29,7 @@ class ParticipantService:
         Returns:
             Result of request as list of participants objects
         """
-        print("get_participants not implemented yet")
+        raise Exception("get_participants not implemented yet")
 
     def get_participant(self, participant_id: int):
         """
@@ -44,7 +41,7 @@ class ParticipantService:
         Returns:
             Result of request as participant object
         """
-        print("get_participant not implemented yet")
+        raise Exception("get_participant not implemented yet")
 
     def delete_participant(self, participant_id: int):
         """
@@ -56,7 +53,7 @@ class ParticipantService:
         Returns:
             Result of request as participant object
         """
-        print("delete_participant not implemented yet")
+        raise Exception("delete_participant not implemented yet")
 
     def update_participant(self, participant_id: int, participant: ParticipantIn):
         """
@@ -69,4 +66,4 @@ class ParticipantService:
         Returns:
             Result of request as participant object
         """
-        print("update_participant not implemented yet")
+        raise Exception("update_participant not implemented yet")
