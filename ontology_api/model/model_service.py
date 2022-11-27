@@ -36,7 +36,15 @@ class ModelService:
         pass
 
     def save_model_as_owl(self,model,model_id, path="tmp_owl"):
-        pass
+        
+        full_path = path + "/" + model.name + str(model_id) + ".owl"
+        try:
+            model.save(full_path)
+        except OSError:
+            return None
+        return full_path
 
     def get_owl_from_model(self,model_id, path="tmp_owl"):
-        pass
+        model = self.__find_model_by_id(model_id)
+        return self.save_model_as_owl(model, model_id, path)
+        
