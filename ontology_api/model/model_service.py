@@ -1,7 +1,9 @@
 from typing import List
 import owlready2
 
-
+f = open("dfghjk.txt","w")
+f.write("sdfghjhgfghj!")
+f.close()
 
 class ModelService:
     """
@@ -11,6 +13,10 @@ class ModelService:
         models (Dictionary): database mock
     """
     models = dict()
+    models[1] = owlready2.get_ontology("http://www.semanticweb.org/GRISERA/contextualOntology")
+    
+    
+    
 
     def __find_model_by_id(self, model_id):
         return self.models[model_id]
@@ -39,7 +45,7 @@ class ModelService:
         
         full_path = path + "/" + model.name + str(model_id) + ".owl"
         try:
-            model.save(full_path)
+            model.save(file=full_path, format = "rdfxml")
         except OSError:
             return None
         return full_path
