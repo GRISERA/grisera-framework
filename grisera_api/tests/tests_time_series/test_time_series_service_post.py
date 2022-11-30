@@ -18,8 +18,9 @@ class TestTimeSeriesServicePost(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'create_properties')
     @mock.patch.object(GraphApiService, 'create_relationships')
     @mock.patch.object(GraphApiService, 'get_node')
+    @mock.patch.object(GraphApiService, 'get_nodes_by_query')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
-    def test_save_time_series_without_errors(self, get_node_relationships_mock, get_node_mock,
+    def test_save_time_series_without_errors(self, get_node_relationships_mock, get_nodes_by_query_mock, get_node_mock,
                                              create_relationships_mock, create_properties_mock, create_node_mock):
 
         time_series_id = 1
@@ -82,6 +83,21 @@ class TestTimeSeriesServicePost(unittest.TestCase):
         def create_properties_side_effect(*args, **kwargs):
             return {'id': args[0], 'errors': None, 'links': None}
 
+        get_nodes_by_query_mock.return_value = {
+            'rows': [
+                [{'labels': ['Signal Value'], 'id': 2, 'properties': [{'key': 'value', 'value': '10'}]},
+                 {'labels': ['Timestamp'], 'id': 1, 'properties': [{'key': 'timestamp', 'value': '100'}]},
+                 {'labels': ['Timestamp'], 'id': 3, 'properties': [{'key': 'timestamp', 'value': '200'}]}],
+                [{'labels': ['Signal Value'], 'id': 4, 'properties': [{'key': 'value', 'value': '20'}]},
+                 {'labels': ['Timestamp'], 'id': 3, 'properties': [{'key': 'timestamp', 'value': '200'}]},
+                 {'labels': ['Timestamp'], 'id': 5, 'properties': [{'key': 'timestamp', 'value': '300'}]}],
+                [{'labels': ['Signal Value'], 'id': 6, 'properties': [{'key': 'value', 'value': '30'}]},
+                 {'labels': ['Timestamp'], 'id': 5, 'properties': [{'key': 'timestamp', 'value': '300'}]},
+                 {'labels': ['Timestamp'], 'id': 7, 'properties': [{'key': 'timestamp', 'value': '400'}]}]
+            ],
+            'errors': []
+        }
+
         get_node_relationships_mock.side_effect = get_node_relationships_side_effect
         create_node_mock.side_effect = create_node_side_effect
         create_properties_mock.side_effect = create_properties_side_effect
@@ -92,7 +108,40 @@ class TestTimeSeriesServicePost(unittest.TestCase):
                                       observable_information_id=observable_information_id, measure_id=measure_id,
                                       signal_values=[SignalIn(value=10, start_timestamp=100, end_timestamp=150),
                                                      SignalIn(value=20, start_timestamp=200, end_timestamp=250)])
-        time_series_out = TimeSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[],
+        time_series_out = TimeSeriesOut(id=1, type="Epoch", source="cos",
+                                        signal_values=[
+                                            {
+                                                'signal_value': {'labels': ['Signal Value'], 'id': 2,
+                                                                 'properties': [
+                                                                     {'key': 'value', 'value': '10'}]},
+                                                'start_timestamp': {'labels': ['Timestamp'], 'id': 1,
+                                                                    'properties': [
+                                                                        {'key': 'timestamp', 'value': '100'}]},
+                                                'end_timestamp': {'labels': ['Timestamp'], 'id': 3,
+                                                                  'properties': [
+                                                                      {'key': 'timestamp', 'value': '200'}]}
+                                            }, {
+                                                'signal_value': {'labels': ['Signal Value'], 'id': 4,
+                                                                 'properties': [
+                                                                     {'key': 'value', 'value': '20'}]},
+                                                'start_timestamp': {'labels': ['Timestamp'], 'id': 3,
+                                                                    'properties': [{'key': 'timestamp',
+                                                                                    'value': '200'}]},
+                                                'end_timestamp': {'labels': ['Timestamp'], 'id': 5,
+                                                                  'properties': [{'key': 'timestamp',
+                                                                                  'value': '300'}]}
+                                            }, {
+                                                'signal_value': {'labels': ['Signal Value'], 'id': 6,
+                                                                 'properties': [
+                                                                     {'key': 'value', 'value': '30'}]},
+                                                'start_timestamp': {'labels': ['Timestamp'], 'id': 5,
+                                                                    'properties': [{'key': 'timestamp',
+                                                                                    'value': '300'}]},
+                                                'end_timestamp': {'labels': ['Timestamp'], 'id': 7,
+                                                                  'properties': [{'key': 'timestamp',
+                                                                                  'value': '400'}]}}
+                                        ],
+                                        additional_properties=[],
                                         relations=
                                         [RelationInformation(second_node_id=19, name="testRelation",
                                                              relation_id=0)],

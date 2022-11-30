@@ -78,6 +78,85 @@ class NodeServiceTestCase(unittest.TestCase):
         self.assertEqual(result, NodesOut(errors=['error']))
         get_nodes_mock.assert_called_once_with(label)
 
+    @mock.patch.object(DatabaseService, 'get_nodes_by_query')
+    def test_get_nodes_by_query_without_error(self, get_nodes_by_query_mock):
+        get_nodes_by_query_mock.return_value = {
+            'results': [
+                {
+                    'data': [
+                        {
+                            'row': [{'value': '10'}, ['Signal Value'],
+                                    {'timestamp': '100'}, ['Timestamp']],
+                            'meta': [{'id': 2},
+                                     None, {'id': 1}, None]
+                        }, {
+                            'row': [{'value': '20'}, ['Signal Value'],
+                                    {'timestamp': '200'}, ['Timestamp']],
+                            'meta': [{'id': 4},
+                                     None, {'id': 3}, None]
+                        }, {
+                            'row': [{'value': '30'}, ['Signal Value'],
+                                    {'timestamp': '300'}, ['Timestamp']],
+                            'meta': [{'id': 6},
+                                     None, {'id': 5}, None]
+                        }
+                    ]
+                }
+            ],
+            'errors': []
+        }
+        query = NodeRowsQueryIn(
+            nodes=[
+                NodeQueryIn(id=15, label="Time Series"),
+                NodeQueryIn(label="Signal Value"),
+                NodeQueryIn(label="Signal Value", result=True),
+                NodeQueryIn(label="Timestamp", result=True),
+                NodeQueryIn(label="Timestamp", result=True),
+            ],
+            relations=[
+                RelationQueryIn(begin_node_index=0, end_node_index=1, label="hasSignal"),
+                RelationQueryIn(begin_node_index=1, end_node_index=2, label="next", min_count=0),
+                RelationQueryIn(begin_node_index=3, end_node_index=2, label="startInSec"),
+                RelationQueryIn(begin_node_index=4, end_node_index=2, label="endInSec"),
+            ])
+        node_service = NodeService()
+
+        result = node_service.get_nodes_by_query(query)
+
+        self.assertEqual(result, NodeRowsOut(rows=[
+            [BasicNodeOut(labels={'Signal Value'}, id=2, properties=[PropertyIn(key='value', value='10')]),
+             BasicNodeOut(labels={'Timestamp'}, id=1, properties=[PropertyIn(key='timestamp', value='100')])],
+            [BasicNodeOut(labels={'Signal Value'}, id=4, properties=[PropertyIn(key='value', value='20')]),
+             BasicNodeOut(labels={'Timestamp'}, id=3, properties=[PropertyIn(key='timestamp', value='200')])],
+            [BasicNodeOut(labels={'Signal Value'}, id=6, properties=[PropertyIn(key='value', value='30')]),
+             BasicNodeOut(labels={'Timestamp'}, id=5, properties=[PropertyIn(key='timestamp', value='300')])]
+        ]))
+        get_nodes_by_query_mock.assert_called_once_with(query)
+
+    @mock.patch.object(DatabaseService, 'get_nodes_by_query')
+    def test_get_nodes_by_query_with_error(self, get_nodes_by_query_mock):
+        get_nodes_by_query_mock.return_value = {'results': [{'data': [{'meta': [{}]}]}], 'errors': ['error']}
+        query = NodeRowsQueryIn(
+            nodes=[
+                NodeQueryIn(id=15, label="Time Series"),
+                NodeQueryIn(label="Signal Value"),
+                NodeQueryIn(label="Signal Value", result=True),
+                NodeQueryIn(label="Timestamp", result=True),
+                NodeQueryIn(label="Timestamp", result=True),
+            ],
+            relations=[
+                RelationQueryIn(begin_node_index=0, end_node_index=1, label="hasSignal"),
+                RelationQueryIn(begin_node_index=1, end_node_index=2, label="next", min_count=0),
+                RelationQueryIn(begin_node_index=3, end_node_index=2, label="startInSec"),
+                RelationQueryIn(begin_node_index=4, end_node_index=2, label="endInSec"),
+            ])
+        node_service = NodeService()
+
+        result = node_service.get_nodes_by_query(query)
+
+        self.assertEqual(result, NodeRowsOut(errors=['error']))
+        get_nodes_by_query_mock.assert_called_once_with(query)
+
     @mock.patch.object(NodeService, 'get_node')
     @mock.patch.object(DatabaseService, 'delete_node')
     def test_delete_node_without_error(self, delete_node_mock, get_node_mock):

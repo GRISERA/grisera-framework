@@ -242,7 +242,7 @@ class TimeSeriesService:
                 time_series['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
                                                                              name=relation["name"],
                                                                              relation_id=relation["id"]))
-        # time_series['signal_values'] = self.get_signal_values(time_series_id, time_series['type'])
+        time_series['signal_values'] = self.get_signal_values(time_series_id, time_series['type'])
         return TimeSeriesOut(**time_series)
 
     def get_signal_values(self, time_series_id: int, time_series_type: str):
