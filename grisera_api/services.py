@@ -9,7 +9,6 @@ class PersistenceTypes(Enum):
     GRAPHDB = 1
     ONTOLOGY = 2
 
-
 class Services:
     def __new__(cls):
         if not hasattr(cls, 'instance'):
