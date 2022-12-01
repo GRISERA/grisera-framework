@@ -1,6 +1,7 @@
 from typing import List
 import owlready2
 
+
 f = open("dfghjk.txt","w")
 f.write("sdfghjhgfghj!")
 f.close()
@@ -42,7 +43,6 @@ class ModelService:
         pass
 
     def save_model_as_owl(self,model,model_id, path="tmp_owl"):
-        
         full_path = path + "/" + model.name + str(model_id) + ".owl"
         try:
             model.save(file=full_path, format = "rdfxml")
