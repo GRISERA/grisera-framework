@@ -5,7 +5,8 @@ import sys
 if 'test' in sys.argv:
     loader = unittest.TestLoader()
     tests_dir = 'tests'
-    tests = loader.discover(tests_dir)
+    test_dir_GraphDB = '/tests_graphdb'
+    tests = loader.discover(tests_dir + test_dir_GraphDB)
 
     runner = unittest.TextTestRunner()
     success = runner.run(tests).wasSuccessful()
