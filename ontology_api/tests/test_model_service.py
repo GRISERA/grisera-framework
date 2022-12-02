@@ -5,7 +5,7 @@ from model.model_service import ModelService
 
 def save_test_model():
     onto = get_ontology("https://road.affectivese.org/documentation/owlAC.owl")
-    path = "tmp_owl/test1.owl"
+    path = "tests/tmp_owl/test1.owl"
     onto.save(file=path, format="rdfxml")
     return path
 
@@ -14,7 +14,7 @@ class ModelServiceTestCase(unittest.TestCase):
         model_service = ModelService()
         model_service.models[1] = get_ontology("https://road.affectivese.org/documentation/owlAC.owl")
         path_1 = save_test_model()
-        path_2 = model_service.get_owl_from_model(model_id=1, path="tmp_owl")
+        path_2 = model_service.get_owl_from_model(model_id=1, path="tests/tmp_owl")
         file_1 = open(path_1)
         file_2 = open(path_2)
         content_1 = file_1.read()
@@ -34,7 +34,7 @@ class ModelServiceTestCase(unittest.TestCase):
     def test_save_model_as_owl_without_error(self):
         model_service = ModelService()
         onto = get_ontology("https://road.affectivese.org/documentation/owlAC.owl")
-        path_1 = "tmp_owl/test1.owl"
+        path_1 = "tests/tmp_owl/test1.owl"
         path_2 = model_service.save_model_as_owl(onto, 1)
         onto.save(path_1)
         file_1 = open(path_1)

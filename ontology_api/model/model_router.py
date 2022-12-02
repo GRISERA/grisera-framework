@@ -38,11 +38,11 @@ class ModelRouter:
         Get OWL file from model with given id
         """
         get_response = self.model_service.get_owl_from_model(id)
-        background_tasks.add_task(os.remove, get_response)
         if get_response is None:
             response.status_code = 404
             return {"error": "File not found!"}
         else:
+            background_tasks.add_task(os.remove, get_response)
             return FileResponse(get_response, media_type="application/xml")
 
     @router.post("/models", tags=["models"], response_model=None)

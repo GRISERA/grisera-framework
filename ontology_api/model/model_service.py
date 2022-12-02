@@ -9,7 +9,6 @@ class ModelService:
         models (Dictionary): database mock
     """
     models = dict()
-
     def __find_model_by_id(self, model_id):
         return self.models.get(model_id)
 
