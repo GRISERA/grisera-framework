@@ -24,14 +24,6 @@ class ModelRouter:
 
         return None
         
-    @router.post("/upload")
-    async def upload_file(self, file: UploadFile):
-        with open(file.filename, 'wb') as image:
-            content = await file.read()
-            image.write(content)
-            image.close()
-        return JSONResponse(content={"filename": file.filename},status_code=200)
-
     @router.get("/models/{id}", tags=["models"])
     async def get_owl(self, id: int, response: Response, background_tasks: BackgroundTasks):
         """
