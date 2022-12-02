@@ -2,6 +2,7 @@ import unittest
 import os
 from owlready2 import get_ontology
 from model.model_service import ModelService
+from fastapi import UploadFile
 
 def save_test_model():
     onto = get_ontology("https://road.affectivese.org/documentation/owlAC.owl")
@@ -52,3 +53,46 @@ class ModelServiceTestCase(unittest.TestCase):
         onto = get_ontology("https://road.affectivese.org/documentation/owlAC.owl")
         path = "this/doesnt/exist"
         self.assertIsNone(model_service.save_model_as_owl(onto, 1, path=path))
+
+    def test_create_base_model_without_error(self):
+        model_service = ModelService()
+        result = model_service.create_base_model()
+        self.assertEqual(result.id,2)
+
+    def test_create_model_without_error(self):
+        model_service = ModelService()
+        new_file = open("testfile.owl", "x")
+        new_file.write("<rdf:RDF xml:base=\"http://www.semanticweb.org/GRISERA/contextualOntology\"><owl:Ontology rdf:about=\"http://www.semanticweb.org/GRISERA/contextualOntology\"/></rdf:RDF> ")
+        new_file.close()
+        result = model_service.create_model("testfile.owl")
+        os.remove("testfile.owl")
+        self.assertEqual(result,3)
+
+    def test_create_model_with_error(self):
+        model_service = ModelService()
+        with self.assertRaises(Exception) as context:
+            model_service.create_model("interestingnameoffile")
+        self.assertTrue("Cannot open file", context.exception)
+
+    def test_save_model_without_error(self):
+        model_service = ModelService()
+        new_file = open("tests/tmp_owl/testfile.owl", "x")
+        new_file.write("<rdf:RDF xml:base=\"http://www.semanticweb.org/GRISERA/contextualOntology\"><owl:Ontology rdf:about=\"http://www.semanticweb.org/GRISERA/contextualOntology\"/></rdf:RDF> ")
+        new_file.close()
+        with open("tests/tmp_owl/testfile.owl", "rb") as f:
+            file = UploadFile('testfile.owl', f)
+            result = model_service.save_model(file)
+        os.remove("tests/tmp_owl/testfile.owl")
+        os.remove("testfile.owl")
+        self.assertNotEqual(result.id, None)
+
+    def test_save_model_with_error_wrong_extension(self):
+        model_service = ModelService()
+        new_file = open("tests/tmp_owl/testfile.txt", "x")
+        new_file.write("content")
+        new_file.close()
+        with open("tests/tmp_owl/testfile.txt", "rb") as f:
+            file = UploadFile('testfile.txt', f)
+            result = model_service.save_model(file)
+        os.remove("tests/tmp_owl/testfile.txt")
+        self.assertEqual(result.errors, "Wrong extension of file")
