@@ -3,3 +3,4 @@ uvicorn[standard]
 requests
 fastapi-utils
 owlready2
+python-multipart

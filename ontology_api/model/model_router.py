@@ -1,4 +1,3 @@
-
 from fastapi import Response, File, UploadFile, BackgroundTasks
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
@@ -7,8 +6,8 @@ from hateoas import get_links
 from typing import List
 from fastapi.responses import FileResponse, JSONResponse
 import os
-router = InferringRouter()
 
+router = InferringRouter()
 
 @cbv(router)
 class ModelRouter:
@@ -39,15 +38,12 @@ class ModelRouter:
         Get OWL file from model with given id
         """
         get_response = self.model_service.get_owl_from_model(id)
-        print(get_response)
         background_tasks.add_task(os.remove, get_response)
         if get_response is None:
             response.status_code = 404
-            return {"error" : "File not found!"}
+            return {"error": "File not found!"}
         else:
             return FileResponse(get_response, media_type="application/xml")
-        
-        
 
     @router.post("/models", tags=["models"], response_model=None)
     async def create_model(self, wymyslsobieparametrjakiswejsciowybedziedobrze: int, response: Response):
@@ -60,4 +56,3 @@ class ModelRouter:
         #TODO Stasiu
 
         return None
-    
