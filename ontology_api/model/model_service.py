@@ -1,5 +1,7 @@
 from typing import List
-import owlready2
+from owlready2 import get_ontology
+from model.model_model import ModelOut
+from fastapi import UploadFile
 
 class ModelService:
     """
@@ -23,16 +25,41 @@ class ModelService:
             if model_id not in self.models.keys():
                 return model_id
 
-    def create_model(self, file_path ) -> int:
-        pass
+    def save_model(self, file: UploadFile) -> ModelOut:
+        if not file.filename.endswith('.owl'):
+            return ModelOut(errors="Wrong extension of file")
+        with open(file.filename, 'wb') as new_file:
+            content = file.file.read()
+            new_file.write(content)
+            new_file.close()
+        try:
+            response = self.create_model(file.filename)
+        except Exception:
+            result = ModelOut(errors="Cannot create model")
+        else:
+            result = ModelOut(id=response)
+        return result
 
-    def create_base_model(self):
-        return self.create_model(self.base_iri)
+    def create_model(self, file_path) -> int:
+        try:
+            model = get_ontology(file_path).load()
+        except OSError:
+            raise Exception("Cannot open file")
+        model_id = self.__generate_id()
+        self.__add_model(model_id, model)
+        return model_id
 
-    def add_instance(self, instance, class_name, model_id):
-        pass
+    def create_base_model(self) -> ModelOut:
+        base_iri = "https://road.affectivese.org/documentation/owlAC.owl"
+        try:
+            response = self.create_model(base_iri)
+        except Exception:
+            result = ModelOut(errors="Cannot create model")
+        else:
+            result = ModelOut(id=response)
+        return result
 
-    def save_model_as_owl(self, model, model_id, path="tmp_owl"):
+    def save_model_as_owl(self, model, model_id, path=""):
         if model is None:
             return None
         full_path = path + "/" + model.name + str(model_id) + ".owl"
@@ -42,6 +69,6 @@ class ModelService:
             return None
         return full_path
 
-    def get_owl_from_model(self, model_id, path="tmp_owl"):
+    def get_owl_from_model(self, model_id, path=""):
         model = self.__find_model_by_id(model_id)
         return self.save_model_as_owl(model, model_id, path)
