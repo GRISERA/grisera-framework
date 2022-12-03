@@ -24,9 +24,20 @@ jobs:
       - run:
           command: python ./grisera_api/manage.py test
           name: Test
+  ontology-api-build-and-test:
+    executor: python/default
+    steps:
+      - checkout
+      - python/install-packages:
+          app-dir: ./ontology_api
+          pkg-manager: pip
+      - run:
+          command: python ./ontology_api/manage.py test
+          name: Test
 
 workflows:
   main:
     jobs:
       - graph-api-build-and-test
       - grisera-api-build-and-test
+      - ontology-api-build-and-test
