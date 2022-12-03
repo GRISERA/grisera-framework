@@ -4,10 +4,10 @@ from pydantic import BaseModel
 
 class ModelOut(BaseModel):
     """
-    Model of model to send to client as a result of request
+    Model of ontology model to send to client as a result of request
 
     Attributes:
-        id (Optional[int]): Id of model returned from notology database
+        id (Optional[int]): Id of model returned from ontology database
         errors (Optional[Any]): Optional errors appeared during query executions
         links (Optional[list): Hateoas implementation
     """

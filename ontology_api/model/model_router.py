@@ -18,7 +18,7 @@ class ModelRouter:
     """
     model_service = ModelService()
 
-    @router.post("/model", tags=["models"], response_model=ModelOut)
+    @router.post("/model", tags=["model"], response_model=ModelOut)
     async def create_model(self,response: Response,background_tasks: BackgroundTasks, file: UploadFile = None):
         """
         Create ontology model based on uploaded file or base iri
@@ -36,7 +36,7 @@ class ModelRouter:
 
         return create_response
         
-    @router.get("/models/{id}", tags=["models"])
+    @router.get("/model/{id}", tags=["model"])
     async def get_owl(self, id: int, response: Response, background_tasks: BackgroundTasks):
         """
         Get OWL file from model with given id

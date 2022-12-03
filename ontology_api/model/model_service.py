@@ -1,6 +1,7 @@
 from owlready2 import get_ontology
 from model.model_model import ModelOut
 from fastapi import UploadFile
+import os
 
 class ModelService:
     """
@@ -58,16 +59,19 @@ class ModelService:
             result = ModelOut(id=response)
         return result
 
-    def save_model_as_owl(self, model, model_id, path=""):
+    def save_model_as_owl(self, model, model_id, path=None):
         if model is None:
             return None
-        full_path = path + "/" + model.name + str(model_id) + ".owl"
+        if path is None:
+            full_path = model.name + str(model_id) + ".owl"
+        else:
+            full_path = path + os.path.sep + model.name + str(model_id) + ".owl"
         try:
             model.save(file=full_path, format="rdfxml")
         except OSError:
             return None
         return full_path
 
-    def get_owl_from_model(self, model_id, path=""):
+    def get_owl_from_model(self, model_id, path=None):
         model = self.__find_model_by_id(model_id)
         return self.save_model_as_owl(model, model_id, path)
