@@ -33,7 +33,7 @@ jobs:
           pkg-manager: pip
       - run:
           command: |
-            mkdir tests/tmp_owl
+            mkdir ./ontology_api/tests/tmp_owl
             python ./ontology_api/manage.py test
           name: Test
 
