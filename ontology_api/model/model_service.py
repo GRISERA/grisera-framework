@@ -1,4 +1,3 @@
-from typing import List
 from owlready2 import get_ontology
 from model.model_model import ModelOut
 from fastapi import UploadFile

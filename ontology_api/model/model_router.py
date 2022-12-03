@@ -3,7 +3,6 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from model.model_service import ModelService
 from hateoas import get_links
-from typing import List
 from fastapi.responses import FileResponse
 from model.model_model import ModelOut
 import os
