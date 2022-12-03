@@ -33,8 +33,8 @@ jobs:
           pkg-manager: pip
       - run:
           command: |
-            mkdir ./ontology_api/tests/tmp_owl
-            python ./ontology_api/manage.py test
+            cd ./ontology_api
+            python ./manage.py test
           name: Test
 
 workflows:
