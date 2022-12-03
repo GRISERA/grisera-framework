@@ -1,12 +1,13 @@
 from fastapi import FastAPI
 from hateoas import get_links
+from model.model_router import router as model_router
 
 app = FastAPI(title="Ontology API",
               description="Ontology API is reference implementation for creating, manipulating and serialising Ontologies for the GRISERA framework.",
               version="0.1",
               )
 
-
+app.include_router(model_router)
 
 @app.get("/", tags=["root"])
 async def root():
