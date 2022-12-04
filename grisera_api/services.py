@@ -59,120 +59,120 @@ class Services:
 
     def activity_service(self) -> ActivityService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return ActivityServiceGraphDB
+            return ActivityServiceGraphDB()
         else:
-            return ActivityService
+            return ActivityService()
 
     def activity_execution_service(self) -> ActivityExecutionService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return ActivityExecutionServiceGraphDB
+            return ActivityExecutionServiceGraphDB()
         else:
-            return ActivityExecutionService
+            return ActivityExecutionService()
 
     def appearance_service(self) -> AppearanceService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return AppearanceServiceGraphDB
+            return AppearanceServiceGraphDB()
         else:
-            return AppearanceService
+            return AppearanceService()
 
     def arrangement_service(self) -> ArrangementService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return ArrangementServiceGraphDB
+            return ArrangementServiceGraphDB()
         else:
-            return ArrangementService
+            return ArrangementService()
 
     def channel_service(self) -> ChannelService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return ChannelServiceGraphDB
+            return ChannelServiceGraphDB()
         else:
-            return ChannelService
+            return ChannelService()
 
     def experiment_service(self) -> ExperimentService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return ExperimentServiceGraphDB
+            return ExperimentServiceGraphDB()
         else:
-            return ExperimentService
+            return ExperimentService()
 
     def life_activity_service(self) -> LifeActivityService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return LifeActivityServiceGraphDB
+            return LifeActivityServiceGraphDB()
         else:
-            return LifeActivityService
+            return LifeActivityService()
 
     def measure_service(self) -> MeasureService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return MeasureServiceGraphDB
+            return MeasureServiceGraphDB()
         else:
-            return MeasureService
+            return MeasureService()
 
     def measure_name_service(self) -> MeasureNameService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return MeasureNameServiceGraphDB
+            return MeasureNameServiceGraphDB()
         else:
-            return MeasureNameService
+            return MeasureNameService()
 
     def modality_service(self) -> ModalityService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return ModalityServiceGraphDB
+            return ModalityServiceGraphDB()
         else:
-            return ModalityService
+            return ModalityService()
 
     def observable_information_service(self) -> ObservableInformationService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return ObservableInformationServiceGraphDB
+            return ObservableInformationServiceGraphDB()
         else:
-            return ObservableInformationService
+            return ObservableInformationService()
 
     def participant_service(self) -> ParticipantService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return ParticipantServiceGraphDB
+            return ParticipantServiceGraphDB()
         else:
-            return ParticipantService
+            return ParticipantService()
 
     def participant_state_service(self) -> ParticipantStateService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return ParticipantStateServiceGraphDB
+            return ParticipantStateServiceGraphDB()
         else:
-            return ParticipantStateService
+            return ParticipantStateService()
 
     def participation_service(self) -> ParticipationService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return ParticipationServiceGraphDB
+            return ParticipationServiceGraphDB()
         else:
-            return ParticipationService
+            return ParticipationService()
 
     def personality_service(self) -> PersonalityService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return PersonalityServiceGraphDB
+            return PersonalityServiceGraphDB()
         else:
-            return PersonalityService
+            return PersonalityService()
 
     def recording_service(self) -> RecordingService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return RecordingServiceGraphDB
+            return RecordingServiceGraphDB()
         else:
-            return RecordingService
+            return RecordingService()
 
     def registered_channel_service(self) -> RegisteredChannelService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return RegisteredChannelServiceGraphDB
+            return RegisteredChannelServiceGraphDB()
         else:
-            return RegisteredChannelService
+            return RegisteredChannelService()
 
     def registered_data_service(self) -> RegisteredDataService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return RegisteredDataServiceGraphDB
+            return RegisteredDataServiceGraphDB()
         else:
-            return RegisteredDataService
+            return RegisteredDataService()
 
     def scenario_service(self) -> ScenarioService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return ScenarioServiceGraphDB
+            return ScenarioServiceGraphDB()
         else:
-            return ScenarioService
+            return ScenarioService()
 
     def time_series_service(self) -> TimeSeriesService:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
-            return TimeSeriesServiceGraphDB
+            return TimeSeriesServiceGraphDB()
         else:
-            return TimeSeriesService
+            return TimeSeriesService()
