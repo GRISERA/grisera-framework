@@ -1,6 +1,8 @@
 from fastapi import Response, UploadFile, BackgroundTasks
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
+
+from instance.instance_model import MinimalInstanceModelIn
 from model.model_service import ModelService
 from hateoas import get_links
 from fastapi.responses import FileResponse
@@ -49,3 +51,12 @@ class ModelRouter:
             background_tasks.add_task(os.remove, get_response)
             return FileResponse(get_response, media_type="application/xml")
 
+    @router.post("/models/{model_id}/classes/{class_id}/instances", tags=["models"], response_model=None)
+    async def add_instance(self, model_id: int, class_id: int,
+                           model_in: MinimalInstanceModelIn, response: Response):
+        errors = self.model_service.add_instance(class_id, model_id, model_in)
+        if errors is not None:
+            response.status_code = 422
+            return errors
+
+        return None

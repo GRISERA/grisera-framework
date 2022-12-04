@@ -1,4 +1,6 @@
 from owlready2 import get_ontology
+
+from instance.instance_model import MinimalInstanceModelIn
 from model.model_model import ModelOut
 from fastapi import UploadFile
 import os
@@ -18,7 +20,7 @@ class ModelService:
         self.models[model_id] = model
 
     def __check_model_exist(self, model_id):
-        return id in self.models
+        return model_id in self.models
 
     def __generate_id(self):
         for model_id in range(len(self.models), -1, -1):
@@ -75,3 +77,15 @@ class ModelService:
     def get_owl_from_model(self, model_id, path=None):
         model = self.__find_model_by_id(model_id)
         return self.save_model_as_owl(model, model_id, path)
+
+    def add_instance(self, class_id, model_id, model_in: MinimalInstanceModelIn):
+        if not self.__check_model_exist(model_id):
+            return {"error": "Model with id " + str(model_id) + " not found"}
+
+        model = self.__find_model_by_id(model_id)
+        classes = list(model.classes())
+
+        if len(classes) <= abs(class_id):
+            return {"error": "Class with id " + str(class_id) + " not found in Model " + str(model_id)}
+
+        classes[model_id](model_in.name)
