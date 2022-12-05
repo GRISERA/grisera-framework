@@ -7,6 +7,7 @@ from hateoas import get_links
 from arrangement.arrangement_model import ArrangementIn, ArrangementOut, BasicArrangementOut, ArrangementsOut
 from arrangement.arrangement_service import ArrangementService
 from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 router = InferringRouter()
 
@@ -17,9 +18,10 @@ class ArrangementRouter:
     Class for routing arrangement based requests
 
     Attributes:
-    arrangement_service (ArrangementService): Service instance for arrangement
+        arrangement_service (ArrangementService): Service instance for arrangement
     """
-    arrangement_service = ArrangementService()
+    def __init__(self):
+        self.arrangement_service = Services().arrangement_service()
 
     @router.get("/arrangements/{arrangement_id}", tags=["arrangements"],
                 response_model=Union[ArrangementOut, NotFoundByIdModel])

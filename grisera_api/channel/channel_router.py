@@ -7,6 +7,7 @@ from hateoas import get_links
 from channel.channel_model import ChannelIn, ChannelOut, BasicChannelOut, ChannelsOut
 from channel.channel_service import ChannelService
 from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 router = InferringRouter()
 
@@ -17,9 +18,10 @@ class ChannelRouter:
     Class for routing channel based requests
 
     Attributes:
-    channel_service (ChannelService): Service instance for channel
+        channel_service (ChannelService): Service instance for channel
     """
-    channel_service = ChannelService()
+    def __init__(self):
+        self.channel_service = Services().channel_service()
 
     @router.get("/channels/{channel_id}", tags=["channels"],
                 response_model=Union[ChannelOut, NotFoundByIdModel])

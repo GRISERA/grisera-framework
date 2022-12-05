@@ -6,6 +6,7 @@ from typing import Union
 from participant.participant_model import ParticipantIn, ParticipantOut, ParticipantsOut
 from participant.participant_service import ParticipantService
 from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 router = InferringRouter()
 
@@ -18,7 +19,9 @@ class ParticipantRouter:
     Attributes:
         participant_service (ParticipantService): Service instance for participants
     """
-    participant_service = ParticipantService()
+
+    def __init__(self):
+        self.participant_service = Services().participant_service()
 
     @router.post("/participants", tags=["participants"], response_model=ParticipantOut)
     async def create_participant(self, participant: ParticipantIn, response: Response):

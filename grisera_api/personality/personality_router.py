@@ -8,6 +8,7 @@ from personality.personality_model import PersonalityBigFiveIn, BasicPersonality
     PersonalityPanasIn, BasicPersonalityPanasOut, PersonalityPanasOut, PersonalitiesOut
 from personality.personality_service import PersonalityService
 from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 router = InferringRouter()
 
@@ -20,7 +21,9 @@ class PersonalityRouter:
     Attributes:
         personality_service (PersonalityService): Service instance for personality
     """
-    personality_service = PersonalityService()
+
+    def __init__(self):
+        self.personality_service = Services().personality_service()
 
     @router.post("/personality/big_five_model", tags=["personality"], response_model=PersonalityBigFiveOut)
     async def create_personality_big_five(self, personality: PersonalityBigFiveIn, response: Response):

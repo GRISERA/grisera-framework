@@ -6,6 +6,7 @@ from typing import Union
 from experiment.experiment_model import ExperimentIn, ExperimentOut, ExperimentsOut
 from experiment.experiment_service import ExperimentService
 from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 router = InferringRouter()
 
@@ -18,7 +19,8 @@ class ExperimentRouter:
     Attributes:
         experiment_service (ExperimentService): Service instance for experiments
     """
-    experiment_service = ExperimentService()
+    def __init__(self):
+        self.experiment_service = Services().experiment_service()
 
     @router.post("/experiments", tags=["experiments"], response_model=ExperimentOut)
     async def create_experiment(self, experiment: ExperimentIn, response: Response):

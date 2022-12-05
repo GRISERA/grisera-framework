@@ -8,6 +8,7 @@ from models.not_found_model import NotFoundByIdModel
 from activity_execution.activity_execution_model import ActivityExecutionIn, ActivityExecutionOut, \
     ActivityExecutionsOut, ActivityExecutionPropertyIn, ActivityExecutionRelationIn
 from activity_execution.activity_execution_service import ActivityExecutionService
+from services import Services
 
 router = InferringRouter()
 
@@ -18,9 +19,11 @@ class ActivityExecutionRouter:
     Class for routing activity execution based requests
 
     Attributes:
-    activity_execution_service (ActivityExecutionService): Service instance for activity execution
+        activity_execution_service (ActivityExecutionService): Service instance for activity execution
     """
-    activity_execution_service = ActivityExecutionService()
+
+    def __init__(self):
+        self.activity_execution_service = Services().activity_execution_service()
 
     @router.post("/activity_executions", tags=["activity executions"], response_model=ActivityExecutionOut)
     async def create_activity_execution(self, activity_execution: ActivityExecutionIn, response: Response):

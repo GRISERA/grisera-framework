@@ -7,6 +7,7 @@ from hateoas import get_links
 from measure_name.measure_name_model import MeasureNameIn, MeasureNameOut, BasicMeasureNameOut, MeasureNamesOut
 from measure_name.measure_name_service import MeasureNameService
 from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 router = InferringRouter()
 
@@ -17,9 +18,10 @@ class MeasureNameRouter:
     Class for routing measure name based requests
 
     Attributes:
-    measure_name_service (MeasureNameService): Service instance for measure name
+        measure_name_service (MeasureNameService): Service instance for measure name
     """
-    measure_name_service = MeasureNameService()
+    def __init__(self):
+        self.measure_name_service = Services().measure_name_service()
 
     @router.get("/measure_names/{measure_name_id}", tags=["measure names"],
                 response_model=Union[MeasureNameOut, NotFoundByIdModel])

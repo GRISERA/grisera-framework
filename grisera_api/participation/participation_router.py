@@ -7,6 +7,7 @@ from hateoas import get_links
 from models.not_found_model import NotFoundByIdModel
 from participation.participation_model import ParticipationIn, ParticipationOut, ParticipationsOut
 from participation.participation_service import ParticipationService
+from services import Services
 
 router = InferringRouter()
 
@@ -17,9 +18,11 @@ class ParticipationRouter:
     Class for routing participation based requests
 
     Attributes:
-    participation_service (ParticipationService): Service instance for participation
+        participation_service (ParticipationService): Service instance for participation
     """
-    participation_service = ParticipationService()
+
+    def __init__(self):
+        self.participation_service = Services().participation_service()
 
     @router.post("/participations", tags=["participations"], response_model=ParticipationOut)
     async def create_participation(self, participation: ParticipationIn, response: Response):

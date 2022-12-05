@@ -7,6 +7,7 @@ from hateoas import get_links
 from modality.modality_model import ModalityIn, ModalityOut, BasicModalityOut, ModalitiesOut
 from modality.modality_service import ModalityService
 from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 router = InferringRouter()
 
@@ -17,9 +18,10 @@ class ModalityRouter:
     Class for routing modality based requests
 
     Attributes:
-    modality_service (ModalityService): Service instance for modality
+        modality_service (ModalityService): Service instance for modality
     """
-    modality_service = ModalityService()
+    def __init__(self):
+        self.modality_service = Services().modality_service()
 
     @router.get("/modalities/{modality_id}", tags=["modalities"],
                 response_model=Union[ModalityOut, NotFoundByIdModel])
