@@ -6,185 +6,295 @@ from time_series.time_series_model import *
 from time_series.time_series_service import TimeSeriesService
 
 
-def relationship_function(*args, **kwargs):
-    if kwargs['name'] == 'hasPublication':
-        return {'start_node': 1, 'end_node': 3, 'id': 5, 'name': 'hasPublication', 'errors': ['error']}
-    return {'start_node': 1, 'end_node': 2, 'id': 4, 'name': 'hasAuthor', 'errors': None}
-
-
 class TestTimeSeriesServicePost(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'create_node')
     @mock.patch.object(GraphApiService, 'create_properties')
     @mock.patch.object(GraphApiService, 'create_relationships')
-    @mock.patch.object(GraphApiService, 'get_node')
-    @mock.patch.object(GraphApiService, 'get_nodes_by_query')
-    @mock.patch.object(GraphApiService, 'get_node_relationships')
-    def test_save_time_series_without_errors(self, get_node_relationships_mock, get_nodes_by_query_mock, get_node_mock,
-                                             create_relationships_mock, create_properties_mock, create_node_mock):
+    def test_create_signal_value_first_without_errors(self, create_relationships_mock, create_properties_mock,
+                                                      create_node_mock):
+        node = {'id': 50, 'properties': [], "errors": None, 'links': None}
+        create_node_mock.return_value = node
+        create_properties_mock.return_value = {'id': 50, 'errors': None, 'links': None}
+        create_relationships_mock.return_value = {'start_node': 40, 'end_node': 50, 'name': 'hasSignal', 'errors': None}
 
-        time_series_id = 1
-        experiment_id = 23
-        timestamp_id = 34
-        signal_value_id = 35
-        observable_information_id = 2
-        measure_id = 3
-
-        def get_node_relationships_side_effect(*args, **kwargs):
-            if args[0] == time_series_id:
-                return {"relationships": [
-                    {"start_node": time_series_id, "end_node": 19,
-                     "name": "testRelation", "id": 0,
-                     "properties": None},
-                    {"start_node": 15, "end_node": time_series_id,
-                     "name": "testReversedRelation", "id": 0,
-                     "properties": None}]}
-            elif args[0] == experiment_id:
-                return {"relationships": []}
-            elif args[0] == timestamp_id:
-                return {"relationships": []}
-            else:
-                return None
-
-        def create_node_side_effect(*args, **kwargs):
-            if args[0] == "`Time Series`":
-                return {'id': time_series_id, 'properties': None, "errors": None, 'links': None}
-            elif args[0] == "`Timestamp`":
-                return {'id': timestamp_id, 'properties': [{"key": "timestamp", "value": 100}], "errors": None,
-                        'links': None}
-            elif args[0] == "`Signal Value`":
-                return {'id': signal_value_id, 'properties': [{"key": "timestamp", "value": 100}], "errors": None,
-                        'links': None}
-            else:
-                return None
-
-        def get_node_side_effect(*args, **kwargs):
-            if args[0] == time_series_id:
-                return {'id': time_series_id, 'labels': ['Time Series'],
-                        'properties': [{'key': 'type', 'value': "Epoch"},
-                                       {'key': 'source', 'value': "cos"}],
-                        "errors": None, 'links': None}
-            elif args[0] == observable_information_id:
-                return {'id': observable_information_id, 'labels': ['Time Series'],
-                        'properties': [{'key': 'type', 'value': "Epoch"},
-                                       {'key': 'source', 'value': "cos"}],
-                        "errors": None, 'links': None}
-            elif args[0] == measure_id:
-                return {'id': measure_id, 'labels': ['Time Series'],
-                        'properties': [{'key': 'type', 'value': "Epoch"},
-                                       {'key': 'source', 'value': "cos"}],
-                        "errors": None, 'links': None}
-            elif args[0] == timestamp_id:
-                return {'id': timestamp_id, 'properties': [{"key": "timestamp", "value": 100}], "errors": None,
-                        'links': None}
-            else:
-                return None
-
-        def create_properties_side_effect(*args, **kwargs):
-            return {'id': args[0], 'errors': None, 'links': None}
-
-        get_nodes_by_query_mock.return_value = {
-            'rows': [
-                [{'labels': ['Signal Value'], 'id': 2, 'properties': [{'key': 'value', 'value': '10'}]},
-                 {'labels': ['Timestamp'], 'id': 1, 'properties': [{'key': 'timestamp', 'value': '100'}]},
-                 {'labels': ['Timestamp'], 'id': 3, 'properties': [{'key': 'timestamp', 'value': '200'}]}],
-                [{'labels': ['Signal Value'], 'id': 4, 'properties': [{'key': 'value', 'value': '20'}]},
-                 {'labels': ['Timestamp'], 'id': 3, 'properties': [{'key': 'timestamp', 'value': '200'}]},
-                 {'labels': ['Timestamp'], 'id': 5, 'properties': [{'key': 'timestamp', 'value': '300'}]}],
-                [{'labels': ['Signal Value'], 'id': 6, 'properties': [{'key': 'value', 'value': '30'}]},
-                 {'labels': ['Timestamp'], 'id': 5, 'properties': [{'key': 'timestamp', 'value': '300'}]},
-                 {'labels': ['Timestamp'], 'id': 7, 'properties': [{'key': 'timestamp', 'value': '400'}]}]
-            ],
-            'errors': []
-        }
-
-        get_node_relationships_mock.side_effect = get_node_relationships_side_effect
-        create_node_mock.side_effect = create_node_side_effect
-        create_properties_mock.side_effect = create_properties_side_effect
-        get_node_mock.side_effect = get_node_side_effect
-        create_relationships_mock.return_value = {'start_node': 1, 'end_node': 2,
-                                                  'name': 'hasMeasure', 'errors': None}
-        time_series_in = TimeSeriesIn(id=1, type="Epoch", source="cos",
-                                      observable_information_id=observable_information_id, measure_id=measure_id,
-                                      signal_values=[SignalIn(value=10, start_timestamp=100, end_timestamp=150),
-                                                     SignalIn(value=20, start_timestamp=200, end_timestamp=250)])
-        time_series_out = TimeSeriesOut(id=1, type="Epoch", source="cos",
-                                        signal_values=[
-                                            {
-                                                'signal_value': {'labels': ['Signal Value'], 'id': 2,
-                                                                 'properties': [
-                                                                     {'key': 'value', 'value': '10'}]},
-                                                'start_timestamp': {'labels': ['Timestamp'], 'id': 1,
-                                                                    'properties': [
-                                                                        {'key': 'timestamp', 'value': '100'}]},
-                                                'end_timestamp': {'labels': ['Timestamp'], 'id': 3,
-                                                                  'properties': [
-                                                                      {'key': 'timestamp', 'value': '200'}]}
-                                            }, {
-                                                'signal_value': {'labels': ['Signal Value'], 'id': 4,
-                                                                 'properties': [
-                                                                     {'key': 'value', 'value': '20'}]},
-                                                'start_timestamp': {'labels': ['Timestamp'], 'id': 3,
-                                                                    'properties': [{'key': 'timestamp',
-                                                                                    'value': '200'}]},
-                                                'end_timestamp': {'labels': ['Timestamp'], 'id': 5,
-                                                                  'properties': [{'key': 'timestamp',
-                                                                                  'value': '300'}]}
-                                            }, {
-                                                'signal_value': {'labels': ['Signal Value'], 'id': 6,
-                                                                 'properties': [
-                                                                     {'key': 'value', 'value': '30'}]},
-                                                'start_timestamp': {'labels': ['Timestamp'], 'id': 5,
-                                                                    'properties': [{'key': 'timestamp',
-                                                                                    'value': '300'}]},
-                                                'end_timestamp': {'labels': ['Timestamp'], 'id': 7,
-                                                                  'properties': [{'key': 'timestamp',
-                                                                                  'value': '400'}]}}
-                                        ],
-                                        additional_properties=[],
-                                        relations=
-                                        [RelationInformation(second_node_id=19, name="testRelation",
-                                                             relation_id=0)],
-                                        reversed_relations=
-                                        [RelationInformation(second_node_id=15, name="testReversedRelation",
-                                                             relation_id=0)])
-        calls = [mock.call(end_node=3, start_node=1, name="hasMeasure")]
         time_series_service = TimeSeriesService()
+        result = time_series_service.create_signal_value(75, None, 40)
 
-        result = time_series_service.save_time_series(time_series_in)
+        self.assertEqual(node, result)
 
-        self.assertEqual(result, time_series_out)
-        create_node_mock.assert_has_calls([
-            mock.call('`Time Series`'),
-            mock.call('`Timestamp`'),
-            mock.call('`Timestamp`'),
-            mock.call('`Signal Value`'),
-            mock.call('`Timestamp`'),
-            mock.call('`Timestamp`'),
-            mock.call('`Signal Value`')
-        ])
-        create_properties_mock.assert_has_calls([
-            mock.call(time_series_id, time_series_in)
-        ])
-        create_relationships_mock.assert_has_calls([mock.call(start_node=23, end_node=34, name='takes'),
-                                                    mock.call(start_node=34, end_node=34, name='next'),
-                                                    mock.call(start_node=1, end_node=35, name='hasSignal'),
-                                                    mock.call(start_node=34, end_node=35, name='startInSec'),
-                                                    mock.call(start_node=34, end_node=35, name='endInSec'),
-                                                    mock.call(start_node=34, end_node=34, name='next'),
-                                                    mock.call(start_node=34, end_node=34, name='next'),
-                                                    mock.call(start_node=35, end_node=35, name='next'),
-                                                    mock.call(start_node=34, end_node=35, name='startInSec'),
-                                                    mock.call(start_node=34, end_node=35, name='endInSec')])
+        self.assertEqual([mock.call('`Signal Value`')], create_node_mock.call_args_list)
+        self.assertEqual([mock.call(50, SignalValueNodesIn(value=75))], create_properties_mock.call_args_list)
+        self.assertEqual([mock.call(start_node=40, end_node=50, name='hasSignal')],
+                         create_relationships_mock.call_args_list)
 
     @mock.patch.object(GraphApiService, 'create_node')
-    def test_save_time_series_with_node_error(self, create_node_mock):
-        id_node = 1
-        create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
-        time_series = TimeSeriesIn(type="Epoch", source="cos", observable_information_id=1, measure_id=2)
+    @mock.patch.object(GraphApiService, 'create_properties')
+    @mock.patch.object(GraphApiService, 'create_relationships')
+    def test_create_signal_value_next_without_errors(self, create_relationships_mock, create_properties_mock,
+                                                     create_node_mock):
+        previous_signal_node = {'id': 10, 'properties': [], "errors": None, 'links': None}
+        node = {'id': 50, 'properties': [], "errors": None, 'links': None}
+        create_node_mock.return_value = node
+        create_properties_mock.return_value = node
+        create_relationships_mock.return_value = {'start_node': 10, 'end_node': 50, 'name': 'next', 'errors': None}
+
         time_series_service = TimeSeriesService()
+        result = time_series_service.create_signal_value(75, previous_signal_node, 40)
 
-        result = time_series_service.save_time_series(time_series)
+        self.assertEqual(node, result)
 
-        self.assertEqual(result, TimeSeriesOut(type="Epoch", source="cos", errors=['error']))
-        create_node_mock.assert_called_once_with('`Time Series`')
+        self.assertEqual([mock.call('`Signal Value`')], create_node_mock.call_args_list)
+        self.assertEqual([mock.call(50, SignalValueNodesIn(value=75))], create_properties_mock.call_args_list)
+        self.assertEqual([mock.call(start_node=10, end_node=50, name='next')], create_relationships_mock.call_args_list)
+
+    @mock.patch.object(GraphApiService, 'create_node')
+    @mock.patch.object(GraphApiService, 'create_properties')
+    @mock.patch.object(GraphApiService, 'create_relationships')
+    @mock.patch.object(GraphApiService, 'get_node')
+    @mock.patch.object(GraphApiService, 'delete_relationship')
+    def test_get_or_create_timestamp_node_first_without_errors(self, delete_relationship_mock, get_node_mock,
+                                                               create_relationships_mock, create_properties_mock,
+                                                               create_node_mock):
+        node = {'id': 50, 'properties': [], "errors": None, 'links': None}
+        get_node_mock.return_value = node
+        create_node_mock.return_value = node
+        create_properties_mock.return_value = node
+
+        time_series_service = TimeSeriesService()
+        result = time_series_service.get_or_create_timestamp_node(100, None)
+
+        self.assertEqual(node, result)
+
+        self.assertEqual([mock.call('`Timestamp`')], create_node_mock.call_args_list)
+        self.assertEqual([mock.call(50, TimestampNodesIn(timestamp=100))], create_properties_mock.call_args_list)
+        self.assertEqual([mock.call(50)], get_node_mock.call_args_list)
+        create_relationships_mock.assert_not_called()
+        delete_relationship_mock.assert_not_called()
+
+    @mock.patch.object(GraphApiService, 'create_node')
+    @mock.patch.object(GraphApiService, 'create_properties')
+    @mock.patch.object(GraphApiService, 'create_relationships')
+    @mock.patch.object(GraphApiService, 'get_node')
+    @mock.patch.object(GraphApiService, 'delete_relationship')
+    def test_get_or_create_timestamp_node_same_timestamp_without_errors(self, delete_relationship_mock, get_node_mock,
+                                                                        create_relationships_mock,
+                                                                        create_properties_mock,
+                                                                        create_node_mock):
+        previous_node = {'id': 10, 'properties': [{"key": "timestamp", "value": 100}], "errors": None, 'links': None}
+
+        time_series_service = TimeSeriesService()
+        result = time_series_service.get_or_create_timestamp_node(100, previous_node)
+
+        self.assertEqual(previous_node, result)
+
+        create_node_mock.assert_not_called()
+        create_properties_mock.assert_not_called()
+        get_node_mock.assert_not_called()
+        create_relationships_mock.assert_not_called()
+        delete_relationship_mock.assert_not_called()
+
+    @mock.patch.object(GraphApiService, 'create_node')
+    @mock.patch.object(GraphApiService, 'create_properties')
+    @mock.patch.object(GraphApiService, 'create_relationships')
+    @mock.patch.object(GraphApiService, 'get_node')
+    @mock.patch.object(GraphApiService, 'delete_relationship')
+    def test_get_or_create_timestamp_node_smaller_timestamp_without_errors(self, delete_relationship_mock,
+                                                                           get_node_mock, create_relationships_mock,
+                                                                           create_properties_mock,
+                                                                           create_node_mock):
+        previous_node = {'id': 80, 'properties': [{"key": "timestamp", "value": 200}], "errors": None, 'links': None}
+        node = {'id': 50, 'properties': [], "errors": None, 'links': None}
+        get_node_mock.return_value = node
+        create_node_mock.return_value = node
+        create_properties_mock.return_value = {'id': 50, 'errors': None, 'links': None}
+
+        time_series_service = TimeSeriesService()
+        result = time_series_service.get_or_create_timestamp_node(100, previous_node)
+
+        self.assertEqual(node, result)
+
+        self.assertEqual([mock.call('`Timestamp`')], create_node_mock.call_args_list)
+        self.assertEqual([mock.call(50, TimestampNodesIn(timestamp=100))], create_properties_mock.call_args_list)
+        self.assertEqual([mock.call(50)], get_node_mock.call_args_list)
+        self.assertEqual([mock.call(start_node=50, end_node=80, name='next')], create_relationships_mock.call_args_list)
+        delete_relationship_mock.assert_not_called()
+
+    @mock.patch.object(GraphApiService, 'create_node')
+    @mock.patch.object(GraphApiService, 'create_properties')
+    @mock.patch.object(GraphApiService, 'create_relationships')
+    @mock.patch.object(GraphApiService, 'get_node')
+    @mock.patch.object(GraphApiService, 'get_node_relationships')
+    @mock.patch.object(GraphApiService, 'delete_relationship')
+    def test_get_or_create_timestamp_node_greater_timestamp_at_the_end_without_errors(self, delete_relationship_mock,
+                                                                                      get_node_relationships_mock,
+                                                                                      get_node_mock,
+                                                                                      create_relationships_mock,
+                                                                                      create_properties_mock,
+                                                                                      create_node_mock):
+        previous_node = {'id': 10, 'properties': [{"key": "timestamp", "value": 75}], "errors": None, 'links': None}
+        node = {'id': 50, 'properties': [], "errors": None, 'links': None}
+        get_node_mock.return_value = node
+        create_node_mock.return_value = node
+        create_properties_mock.return_value = {'id': 50, 'errors': None, 'links': None}
+        get_node_relationships_mock.return_value = {"relationships": []}
+
+        time_series_service = TimeSeriesService()
+        result = time_series_service.get_or_create_timestamp_node(100, previous_node)
+
+        self.assertEqual(node, result)
+
+        self.assertEqual([mock.call('`Timestamp`')], create_node_mock.call_args_list)
+        self.assertEqual([mock.call(50, TimestampNodesIn(timestamp=100))], create_properties_mock.call_args_list)
+        self.assertEqual([mock.call(50)], get_node_mock.call_args_list)
+        self.assertEqual([mock.call(start_node=10, end_node=50, name='next')], create_relationships_mock.call_args_list)
+        delete_relationship_mock.assert_not_called()
+        self.assertEqual([mock.call(10)], get_node_relationships_mock.call_args_list)
+
+    @mock.patch.object(GraphApiService, 'create_node')
+    @mock.patch.object(GraphApiService, 'create_properties')
+    @mock.patch.object(GraphApiService, 'create_relationships')
+    @mock.patch.object(GraphApiService, 'get_node')
+    @mock.patch.object(GraphApiService, 'get_node_relationships')
+    @mock.patch.object(GraphApiService, 'delete_relationship')
+    def test_get_or_create_timestamp_node_greater_timestamp_in_the_middle_without_errors(self, delete_relationship_mock,
+                                                                                         get_node_relationships_mock,
+                                                                                         get_node_mock,
+                                                                                         create_relationships_mock,
+                                                                                         create_properties_mock,
+                                                                                         create_node_mock):
+        previous_node = {'id': 10, 'properties': [{"key": "timestamp", "value": 75}], "errors": None, 'links': None}
+        next_node = {'id': 70, 'properties': [{"key": "timestamp", "value": 125}], "errors": None, 'links': None}
+        node = {'id': 50, 'properties': [], "errors": None, 'links': None}
+
+        def get_node_side_effect(*args, **kwargs):
+            if args[0] == 50:
+                return node
+            elif args[0] == 70:
+                return next_node
+
+        get_node_mock.side_effect = get_node_side_effect
+        get_node_relationships_mock.return_value = {"relationships": [
+            {"start_node": 10, "end_node": 70, "name": "next", "id": 15, "properties": None}
+        ]}
+        create_node_mock.return_value = node
+        create_properties_mock.return_value = {'id': 50, 'errors': None, 'links': None}
+
+        time_series_service = TimeSeriesService()
+        result = time_series_service.get_or_create_timestamp_node(100, previous_node)
+
+        self.assertEqual(node, result)
+
+        self.assertEqual([mock.call('`Timestamp`')], create_node_mock.call_args_list)
+        self.assertEqual([mock.call(50, TimestampNodesIn(timestamp=100))], create_properties_mock.call_args_list)
+
+        self.assertEqual([
+            mock.call(70),
+            mock.call(50),
+        ], get_node_mock.call_args_list)
+        self.assertEqual([
+            mock.call(start_node=10, end_node=50, name='next'),
+            mock.call(start_node=50, end_node=70, name='next'),
+        ], create_relationships_mock.call_args_list)
+        self.assertEqual([mock.call(15)], delete_relationship_mock.call_args_list)
+        self.assertEqual([mock.call(10)], get_node_relationships_mock.call_args_list)
+
+    @mock.patch.object(GraphApiService, 'create_node')
+    @mock.patch.object(GraphApiService, 'create_properties')
+    @mock.patch.object(GraphApiService, 'create_relationships')
+    @mock.patch.object(GraphApiService, 'get_node')
+    @mock.patch.object(GraphApiService, 'get_node_relationships')
+    @mock.patch.object(GraphApiService, 'delete_relationship')
+    @mock.patch.object(TimeSeriesService, 'get_or_create_timestamp_node')
+    @mock.patch.object(TimeSeriesService, 'create_signal_value')
+    def test_save_signal_values_first_without_errors(self, create_signal_value_mock, get_or_create_timestamp_node_mock,
+                                                     delete_relationship_mock,
+                                                     get_node_relationships_mock,
+                                                     get_node_mock,
+                                                     create_relationships_mock,
+                                                     create_properties_mock,
+                                                     create_node_mock):
+        get_or_create_timestamp_node_mock.return_value = {'id': 60, 'properties': [{"key": "timestamp", "value": 100}],
+                                                          "errors": None, 'links': None}
+        create_signal_value_mock.return_value = {'id': 70, 'properties': [{"key": "value", "value": 10}],
+                                                 "errors": None,
+                                                 'links': None}
+
+        time_series_service = TimeSeriesService()
+        result = time_series_service.save_signal_values([SignalIn(timestamp=100, value=10)], 15, 20, Type.timestamp)
+
+        self.assertEqual(None, result)
+
+        create_node_mock.assert_not_called()
+        create_properties_mock.assert_not_called()
+        get_node_mock.assert_not_called()
+        self.assertEqual([
+            mock.call(start_node=20, end_node=60, name='takes'),
+            mock.call(start_node=60, end_node=70, name='inSec')
+        ], create_relationships_mock.call_args_list)
+
+        delete_relationship_mock.assert_not_called()
+        self.assertEqual([mock.call(20)], get_node_relationships_mock.call_args_list)
+        self.assertEqual([mock.call('10', None, 15)], create_signal_value_mock.call_args_list)
+        self.assertEqual([mock.call(100, None)], get_or_create_timestamp_node_mock.call_args_list)
+
+    @mock.patch.object(GraphApiService, 'create_node')
+    @mock.patch.object(GraphApiService, 'create_properties')
+    @mock.patch.object(GraphApiService, 'create_relationships')
+    @mock.patch.object(GraphApiService, 'get_node')
+    @mock.patch.object(GraphApiService, 'get_node_relationships')
+    @mock.patch.object(GraphApiService, 'delete_relationship')
+    @mock.patch.object(TimeSeriesService, 'get_or_create_timestamp_node')
+    @mock.patch.object(TimeSeriesService, 'create_signal_value')
+    def test_save_signal_values_middle_without_errors(self, create_signal_value_mock, get_or_create_timestamp_node_mock,
+                                                      delete_relationship_mock,
+                                                      get_node_relationships_mock,
+                                                      get_node_mock,
+                                                      create_relationships_mock,
+                                                      create_properties_mock,
+                                                      create_node_mock):
+        previous_timestamp_node = {'id': 1000, 'properties': [{"key": "timestamp", "value": 75}], "errors": None,
+                                   'links': None}
+        timestamp_node = {'id': 60, 'properties': [{"key": "timestamp", "value": 100}],
+                          "errors": None, 'links': None}
+        get_or_create_timestamp_node_mock.return_value = timestamp_node
+        create_signal_value_mock.return_value = {'id': 70, 'properties': [{"key": "value", "value": 10}],
+                                                 "errors": None,
+                                                 'links': None}
+        get_node_relationships_mock.return_value = {"relationships": [
+            {"start_node": 20, "end_node": 1000, "name": "takes", "id": 15, "properties": None}
+        ]}
+        get_node_mock.return_value = previous_timestamp_node
+
+        time_series_service = TimeSeriesService()
+        result = time_series_service.save_signal_values([SignalIn(start_timestamp=100, end_timestamp=200, value=10)],
+                                                        15, 20, Type.epoch)
+
+        self.assertEqual(None, result)
+
+        create_node_mock.assert_not_called()
+        create_properties_mock.assert_not_called()
+        self.assertEqual([mock.call(1000)], get_node_mock.call_args_list)
+        self.assertEqual([
+            mock.call(start_node=20, end_node=60, name='takes'),
+            mock.call(start_node=60, end_node=70, name='startInSec'),
+            mock.call(start_node=60, end_node=70, name='endInSec')
+        ], create_relationships_mock.call_args_list)
+        self.assertEqual([mock.call(15)], delete_relationship_mock.call_args_list)
+        self.assertEqual([mock.call(20)], get_node_relationships_mock.call_args_list)
+        self.assertEqual([mock.call('10', None, 15)], create_signal_value_mock.call_args_list)
+        self.assertEqual([mock.call(100, previous_timestamp_node), mock.call(200, timestamp_node)],
+                         get_or_create_timestamp_node_mock.call_args_list)
+
+
+@mock.patch.object(GraphApiService, 'create_node')
+def test_save_time_series_with_node_error(self, create_node_mock):
+    id_node = 1
+    create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
+    time_series = TimeSeriesIn(type="Epoch", source="cos", observable_information_id=1, measure_id=2)
+    time_series_service = TimeSeriesService()
+
+    result = time_series_service.save_time_series(time_series)
+
+    self.assertEqual(result, TimeSeriesOut(type="Epoch", source="cos", errors=['error']))
+    create_node_mock.assert_called_once_with('`Time Series`')
