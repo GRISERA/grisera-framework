@@ -28,7 +28,7 @@ services:
       - PERSISTENCE_TYPE=1
       
   grisera_api_ontology:
-    build: grisera_api_ontology
+    build: grisera_api
     ports:
       - "18083:80"
     extra_hosts: 
