@@ -1,4 +1,4 @@
-from fastapi import Response, UploadFile, BackgroundTasks
+from fastapi import Response, UploadFile, BackgroundTasks, File
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from model.model_service import ModelService
@@ -8,6 +8,7 @@ from model.model_model import ModelOut
 import os
 
 router = InferringRouter()
+
 
 @cbv(router)
 class ModelRouter:
@@ -19,11 +20,14 @@ class ModelRouter:
     model_service = ModelService()
 
     @router.post("/model", tags=["model"], response_model=ModelOut)
-    async def create_model(self,response: Response,background_tasks: BackgroundTasks, file: UploadFile = None):
+    async def create_model(self, response: Response, background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+        # Problem with using UploadFile with Pydantic model:
+        # "Value not declarable with JSON Schema".
+        # Quick fix based on https://github.com/tiangolo/fastapi/issues/657
         """
         Create ontology model based on uploaded file or base iri
         """
-        if file is not None:
+        if isinstance(file, UploadFile):
             create_response = self.model_service.save_model(file)
             background_tasks.add_task(os.remove, file.filename)
         else:
@@ -35,7 +39,7 @@ class ModelRouter:
         create_response.links = get_links(router)
 
         return create_response
-        
+
     @router.get("/model/{id}", tags=["model"])
     async def get_owl(self, id: int, response: Response, background_tasks: BackgroundTasks):
         """
@@ -48,4 +52,3 @@ class ModelRouter:
         else:
             background_tasks.add_task(os.remove, get_response)
             return FileResponse(get_response, media_type="application/xml")
-
