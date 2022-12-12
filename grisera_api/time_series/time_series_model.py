@@ -1,8 +1,43 @@
-from pydantic import BaseModel
-from typing import Optional, Any, List
 from enum import Enum
-from property.property_model import PropertyIn
+from typing import Optional, Any, List, Union
+
+from pydantic import BaseModel
+
 from models.relation_information_model import RelationInformation
+from property.property_model import PropertyIn
+
+
+class TimestampNodesIn(BaseModel):
+    """
+    Model of timestamp node
+    Attributes:
+        timestamp (int): Timestamp of signal measure in milliseconds
+    """
+    timestamp: int
+
+
+class SignalValueNodesIn(BaseModel):
+    """
+    Model of signal value node
+    Attributes:
+        value (Union[str, float]): Value of signal
+    """
+    value: Union[str, float]
+
+
+class SignalIn(BaseModel):
+    """
+    Model of signal to acquire from client
+    Attributes:
+        timestamp (int): Timestamp of signal measure of type Timestamp in milliseconds
+        start_timestamp (int): Timestamp of begin signal measure of type Epoch in milliseconds
+        end_timestamp (int): Timestamp of end signal measure of type Epoch in milliseconds
+        value (SignalValueIn): Value of signal
+    """
+    timestamp: Optional[int]
+    start_timestamp: Optional[int]
+    end_timestamp: Optional[int]
+    value: Union[str, float]
 
 
 class Type(str, Enum):
@@ -28,10 +63,12 @@ class TimeSeriesPropertyIn(BaseModel):
     Attributes:
         type (Type): Type of the signal
         source(str): TimeSeries source
+        signal_values (List[SignalIn]): list of signals
         additional_properties (Optional[List[PropertyIn]]): Additional properties for signal
     """
     type: Type
-    source: str
+    source: Optional[str]
+    signal_values: List[SignalIn] = []
     additional_properties: Optional[List[PropertyIn]]
 
 
@@ -70,11 +107,13 @@ class TimeSeriesOut(BasicTimeSeriesOut):
     Attributes:
         relations (List[RelationInformation]): List of relations starting in time series node
         reversed_relations (List[RelationInformation]): List of relations ending in time series node
+        signal_values (list): List of signal values
         errors (Optional[Any]): Optional errors appeared during query executions
         links (Optional[list]): List of links available from api
     """
     relations: List[RelationInformation] = []
     reversed_relations: List[RelationInformation] = []
+    signal_values: list = []
     errors: Optional[Any] = None
     links: Optional[list] = None
 

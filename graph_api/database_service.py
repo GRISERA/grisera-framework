@@ -1,6 +1,8 @@
 import requests
 from requests.auth import HTTPBasicAuth
+
 from database_config import database
+from node.node_model import NodeRowsQueryIn
 
 
 class DatabaseService:
@@ -113,6 +115,49 @@ class DatabaseService:
         """
         get_statement = "MATCH (n: {label}) RETURN n".format(
             label=label)
+        return self.post_statement(get_statement)
+
+    def get_nodes_by_query(self, query: NodeRowsQueryIn):
+        """
+        Send to the database request to get nodes with given query
+        Args:
+            query (NodeRowsQueryIn): query to search by
+        Returns:
+            Result of request
+        """
+        return_list = []
+        where_list = []
+        match_list = []
+        if query.relations is not None:
+            for relation in query.relations:
+                statement = "(n_" + str(relation.begin_node_index) + ")-["
+                if relation.label is not None:
+                    statement += ":`" + relation.label + "`"
+                if relation.min_count is not None:
+                    statement += "*" + str(relation.min_count) + ".."
+                statement += "]->" + "(n_" + str(relation.end_node_index) + ")"
+                match_list.append(statement)
+
+        element_id = 0
+        for node in query.nodes:
+            statement = "("
+            node_label = "n_" + str(element_id)
+            statement += node_label
+            if node.result:
+                return_list.append(node_label)
+            if node.id is not None:
+                where_list.append("ID(" + node_label + ")=" + str(node.id))
+            if node.label is not None:
+                statement += ":`" + node.label + "`"
+            statement += ")"
+            match_list.append(statement)
+            element_id += 1
+        get_statement = "MATCH " + ",".join(match_list)
+        if len(where_list) > 0:
+            get_statement += " WHERE " + " AND ".join(where_list)
+        if len(return_list) > 0:
+            get_statement += " RETURN " + ",".join(
+                [node_label + ",LABELS(" + node_label + ")" for node_label in return_list])
         return self.post_statement(get_statement)
 
     def delete_node(self, node_id):
