@@ -2,11 +2,12 @@ import json
 import unittest
 import unittest.mock as mock
 
+from requests import Response
+
 from database_service import DatabaseService
 from node.node_model import NodeIn, NodeRowsQueryIn, NodeQueryIn, RelationQueryIn
 from property.property_model import PropertyIn
 from relationship.relationship_model import RelationshipIn
-from requests import Response
 
 
 class DatabaseServiceTestCase(unittest.TestCase):
@@ -110,7 +111,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
                                               auth=self.database_service.database_auth)
 
     @mock.patch('database_service.requests')
-    def get_nodes_by_query(self, requests_mock):
+    def test_get_nodes_by_query(self, requests_mock):
         requests_mock.post.return_value = self.response
         commit_body = {"statements": [{
             "statement": "MATCH (n_0)-[:`hasSignal`]->(n_1),(n_1)-[:`next`*0..]->(n_2),(n_3)-[:`startInSec`]->(n_2),(n_4)-[:`endInSec`]->(n_2),(n_0:`Time Series`),(n_1:`Signal Value`),(n_2:`Signal Value`),(n_3:`Timestamp`),(n_4:`Timestamp`) WHERE ID(n_0)=15 RETURN n_2,LABELS(n_2),n_3,LABELS(n_3),n_4,LABELS(n_4)"}]}

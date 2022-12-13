@@ -130,34 +130,32 @@ class DatabaseService:
         match_list = []
         if query.relations is not None:
             for relation in query.relations:
-                statement = "(n_" + str(relation.begin_node_index) + ")-["
+                statement = f"(n_{str(relation.begin_node_index)})-["
                 if relation.label is not None:
-                    statement += ":`" + relation.label + "`"
+                    statement += f":`{relation.label}`"
                 if relation.min_count is not None:
-                    statement += "*" + str(relation.min_count) + ".."
-                statement += "]->" + "(n_" + str(relation.end_node_index) + ")"
+                    statement += f"*{str(relation.min_count)}.."
+                statement += f"]->(n_{str(relation.end_node_index)})"
                 match_list.append(statement)
 
         element_id = 0
         for node in query.nodes:
-            statement = "("
-            node_label = "n_" + str(element_id)
-            statement += node_label
+            node_label = f"n_{str(element_id)}"
+            statement = f"({node_label}"
             if node.result:
                 return_list.append(node_label)
             if node.id is not None:
-                where_list.append("ID(" + node_label + ")=" + str(node.id))
+                where_list.append(f"ID({node_label})={str(node.id)}")
             if node.label is not None:
-                statement += ":`" + node.label + "`"
+                statement += f":`{node.label}`"
             statement += ")"
             match_list.append(statement)
             element_id += 1
-        get_statement = "MATCH " + ",".join(match_list)
+        get_statement = f"MATCH {','.join(match_list)}"
         if len(where_list) > 0:
-            get_statement += " WHERE " + " AND ".join(where_list)
+            get_statement += f" WHERE {' AND '.join(where_list)}"
         if len(return_list) > 0:
-            get_statement += " RETURN " + ",".join(
-                [node_label + ",LABELS(" + node_label + ")" for node_label in return_list])
+            get_statement += f" RETURN {','.join([f'{label},LABELS({label})' for label in return_list])}"
         return self.post_statement(get_statement)
 
     def delete_node(self, node_id):
