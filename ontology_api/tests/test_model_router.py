@@ -5,6 +5,7 @@ import os
 from fastapi import Response, BackgroundTasks, UploadFile
 from owlready2 import get_ontology
 from model.model_router import ModelRouter
+from instance.instance_model import MinimalInstanceModelIn
 
 class ModelRouterTestCase(unittest.TestCase):
 
@@ -56,4 +57,35 @@ class ModelRouterTestCase(unittest.TestCase):
             result = asyncio.run(model_router.create_model(response, background_tasks, file))
         os.remove("tests/tmp_owl/testfile.txt")
         #os.remove("testfile.txt")
+        self.assertEqual(response.status_code, 422)
+
+    def test_add_instance_happy_path(self):
+        model_router = ModelRouter()
+        response = Response()
+
+        result1 = model_router.model_service.create_base_model()
+        model_in = MinimalInstanceModelIn()
+        model_in.name = "test"
+
+        asyncio.run(model_router.add_instance(result1.id, "Channel", model_in, response))
+        self.assertEqual(response.status_code, 200)
+
+    def test_add_instance_model_not_found(self):
+        model_router = ModelRouter()
+        response = Response()
+
+        model_in = MinimalInstanceModelIn()
+        model_in.name = "test"
+        asyncio.run(model_router.add_instance(-1, "Channel", model_in, response))
+        self.assertEqual(response.status_code, 422)
+
+    def test_add_instance_class_not_found(self):
+        model_router = ModelRouter()
+        response = Response()
+
+        result1 = model_router.model_service.create_base_model()
+        model_in = MinimalInstanceModelIn()
+        model_in.name = "test"
+
+        asyncio.run(model_router.add_instance(result1.id, "Utopia", model_in, response))
         self.assertEqual(response.status_code, 422)

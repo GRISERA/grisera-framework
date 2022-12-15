@@ -2,6 +2,7 @@ import unittest
 import os
 from owlready2 import get_ontology
 from model.model_service import ModelService
+from instance.instance_model import MinimalInstanceModelIn
 from fastapi import UploadFile
 
 def save_test_model():
@@ -57,7 +58,7 @@ class ModelServiceTestCase(unittest.TestCase):
     def test_create_base_model_without_error(self):
         model_service = ModelService()
         result = model_service.create_base_model()
-        self.assertEqual(result.id,2)
+        self.assertEqual(result.id,6)
 
     def test_create_model_without_error(self):
         model_service = ModelService()
@@ -66,7 +67,7 @@ class ModelServiceTestCase(unittest.TestCase):
         new_file.close()
         result = model_service.create_model("testfile.owl")
         os.remove("testfile.owl")
-        self.assertEqual(result,3)
+        self.assertEqual(result,7)
 
     def test_create_model_with_error(self):
         model_service = ModelService()
@@ -96,3 +97,27 @@ class ModelServiceTestCase(unittest.TestCase):
             result = model_service.save_model(file)
         os.remove("tests" + os.path.sep + "tmp_owl" + os.path.sep + "testfile.txt")
         self.assertEqual(result.errors, "Wrong extension of file")
+
+    def test_add_instance_happy_path(self):
+        model_service = ModelService()
+        result1 = model_service.create_base_model()
+        model_in = MinimalInstanceModelIn()
+        model_in.name = "test"
+        result2 = model_service.add_instance(result1.id, "Channel", model_in)
+        self.assertEqual(result2,None)
+
+    def test_add_instance_model_not_found(self):
+        model_service = ModelService()
+        model_in = MinimalInstanceModelIn()
+        model_in.name = "test"
+        result2 = model_service.add_instance(-1, "Channel", model_in)
+        self.assertEqual(result2["error"], "Model with id -1 not found")
+
+    def test_add_instance_class_not_found(self):
+        model_service = ModelService()
+        result1 = model_service.create_base_model()
+        model_in = MinimalInstanceModelIn()
+        model_in.name = "test"
+        class_name = "Utopia"
+        result2 = model_service.add_instance(result1.id, class_name, model_in)
+        self.assertEqual(result2["error"], "Class named " + str(class_name) + " not found in Model " + str(result1.id))
