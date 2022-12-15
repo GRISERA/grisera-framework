@@ -1,7 +1,8 @@
-from database_service import DatabaseService
-from node.node_model import NodeIn, NodeOut, BasicNodeOut, NodesOut
-from property.property_model import PropertyIn
 from typing import List
+
+from database_service import DatabaseService
+from node.node_model import NodeIn, NodeOut, BasicNodeOut, NodesOut, NodeRowsQueryIn, NodeRowsOut
+from property.property_model import PropertyIn
 from relationship.relationship_model import RelationshipsOut, BasicRelationshipOut
 
 
@@ -76,6 +77,31 @@ class NodeService:
             properties = [PropertyIn(key=property[0], value=property[1]) for property in node["row"][0].items()]
             result.nodes.append(BasicNodeOut(labels={label}, id=node["meta"][0]["id"], properties=properties))
 
+        return result
+
+    def get_nodes_by_query(self, query: NodeRowsQueryIn):
+        """
+        Send request to database by its API to acquire nodes with given query
+        Args:
+            query (NodeRowsQueryIn): Query by which it is searched for in the database
+        Returns:
+            List of acquired nodes in NodesOut model
+        """
+        response = self.db.get_nodes_by_query(query)
+
+        if len(response["errors"]) > 0:
+            return NodeRowsOut(errors=response["errors"])
+
+        result = NodeRowsOut(rows=[])
+
+        for nodes in response["results"][0]["data"]:
+            row = []
+            for i in range(len(nodes["row"]) // 2):
+                properties = [PropertyIn(key=property[0], value=property[1]) for property in
+                              nodes["row"][2 * i].items()]
+                row.append(
+                    BasicNodeOut(labels=nodes["row"][2 * i + 1], id=nodes["meta"][2 * i]["id"], properties=properties))
+            result.rows.append(row)
         return result
 
     def delete_node(self, node_id: int):
