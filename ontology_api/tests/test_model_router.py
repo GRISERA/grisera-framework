@@ -33,7 +33,7 @@ class ModelRouterTestCase(unittest.TestCase):
         file = UploadFile('testfile.owl')
         result = asyncio.run(model_router.create_model(response, file))
         os.remove("testfile.owl")
-        os.remove("database" + os.path.sep + "0.owl")
+        os.remove("database" + os.path.sep + "1.owl")
         self.assertEqual(response.status_code, 200)
 
     def test_create_model_with_file_with_error(self):
