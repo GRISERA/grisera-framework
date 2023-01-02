@@ -20,7 +20,7 @@ class ModelRouter:
     model_service = ModelService()
 
     @router.post("/model", tags=["model"], response_model=ModelOut)
-    async def create_model(self, response: Response, background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+    async def create_model(self, response: Response, file: UploadFile = File(...)):
         # Problem with using UploadFile with Pydantic model:
         # "Value not declarable with JSON Schema".
         # Quick fix based on https://github.com/tiangolo/fastapi/issues/657
@@ -31,7 +31,6 @@ class ModelRouter:
         create_response = self.model_service.save_model(file)
 
         if create_response.errors is not None:
-            print(create_response.errors)
             response.status_code = 422
 
         # add links from hateoas
@@ -54,7 +53,7 @@ class ModelRouter:
         return create_response
 
     @router.get("/model/{id}", tags=["model"])
-    async def get_owl(self, id: int, response: Response, background_tasks: BackgroundTasks):
+    async def get_owl(self, id: int, response: Response):
         """
         Get OWL file from model with given id
         """

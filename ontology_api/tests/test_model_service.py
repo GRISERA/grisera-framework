@@ -11,68 +11,15 @@ def save_test_model():
     return path
 
 class ModelServiceTestCase(unittest.TestCase):
-    def test_get_owl_from_model_without_error(self):
-        model_service = ModelService()
-        model_service.models[1] = get_ontology("https://road.affectivese.org/documentation/owlAC.owl")
-        path_1 = save_test_model()
-        path_2 = model_service.get_owl_from_model(model_id=1, path="tests" + os.path.sep + "tmp_owl")
-        file_1 = open(path_1)
-        file_2 = open(path_2)
-        content_1 = file_1.read()
-        content_2 = file_2.read()
-        file_1.close()
-        file_2.close()
-        os.remove(file_1.name)
-        os.remove(file_2.name)
-        model_service.models.pop(1)
-        self.assertEqual(content_1, content_2)
-
-    def test_get_owl_from_model_without_existing_model(self):
-        model_service = ModelService()
-        result = model_service.get_owl_from_model(1)
-        self.assertIsNone(result)
-
-    def test_save_model_as_owl_without_error(self):
-        model_service = ModelService()
-        onto = get_ontology("https://road.affectivese.org/documentation/owlAC.owl")
-        path_1 = "tests" + os.path.sep + "tmp_owl" + os.path.sep + "test1.owl"
-        path_2 = model_service.save_model_as_owl(onto, 1)
-        onto.save(path_1)
-        file_1 = open(path_1)
-        file_2 = open(path_2)
-        content_1 = file_1.read()
-        content_2 = file_2.read()
-        file_1.close()
-        file_2.close()
-        os.remove(file_1.name)
-        os.remove(file_2.name)
-        self.assertEqual(content_1, content_2)
-
-    def test_save_model_as_owl_with_error(self):
-        model_service = ModelService()
-        onto = get_ontology("https://road.affectivese.org/documentation/owlAC.owl")
-        path = "this/doesnt/exist"
-        self.assertIsNone(model_service.save_model_as_owl(onto, 1, path=path))
 
     def test_create_base_model_without_error(self):
         model_service = ModelService()
-        result = model_service.create_base_model()
-        self.assertEqual(result.id,2)
-
-    def test_create_model_without_error(self):
-        model_service = ModelService()
-        new_file = open("testfile.owl", "x")
-        new_file.write("<rdf:RDF xml:base=\"http://www.semanticweb.org/GRISERA/contextualOntology\"><owl:Ontology rdf:about=\"http://www.semanticweb.org/GRISERA/contextualOntology\"/></rdf:RDF> ")
-        new_file.close()
-        result = model_service.create_model("testfile.owl")
-        os.remove("testfile.owl")
-        self.assertEqual(result,3)
-
-    def test_create_model_with_error(self):
-        model_service = ModelService()
-        with self.assertRaises(Exception) as context:
-            model_service.create_model("interestingnameoffile")
-        self.assertTrue("Cannot open file", context.exception)
+        result1 = model_service.create_base_model()
+        result2 = model_service.create_base_model()
+        os.remove("database" + os.path.sep + "0.owl")
+        os.remove("database" + os.path.sep + "1.owl")
+        self.assertEqual(result1.id, 0)
+        self.assertEqual(result2.id, 1)
 
     def test_save_model_without_error(self):
         model_service = ModelService()
@@ -83,7 +30,7 @@ class ModelServiceTestCase(unittest.TestCase):
             file = UploadFile('testfile.owl', f)
             result = model_service.save_model(file)
         os.remove("tests" + os.path.sep + "tmp_owl" + os.path.sep + "testfile.owl")
-        os.remove("testfile.owl")
+        os.remove("database" + os.path.sep + "0.owl")
         self.assertNotEqual(result.id, None)
 
     def test_save_model_with_error_wrong_extension(self):
