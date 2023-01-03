@@ -1,6 +1,5 @@
 import asyncio
 import unittest
-import unittest.mock as mock
 import os
 from fastapi import Response, UploadFile
 from owlready2 import get_ontology
