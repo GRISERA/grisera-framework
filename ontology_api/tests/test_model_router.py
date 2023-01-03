@@ -2,7 +2,7 @@ import asyncio
 import unittest
 import unittest.mock as mock
 import os
-from fastapi import Response, BackgroundTasks, UploadFile
+from fastapi import Response, UploadFile
 from owlready2 import get_ontology
 from model.model_router import ModelRouter
 
