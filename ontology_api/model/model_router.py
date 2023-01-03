@@ -1,4 +1,4 @@
-from fastapi import Response, UploadFile, BackgroundTasks, File
+from fastapi import Response, UploadFile, File
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from model.model_service import ModelService
