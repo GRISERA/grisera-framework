@@ -6,38 +6,37 @@ import os
 class ModelService:
     """
     Object to handle logic of models requests
-
-    Attributes:
-        models (Dictionary): database mock
     """
-    models = dict()
+
     def __find_model_by_id(self, model_id):
-        return self.models.get(model_id)
+        return get_ontology("database" + os.path.sep + str(model_id) + ".owl").load()
 
     def __add_model(self,model_id,model):
-        self.models[model_id] = model
+        model.save(file="database" + os.path.sep + str(model_id) + ".owl", format="rdfxml")
 
     def __check_model_exist(self, model_id):
-        return id in self.models
+        return os.path.isfile("database" + os.path.sep + str(model_id) + ".owl")
 
     def __generate_id(self):
-        for model_id in range(len(self.models), -1, -1):
-            if model_id not in self.models.keys():
+        files = os.listdir('database')
+        files.sort(reverse=True)
+        for model_id in range(len(files), -1, -1):
+            new_file_name = str(model_id) + ".owl"
+            if new_file_name not in files:
                 return model_id
 
     def save_model(self, file: UploadFile) -> ModelOut:
         if not file.filename.endswith('.owl'):
             return ModelOut(errors="Wrong extension of file")
-        with open(file.filename, 'wb') as new_file:
-            content = file.file.read()
-            new_file.write(content)
-            new_file.close()
+        new_id = self.__generate_id()
         try:
-            response = self.create_model(file.filename)
-        except Exception:
+            with open("database" + os.path.sep + str(new_id) + ".owl", 'wb') as new_file:
+                content = file.file.read()
+                new_file.write(content)
+        except IOError:
             result = ModelOut(errors="Cannot create model")
         else:
-            result = ModelOut(id=response)
+            result = ModelOut(id=new_id)
         return result
 
     def create_model(self, file_path) -> int:
@@ -59,19 +58,7 @@ class ModelService:
             result = ModelOut(id=response)
         return result
 
-    def save_model_as_owl(self, model, model_id, path=None):
-        if model is None:
-            return None
-        if path is None:
-            full_path = model.name + str(model_id) + ".owl"
-        else:
-            full_path = path + os.path.sep + model.name + str(model_id) + ".owl"
-        try:
-            model.save(file=full_path, format="rdfxml")
-        except OSError:
-            return None
-        return full_path
-
     def get_owl_from_model(self, model_id, path=None):
-        model = self.__find_model_by_id(model_id)
-        return self.save_model_as_owl(model, model_id, path)
+        if self.__check_model_exist(model_id):
+            return "database" + os.path.sep + str(model_id) + ".owl"
+        return None
