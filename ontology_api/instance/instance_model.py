@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, Any
 
+
 class MinimalInstanceModelIn(BaseModel):
     name: Optional[str]
 
