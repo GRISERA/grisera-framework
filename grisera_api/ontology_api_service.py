@@ -41,7 +41,7 @@ class OntologyApiService:
         """
         Send a request to add an instance to Ontology API
         Args:
-            model_id (str): ID of the model to which the instance is to be added
+            model_id (int): ID of the model to which the instance is to be added
             class_name (str): Name of the class of the instance
 
         Returns: Request result
