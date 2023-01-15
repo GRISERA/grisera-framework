@@ -62,3 +62,20 @@ class ModelService:
         if self.__check_model_exist(model_id):
             return "database" + os.path.sep + str(model_id) + ".owl"
         return None
+
+    def load_ontology(self,model_id):
+        if self.__check_model_exist(model_id):
+            return self.__find_model_by_id(model_id)
+        return None
+
+    def update_ontology(self, model_id, onto):
+        if not self.__find_model_by_id(model_id):
+            return ModelOut(errors=f"Model with {model_id} don't exist")
+
+        try:
+            self.__add_model(model_id, onto)
+        except IOError:
+            result = ModelOut(errors="Cannot update model")
+        else:
+            result = ModelOut()
+        return result

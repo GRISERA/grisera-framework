@@ -15,4 +15,6 @@ class FullInstanceModelIn(InstanceModelIn):
 
 
 class MinimalModelOut(BaseModel):
+    links: Optional[str]
+    label: Optional[str]
     errors: Optional[str]
