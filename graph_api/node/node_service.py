@@ -16,17 +16,17 @@ class NodeService:
 
     db : DatabaseService = DatabaseService()
 
-    def save_node(self, node: NodeIn):
+    def save_node(self, node: NodeIn, database_name: str):
         """
         Send request to database by its API to create new node
 
         Args:
             node (NodeIn): Node to be added to database
-
+            database_name (string): Name of the database
         Returns:
             Result of request as node object
         """
-        response = self.db.create_node(node)
+        response = self.db.create_node(node, database_name)
 
         if len(response["errors"]) > 0:
             result = NodeOut(errors=response["errors"])
@@ -36,17 +36,18 @@ class NodeService:
 
         return result
 
-    def get_node(self, node_id: int):
+    def get_node(self, node_id: int, database_name: str):
         """
         Send request to database by its API to acquire node with given id
 
         Args:
             node_id (int): Id by which it is searched for in the database
+            database_name (string): Name of the database
 
         Returns:
             Acquired node in NodeOut model
         """
-        response = self.db.get_node(node_id)
+        response = self.db.get_node(node_id, database_name)
 
         if len(response['results'][0]["data"]) == 0:
             return NodeOut(errors="Node not found")
@@ -57,17 +58,18 @@ class NodeService:
 
         return result
 
-    def get_nodes(self, label: str):
+    def get_nodes(self, label: str, database_name: str):
         """
         Send request to database by its API to acquire all nodes with given label
 
         Args:
             label (str): Label by which it is searched for in the database
+            database_name (string): Name of the database
 
         Returns:
             List of acquired nodes in NodesOut model
         """
-        response = self.db.get_nodes(label)
+        response = self.db.get_nodes(label, database_name)
 
         if len(response["errors"]) > 0:
             return NodesOut(errors=response["errors"])
@@ -79,15 +81,16 @@ class NodeService:
 
         return result
 
-    def get_nodes_by_query(self, query: NodeRowsQueryIn):
+    def get_nodes_by_query(self, query: NodeRowsQueryIn, database_name: str):
         """
         Send request to database by its API to acquire nodes with given query
         Args:
             query (NodeRowsQueryIn): Query by which it is searched for in the database
+            database_name (string): Name of the database
         Returns:
             List of acquired nodes in NodesOut model
         """
-        response = self.db.get_nodes_by_query(query)
+        response = self.db.get_nodes_by_query(query, database_name)
 
         if len(response["errors"]) > 0:
             return NodeRowsOut(errors=response["errors"])
@@ -104,33 +107,35 @@ class NodeService:
             result.rows.append(row)
         return result
 
-    def delete_node(self, node_id: int):
+    def delete_node(self, node_id: int, database_name: str):
         """
         Send request to database by its API to delete node with given id
 
         Args:
             node_id (int): Id of node
+            database_name (string): Name of the database
         Returns:
             Deleted node
         """
-        node = self.get_node(node_id)
-        response = self.db.delete_node(node_id)
+        node = self.get_node(node_id, database_name)
+        response = self.db.delete_node(node_id, database_name)
         result = NodeOut(errors=response["errors"]) if len(response["errors"]) > 0 else \
             NodeOut(id=node_id, labels=node.labels, properties=node.properties)
 
         return result
 
-    def get_relationships(self, id: int):
+    def get_relationships(self, id: int, database_name: str):
         """
         Send request to database by its API to get node's relationships
 
         Args:
             id (int): Id of the node
+            database_name (string): Name of the database
 
         Returns:
             Result of request as list of relationships
         """
-        response = self.db.get_relationships(id)
+        response = self.db.get_relationships(id, database_name)
 
         if len(response["errors"]) > 0:
             result = RelationshipsOut(errors=response["errors"])
@@ -142,19 +147,20 @@ class NodeService:
 
         return result
 
-    def save_properties(self, id: int, properties: List[PropertyIn]):
+    def save_properties(self, id: int, properties: List[PropertyIn], database_name: str):
         """
         Send request to database by its API to create new properties
 
         Args:
             id (int): Id of the node
             properties (List[PropertyIn]): List of properties for the node of given id
+            database_name (string): Name of the database
 
         Returns:
             Result of request as node object
         """
-        if self.db.node_exists(id):
-            response = self.db.create_node_properties(id, properties)
+        if self.db.node_exists(id, database_name):
+            response = self.db.create_node_properties(id, properties, database_name)
             if len(response["errors"]) > 0:
                 result = NodeOut(errors=response["errors"])
             else:
@@ -167,17 +173,18 @@ class NodeService:
 
         return result
 
-    def delete_node_properties(self, node_id: int):
+    def delete_node_properties(self, node_id: int, database_name: str):
         """
         Send request to database by its API to delete properties from node with given id
 
         Args:
             node_id (int): Id of node
+            database_name (string): Name of the database
         Returns:
             Deleted node
         """
-        node = self.get_node(node_id)
-        response = self.db.delete_node_properties(node_id)
+        node = self.get_node(node_id, database_name)
+        response = self.db.delete_node_properties(node_id, database_name)
         result = NodeOut(errors=response["errors"]) if len(response["errors"]) > 0 else \
             NodeOut(id=node_id, labels=node.labels, properties=node.properties)
 
