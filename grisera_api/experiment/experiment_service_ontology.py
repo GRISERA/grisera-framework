@@ -12,7 +12,7 @@ class ExperimentServiceOntology(ExperimentService):
     """
     ontology_api_service = OntologyApiService()
 
-    def save_experiment(self, experiment: ExperimentIn, model_id: int = None):
+    def save_experiment(self, experiment: ExperimentIn):
         """
         Send request to ontology api to add new experiment
 
@@ -23,6 +23,7 @@ class ExperimentServiceOntology(ExperimentService):
         Returns:
             Result of request as experiment object
         """
+        model_id = 1
         instance_response_experiment = self.ontology_api_service.add_instance(model_id, "Experiment")
 
         if instance_response_experiment["errors"] is not None:

@@ -10,12 +10,11 @@ class ExperimentService:
 
     """
 
-    def save_experiment(self, experiment: ExperimentIn, model_id: int = None):
+    def save_experiment(self, experiment: ExperimentIn):
         """
         Send request to graph api to create new experiment
 
         Args:
-            model_id:
             experiment (ExperimentIn): Experiment to be added
 
         Returns:
