@@ -29,6 +29,6 @@ class ExperimentServiceOntology(ExperimentService):
         if instance_response_experiment["errors"] is not None:
             return ExperimentOut(**experiment.dict(), errors=instance_response_experiment["errors"])
 
-        experiment_id = instance_response_experiment["id"]
+        experiment_label = instance_response_experiment["label"]
 
-        return ExperimentOut(**experiment.dict(), id=experiment_id)
+        return ExperimentOut(**experiment.dict())
