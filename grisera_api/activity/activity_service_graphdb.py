@@ -38,14 +38,14 @@ class ActivityServiceGraphDB(ActivityService):
 
         return ActivityOut(activity=activity.activity, id=activity_id)
 
-    def get_activities(self):
+    def get_activities(self, database_name: str):
         """
         Send request to graph api to get all activities
 
         Returns:
             Result of request as list of activity objects
         """
-        get_response = self.graph_api_service.get_nodes("Activity")
+        get_response = self.graph_api_service.get_nodes("Activity", database_name)
         if get_response["errors"] is not None:
             return ActivitiesOut(errors=get_response["errors"])
         activities = [BasicActivityOut(id=activity["id"], activity=activity["properties"][0]["value"])
@@ -53,7 +53,7 @@ class ActivityServiceGraphDB(ActivityService):
 
         return ActivitiesOut(activities=activities)
 
-    def get_activity(self, activity_id: int):
+    def get_activity(self, activity_id: int, database_name: str):
         """
         Send request to graph api to get given activity
         Args:
@@ -61,7 +61,7 @@ class ActivityServiceGraphDB(ActivityService):
         Returns:
             Result of request as activity object
         """
-        get_response = self.graph_api_service.get_node(activity_id)
+        get_response = self.graph_api_service.get_node(activity_id, database_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=activity_id, errors=get_response["errors"])

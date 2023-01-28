@@ -26,11 +26,11 @@ class ActivityRouter:
 
     @router.get("/activities/{activity_id}", tags=["activities"],
                 response_model=Union[ActivityOut, NotFoundByIdModel])
-    async def get_activity(self, activity_id: int, response: Response):
+    async def get_activity(self, activity_id: int, response: Response, database_name: str):
         """
         Get activity from database
         """
-        get_response = self.activity_service.get_activity(activity_id)
+        get_response = self.activity_service.get_activity(activity_id, database_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -40,12 +40,12 @@ class ActivityRouter:
         return get_response
 
     @router.get("/activities", tags=["activities"], response_model=ActivitiesOut)
-    async def get_activities(self, response: Response):
+    async def get_activities(self, response: Response, database_name: str):
         """
         Get activities from database
         """
 
-        get_response = self.activity_service.get_activities()
+        get_response = self.activity_service.get_activities(database_name)
 
         # add links from hateoas
         get_response.links = get_links(router)

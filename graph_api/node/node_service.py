@@ -28,6 +28,8 @@ class NodeService:
         """
         response = self.db.create_node(node, database_name)
 
+        print("-----response:",response)
+
         if len(response["errors"]) > 0:
             result = NodeOut(errors=response["errors"])
         else:

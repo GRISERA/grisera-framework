@@ -61,7 +61,7 @@ class GraphApiService:
                                    params=params).json()
         return response
 
-    def create_node(self, label: str):
+    def create_node(self, label: str, database_name: str):
         """
         Send to the Graph API request to create a node
 
@@ -70,10 +70,11 @@ class GraphApiService:
         Returns:
             Result of request
         """
+        #request_body = {"labels": [label], "database_name": database_name}
         request_body = {"labels": [label]}
         return self.post("/nodes", request_body)
 
-    def get_nodes(self, label: str):
+    def get_nodes(self, label: str, database_name: str):
         """
         Send to the Graph API request to get nodes with given label
 
@@ -82,10 +83,10 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_params = {"label": label}
+        request_params = {"label": label, "database_name": database_name}
         return self.get("/nodes", request_params)
 
-    def get_node(self, id: int):
+    def get_node(self, id: int, database_name: str):
         """
         Send to the Graph API request to get node with given id
 
@@ -94,7 +95,8 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        return self.get("/nodes/"+str(id), {})
+        request_params = {"database_name": database_name}
+        return self.get("/nodes/"+str(id), request_params)
 
     def get_node_relationships(self, node_id: int):
         """
@@ -142,7 +144,7 @@ class GraphApiService:
         request_params = {}
         return self.delete(f"/nodes/{node_id}/properties", request_params)
 
-    def create_properties(self, node_id: int, node_model: BaseModel):
+    def create_properties(self, node_id: int, node_model: BaseModel, database_name: str):
         """
         Send to the Graph API request to create properties for given node
 
@@ -159,7 +161,7 @@ class GraphApiService:
             if key == 'additional_properties' and value is not None:
                 request_body.extend(self.create_additional_properties(property_dict=node_dict))
             elif value is not None and not isinstance(value, list) and not isinstance(value, dict):
-                request_body.append({"key": key, "value": value})
+                request_body.append({"key": key, "value": value, "database_name": database_name})
 
         return self.post("/nodes/{}/properties".format(node_id), request_body)
 
