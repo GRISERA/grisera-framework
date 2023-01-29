@@ -24,10 +24,11 @@ class NodeRouter:
     node_service = NodeService()
 
     @router.post("/nodes", tags=["nodes"], response_model=NodeOut)
-    async def create_node(self, node: NodeIn, response: Response, database_name: str):
+    async def create_node(self, node: NodeIn, database_name: str, response: Response):
         """
         Create node with optional labels
         """
+        print("create_node Method!")
         create_response = self.node_service.save_node(node, database_name)
         if create_response.errors is not None:
             response.status_code = 422

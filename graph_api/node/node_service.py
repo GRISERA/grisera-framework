@@ -36,6 +36,7 @@ class NodeService:
             node_id = response["results"][0]["data"][0]["meta"][0]["id"]
             result = NodeOut(id=node_id, labels=node.labels)
 
+        print("RESULT of save_node in node_service: ", result)
         return result
 
     def get_node(self, node_id: int, database_name: str):

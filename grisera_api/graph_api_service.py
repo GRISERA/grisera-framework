@@ -13,7 +13,7 @@ class GraphApiService:
     """
     graph_api_url = graph_api_address
 
-    def post(self, url_part, request_body):
+    def post(self, url_part, request_body, database_name):
         """
         Send request post to Graph API
 
@@ -25,8 +25,12 @@ class GraphApiService:
             Result of request
         """
 
+        print("request_body:", request_body)
+        url_part += "?database_name=" + database_name
+        print("SELF URL:", self.graph_api_url + url_part)
         response = requests.post(url=self.graph_api_url + url_part,
                                  json=request_body).json()
+        print("POST RESPONSE:",response)
         return response
 
     def get(self, url_part, params):
@@ -70,9 +74,11 @@ class GraphApiService:
         Returns:
             Result of request
         """
+        print("LABEL: ", label)
         #request_body = {"labels": [label], "database_name": database_name}
-        request_body = {"labels": [label]}
-        return self.post("/nodes", request_body)
+        request_body = {"labels": [label], "database_name": [database_name]}
+        print("LABEL DISCTIONARY", request_body)
+        return self.post("/nodes", request_body, database_name)
 
     def get_nodes(self, label: str, database_name: str):
         """
@@ -163,7 +169,7 @@ class GraphApiService:
             elif value is not None and not isinstance(value, list) and not isinstance(value, dict):
                 request_body.append({"key": key, "value": value, "database_name": database_name})
 
-        return self.post("/nodes/{}/properties".format(node_id), request_body)
+        return self.post("/nodes/{}/properties".format(node_id), request_body, database_name)
 
     def create_relationships(self, start_node: int, end_node: int, name: str):
         """
