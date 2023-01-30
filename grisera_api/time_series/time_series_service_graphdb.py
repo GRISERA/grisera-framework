@@ -57,7 +57,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
 
         return self.get_time_series(time_series_id)
 
-    def get_time_series_nodes(self, params: QueryParams):
+    def get_time_series_nodes(self, params: QueryParams = None):
         """
         Send request to graph api to get time series nodes
 

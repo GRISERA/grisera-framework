@@ -1,9 +1,22 @@
 import asyncio
 import unittest
 import unittest.mock as mock
+from typing import Dict
+
+from pydantic import BaseModel
+
+from time_series.time_series_model import TimeSeriesOut
 from time_series.time_series_router import *
-from time_series.time_series_model import BasicTimeSeriesOut, TimeSeriesOut
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
+
+
+class TestRequest(BaseModel):
+    """
+    Model of test request
+    Attributes:
+        query_params (Optional[Dict[str, str]]): Query params
+    """
+    query_params: Optional[Dict[str, str]]
 
 
 class TestTimeSeriesRouterGet(unittest.TestCase):
@@ -43,7 +56,8 @@ class TestTimeSeriesRouterGet(unittest.TestCase):
         response = Response()
         time_series_router = TimeSeriesRouter()
 
-        result = asyncio.run(time_series_router.get_time_series_nodes(response))
+        result = asyncio.run(
+            time_series_router.get_time_series_nodes(response, TestRequest(query_params={"abc": "def"})))
 
         self.assertEqual(result, TimeSeriesNodesOut(time_series_nodes=[
             TimeSeriesOut(type="Epoch", source="cos"),
