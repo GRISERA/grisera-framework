@@ -383,46 +383,89 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             node_indexes[label] = new_node_index
             query["nodes"].append(new_node)
             if label == "Observable Information":
-                relation = {
+                query["relations"].append({
                     "begin_node_index": 0,
                     "end_node_index": new_node_index,
                     "label": "hasObservableInformation"
-                }
-                query["relations"].append(relation)
+                })
             elif label == "Recording":
-                relation = {
+                query["relations"].append({
                     "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Observable Information"),
                     "end_node_index": new_node_index,
                     "label": "hasRecording"
-                }
-                query["relations"].append(relation)
+                })
             elif label == "Participation":
-                relation = {
+                query["relations"].append({
                     "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Recording"),
                     "end_node_index": new_node_index,
                     "label": "hasParticipation"
-                }
-                query["relations"].append(relation)
+                })
             elif label == "Participant State":
-                relation = {
+                query["relations"].append({
                     "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Participation"),
                     "end_node_index": new_node_index,
                     "label": "hasParticipantState"
-                }
-                query["relations"].append(relation)
+                })
             elif label == "Participant":
-                relation = {
+                query["relations"].append({
                     "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Participant State"),
                     "end_node_index": new_node_index,
                     "label": "hasParticipant"
-                }
-                query["relations"].append(relation)
+                })
+            elif label == "Activity Execution":
+                query["relations"].append({
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Participation"),
+                    "end_node_index": new_node_index,
+                    "label": "hasActivityExecution"
+                })
+            elif label == "Activity":
+                query["relations"].append({
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Activity Execution"),
+                    "end_node_index": new_node_index,
+                    "label": "hasActivity"
+                })
+            elif label == "Experiment":
+                new_activity_execution_index = len(query["nodes"])
+                query["nodes"].append({
+                    "label": "Activity Execution"
+                })
+                query["relations"].append({
+                    "begin_node_index": new_activity_execution_index,
+                    "end_node_index": get_or_append_node_to_query(query, node_indexes, "Activity Execution"),
+                    "label": "nextActivityExecution",
+                    "min_count": 0
+                })
+                query["relations"].append({
+                    "begin_node_index": new_node_index,
+                    "end_node_index": new_activity_execution_index,
+                    "label": "hasScenario"
+                })
+            elif label == "Registered Channel":
+                query["relations"].append({
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Recording"),
+                    "end_node_index": new_node_index,
+                    "label": "hasRegisteredChannel"
+                })
+            elif label == "Channel":
+                query["relations"].append({
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Registered Channel"),
+                    "end_node_index": new_node_index,
+                    "label": "hasChannel"
+                })
+            elif label == "Registered Data":
+                query["relations"].append({
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Channel"),
+                    "end_node_index": new_node_index,
+                    "label": "hasRegisteredData"
+                })
             else:
                 print("Unknown node label")
             return new_node_index
 
         node_indexes = {}
-        for node_label in ["Observable Information", "Recording", "Participation", "Participant State", "Participant"]:
+        for node_label in ["Observable Information", "Recording", "Participation", "Participant State", "Participant",
+                           "Activity Execution", "Activity", "Experiment", "Registered Channel", "Channel",
+                           "Registered Data"]:
             node_param_name = node_label.lower().replace(" ", "")
             if node_param_name in params_per_node:
                 node_id = None
