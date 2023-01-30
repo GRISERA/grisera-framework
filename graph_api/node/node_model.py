@@ -1,4 +1,4 @@
-from typing import Set, Optional, Any, List
+from typing import Set, Optional, Any, List, Dict
 
 from pydantic import BaseModel
 
@@ -64,6 +64,7 @@ class NodeQueryIn(BaseModel):
     id: Optional[int]
     label: Optional[str]
     result = False
+    parameters: Optional[Dict[str, str]]
 
 
 class RelationQueryIn(BaseModel):

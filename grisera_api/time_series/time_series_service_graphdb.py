@@ -1,10 +1,12 @@
+from starlette.datastructures import QueryParams
+
 from graph_api_service import GraphApiService
 from measure.measure_service_graphdb import MeasureServiceGraphDB
+from models.not_found_model import NotFoundByIdModel
+from models.relation_information_model import RelationInformation
 from observable_information.observable_information_service_graphdb import ObservableInformationServiceGraphDB
 from time_series.time_series_model import TimeSeriesPropertyIn, BasicTimeSeriesOut, \
     TimeSeriesNodesOut, TimeSeriesOut, TimeSeriesIn, TimeSeriesRelationIn
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
 from time_series.time_series_service import TimeSeriesService
 
 
@@ -55,7 +57,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
 
         return self.get_time_series(time_series_id)
 
-    def get_time_series_nodes(self):
+    def get_time_series_nodes(self, params: QueryParams):
         """
         Send request to graph api to get time series nodes
 

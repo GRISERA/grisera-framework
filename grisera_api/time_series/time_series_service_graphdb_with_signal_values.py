@@ -1,7 +1,10 @@
 from typing import List, Union
 
+from starlette.datastructures import QueryParams
+
+from models.not_found_model import NotFoundByIdModel
 from time_series.time_series_model import Type, TimeSeriesIn, TimeSeriesOut, SignalIn, SignalValueNodesIn, \
-    TimestampNodesIn
+    TimestampNodesIn, TimeSeriesNodesOut, BasicTimeSeriesOut
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 
 
@@ -180,7 +183,8 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
     def save_signal_values(self, signal_values: List[SignalIn], time_series_id: int, experiment_id: int,
                            timestamp_type: Type):
 
-        timestamp, experiment_timestamp_relation_id = self.get_neighbour_node(experiment_id, "takes")
+        timestamp, experiment_timestamp_relation_id = self.get_neighbour_node(experiment_id, "takes") \
+            if experiment_id is not None else (None, None)
         signal_value_node = None
 
         for signal_value in signal_values:
@@ -339,3 +343,150 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             else:
                 signal_values.append({'signal_value': row[0], 'start_timestamp': row[1], 'end_timestamp': row[2]})
         return signal_values
+
+    def get_time_series_nodes(self, params: QueryParams):
+        """
+        Send request to graph api to get time series nodes
+
+        Returns:
+            Result of request as list of time series nodes objects
+        """
+        query = {
+            "nodes": [
+                {
+                    "label": "Time Series",
+                    "result": True
+                },
+            ],
+            "relations": [
+            ]
+        }
+        params_per_node = {}
+        for param_key, param_value in dict(params).items():
+            if "_" in param_key:
+                param_key_prefix, param_key_suffix = param_key.split("_", 1)
+                if param_key_prefix not in params_per_node:
+                    params_per_node[param_key_prefix] = {}
+                params_per_node[param_key_prefix][param_key_suffix] = param_value
+            else:
+                print("Bad query param value format")
+
+        def get_or_append_node_to_query(query, node_indexes, label, id=None, parameters={}):
+            if label in node_indexes:
+                return node_indexes[label]
+            new_node = {"label": label}
+            if id is not None:
+                new_node["id"] = id
+            if parameters is not None:
+                new_node["parameters"] = parameters
+            new_node_index = len(query["nodes"])
+            node_indexes[label] = new_node_index
+            query["nodes"].append(new_node)
+            if label == "Observable Information":
+                relation = {
+                    "begin_node_index": 0,
+                    "end_node_index": new_node_index,
+                    "label": "hasObservableInformation"
+                }
+                query["relations"].append(relation)
+            elif label == "Recording":
+                relation = {
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Observable Information"),
+                    "end_node_index": new_node_index,
+                    "label": "hasRecording"
+                }
+                query["relations"].append(relation)
+            elif label == "Participation":
+                relation = {
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Recording"),
+                    "end_node_index": new_node_index,
+                    "label": "hasParticipation"
+                }
+                query["relations"].append(relation)
+            elif label == "Participant State":
+                relation = {
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Participation"),
+                    "end_node_index": new_node_index,
+                    "label": "hasParticipantState"
+                }
+                query["relations"].append(relation)
+            elif label == "Participant":
+                relation = {
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Participant State"),
+                    "end_node_index": new_node_index,
+                    "label": "hasParticipant"
+                }
+                query["relations"].append(relation)
+            else:
+                print("Unknown node label")
+            return new_node_index
+
+        node_indexes = {}
+        for node_label in ["Observable Information", "Recording", "Participation", "Participant State", "Participant"]:
+            node_param_name = node_label.lower().replace(" ", "")
+            if node_param_name in params_per_node:
+                node_id = None
+                if "id" in params_per_node[node_param_name]:
+                    node_id = int(params_per_node[node_param_name]["id"])
+                    del params_per_node[node_param_name]["id"]
+                get_or_append_node_to_query(query, node_indexes, node_label, node_id, params_per_node[node_param_name])
+
+        response = self.graph_api_service.get_nodes_by_query(query)
+
+        time_series_nodes = []
+        for time_series_row in response["rows"]:
+            time_series_node = time_series_row[0]
+            properties = {'id': time_series_node['id'], 'additional_properties': []}
+            for property in time_series_node["properties"]:
+                if property["key"] in ["type", "source"]:
+                    properties[property["key"]] = property["value"]
+                else:
+                    properties['additional_properties'].append({'key': property['key'], 'value': property['value']})
+            time_series = BasicTimeSeriesOut(**properties)
+            time_series_nodes.append(time_series)
+
+        return TimeSeriesNodesOut(time_series_nodes=time_series_nodes)
+
+    def delete_time_series(self, time_series_id: int):
+        """
+        Send request to graph api to delete given time series
+
+        Args:
+            time_series_id (int): Id of time series
+
+        Returns:
+            Result of request as time series object
+        """
+        get_response = super().delete_time_series(time_series_id)
+
+        if type(get_response) is NotFoundByIdModel:
+            return get_response
+
+        timestamp_ids_to_analyze = []
+        for signal_value in get_response.signal_values:
+            self.graph_api_service.delete_node(signal_value["signal_value"]["id"])
+            if get_response.type == Type.timestamp.value:
+                timestamp_ids_to_analyze.append(signal_value["timestamp"]["id"])
+            else:
+                timestamp_ids_to_analyze.append(signal_value["start_timestamp"]["id"])
+                timestamp_ids_to_analyze.append(signal_value["end_timestamp"]["id"])
+        for timestamp_id in timestamp_ids_to_analyze:
+            if self.get_neighbour_node_id(timestamp_id, "inSec") == (None, None) and \
+                    self.get_neighbour_node_id(timestamp_id, "startInSec") == (None, None) and \
+                    self.get_neighbour_node_id(timestamp_id, "endInSec") == (None, None):
+                next_timestamp_id = self.get_neighbour_node_id(timestamp_id, "next")
+                previous_timestamp_id = self.get_neighbour_node_id(timestamp_id, "next", False)
+                previous_experiment_id = self.get_neighbour_node_id(timestamp_id, "takes", False)
+
+                self.graph_api_service.delete_node(timestamp_id)
+
+                if next_timestamp_id is not None:
+                    if previous_experiment_id is not None:
+                        self.graph_api_service.create_relationships(start_node=previous_experiment_id,
+                                                                    end_node=next_timestamp_id,
+                                                                    name="takes")
+                    elif previous_timestamp_id is not None:
+                        self.graph_api_service.create_relationships(start_node=previous_timestamp_id,
+                                                                    end_node=next_timestamp_id,
+                                                                    name="next")
+        return get_response

@@ -146,6 +146,9 @@ class DatabaseService:
                 return_list.append(node_label)
             if node.id is not None:
                 where_list.append(f"ID({node_label})={str(node.id)}")
+            if node.parameters is not None:
+                for parameter, value in node.parameters.items():
+                    where_list.append(f"{node_label}.{parameter}='{value}'")
             if node.label is not None:
                 statement += f":`{node.label}`"
             statement += ")"

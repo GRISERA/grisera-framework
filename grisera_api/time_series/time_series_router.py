@@ -1,13 +1,16 @@
+from typing import Union, Optional
+
 from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
+from starlette.requests import Request
+
 from hateoas import get_links
+from models.not_found_model import NotFoundByIdModel
+from services import Services
 from time_series.time_series_model import TimeSeriesIn, TimeSeriesNodesOut, TimeSeriesOut, \
     TimeSeriesPropertyIn, TimeSeriesRelationIn
 from time_series.time_series_service import TimeSeriesService
-from typing import Union
-from models.not_found_model import NotFoundByIdModel
-from services import Services
 
 router = InferringRouter()
 
@@ -39,12 +42,15 @@ class TimeSeriesRouter:
         return create_response
 
     @router.get("/time_series", tags=["time series"], response_model=TimeSeriesNodesOut)
-    async def get_time_series_nodes(self, response: Response):
+    async def get_time_series_nodes(self, response: Response, request: Request,
+                                    recording_id: Optional[int] = None,
+                                    participant_date_of_birth: Optional[str] = None,
+                                    participant_id: Optional[int] = None):
         """
         Get time series nodes from database
         """
 
-        get_response = self.time_series_service.get_time_series_nodes()
+        get_response = self.time_series_service.get_time_series_nodes(request.query_params)
 
         # add links from hateoas
         get_response.links = get_links(router)

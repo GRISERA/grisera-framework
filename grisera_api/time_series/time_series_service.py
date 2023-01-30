@@ -1,10 +1,6 @@
-from graph_api_service import GraphApiService
-from measure.measure_service import MeasureService
-from observable_information.observable_information_service import ObservableInformationService
-from time_series.time_series_model import TimeSeriesPropertyIn, BasicTimeSeriesOut, \
-    TimeSeriesNodesOut, TimeSeriesOut, TimeSeriesIn, TimeSeriesRelationIn
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from starlette.datastructures import QueryParams
+
+from time_series.time_series_model import TimeSeriesPropertyIn, TimeSeriesIn, TimeSeriesRelationIn
 
 
 class TimeSeriesService:
@@ -25,9 +21,12 @@ class TimeSeriesService:
         """
         raise Exception("save_time_series not implemented yet")
 
-    def get_time_series_nodes(self):
+    def get_time_series_nodes(self, params: QueryParams):
         """
         Send request to graph api to get time series nodes
+
+        Args:
+            params (QueryParams): Get parameters
 
         Returns:
             Result of request as list of time series nodes objects
