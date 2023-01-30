@@ -5,7 +5,7 @@ from graph_api_service import GraphApiService
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
 from property.property_model import PropertyIn
-from time_series.time_series_model import TimeSeriesOut
+from time_series.time_series_model import TimeSeriesOut, TimeSeriesNodesOut, BasicTimeSeriesOut
 from time_series.time_series_service_graphdb_with_signal_values import TimeSeriesServiceGraphDBWithSignalValues
 
 
@@ -87,3 +87,43 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
 
         self.assertEqual(result, not_found)
         get_node_mock.assert_called_once_with(id_node)
+
+    @mock.patch.object(GraphApiService, 'get_nodes_by_query')
+    def test_get_time_series_nodes(self, get_nodes_by_query):
+        get_nodes_by_query.return_value = {
+            'rows': [
+                [{'labels': ['Time Series'], 'id': 2,
+                  'properties': [{'key': 'value', 'value': 'test1'}, {'key': 'type', 'value': 'Timestamp'}]}],
+                [{'labels': ['Time Series'], 'id': 4,
+                  'properties': [{'key': 'value', 'value': 'test2'}, {'key': 'type', 'value': 'Timestamp'}]}],
+            ],
+            'errors': []
+        }
+        time_series_one = BasicTimeSeriesOut(id=2, type="Timestamp", additional_properties=[
+            PropertyIn(key='value', value='test1')])
+        time_series_two = BasicTimeSeriesOut(id=4, type="Timestamp", additional_properties=[
+            PropertyIn(key='value', value='test2')])
+        time_series_nodes = TimeSeriesNodesOut(time_series_nodes=[time_series_one, time_series_two])
+        time_series_nodes_service = TimeSeriesServiceGraphDBWithSignalValues()
+
+        result = time_series_nodes_service.get_time_series_nodes({"participant_date_of_birth": "2023-01-11"})
+
+        self.assertEqual(time_series_nodes, result)
+        get_nodes_by_query.assert_called_once_with({
+            'nodes':
+                [
+                    {'label': 'Time Series', 'result': True},
+                    {'label': 'Participant', 'parameters': {'date_of_birth': '2023-01-11'}},
+                    {'label': 'Participant State', 'parameters': {}},
+                    {'label': 'Participation', 'parameters': {}},
+                    {'label': 'Recording', 'parameters': {}},
+                    {'label': 'Observable Information', 'parameters': {}}
+                ],
+            'relations': [
+                {'begin_node_index': 0, 'end_node_index': 5, 'label': 'hasObservableInformation'},
+                {'begin_node_index': 5, 'end_node_index': 4, 'label': 'hasRecording'},
+                {'begin_node_index': 4, 'end_node_index': 3, 'label': 'hasParticipation'},
+                {'begin_node_index': 3, 'end_node_index': 2, 'label': 'hasParticipantState'},
+                {'begin_node_index': 2, 'end_node_index': 1, 'label': 'hasParticipant'}
+            ]
+        })
