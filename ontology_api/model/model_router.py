@@ -5,6 +5,7 @@ from model.model_service import ModelService
 from hateoas import get_links
 from fastapi.responses import FileResponse
 from model.model_model import ModelOut
+from instance.instance_model import MinimalInstanceModelIn
 import os
 
 router = InferringRouter()
@@ -63,3 +64,4 @@ class ModelRouter:
             return {"error": "File not found!"}
         else:
             return FileResponse(get_response, media_type="application/xml")
+
