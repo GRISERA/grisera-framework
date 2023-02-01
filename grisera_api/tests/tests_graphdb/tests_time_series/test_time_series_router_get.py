@@ -5,7 +5,6 @@ from typing import Dict
 
 from pydantic import BaseModel
 
-from time_series.time_series_model import TimeSeriesOut
 from time_series.time_series_router import *
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 
@@ -28,10 +27,10 @@ class TestTimeSeriesRouterGet(unittest.TestCase):
         response = Response()
         time_series_router = TimeSeriesRouter()
 
-        result = asyncio.run(time_series_router.get_time_series(time_series_id, response))
+        result = asyncio.run(time_series_router.get_time_series(time_series_id, response, 10, 20))
 
         self.assertEqual(result, TimeSeriesOut(type="Epoch", source="cos", links=get_links(router)))
-        get_time_series_mock.assert_called_once_with(time_series_id)
+        get_time_series_mock.assert_called_once_with(time_series_id, 10, 20)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(TimeSeriesServiceGraphDB, 'get_time_series')
@@ -41,11 +40,11 @@ class TestTimeSeriesRouterGet(unittest.TestCase):
         time_series_id = 1
         time_series_router = TimeSeriesRouter()
 
-        result = asyncio.run(time_series_router.get_time_series(time_series_id, response))
+        result = asyncio.run(time_series_router.get_time_series(time_series_id, response, 10, 20))
 
         self.assertEqual(result, TimeSeriesOut(type="Epoch", source="cos", errors={'errors': ['test']},
-                                                             links=get_links(router)))
-        get_time_series_mock.assert_called_once_with(time_series_id)
+                                               links=get_links(router)))
+        get_time_series_mock.assert_called_once_with(time_series_id, 10, 20)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(TimeSeriesServiceGraphDB, 'get_time_series_nodes')

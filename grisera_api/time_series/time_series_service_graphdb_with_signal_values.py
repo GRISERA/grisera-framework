@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Optional
 
 from starlette.datastructures import QueryParams
 
@@ -228,29 +228,51 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             signal_value_node = current_signal_value_node
         return None
 
-    def get_time_series(self, time_series_id: int):
+    def get_time_series(self, time_series_id: int,
+                        signal_min_value: Optional[int] = None,
+                        signal_max_value: Optional[int] = None):
         """
         Send request to graph api to get given time series
         Args:
             time_series_id (int): Id of time series
+            signal_min_value (Optional[int]): Filter signal values by min value
+            signal_max_value (Optional[int]): Filter signal values by max value
         Returns:
             Result of request as time series object
         """
         time_series = super().get_time_series(time_series_id)
         if time_series.errors is None:
-            time_series.signal_values = self.get_signal_values(time_series_id, time_series.type)
+            time_series.signal_values = self.get_signal_values(time_series_id, time_series.type,
+                                                               signal_min_value, signal_max_value)
         return time_series
 
-    def get_signal_values(self, time_series_id: int, time_series_type: str):
+    def get_signal_values(self, time_series_id: int, time_series_type: str,
+                          signal_min_value: Optional[int] = None,
+                          signal_max_value: Optional[int] = None):
         """
         Send requests to graph api to get all signal values
         Args:
             time_series_id (int): id of the time series
             time_series_type (str): type of the time series
+            signal_min_value (Optional[int]): Filter signal values by min value
+            signal_max_value (Optional[int]): Filter signal values by max value
         Returns:
             Array of signal value objects
         """
 
+        parameters = []
+        if signal_min_value is not None:
+            parameters.append({
+                "key": "value",
+                "operator": "greater",
+                "value": signal_min_value
+            })
+        if signal_max_value is not None:
+            parameters.append({
+                "key": "value",
+                "operator": "less",
+                "value": signal_max_value
+            })
         query_timestamp = {
             "nodes": [
                 {
@@ -262,7 +284,8 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 },
                 {
                     "label": "Signal Value",
-                    "result": True
+                    "result": True,
+                    "parameters": parameters
                 },
                 {
                     "label": "Timestamp",
@@ -299,7 +322,8 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 },
                 {
                     "label": "Signal Value",
-                    "result": True
+                    "result": True,
+                    "parameters": parameters
                 },
                 {
                     "label": "Timestamp",
@@ -366,8 +390,12 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             if "_" in param_key:
                 param_key_prefix, param_key_suffix = param_key.split("_", 1)
                 if param_key_prefix not in params_per_node:
-                    params_per_node[param_key_prefix] = {}
-                params_per_node[param_key_prefix][param_key_suffix] = param_value
+                    params_per_node[param_key_prefix] = []
+                params_per_node[param_key_prefix].append({
+                    "key": param_key_suffix,
+                    "operator": "equals",
+                    "value": param_value
+                })
             else:
                 print("Bad query param value format")
 

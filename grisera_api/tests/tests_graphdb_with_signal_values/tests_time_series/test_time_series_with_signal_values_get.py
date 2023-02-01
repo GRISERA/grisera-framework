@@ -113,7 +113,9 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
             'nodes':
                 [
                     {'label': 'Time Series', 'result': True},
-                    {'label': 'Participant', 'parameters': {'date_of_birth': '2023-01-11'}},
+                    {'label': 'Participant', 'parameters': [
+                        {'key': 'date_of_birth', 'operator': 'equals', 'value': '2023-01-11'}
+                    ]},
                     {'label': 'Participant State', 'parameters': {}},
                     {'label': 'Participation', 'parameters': {}},
                     {'label': 'Recording', 'parameters': {}},

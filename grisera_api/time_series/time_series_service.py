@@ -1,3 +1,5 @@
+from typing import Optional
+
 from starlette.datastructures import QueryParams
 
 from time_series.time_series_model import TimeSeriesPropertyIn, TimeSeriesIn, TimeSeriesRelationIn
@@ -33,12 +35,16 @@ class TimeSeriesService:
         """
         raise Exception("get_time_series_nodes not implemented yet")
 
-    def get_time_series(self, time_series_id: int):
+    def get_time_series(self, time_series_id: int,
+                        signal_min_value: Optional[int] = None,
+                        signal_max_value: Optional[int] = None):
         """
         Send request to graph api to get given time series
 
         Args:
             time_series_id (int): Id of time series
+            signal_min_value (Optional[int]): Filter signal values by min value
+            signal_max_value (Optional[int]): Filter signal values by max value
 
         Returns:
             Result of request as time series object

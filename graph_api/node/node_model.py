@@ -1,4 +1,4 @@
-from typing import Set, Optional, Any, List, Dict
+from typing import Set, Optional, Any, List
 
 from pydantic import BaseModel
 
@@ -53,6 +53,19 @@ class NodesOut(BaseModel):
     links: Optional[List] = None
 
 
+class NodeParameterQueryIn(BaseModel):
+    """
+    Model of node query to acquire from client
+    Attributes:
+        key (str): name of parameter
+        operator (str): compare operator
+        value (str): compared value
+    """
+    key: str
+    operator: str
+    value: str
+
+
 class NodeQueryIn(BaseModel):
     """
     Model of node query to acquire from client
@@ -64,7 +77,7 @@ class NodeQueryIn(BaseModel):
     id: Optional[int]
     label: Optional[str]
     result = False
-    parameters: Optional[Dict[str, str]]
+    parameters: Optional[List[NodeParameterQueryIn]]
 
 
 class RelationQueryIn(BaseModel):

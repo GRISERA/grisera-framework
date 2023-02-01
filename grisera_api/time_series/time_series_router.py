@@ -43,9 +43,15 @@ class TimeSeriesRouter:
 
     @router.get("/time_series", tags=["time series"], response_model=TimeSeriesNodesOut)
     async def get_time_series_nodes(self, response: Response, request: Request,
-                                    recording_id: Optional[int] = None,
+                                    nodename_property_name: Optional[str] = None,
+                                    experiment_experiment_name: Optional[str] = None,
+                                    participant_id: Optional[int] = None,
                                     participant_date_of_birth: Optional[str] = None,
-                                    participant_id: Optional[int] = None):
+                                    participant_sex: Optional[str] = None,
+                                    participant_name: Optional[str] = None,
+                                    participantstate_age: Optional[str] = None,
+                                    recording_id: Optional[int] = None,
+                                    recording_source: Optional[str] = None):
         """
         Get time series nodes from database
         """
@@ -59,12 +65,14 @@ class TimeSeriesRouter:
 
     @router.get("/time_series/{time_series_id}", tags=["time series"],
                 response_model=Union[TimeSeriesOut, NotFoundByIdModel])
-    async def get_time_series(self, time_series_id: int, response: Response):
+    async def get_time_series(self, time_series_id: int, response: Response,
+                              signal_min_value: Optional[int] = None,
+                              signal_max_value: Optional[int] = None):
         """
         Get time series from database
         """
 
-        get_response = self.time_series_service.get_time_series(time_series_id)
+        get_response = self.time_series_service.get_time_series(time_series_id, signal_min_value, signal_max_value)
         if get_response.errors is not None:
             response.status_code = 404
 

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from starlette.datastructures import QueryParams
 
 from graph_api_service import GraphApiService
@@ -80,12 +82,16 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
 
         return TimeSeriesNodesOut(time_series_nodes=time_series_nodes)
 
-    def get_time_series(self, time_series_id: int):
+    def get_time_series(self, time_series_id: int,
+                        signal_min_value: Optional[int] = None,
+                        signal_max_value: Optional[int] = None):
         """
         Send request to graph api to get given time series
 
         Args:
             time_series_id (int): Id of time series
+            signal_min_value (Optional[int]): Filter signal values by min value
+            signal_max_value (Optional[int]): Filter signal values by max value
 
         Returns:
             Result of request as time series object
