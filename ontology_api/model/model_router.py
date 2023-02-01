@@ -1,10 +1,11 @@
-from fastapi import Response, UploadFile, BackgroundTasks, File
+from fastapi import Response, UploadFile, File
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from model.model_service import ModelService
 from hateoas import get_links
 from fastapi.responses import FileResponse
 from model.model_model import ModelOut
+from instance.instance_model import MinimalInstanceModelIn
 import os
 
 router = InferringRouter()
@@ -20,28 +21,40 @@ class ModelRouter:
     model_service = ModelService()
 
     @router.post("/model", tags=["model"], response_model=ModelOut)
-    async def create_model(self, response: Response, background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+    async def create_model(self, response: Response, file: UploadFile = File(...)):
         # Problem with using UploadFile with Pydantic model:
         # "Value not declarable with JSON Schema".
         # Quick fix based on https://github.com/tiangolo/fastapi/issues/657
         """
-        Create ontology model based on uploaded file or base iri
+        Create ontology model based on uploaded file
         """
-        if isinstance(file, UploadFile):
-            create_response = self.model_service.save_model(file)
-            background_tasks.add_task(os.remove, file.filename)
-        else:
-            create_response = self.model_service.create_base_model()
+
+        create_response = self.model_service.save_model(file)
+
         if create_response.errors is not None:
             response.status_code = 422
 
-            # add links from hateoas
+        # add links from hateoas
         create_response.links = get_links(router)
 
         return create_response
 
+    @router.post("/model_basic", tags=["model"], response_model=ModelOut)
+    async def create_base_model(self, response: Response):
+        """
+        Create base ontology model
+        """
+
+        create_response = self.model_service.create_base_model()
+        if create_response.errors is not None:
+            response.status_code = 422
+
+        # add links from hateoas
+        create_response.links = get_links(router)
+        return create_response
+
     @router.get("/model/{id}", tags=["model"])
-    async def get_owl(self, id: int, response: Response, background_tasks: BackgroundTasks):
+    async def get_owl(self, id: int, response: Response):
         """
         Get OWL file from model with given id
         """
@@ -50,5 +63,5 @@ class ModelRouter:
             response.status_code = 404
             return {"error": "File not found!"}
         else:
-            background_tasks.add_task(os.remove, get_response)
             return FileResponse(get_response, media_type="application/xml")
+
