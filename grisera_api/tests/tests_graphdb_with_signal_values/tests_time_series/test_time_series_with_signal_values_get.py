@@ -116,10 +116,10 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
                     {'label': 'Participant', 'parameters': [
                         {'key': 'date_of_birth', 'operator': 'equals', 'value': '2023-01-11'}
                     ]},
-                    {'label': 'Participant State', 'parameters': {}},
-                    {'label': 'Participation', 'parameters': {}},
-                    {'label': 'Recording', 'parameters': {}},
-                    {'label': 'Observable Information', 'parameters': {}}
+                    {'label': 'Participant State'},
+                    {'label': 'Participation'},
+                    {'label': 'Recording'},
+                    {'label': 'Observable Information'}
                 ],
             'relations': [
                 {'begin_node_index': 0, 'end_node_index': 5, 'label': 'hasObservableInformation'},

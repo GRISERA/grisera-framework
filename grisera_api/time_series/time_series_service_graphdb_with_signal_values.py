@@ -399,7 +399,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             else:
                 print("Bad query param value format")
 
-        def get_or_append_node_to_query(query, node_indexes, label, id=None, parameters={}):
+        def get_or_append_node_to_query(query, node_indexes, label, id=None, parameters=None):
             if label in node_indexes:
                 return node_indexes[label]
             new_node = {"label": label}
