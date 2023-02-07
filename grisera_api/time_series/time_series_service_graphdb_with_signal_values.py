@@ -542,12 +542,13 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 timestamp_ids_to_analyze.append(signal_value["start_timestamp"]["id"])
                 timestamp_ids_to_analyze.append(signal_value["end_timestamp"]["id"])
         for timestamp_id in timestamp_ids_to_analyze:
-            if self.get_neighbour_node_id(timestamp_id, "inSec") == (None, None) and \
-                    self.get_neighbour_node_id(timestamp_id, "startInSec") == (None, None) and \
-                    self.get_neighbour_node_id(timestamp_id, "endInSec") == (None, None):
-                next_timestamp_id = self.get_neighbour_node_id(timestamp_id, "next")
-                previous_timestamp_id = self.get_neighbour_node_id(timestamp_id, "next", False)
-                previous_experiment_id = self.get_neighbour_node_id(timestamp_id, "takes", False)
+            neighbour_signal_a_id, _ = self.get_neighbour_node_id(timestamp_id, "inSec")
+            neighbour_signal_b_id, _ = self.get_neighbour_node_id(timestamp_id, "startInSec")
+            neighbour_signal_c_id, _ = self.get_neighbour_node_id(timestamp_id, "endInSec")
+            if neighbour_signal_a_id is None and neighbour_signal_b_id is None and neighbour_signal_c_id is None:
+                next_timestamp_id, _ = self.get_neighbour_node_id(timestamp_id, "next")
+                previous_timestamp_id, _ = self.get_neighbour_node_id(timestamp_id, "next", False)
+                previous_experiment_id, _ = self.get_neighbour_node_id(timestamp_id, "takes", False)
 
                 self.graph_api_service.delete_node(timestamp_id)
 
