@@ -26,7 +26,7 @@ class InstanceService:
             return InstanceModelOut(errors="Class named " + str(class_name) + " not found in Model " + str(model_id))
 
         instance = owl_class(model_in.name)
-        instance.label = [locstr(model_in.name, lang = "en")]
+        instance.label = [locstr(model_in.name, lang="en")]
         model_out = self.model_service.update_ontology(model_id, onto)
 
         if model_out.errors is not None:
@@ -35,6 +35,9 @@ class InstanceService:
             return InstanceModelOut(label=model_in.name)
 
     def get_instance(self, model_id: int, class_name: str, instance_label: str):
+        """
+                Return instance with a given label
+        """
         onto = self.model_service.load_ontology(model_id)
         if onto is None:
             return InstanceModelOut(errors="Model with id " + str(model_id) + " not found")
@@ -46,4 +49,3 @@ class InstanceService:
                 return FullInstanceModelOut(instance_id=i.name, label=instance_label)
         return InstanceModelOut(
             errors="Instance with label " + str(instance_label) + " not found in Model " + str(model_id))
-
