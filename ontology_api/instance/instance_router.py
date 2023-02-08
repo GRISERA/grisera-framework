@@ -9,7 +9,6 @@ from instance.instance_model import MinimalInstanceModelIn
 from instance.instance_service import InstanceService
 import os
 
-
 router = InferringRouter()
 
 
@@ -44,6 +43,12 @@ class InstanceRouter:
                 response_model=None)
     async def get_instance(self, model_id: int, class_name: str, instance_label: str, response: Response):
 
+        """
+                Return instance with a given label.
+
+                Return 422 when a model with given model_id does not exist
+                or class with given class_name does not exist in model or instance with given label does not exist.
+        """
         instance_out = self.instance_service.get_instance(model_id, class_name, instance_label)
         if instance_out.errors is not None:
             response.status_code = 404
