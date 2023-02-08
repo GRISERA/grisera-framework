@@ -1,6 +1,6 @@
-from owlready2 import get_ontology,locstr
+from owlready2 import get_ontology, locstr
 from model.model_model import ModelOut
-from instance.instance_model import MinimalInstanceModelIn
+from instance.instance_model import MinimalInstanceModelIn, FullInstanceModelOut
 from instance.instance_model import MinimalModelOut as InstanceModelOut
 from model.model_service import ModelService
 from fastapi import UploadFile
@@ -33,3 +33,17 @@ class InstanceService:
             return InstanceModelOut(errors=model_out.errors)
         else:
             return InstanceModelOut(label=model_in.name)
+
+    def get_instance(self, model_id: int, class_name: str, instance_label: str):
+        onto = self.model_service.load_ontology(model_id)
+        if onto is None:
+            return InstanceModelOut(errors="Model with id " + str(model_id) + " not found")
+        owl_class = onto[class_name]
+        if owl_class is None:
+            return InstanceModelOut(errors="Class named " + str(class_name) + " not found in Model " + str(model_id))
+        for i in owl_class.instances():
+            if len(i.label) > 0 and i.label[0] == instance_label:
+                return FullInstanceModelOut(instance_id=i.name, label=instance_label)
+        return InstanceModelOut(
+            errors="Instance with label " + str(instance_label) + " not found in Model " + str(model_id))
+
