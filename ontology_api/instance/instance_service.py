@@ -43,9 +43,13 @@ class InstanceService:
             return InstanceModelOut(errors="Model with id " + str(model_id) + " not found")
         owl_class = onto[class_name]
         if owl_class is None:
+            onto.destroy()
             return InstanceModelOut(errors="Class named " + str(class_name) + " not found in Model " + str(model_id))
         for i in owl_class.instances():
             if len(i.label) > 0 and i.label[0] == instance_label:
-                return FullInstanceModelOut(instance_id=i.name, label=instance_label)
+                instance_id = i.name
+                onto.destroy()
+                return FullInstanceModelOut(instance_id=instance_id, label=instance_label)
+        onto.destroy()
         return InstanceModelOut(
             errors="Instance with label " + str(instance_label) + " not found in Model " + str(model_id))
