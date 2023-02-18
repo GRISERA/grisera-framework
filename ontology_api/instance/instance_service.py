@@ -23,6 +23,7 @@ class InstanceService:
 
         owl_class = onto[class_name]
         if owl_class is None:
+            onto.destroy()
             return InstanceModelOut(errors="Class named " + str(class_name) + " not found in Model " + str(model_id))
 
         instance = owl_class(model_in.name)
