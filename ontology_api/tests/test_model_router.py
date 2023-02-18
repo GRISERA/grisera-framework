@@ -29,7 +29,7 @@ class ModelRouterTestCase(unittest.TestCase):
         new_file = open("testfile.owl", "x")
         new_file.write("<rdf:RDF xml:base=\"http://www.semanticweb.org/GRISERA/contextualOntology\"><owl:Ontology rdf:about=\"http://www.semanticweb.org/GRISERA/contextualOntology\"/></rdf:RDF> ")
         new_file.close()
-        file = UploadFile('testfile.owl')
+        file = UploadFile(filename='testfile.owl')
         result = asyncio.run(model_router.create_model(response, file))
         os.remove("testfile.owl")
         os.remove("database" + os.path.sep + "1.owl")
@@ -42,7 +42,7 @@ class ModelRouterTestCase(unittest.TestCase):
         new_file.write("Rose is a rose is a rose is a rose")
         new_file.close()
         with open("tests" + os.path.sep + "tmp_owl" + os.path.sep + "testfile.txt", "rb") as f:
-            file = UploadFile('testfile.txt',f)
+            file = UploadFile(filename='testfile.txt', file=f)
             result = asyncio.run(model_router.create_model(response, file))
         os.remove("tests" + os.path.sep + "tmp_owl" + os.path.sep + "testfile.txt")
         self.assertEqual(response.status_code, 422)
