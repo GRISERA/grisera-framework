@@ -26,12 +26,14 @@ class ModelRouterTestCase(unittest.TestCase):
     def test_create_model_with_file_without_error(self):
         model_router = ModelRouter()
         response = Response()
-        new_file = open("testfile.owl", "x")
+        new_file = open("tests" + os.path.sep + "testfile.owl", "x")
         new_file.write("<rdf:RDF xml:base=\"http://www.semanticweb.org/GRISERA/contextualOntology\"><owl:Ontology rdf:about=\"http://www.semanticweb.org/GRISERA/contextualOntology\"/></rdf:RDF> ")
         new_file.close()
-        file = UploadFile(filename='testfile.owl')
-        result = asyncio.run(model_router.create_model(response, file))
-        os.remove("testfile.owl")
+        with open("tests" + os.path.sep + "testfile.owl", "rb") as f:
+            file = UploadFile(filename="tests" + os.path.sep + "testfile.owl", file=f)
+            result = asyncio.run(model_router.create_model(response, file))
+
+        os.remove("tests" + os.path.sep + "testfile.owl")
         os.remove("database" + os.path.sep + "1.owl")
         self.assertEqual(response.status_code, 200)
 
