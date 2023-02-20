@@ -1,13 +1,11 @@
 import os
 from enum import Enum
-from typing import Dict
 
 from services.service_factory import ServiceFactory
 from services.graph_services import (
     GraphServiceFactory,
     GraphWithSignalValuesServiceFactory,
 )
-from services.mongo_services import MongoServiceFactory
 from activity.activity_service import ActivityService
 from activity_execution.activity_execution_service import ActivityExecutionService
 from appearance.appearance_service import AppearanceService
