@@ -3,7 +3,7 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
 from typing import Union
-from participant.participant_model_new import (
+from participant.participant_model import (
     ParticipantIn,
     ParticipantOut,
     ParticipantsOut,
@@ -63,13 +63,14 @@ class ParticipantRouter:
         response_model=Union[ParticipantOut, NotFoundByIdModel],
     )
     async def get_participant(
-        self, participant_id: Union[str, int], response: Response
+        self, participant_id: Union[str, int], depth: int, response: Response
     ):
         """
-        Get participant from database
+        Get participant from database. Depth attribute specifies how many models will be traversed to create the
+        response.
         """
 
-        get_response = self.participant_service.get_participant(participant_id)
+        get_response = self.participant_service.get_participant(participant_id, depth)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -83,7 +84,7 @@ class ParticipantRouter:
         tags=["participants"],
         response_model=Union[ParticipantOut, NotFoundByIdModel],
     )
-    async def delete_participant(self, participant_id: int, response: Response):
+    async def delete_participant(self, participant_id: Union[int, str], response: Response):
         """
         Delete participant from database
         """
@@ -102,7 +103,7 @@ class ParticipantRouter:
         response_model=Union[ParticipantOut, NotFoundByIdModel],
     )
     async def update_participant(
-        self, participant_id: int, participant: ParticipantIn, response: Response
+        self, participant_id: Union[int, str], participant: ParticipantIn, response: Response
     ):
         """
         Update participant model in database
