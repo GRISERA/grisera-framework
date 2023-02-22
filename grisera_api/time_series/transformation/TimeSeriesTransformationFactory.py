@@ -1,3 +1,4 @@
+from time_series.transformation.TimeSeriesTransformationQuadrants import TimeSeriesTransformationQuadrants
 from time_series.transformation.TimeSeriesTransformationResample import TimeSeriesTransformationResample
 
 
@@ -20,5 +21,7 @@ class TimeSeriesTransformationFactory:
         """
         if transformation_name == "resample":
             return TimeSeriesTransformationResample()
+        elif transformation_name == "quadrants":
+            return TimeSeriesTransformationQuadrants()
         else:
             raise Exception(f"transformation {transformation_name} is unknown")
