@@ -3,9 +3,11 @@ from typing import List, Union, Optional
 from starlette.datastructures import QueryParams
 
 from models.not_found_model import NotFoundByIdModel
+from time_series.helpers import get_node_property
 from time_series.time_series_model import Type, TimeSeriesIn, TimeSeriesOut, SignalIn, SignalValueNodesIn, \
-    TimestampNodesIn, TimeSeriesNodesOut, BasicTimeSeriesOut
+    TimestampNodesIn, TimeSeriesNodesOut, BasicTimeSeriesOut, TimeSeriesTransformationIn
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
+from time_series.transformation.TimeSeriesTransformationFactory import TimeSeriesTransformationFactory
 
 
 class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
@@ -30,6 +32,41 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             return TimeSeriesOut(**time_series.dict(), errors=errors)
 
         result.signal_values = self.get_signal_values(time_series_id, time_series.type)
+
+        return result
+
+    def transform_time_series(self, time_series_transformation: TimeSeriesTransformationIn):
+        """
+        Send request to graph api to create new transformed time series
+
+        Args:
+            time_series_transformation (TimeSeriesTransformationIn): Time series transformation parameters
+
+        Returns:
+            Result of request as time series object
+        """
+        source_time_series = [self.get_time_series(time_series_id) for time_series_id in
+                              time_series_transformation.source_time_series_ids]
+
+        new_time_series, new_signal_values_index_mapping = TimeSeriesTransformationFactory().get_transformation(
+            time_series_transformation.name) \
+            .transform(source_time_series, time_series_transformation.additional_properties)
+
+        new_time_series.measure_id = time_series_transformation.destination_measure_id
+        new_time_series.observable_information_id = time_series_transformation.destination_observable_information_id
+
+        print(new_time_series)
+        result = self.save_time_series(new_time_series)
+        print(result)
+
+        for time_series_id in time_series_transformation.source_time_series_ids:
+            self.graph_api_service.create_relationships(result.id, time_series_id, "transformedFrom")
+        assert len(new_signal_values_index_mapping) == len(
+            result.signal_values), "transformation signal values mapping does not have correct length"
+        for new_signal_value_index in range(len(new_signal_values_index_mapping)):
+            new_signal_value_id = result.signal_values[new_signal_value_index]["signal_value"]["id"]
+            for old_signal_value_id in new_signal_values_index_mapping[new_signal_value_index]:
+                self.graph_api_service.create_relationships(new_signal_value_id, old_signal_value_id, "basedOn")
 
         return result
 
@@ -115,21 +152,14 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 return get_response, relation_id
         return None, None
 
-    def get_node_property(self, node, property_key: str):
-        if node is not None:
-            for node_property in node["properties"]:
-                if node_property["key"] == property_key:
-                    return node_property["value"]
-        return None
-
     def get_or_create_timestamp_node(self, timestamp_value: int, timestamp):
         previous_timestamp_id = None
         previous_timestamp_timestamp_relation_id = None
-        while timestamp is not None and int(self.get_node_property(timestamp, "timestamp")) < timestamp_value:
+        while timestamp is not None and int(get_node_property(timestamp, "timestamp")) < timestamp_value:
             previous_timestamp_id = timestamp["id"]
             timestamp, previous_timestamp_timestamp_relation_id = self.get_neighbour_node(timestamp["id"], "next")
 
-        if timestamp is None or int(self.get_node_property(timestamp, "timestamp")) != timestamp_value:
+        if timestamp is None or int(get_node_property(timestamp, "timestamp")) != timestamp_value:
             new_timestamp_node = self.graph_api_service.create_node("`Timestamp`")
 
             if new_timestamp_node["errors"] is not None:
