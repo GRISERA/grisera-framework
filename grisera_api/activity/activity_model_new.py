@@ -17,6 +17,7 @@ class Activity(str, Enum):
     two_people (str): Two people activity
     group (str): Group activity
     """
+
     individual = "individual"
     two_people = "two-people"
     group = "group"
@@ -30,6 +31,7 @@ class ActivityIn(BaseModel):
     activity (str): Type of activity
     additional_properties (Optional[List[PropertyIn]]): Additional properties for activity
     """
+
     activity: str
     additional_properties: Optional[List[PropertyIn]]
 
@@ -41,6 +43,7 @@ class BasicActivityOut(ActivityIn):
     Attributes:
     id (Optional[Union[int, str]]): Id of activity returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -51,7 +54,8 @@ class ActivityOut(BasicActivityOut, BaseModelOut):
     Attributes:
     activity_executions (Optional[ActivityExecutionOut]): activity_executions related to this activity
     """
-    activity_executions: Optional[ActivityExecutionOut] = []
+
+    activity_executions: Optional[ActivityExecutionOut]
 
 
 class ActivitiesOut(BaseModelOut):
@@ -61,4 +65,5 @@ class ActivitiesOut(BaseModelOut):
     Attributes:
     activity_types (List[BasicActivityOut]): Activity types from database
     """
+
     activities: List[BasicActivityOut] = []

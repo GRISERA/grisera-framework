@@ -4,7 +4,9 @@ from enum import Enum
 from pydantic import BaseModel
 
 from models.base_model_out import BaseModelOut
-from observable_information.observable_information_model_new import ObservableInformationOut
+from observable_information.observable_information_model_new import (
+    ObservableInformationOut,
+)
 
 
 class LifeActivity(str, Enum):
@@ -21,6 +23,7 @@ class LifeActivity(str, Enum):
     thermal_regulation (str): Thermal regulation
     brain_activity (str): Brain activity
     """
+
     movement = "movement"
     sound = "sound"
     heart_activity = "heart activity"
@@ -38,6 +41,7 @@ class LifeActivityIn(BaseModel):
     Attributes:
     life_activity (str): Actions of a human body
     """
+
     life_activity: str
 
 
@@ -48,6 +52,7 @@ class BasicLifeActivityOut(LifeActivityIn):
     Attributes:
     id (Optional[Union[int, str]]): Id of node returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -59,7 +64,8 @@ class LifeActivityOut(BasicLifeActivityOut, BaseModelOut):
     observable_informations (Optional[List[ObservableInformationOut]]): List of observable informations related to
         this life activity
     """
-    observable_informations: Optional[List[ObservableInformationOut]] = None
+
+    observable_informations: Optional[List[ObservableInformationOut]]
 
 
 class LifeActivitiesOut(BaseModelOut):
@@ -69,4 +75,5 @@ class LifeActivitiesOut(BaseModelOut):
     Attributes:
     life_activities (List[BasicLifeActivityOut]): Life activities from database
     """
+
     life_activities: List[BasicLifeActivityOut] = []

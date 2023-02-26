@@ -16,6 +16,7 @@ class ParticipationIn(BaseModel):
     activity_execution_id (Optional[int]): Activity execution of participation
     participant_state_id (Optional[int]): Participant state of participation
     """
+
     activity_execution_id: Optional[Union[int, str]]
     participant_state_id: Optional[Union[int, str]]
 
@@ -41,9 +42,9 @@ class ParticipationOut(BasicParticipationOut, BaseModelOut):
     recordings (Optional[List[RecordingOut]]): recordings related to this participation
     """
 
-    participant_state: Optional[ParticipantStateOut] = None
-    activity_execution: Optional[ActivityExecutionOut] = None
-    recordings: Optional[List[RecordingOut]] = None
+    participant_state: Optional[ParticipantStateOut]
+    activity_execution: Optional[ActivityExecutionOut]
+    recordings: Optional[List[RecordingOut]]
 
 
 class ParticipationsOut(BaseModelOut):
@@ -53,4 +54,5 @@ class ParticipationsOut(BaseModelOut):
     Attributes:
     participations (List[BasicParticipationOut]): Participations from database
     """
+
     participations: List[BasicParticipationOut] = []

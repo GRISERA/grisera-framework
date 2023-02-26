@@ -25,6 +25,7 @@ class PersonalityBigFiveIn(BaseModel):
         openess (float): Scale of openness (Intellect) reflects imagination, creativity
 
     """
+
     agreeableness: float
     conscientiousness: float
     extroversion: float
@@ -39,6 +40,7 @@ class BasicPersonalityBigFiveOut(PersonalityBigFiveIn):
     Attributes:
         id (Optional[int]): Id of personality big five model returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -50,7 +52,8 @@ class PersonalityBigFiveOut(BasicPersonalityBigFiveOut, BaseModelOut):
         participant_states (Optional[List[ParticipantStateOut]]): List of participant states related to this
             personality
     """
-    participant_states: Optional[List[ParticipantStateOut]] = None
+
+    participant_states: Optional[List[ParticipantStateOut]]
 
 
 class PersonalityPanasIn(BaseModel):
@@ -61,6 +64,7 @@ class PersonalityPanasIn(BaseModel):
         negative_affect (float): Scale of negative affect to community
         positive_affect (float): Scale of positive affect to community
     """
+
     negative_affect: float
     positive_affect: float
 
@@ -72,6 +76,7 @@ class BasicPersonalityPanasOut(PersonalityPanasIn):
     Attributes:
         id (Optional[int]): Id of personality panas returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -83,7 +88,8 @@ class PersonalityPanasOut(BasicPersonalityPanasOut, BaseModelOut):
         participant_states (Optional[List[ParticipantStateOut]]): List of participant states related to this
             personality
     """
-    participant_states: Optional[List[ParticipantStateOut]] = None
+
+    participant_states: Optional[List[ParticipantStateOut]]
 
 
 class PersonalitiesOut(BaseModel, BaseModelOut):
@@ -93,4 +99,7 @@ class PersonalitiesOut(BaseModel, BaseModelOut):
     Attributes:
         personalities (List[Union[BasicPersonalityBigFiveOut, BasicPersonalityPanasOut]]): Personalities from database
     """
-    personalities: List[Union[BasicPersonalityBigFiveOut, BasicPersonalityPanasOut]] = []
+
+    personalities: List[
+        Union[BasicPersonalityBigFiveOut, BasicPersonalityPanasOut]
+    ] = []

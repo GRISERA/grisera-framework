@@ -18,6 +18,7 @@ class Sex(str, Enum):
         female (str): Female sex
         not_given (str): Sex was not given
     """
+
     male = "male"
     female = "female"
     not_given = "not given"
@@ -61,7 +62,7 @@ class ParticipantOut(BasicParticipantOut, BaseModelOut):
         participant_states (Optional[List[ParticipantStateOut]]): Participant states related to this participant.
     """
 
-    participant_states: Optional[List[ParticipantStateOut]] = []
+    participant_states: Optional[List[ParticipantStateOut]]
 
 
 class ParticipantsOut(BaseModelOut):

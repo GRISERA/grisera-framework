@@ -16,6 +16,7 @@ class RegisteredChannelIn(BaseModel):
     channel_id (Union[int, str]): Channel by which data was registered
     registered_data_id (Union[int, str]): Id of created registered data
     """
+
     channel_id: Optional[Union[int, str]]
     registered_data_id: Optional[Union[int, str]]
 
@@ -27,6 +28,7 @@ class BasicRegisteredChannelOut(BaseModel):
     Attributes:
     id (Optional[Union[int, str]]): Id of registered channel returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -39,9 +41,10 @@ class RegisteredChannelOut(BasicRegisteredChannelOut, BaseModelOut):
     channel (Optional[ChannelOut]): channel related to this registered channel
     registeredData (Optional[RegisteredDataOut]): registeredData related to this registered channel
     """
-    recordings: Optional[List[RecordingOut]] = []
-    channel: Optional[ChannelOut] = []
-    registeredData: Optional[RegisteredDataOut] = []
+
+    recordings: Optional[List[RecordingOut]]
+    channel: Optional[ChannelOut]
+    registeredData: Optional[RegisteredDataOut]
 
 
 class RegisteredChannelsOut(BaseModelOut):
@@ -52,4 +55,5 @@ class RegisteredChannelsOut(BaseModelOut):
     registered_channels (List[BasicRegisteredChannelOut]): Registered channels from database
 
     """
+
     registered_channels: List[BasicRegisteredChannelOut] = []

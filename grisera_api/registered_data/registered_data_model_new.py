@@ -15,6 +15,7 @@ class RegisteredDataIn(BaseModel):
     source (str): URI address where recorded data is located
 
     """
+
     source: str
     additional_properties: Optional[List[PropertyIn]]
 
@@ -26,6 +27,7 @@ class BasicRegisteredDataOut(RegisteredDataIn):
     Attributes:
     id (Optional[Union[int, str]]): Id of registered data returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -36,7 +38,8 @@ class RegisteredDataOut(BasicRegisteredDataOut, BaseModelOut):
     Attributes:
     registered_channels (Optional[List[RegisteredChannelOut]]): registered channels related to this registered data
     """
-    registered_channels: Optional[List[RegisteredChannelOut]] = []
+
+    registered_channels: Optional[List[RegisteredChannelOut]]
 
 
 class RegisteredDataNodesOut(BaseModelOut):
@@ -46,4 +49,5 @@ class RegisteredDataNodesOut(BaseModelOut):
     Attributes:
     registered_data_nodes (List[BasicRegisteredDataOut]): Registered Data nodes from database
     """
+
     registered_data_nodes: List[BasicRegisteredDataOut] = []

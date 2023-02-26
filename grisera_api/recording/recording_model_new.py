@@ -3,7 +3,9 @@ from typing import Optional, List, Union
 from pydantic import BaseModel
 
 from models.base_model_out import BaseModelOut
-from observable_information.observable_information_model_new import ObservableInformationOut
+from observable_information.observable_information_model_new import (
+    ObservableInformationOut,
+)
 from participation.participation_model_new import ParticipationOut
 from property.property_model import PropertyIn
 from registered_channel.registered_channel_model_new import RegisteredChannelOut
@@ -16,6 +18,7 @@ class RecordingPropertyIn(BaseModel):
     Attributes:
     additional_properties (Optional[List[PropertyIn]]): Additional properties for recording
     """
+
     additional_properties: Optional[List[PropertyIn]]
 
 
@@ -27,6 +30,7 @@ class RecordingRelationIn(BaseModel):
     participation_id (Optional[Union[int, str]]) : id of participation
     registered_channel_id (Optional[Union[int, str]]): id of registered channel
     """
+
     participation_id: Optional[Union[int, str]]
     registered_channel_id: Optional[Union[int, str]]
 
@@ -45,6 +49,7 @@ class BasicRecordingOut(RecordingIn):
     Attributes:
     id (Optional[Union[int, str]]): Id of recording returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -58,9 +63,10 @@ class RecordingOut(BasicRecordingOut, BaseModelOut):
     observable_informations (Optional[List[ObservableInformationOut]]): List of observable informations related to
         this recording
     """
-    registered_channel: Optional[RegisteredChannelOut] = None
-    participation: Optional[ParticipationOut] = None
-    observable_informations: Optional[List[ObservableInformationOut]] = None
+
+    registered_channel: Optional[RegisteredChannelOut]
+    participation: Optional[ParticipationOut]
+    observable_informations: Optional[List[ObservableInformationOut]]
 
 
 class RecordingsOut(BaseModelOut):
@@ -70,4 +76,5 @@ class RecordingsOut(BaseModelOut):
     Attributes:
     recordings (List[BasicRecordingOut]): Recordings from database
     """
+
     recordings: List[BasicRecordingOut] = []
