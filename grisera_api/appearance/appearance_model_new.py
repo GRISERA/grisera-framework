@@ -22,6 +22,7 @@ class AppearanceOcclusionIn(BaseModel):
         beard (FacialHair): Length of beard
         moustache (FacialHair): Length of moustache
     """
+
     beard: FacialHair
     moustache: FacialHair
     glasses: bool
@@ -34,6 +35,7 @@ class BasicAppearanceOcclusionOut(AppearanceOcclusionIn):
     Attributes:
         id (Optional[Union[int, str]]): Id of appearance occlusion model returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -45,6 +47,7 @@ class AppearanceOcclusionOut(BasicAppearanceOcclusionOut, BaseModelOut):
         participant_states (Optional[List[ParticipantStateOut]]): List of participant states related to this
             personality
     """
+
     participant_states: Optional[List[ParticipantStateOut]] = None
 
 
@@ -58,6 +61,7 @@ class AppearanceSomatotypeIn(BaseModel):
         mesomorph (float): Range of mesomorph appearance measure
 
     """
+
     ectomorph: float
     endomorph: float
     mesomorph: float
@@ -71,6 +75,7 @@ class BasicAppearanceSomatotypeOut(AppearanceSomatotypeIn):
         id (Optional[int]): Id of appearance somatotype model returned from api
 
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -82,7 +87,8 @@ class AppearanceSomatotypeOut(BasicAppearanceSomatotypeOut, BaseModelOut):
         participant_states (Optional[List[ParticipantStateOut]]): List of participant states related to this
             personality
     """
-    participant_states: Optional[List[ParticipantStateOut]] = None
+
+    participant_states: Optional[List[ParticipantStateOut]]
 
 
 class AppearancesOut(BaseModelOut):
@@ -94,4 +100,7 @@ class AppearancesOut(BaseModelOut):
         errors (Optional[Any]): Optional errors appeared during query executions
         links (Optional[list]): List of links available from api
     """
-    appearances: List[Union[BasicAppearanceSomatotypeOut, BasicAppearanceOcclusionOut]] = []
+
+    appearances: List[
+        Union[BasicAppearanceSomatotypeOut, BasicAppearanceOcclusionOut]
+    ] = []

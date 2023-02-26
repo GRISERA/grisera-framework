@@ -16,6 +16,7 @@ class ActivityExecutionPropertyIn(BaseModel):
     Attributes:
     additional_properties (Optional[List[PropertyIn]]): Additional properties for activity execution
     """
+
     additional_properties: Optional[List[PropertyIn]]
 
 
@@ -27,6 +28,7 @@ class ActivityExecutionRelationIn(BaseModel):
     activity_id (int): Id of activity
     arrangement_id (int) : Id of arrangement
     """
+
     activity_id: Optional[Union[int, str]]
     arrangement_id: Optional[Union[int, str]]
 
@@ -45,6 +47,7 @@ class BasicActivityExecutionOut(ActivityExecutionPropertyIn):
     Attributes:
     id (Optional[Union[int, str]]): Id of activity execution returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -57,9 +60,10 @@ class ActivityExecutionOut(BasicActivityExecutionOut, BaseModelOut):
     participations (Optional[List[ParticipationOut]]): participations related to this activity execution
     experiments (Optional[List[ExperimentOut]]): experiments related to this participation
     """
-    activity: Optional[ActivityOut] = None
-    participations: Optional[List[ParticipationOut]] = None
-    experiments: Optional[List[ExperimentOut]] = None
+
+    activity: Optional[ActivityOut]
+    participations: Optional[List[ParticipationOut]]
+    experiments: Optional[List[ExperimentOut]]
 
 
 class ActivityExecutionsOut(BaseModelOut):
@@ -69,4 +73,5 @@ class ActivityExecutionsOut(BaseModelOut):
     Attributes:
     activity_executions (List[BasicActivityExecutionOut]): Activity executions from database
     """
+
     activity_executions: List[BasicActivityExecutionOut] = []

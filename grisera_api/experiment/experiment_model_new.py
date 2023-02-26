@@ -15,6 +15,7 @@ class ExperimentIn(BaseModel):
     experiment_name (str): Name of experiment
     additional_properties (Optional[List[PropertyIn]]): Additional properties for experiment
     """
+
     experiment_name: str
     additional_properties: Optional[List[PropertyIn]]
 
@@ -26,6 +27,7 @@ class BasicExperimentOut(ExperimentIn):
     Attributes:
     id (Union[int, str]): Id of experiment returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -36,7 +38,8 @@ class ExperimentOut(BasicExperimentOut, BaseModelOut):
     Attributes:
     activity_executions (Optional[ActivityExecutionOut]): activity_executions related to this experiment
     """
-    activity_executions: Optional[ActivityExecutionOut] = []
+
+    activity_executions: Optional[ActivityExecutionOut]
 
 
 class ExperimentsOut(BaseModelOut):
@@ -46,4 +49,5 @@ class ExperimentsOut(BaseModelOut):
     Attributes:
     experiments (List[BasicExperimentOut]): Experiments from database
     """
+
     experiments: List[BasicExperimentOut] = []

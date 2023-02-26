@@ -3,7 +3,10 @@ from typing import Optional, Union
 
 from pydantic import BaseModel
 
-from appearance.appearance_model_new import AppearanceSomatotypeOut, AppearanceOcclusionOut
+from appearance.appearance_model_new import (
+    AppearanceSomatotypeOut,
+    AppearanceOcclusionOut,
+)
 from participation.participation_model_new import ParticipationOut
 from participant.participant_model_new import ParticipantOut
 from personality.personality_model_new import PersonalityBigFiveOut, PersonalityPanasOut
@@ -69,10 +72,10 @@ class ParticipantStateOut(BasicParticipantStateOut, BaseModelOut):
             participant state
     """
 
-    participations: Optional[List[ParticipationOut]] = None
-    participant: Optional[ParticipantOut] = None
-    appearance: Optional[Union[AppearanceSomatotypeOut, AppearanceOcclusionOut]] = None
-    personality: Optional[Union[PersonalityBigFiveOut, PersonalityPanasOut]] = None
+    participations: Optional[List[ParticipationOut]]
+    participant: Optional[ParticipantOut]
+    appearance: Optional[Union[AppearanceSomatotypeOut, AppearanceOcclusionOut]]
+    personality: Optional[Union[PersonalityBigFiveOut, PersonalityPanasOut]]
 
 
 class ParticipantStatesOut(BaseModelOut):

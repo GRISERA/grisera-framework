@@ -18,6 +18,7 @@ class ObservableInformationIn(BaseModel):
     life_activity_id (Optional[Union[int, str]]): Id of life activity
     recording_id (Optional[Union[int, str]]): Id of recording
     """
+
     modality_id: Optional[Union[int, str]]
     life_activity_id: Optional[Union[int, str]]
     recording_id: Optional[Union[int, str]]
@@ -30,6 +31,7 @@ class BasicObservableInformationOut(ObservableInformationIn):
     Attributes:
     id (Optional[Union[int, str]]): Id of node returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -43,6 +45,7 @@ class ObservableInformationOut(BasicObservableInformationOut, BaseModelOut):
     modality (Optional[ModalityOut]): modality related to this observable information
     life_activity (Optional[LifeActivityOut]): life activity related to this observable information
     """
+
     recording: Optional[RecordingOut]
     timeSeries: Optional[List[TimeSeriesOut]]
     modality: Optional[ModalityOut]
@@ -56,4 +59,5 @@ class ObservableInformationsOut(BaseModelOut):
     Attributes:
     observable_informations (List[BasicLifeActivityOut]): Observable informations from database
     """
+
     observable_informations: List[BasicObservableInformationOut] = []

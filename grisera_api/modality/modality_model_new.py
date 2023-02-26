@@ -4,7 +4,9 @@ from enum import Enum
 from pydantic import BaseModel
 
 from models.base_model_out import BaseModelOut
-from observable_information.observable_information_model_new import ObservableInformationOut
+from observable_information.observable_information_model_new import (
+    ObservableInformationOut,
+)
 
 
 class Modality(str, Enum):
@@ -28,6 +30,7 @@ class Modality(str, Enum):
     peripheral_temperature (str): Peripheral temperature
     neural_activity (str): Neural activity
     """
+
     facial_expressions = "facial expressions"
     body_posture = "body posture"
     eye_gaze = "eye gaze"
@@ -52,6 +55,7 @@ class ModalityIn(BaseModel):
     Attributes:
     modality (str): Type of observable information
     """
+
     modality: str
 
 
@@ -62,6 +66,7 @@ class BasicModalityOut(ModalityIn):
     Attributes:
     id (Optional[Union[int, str]]): Id of modality returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -73,7 +78,8 @@ class ModalityOut(BasicModalityOut, BaseModelOut):
     observable_informations (Optional[List[ObservableInformationOut]]): List of observable informations related to
         this modality
     """
-    observable_informations: Optional[List[ObservableInformationOut]] = None
+
+    observable_informations: Optional[List[ObservableInformationOut]]
 
 
 class ModalitiesOut(BaseModelOut):
@@ -83,4 +89,5 @@ class ModalitiesOut(BaseModelOut):
     Attributes:
     modalities (List[BasicModalityOut]): Modalities from database
     """
+
     modalities: List[BasicModalityOut] = []

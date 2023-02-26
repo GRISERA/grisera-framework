@@ -25,18 +25,19 @@ class MeasureName(tuple, Enum):
     arousal (tuple): Arousal
     valence (tuple): Valence
     """
+
     familiarity = ("Familiarity", "Addional emotions measure")
-    liking = ('Liking', "Ekman model measure")
-    anger = ('Anger', "Ekman model measure")
-    disgust = ('Disgust', "Ekman model measure")
-    fear = ('Fear', "Ekman model measure")
-    happiness = ('Happiness', "Ekman model measure")
-    sadness = ('Sadness', "Ekman model measure")
-    surprise = ('Surprise', "Ekman model measure")
-    neutral_state = ('Neutral state', "Neutral state measure")
-    dominance = ('Dominance', "PAD model measure")
-    arousal = ('Arousal', "PAD model measure")
-    valence = ('Valence', "PAD model measure")
+    liking = ("Liking", "Ekman model measure")
+    anger = ("Anger", "Ekman model measure")
+    disgust = ("Disgust", "Ekman model measure")
+    fear = ("Fear", "Ekman model measure")
+    happiness = ("Happiness", "Ekman model measure")
+    sadness = ("Sadness", "Ekman model measure")
+    surprise = ("Surprise", "Ekman model measure")
+    neutral_state = ("Neutral state", "Neutral state measure")
+    dominance = ("Dominance", "PAD model measure")
+    arousal = ("Arousal", "PAD model measure")
+    valence = ("Valence", "PAD model measure")
 
 
 class MeasureNameIn(BaseModel):
@@ -47,6 +48,7 @@ class MeasureNameIn(BaseModel):
     name (str): Name of measure
     type (str): Type of the measure name
     """
+
     name: str
     type: str
 
@@ -58,6 +60,7 @@ class BasicMeasureNameOut(MeasureNameIn):
     Attributes:
     id (Optional[Union[int, str]]): Id of measure name returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -68,6 +71,7 @@ class MeasureNameOut(BasicMeasureNameOut, BaseModelOut):
     Attributes:
     measures (List[RelationInformation]): list of measures related to this measure name
     """
+
     measures: Optional[List[MeasureOut]]
 
 
@@ -78,4 +82,5 @@ class MeasureNamesOut(BaseModelOut):
     Attributes:
     measure_names (List[BasicMeasureNameOut]): Measure names from database
     """
+
     measure_names: List[BasicMeasureNameOut] = []

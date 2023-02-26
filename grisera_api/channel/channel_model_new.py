@@ -23,6 +23,7 @@ class Type(str, Enum):
     rgb_video (str): RGB video channel
     temperature (str): Temperature channel
     """
+
     audio = "Audio"
     bvp = "BVP"
     chest_size = "Chest size"
@@ -42,6 +43,7 @@ class ChannelIn(BaseModel):
     Attributes:
     type (str): Type of the channel
     """
+
     type: str
 
 
@@ -52,6 +54,7 @@ class BasicChannelOut(ChannelIn):
     Attributes:
     id (Optional[Union[int, str]]): Id of channel returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -63,6 +66,7 @@ class ChannelOut(BasicChannelOut, BaseModelOut):
     registered_channels (Optional[List[RegisteredChannelOut]]): registered channels related to this channel
 
     """
+
     registered_channels: Optional[List[RegisteredChannelOut]]
 
 
@@ -73,4 +77,5 @@ class ChannelsOut(BaseModelOut):
     Attributes:
     channels (List[BasicChannelOut]): Channels from database
     """
+
     channels: List[BasicChannelOut] = []

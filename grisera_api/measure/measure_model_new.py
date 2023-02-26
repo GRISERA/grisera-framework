@@ -16,6 +16,7 @@ class MeasurePropertyIn(BaseModel):
     range (str): Range of measure
     unit (str): Datatype property which allows for defining unit of measure
     """
+
     datatype: str
     range: str
     unit: str
@@ -28,6 +29,7 @@ class MeasureRelationIn(BaseModel):
     Attributes:
     measure_name_id (int): Id of the measure name
     """
+
     measure_name_id: Optional[Union[int, str]]
 
 
@@ -44,6 +46,7 @@ class BasicMeasureOut(MeasurePropertyIn):
     Attributes:
     id (Optional[Union[int, str]]): Id of measure returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -55,6 +58,7 @@ class MeasureOut(BasicMeasureOut, BaseModelOut):
     time_series (Optional[List[TimeSeriesOut]]): list of time series related to this measure
     measure_name (Optional[MeasureNameOut]): measure name related to this measure
     """
+
     time_series: Optional[List[TimeSeriesOut]]
     measure_name: Optional[MeasureNameOut]
 
@@ -66,4 +70,5 @@ class MeasuresOut(BaseModelOut):
     Attributes:
     measures (List[BasicMeasureOut]): measures from database
     """
+
     measures: List[BasicMeasureOut] = []

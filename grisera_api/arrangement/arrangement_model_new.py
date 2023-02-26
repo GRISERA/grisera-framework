@@ -18,6 +18,7 @@ class Arrangement(tuple, Enum):
         socio_consultive_zone (tuple): Personal two persons arrangement - socio consultive zone
         personal_group (tuple): Personal group arrangement
     """
+
     casual_personal_zone = ("personal two persons", "casual personal zone")
     intimate_zone = ("personal two persons", "intimate zone")
     public_zone = ("personal two persons", "public zone")
@@ -32,6 +33,7 @@ class ArrangementIn(BaseModel):
     Attributes:
     arrangement (str): Type of arrangement
     """
+
     arrangement_type: str
     arrangement_distance: Optional[str]
 
@@ -43,6 +45,7 @@ class BasicArrangementOut(ArrangementIn):
     Attributes:
     id (Optional[Union[int, str]]): Id of arrangement returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -53,7 +56,8 @@ class ArrangementOut(BasicArrangementOut, BaseModelOut):
     Attributes:
     activity_executions (Optional[ActivityExecutionOut]): activity_executions related to this arrangement
     """
-    activity_executions: Optional[ActivityExecutionOut] = []
+
+    activity_executions: Optional[ActivityExecutionOut]
 
 
 class ArrangementsOut(BaseModelOut):
@@ -63,4 +67,5 @@ class ArrangementsOut(BaseModelOut):
     Attributes:
     arrangement_types (List[BasicArrangementOut]): Arrangement types from database
     """
+
     arrangements: List[BasicArrangementOut] = []

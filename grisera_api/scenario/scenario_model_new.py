@@ -2,7 +2,10 @@ from typing import Optional, Union, List
 
 from pydantic import BaseModel
 
-from activity_execution.activity_execution_model_new import ActivityExecutionIn, ActivityExecutionOut
+from activity_execution.activity_execution_model_new import (
+    ActivityExecutionIn,
+    ActivityExecutionOut,
+)
 from models.base_model_out import BaseModelOut
 
 
@@ -14,6 +17,7 @@ class ScenarioIn(BaseModel):
     activity_executions (List[ActivityExecutionIn]): list of activity executions in scenario
     experiment_id (Union[int, str]): Id of experiment
     """
+
     experiment_id: Union[int, str]
     activity_executions: List[ActivityExecutionIn]
 
@@ -25,6 +29,7 @@ class ScenarioOut(ScenarioIn, BaseModelOut):
     Attributes:
     activity_executions (List[ActivityExecutionOut]): List of activity executions in scenario
     """
+
     activity_executions: List[ActivityExecutionOut]
 
 
@@ -36,6 +41,7 @@ class OrderChangeIn(BaseModel):
     previous_id (Union[int, str]): Id of activity execution/experiment to put activity execution after that
     activity_execution_id (Union[int, str]): Id of activity execution to change order of it
     """
+
     previous_id: Union[int, str]
     activity_execution_id: Union[int, str]
 

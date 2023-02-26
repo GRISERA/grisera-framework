@@ -5,7 +5,9 @@ from pydantic import BaseModel
 
 from measure.measure_model_new import MeasureOut
 from models.base_model_out import BaseModelOut
-from observable_information.observable_information_model_new import ObservableInformationOut
+from observable_information.observable_information_model_new import (
+    ObservableInformationOut,
+)
 from property.property_model import PropertyIn
 
 
@@ -15,6 +17,7 @@ class TimestampNodesIn(BaseModel):
     Attributes:
     timestamp (int): Timestamp of signal measure in milliseconds
     """
+
     timestamp: int
 
 
@@ -24,6 +27,7 @@ class SignalValueNodesIn(BaseModel):
     Attributes:
     value (Union[str, float]): Value of signal
     """
+
     value: Union[str, float]
 
 
@@ -36,6 +40,7 @@ class SignalIn(BaseModel):
     end_timestamp (int): Timestamp of end signal measure of type Epoch in milliseconds
     value (SignalValueIn): Value of signal
     """
+
     timestamp: Optional[int]
     start_timestamp: Optional[int]
     end_timestamp: Optional[int]
@@ -52,6 +57,7 @@ class Type(str, Enum):
     regularly_spaced (str): Regularly spaced signal
     timestamp (str): Timestamp signal
     """
+
     epoch = "Epoch"
     irregularly_spaced = "Irregularly spaced"
     regularly_spaced = "Regularly spaced"
@@ -68,6 +74,7 @@ class TimeSeriesPropertyIn(BaseModel):
     signal_values (List[SignalIn]): list of signals
     additional_properties (Optional[List[PropertyIn]]): Additional properties for signal
     """
+
     type: Type
     source: Optional[str]
     signal_values: List[SignalIn] = []
@@ -82,6 +89,7 @@ class TimeSeriesRelationIn(BaseModel):
     observable_information_id (Optional[Union[int, str]]): Id of observable information
     measure_id (Optional[Union[int, str]]): Id of measure
     """
+
     observable_information_id: Optional[Union[int, str]]
     measure_id: Optional[Union[int, str]]
 
@@ -99,6 +107,7 @@ class BasicTimeSeriesOut(TimeSeriesPropertyIn):
     Attributes:
     id (Optional[Union[int, str]]): Id of time series returned from api
     """
+
     id: Optional[Union[int, str]]
 
 
@@ -111,6 +120,7 @@ class TimeSeriesOut(BasicTimeSeriesOut, BaseModelOut):
         this time series
     measure (Optional[MeasureOut]): measure related to this time series
     """
+
     observable_informations: Optional[List[ObservableInformationOut]]
     measure: Optional[MeasureOut]
 
@@ -122,4 +132,5 @@ class TimeSeriesNodesOut(BaseModelOut):
     Attributes:
     time_series_nodes (List[BasicTimeSeriesOut]): Time series nodes from database
     """
+
     time_series_nodes: List[BasicTimeSeriesOut] = []
