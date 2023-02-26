@@ -14,7 +14,7 @@ class ActivityServiceGraphDB(ActivityService):
     """
     graph_api_service = GraphApiService()
 
-    def save_activity(self, activity: ActivityIn):
+    def save_activity(self, activity: ActivityIn, database_name: str):
         """
         Send request to graph api to create new activity
 
@@ -25,14 +25,14 @@ class ActivityServiceGraphDB(ActivityService):
             Result of request as activity object
         """
 
-        node_response = self.graph_api_service.create_node("Activity")
+        node_response = self.graph_api_service.create_node("Activity", database_name)
 
         if node_response["errors"] is not None:
             return ActivityOut(activity=activity.activity, errors=node_response["errors"])
 
         activity_id = node_response["id"]
 
-        properties_response = self.graph_api_service.create_properties(activity_id, activity)
+        properties_response = self.graph_api_service.create_properties(activity_id, activity, database_name)
         if properties_response["errors"] is not None:
             return ActivityOut(activity=activity.activity, errors=properties_response["errors"])
 
@@ -72,7 +72,7 @@ class ActivityServiceGraphDB(ActivityService):
         for property in get_response["properties"]:
             activity[property["key"]] = property["value"]
 
-        relations_response = self.graph_api_service.get_node_relationships(activity_id)
+        relations_response = self.graph_api_service.get_node_relationships(activity_id, database_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == activity_id:

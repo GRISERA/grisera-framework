@@ -7,7 +7,7 @@ from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 
 class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
 
-    def save_time_series(self, time_series: TimeSeriesIn):
+    def save_time_series(self, time_series: TimeSeriesIn, database_name: str):
         """
         Send request to graph api to create new time series
         Args:
@@ -15,22 +15,22 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         Returns:
             Result of request as time series object
         """
-        result = super().save_time_series(time_series)
+        result = super().save_time_series(time_series, database_name)
         if result.errors is not None:
             return result
 
         time_series_id = result.id
 
         errors = self.save_signal_values(time_series.signal_values, time_series_id,
-                                         self.get_experiment_id(time_series_id), time_series.type)
+                                         self.get_experiment_id(time_series_id, database_name), time_series.type, database_name)
         if errors is not None:
             return TimeSeriesOut(**time_series.dict(), errors=errors)
 
-        result.signal_values = self.get_signal_values(time_series_id, time_series.type)
+        result.signal_values = self.get_signal_values(time_series_id, time_series.type, database_name)
 
         return result
 
-    def get_experiment_id(self, time_series_id: int):
+    def get_experiment_id(self, time_series_id: int, database_name: str):
         query = {
             "nodes": [
                 {
@@ -91,23 +91,23 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 },
             ]
         }
-        response = self.graph_api_service.get_nodes_by_query(query)
+        response = self.graph_api_service.get_nodes_by_query(query, database_name)
         for row in response["rows"]:
             return row[0]["id"]
         return None
 
-    def get_neighbour_node_id(self, node_id: int, relation_name: str, forward: bool = True):
-        relations_response = self.graph_api_service.get_node_relationships(node_id)
+    def get_neighbour_node_id(self, node_id: int, relation_name: str, database_name: str, forward: bool = True):
+        relations_response = self.graph_api_service.get_node_relationships(node_id, database_name)
         for relation in relations_response["relationships"]:
             if relation["name"] == relation_name:
                 if relation["start_node" if forward else "end_node"] == node_id:
                     return relation["end_node" if forward else "start_node"], relation["id"]
         return None, None
 
-    def get_neighbour_node(self, node_id: int, relation_name: str, forward: bool = True):
-        neighbour_node_id, relation_id = self.get_neighbour_node_id(node_id, relation_name, forward)
+    def get_neighbour_node(self, node_id: int, relation_name: str, database_name: str, forward: bool = True):
+        neighbour_node_id, relation_id = self.get_neighbour_node_id(node_id, relation_name, database_name, forward)
         if neighbour_node_id is not None:
-            get_response = self.graph_api_service.get_node(neighbour_node_id)
+            get_response = self.graph_api_service.get_node(neighbour_node_id, database_name)
             if get_response["errors"] is None:
                 return get_response, relation_id
         return None, None
@@ -119,15 +119,15 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                     return node_property["value"]
         return None
 
-    def get_or_create_timestamp_node(self, timestamp_value: int, timestamp):
+    def get_or_create_timestamp_node(self, timestamp_value: int, timestamp, database_name: str):
         previous_timestamp_id = None
         previous_timestamp_timestamp_relation_id = None
         while timestamp is not None and int(self.get_node_property(timestamp, "timestamp")) < timestamp_value:
             previous_timestamp_id = timestamp["id"]
-            timestamp, previous_timestamp_timestamp_relation_id = self.get_neighbour_node(timestamp["id"], "next")
+            timestamp, previous_timestamp_timestamp_relation_id = self.get_neighbour_node(timestamp["id"], "next", database_name)
 
         if timestamp is None or int(self.get_node_property(timestamp, "timestamp")) != timestamp_value:
-            new_timestamp_node = self.graph_api_service.create_node("`Timestamp`")
+            new_timestamp_node = self.graph_api_service.create_node("`Timestamp`", database_name)
 
             if new_timestamp_node["errors"] is not None:
                 return new_timestamp_node
@@ -136,7 +136,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
 
             timestamp_properties_response = self.graph_api_service.create_properties(new_timestamp_id,
                                                                                      TimestampNodesIn(
-                                                                                         timestamp=timestamp_value))
+                                                                                         timestamp=timestamp_value), database_name)
             if timestamp_properties_response["errors"] is not None:
                 return timestamp_properties_response
 
@@ -149,20 +149,20 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                                                             end_node=timestamp["id"],
                                                             name="next")
             if previous_timestamp_timestamp_relation_id is not None:
-                self.graph_api_service.delete_relationship(previous_timestamp_timestamp_relation_id)
+                self.graph_api_service.delete_relationship(previous_timestamp_timestamp_relation_id, database_name)
 
-            return self.graph_api_service.get_node(new_timestamp_id)
+            return self.graph_api_service.get_node(new_timestamp_id, database_name)
         return timestamp
 
-    def create_signal_value(self, signal_value: Union[str, float], previous_signal_value_node, time_series_id: int):
-        signal_value_node_response = self.graph_api_service.create_node("`Signal Value`")
+    def create_signal_value(self, signal_value: Union[str, float], previous_signal_value_node, time_series_id: int, database_name: str):
+        signal_value_node_response = self.graph_api_service.create_node("`Signal Value`", database_name)
 
         if signal_value_node_response["errors"] is not None:
             return signal_value_node_response
 
         signal_value_properties_response = self.graph_api_service.create_properties(signal_value_node_response["id"],
                                                                                     SignalValueNodesIn(
-                                                                                        value=signal_value))
+                                                                                        value=signal_value), database_name)
         if signal_value_properties_response["errors"] is not None:
             return signal_value_properties_response
 
@@ -178,26 +178,26 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         return signal_value_node_response
 
     def save_signal_values(self, signal_values: List[SignalIn], time_series_id: int, experiment_id: int,
-                           timestamp_type: Type):
+                           timestamp_type: Type, database_name: str):
 
-        timestamp, experiment_timestamp_relation_id = self.get_neighbour_node(experiment_id, "takes")
+        timestamp, experiment_timestamp_relation_id = self.get_neighbour_node(experiment_id, "takes", database_name)
         signal_value_node = None
 
         for signal_value in signal_values:
-            current_signal_value_node = self.create_signal_value(signal_value.value, signal_value_node, time_series_id)
+            current_signal_value_node = self.create_signal_value(signal_value.value, signal_value_node, time_series_id, database_name)
 
             if current_signal_value_node["errors"] is not None:
                 return current_signal_value_node
 
             current_timestamp = self.get_or_create_timestamp_node(
-                signal_value.timestamp if timestamp_type == Type.timestamp else signal_value.start_timestamp, timestamp)
+                signal_value.timestamp if timestamp_type == Type.timestamp else signal_value.start_timestamp, timestamp, database_name)
 
             if current_timestamp["errors"] is not None:
                 return current_timestamp
 
             if signal_value_node is None and current_timestamp != timestamp:
                 if experiment_timestamp_relation_id is not None:
-                    self.graph_api_service.delete_relationship(experiment_timestamp_relation_id)
+                    self.graph_api_service.delete_relationship(experiment_timestamp_relation_id, database_name)
                 if experiment_id is not None:
                     self.graph_api_service.create_relationships(start_node=experiment_id,
                                                                 end_node=current_timestamp["id"],
@@ -211,7 +211,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 self.graph_api_service.create_relationships(start_node=current_timestamp["id"],
                                                             end_node=current_signal_value_node["id"],
                                                             name="startInSec")
-                current_timestamp = self.get_or_create_timestamp_node(signal_value.end_timestamp, current_timestamp)
+                current_timestamp = self.get_or_create_timestamp_node(signal_value.end_timestamp, current_timestamp, database_name)
 
                 if current_timestamp["errors"] is not None:
                     return current_timestamp
@@ -224,7 +224,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             signal_value_node = current_signal_value_node
         return None
 
-    def get_time_series(self, time_series_id: int):
+    def get_time_series(self, time_series_id: int, database_name: str):
         """
         Send request to graph api to get given time series
         Args:
@@ -232,12 +232,12 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         Returns:
             Result of request as time series object
         """
-        time_series = super().get_time_series(time_series_id)
+        time_series = super().get_time_series(time_series_id, database_name)
         if time_series.errors is None:
-            time_series.signal_values = self.get_signal_values(time_series_id, time_series.type)
+            time_series.signal_values = self.get_signal_values(time_series_id, time_series.type, database_name)
         return time_series
 
-    def get_signal_values(self, time_series_id: int, time_series_type: str):
+    def get_signal_values(self, time_series_id: int, time_series_type: str, database_name: str):
         """
         Send requests to graph api to get all signal values
         Args:
@@ -331,7 +331,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             ]
         }
         response = self.graph_api_service.get_nodes_by_query(
-            query_timestamp if time_series_type == Type.timestamp.value else query_epoch)
+            query_timestamp if time_series_type == Type.timestamp.value else query_epoch, database_name)
         signal_values = []
         for row in response["rows"]:
             if time_series_type == Type.timestamp:

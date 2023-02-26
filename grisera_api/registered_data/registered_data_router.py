@@ -26,11 +26,11 @@ class RegisteredDataRouter:
         self.registered_data_service = Services().registered_data_service()
 
     @router.post("/registered_data", tags=["registered data"], response_model=RegisteredDataOut)
-    async def create_registered_data(self, registered_data: RegisteredDataIn, response: Response):
+    async def create_registered_data(self, registered_data: RegisteredDataIn, response: Response, database_name: str):
         """
         Create registered data in database
         """
-        create_response = self.registered_data_service.save_registered_data(registered_data)
+        create_response = self.registered_data_service.save_registered_data(registered_data, database_name)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -41,12 +41,12 @@ class RegisteredDataRouter:
 
     @router.get("/registered_data/{registered_data_id}", tags=["registered data"],
                 response_model=Union[RegisteredDataOut, NotFoundByIdModel])
-    async def get_registered_data(self, registered_data_id: int, response: Response):
+    async def get_registered_data(self, registered_data_id: int, response: Response, database_name: str):
         """
         Get registered data from database
         """
 
-        get_response = self.registered_data_service.get_registered_data(registered_data_id)
+        get_response = self.registered_data_service.get_registered_data(registered_data_id, database_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -56,12 +56,12 @@ class RegisteredDataRouter:
         return get_response
 
     @router.get("/registered_data", tags=["registered data"], response_model=RegisteredDataNodesOut)
-    async def get_registered_data_nodes(self, response: Response):
+    async def get_registered_data_nodes(self, response: Response, database_name: str):
         """
         Get registered data from database
         """
 
-        get_response = self.registered_data_service.get_registered_data_nodes()
+        get_response = self.registered_data_service.get_registered_data_nodes(database_name)
 
         # add links from hateoas
         get_response.links = get_links(router)
@@ -70,11 +70,11 @@ class RegisteredDataRouter:
 
     @router.delete("/registered_data/{registered_data_id}", tags=["registered data"],
                    response_model=Union[RegisteredDataOut, NotFoundByIdModel])
-    async def delete_registered_data(self, registered_data_id: int, response: Response):
+    async def delete_registered_data(self, registered_data_id: int, response: Response, database_name: str):
         """
         Delete registered data from database
         """
-        get_response = self.registered_data_service.delete_registered_data(registered_data_id)
+        get_response = self.registered_data_service.delete_registered_data(registered_data_id, database_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -86,11 +86,11 @@ class RegisteredDataRouter:
     @router.put("/registered_data/{registered_data_id}", tags=["registered data"],
                 response_model=Union[RegisteredDataOut, NotFoundByIdModel])
     async def update_registered_data(self, registered_data_id: int, registered_data: RegisteredDataIn,
-                                     response: Response):
+                                     response: Response, database_name: str):
         """
         Update registered data model in database
         """
-        update_response = self.registered_data_service.update_registered_data(registered_data_id, registered_data)
+        update_response = self.registered_data_service.update_registered_data(registered_data_id, registered_data, database_name)
         if update_response.errors is not None:
             response.status_code = 404
 

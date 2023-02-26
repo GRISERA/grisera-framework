@@ -25,11 +25,11 @@ class ModalityRouter:
 
     @router.get("/modalities/{modality_id}", tags=["modalities"],
                 response_model=Union[ModalityOut, NotFoundByIdModel])
-    async def get_modality(self, modality_id: int, response: Response):
+    async def get_modality(self, modality_id: int, response: Response, database_name: str):
         """
         Get modality from database
         """
-        get_response = self.modality_service.get_modality(modality_id)
+        get_response = self.modality_service.get_modality(modality_id, database_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -39,12 +39,12 @@ class ModalityRouter:
         return get_response
 
     @router.get("/modalities", tags=["modalities"], response_model=ModalitiesOut)
-    async def get_modalities(self, response: Response):
+    async def get_modalities(self, response: Response, database_name: str):
         """
         Get modalities from database
         """
 
-        get_response = self.modality_service.get_modalities()
+        get_response = self.modality_service.get_modalities(database_name)
 
         # add links from hateoas
         get_response.links = get_links(router)

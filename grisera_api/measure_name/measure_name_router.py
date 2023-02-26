@@ -25,11 +25,11 @@ class MeasureNameRouter:
 
     @router.get("/measure_names/{measure_name_id}", tags=["measure names"],
                 response_model=Union[MeasureNameOut, NotFoundByIdModel])
-    async def get_measure_name(self, measure_name_id: int, response: Response):
+    async def get_measure_name(self, measure_name_id: int, response: Response, database_name: str):
         """
         Get measure name from database
         """
-        get_response = self.measure_name_service.get_measure_name(measure_name_id)
+        get_response = self.measure_name_service.get_measure_name(measure_name_id, database_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -39,12 +39,12 @@ class MeasureNameRouter:
         return get_response
 
     @router.get("/measure_names", tags=["measure names"], response_model=MeasureNamesOut)
-    async def get_measure_names(self, response: Response):
+    async def get_measure_names(self, response: Response, database_name: str):
         """
         Get measure names from database
         """
 
-        get_response = self.measure_name_service.get_measure_names()
+        get_response = self.measure_name_service.get_measure_names(database_name)
 
         # add links from hateoas
         get_response.links = get_links(router)

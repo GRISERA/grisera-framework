@@ -14,7 +14,7 @@ class RelationshipService:
     """
     db: DatabaseService = DatabaseService()
 
-    def save_relationship(self, relationship: RelationshipIn):
+    def save_relationship(self, relationship: RelationshipIn, database_name: str):
         """
         Send request to database by its API to create new relationship
 
@@ -24,8 +24,8 @@ class RelationshipService:
         Returns:
             Result of request as relationship object
         """
-        if self.db.node_exists(relationship.start_node) and self.db.node_exists(relationship.end_node):
-            response = self.db.create_relationship(relationship)
+        if self.db.node_exists(relationship.start_node, database_name) and self.db.node_exists(relationship.end_node, database_name):
+            response = self.db.create_relationship(relationship, database_name)
 
             if len(response["errors"]) > 0:
                 result = RelationshipOut(start_node=relationship.start_node, end_node=relationship.end_node,
@@ -40,7 +40,7 @@ class RelationshipService:
 
         return result
 
-    def get_relationship(self, relationship_id: int):
+    def get_relationship(self, relationship_id: int, database_name: str):
         """
         Send request to database by its API to acquire relationship with given id
 
@@ -50,7 +50,7 @@ class RelationshipService:
         Returns:
             Acquired relationship in RelationshipOut model
         """
-        response = self.db.get_relationship(relationship_id)
+        response = self.db.get_relationship(relationship_id, database_name)
 
         if len(response['results'][0]["data"]) == 0:
             return RelationshipOut(errors="Relationship not found")
@@ -61,7 +61,7 @@ class RelationshipService:
 
         return result
 
-    def delete_relationship(self, relationship_id: int):
+    def delete_relationship(self, relationship_id: int, database_name: str):
         """
         Send request to database by its API to delete relationship with given id
 
@@ -70,8 +70,8 @@ class RelationshipService:
         Returns:
             Deleted relationship
         """
-        relationship = self.get_relationship(relationship_id)
-        response = self.db.delete_relationship(relationship_id)
+        relationship = self.get_relationship(relationship_id, database_name)
+        response = self.db.delete_relationship(relationship_id, database_name)
 
         if len(response["errors"]) > 0:
             result = RelationshipOut(errors=response["errors"])
@@ -82,7 +82,7 @@ class RelationshipService:
 
         return result
 
-    def save_properties(self, id: int, properties: List[PropertyIn]):
+    def save_properties(self, id: int, properties: List[PropertyIn], database_name: str):
         """
         Send request to database by its API to create new properties
 
@@ -94,8 +94,8 @@ class RelationshipService:
         Returns:
             Result of request as relationship object
         """
-        if self.db.relationship_exist(id):
-            response = self.db.create_relationship_properties(id, properties)
+        if self.db.relationship_exist(id, database_name):
+            response = self.db.create_relationship_properties(id, properties, database_name)
             if len(response["errors"]) > 0:
                 result = RelationshipOut(errors=response["errors"])
             else:

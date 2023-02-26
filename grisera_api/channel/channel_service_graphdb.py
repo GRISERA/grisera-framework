@@ -14,7 +14,7 @@ class ChannelServiceGraphDB(ChannelService):
     """
     graph_api_service = GraphApiService()
 
-    def save_channel(self, channel: ChannelIn):
+    def save_channel(self, channel: ChannelIn, database_name: str):
         """
         Send request to graph api to create new channel
 
@@ -24,26 +24,26 @@ class ChannelServiceGraphDB(ChannelService):
         Returns:
             Result of request as channel object
         """
-        create_response = self.graph_api_service.create_node("Channel")
+        create_response = self.graph_api_service.create_node("Channel", database_name)
 
         if create_response["errors"] is not None:
             return ChannelOut(type=channel.type, errors=create_response["errors"])
 
         channel_id = create_response["id"]
-        properties_response = self.graph_api_service.create_properties(channel_id, channel)
+        properties_response = self.graph_api_service.create_properties(channel_id, channel, database_name)
         if properties_response["errors"] is not None:
             return ChannelOut(type=channel.type, errors=properties_response["errors"])
 
         return ChannelOut(type=channel.type,  id=channel_id)
 
-    def get_channels(self):
+    def get_channels(self, database_name: str):
         """
         Send request to graph api to get all channels
 
         Returns:
             Result of request as list of channel objects
         """
-        get_response = self.graph_api_service.get_nodes("Channel")
+        get_response = self.graph_api_service.get_nodes("Channel", database_name)
         if get_response["errors"] is not None:
             return ChannelsOut(errors=get_response["errors"])
         channels = [BasicChannelOut(id=channel["id"], type=channel["properties"][0]["value"])
@@ -51,7 +51,7 @@ class ChannelServiceGraphDB(ChannelService):
 
         return ChannelsOut(channels=channels)
 
-    def get_channel(self, channel_id: int):
+    def get_channel(self, channel_id: int, database_name: str):
         """
         Send request to graph api to get given channel
 
@@ -61,7 +61,7 @@ class ChannelServiceGraphDB(ChannelService):
         Returns:
             Result of request as channel object
         """
-        get_response = self.graph_api_service.get_node(channel_id)
+        get_response = self.graph_api_service.get_node(channel_id, database_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=channel_id, errors=get_response["errors"])
@@ -72,7 +72,7 @@ class ChannelServiceGraphDB(ChannelService):
         for property in get_response["properties"]:
             channel[property["key"]] = property["value"]
 
-        relations_response = self.graph_api_service.get_node_relationships(channel_id)
+        relations_response = self.graph_api_service.get_node_relationships(channel_id, database_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == channel_id:

@@ -1,4 +1,5 @@
 import requests
+import json
 from pydantic import BaseModel
 
 from graph_api_config import graph_api_address
@@ -13,7 +14,11 @@ class GraphApiService:
     """
     graph_api_url = graph_api_address
 
-    def post(self, url_part, request_body, database_name):
+    def add_database_name_to_url(self, database_name):
+        url = "?database_name=" + database_name
+        return url
+
+    def post(self, url_part, request_body, database_name: str):
         """
         Send request post to Graph API
 
@@ -25,15 +30,19 @@ class GraphApiService:
             Result of request
         """
 
-        print("request_body:", request_body)
-        url_part += "?database_name=" + database_name
-        print("SELF URL:", self.graph_api_url + url_part)
-        response = requests.post(url=self.graph_api_url + url_part,
-                                 json=request_body).json()
-        print("POST RESPONSE:",response)
+        url_part += self.add_database_name_to_url(database_name)
+        response = requests.post(url=self.graph_api_url + url_part, json=request_body).json()
+        # print("###### RESPONSE: ", response)
+        # try:
+        #     response_data = response.json()
+        # except json.JSONDecodeError as json_error:
+        #     print(f"JSON decoding error occurred: {json_error}")
+        #     # Handle the JSONDecodeError
+        #     response_data = {}
+
         return response
 
-    def get(self, url_part, params):
+    def get(self, url_part, params, database_name: str):
         """
         Send request get to Graph API
 
@@ -44,12 +53,12 @@ class GraphApiService:
         Returns:
             Result of request
         """
-
+        url_part += self.add_database_name_to_url(database_name)
         response = requests.get(url=self.graph_api_url + url_part,
                                 params=params).json()
         return response
 
-    def delete(self, url_part, params):
+    def delete(self, url_part, params, database_name: str):
         """
         Send request get to Graph API
 
@@ -60,7 +69,7 @@ class GraphApiService:
         Returns:
             Result of request
         """
-
+        url_part += self.add_database_name_to_url(database_name)
         response = requests.delete(url=self.graph_api_url + url_part,
                                    params=params).json()
         return response
@@ -90,7 +99,7 @@ class GraphApiService:
             Result of request
         """
         request_params = {"label": label, "database_name": database_name}
-        return self.get("/nodes", request_params)
+        return self.get("/nodes", request_params, database_name)
 
     def get_node(self, id: int, database_name: str):
         """
@@ -102,9 +111,9 @@ class GraphApiService:
             Result of request
         """
         request_params = {"database_name": database_name}
-        return self.get("/nodes/"+str(id), request_params)
+        return self.get("/nodes/"+str(id), request_params, database_name)
 
-    def get_node_relationships(self, node_id: int):
+    def get_node_relationships(self, node_id: int, database_name: str):
         """
         Send to the Graph API request to get node's relationship
 
@@ -113,10 +122,10 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_params = {}
-        return self.get(f"/nodes/{node_id}/relationships", request_params)
+        request_params = {"database_name": database_name}
+        return self.get(f"/nodes/{node_id}/relationships", request_params, database_name)
 
-    def get_nodes_by_query(self, query):
+    def get_nodes_by_query(self, query, database_name: str):
         """
         Send to the Graph API request to get nodes with given label
         Args:
@@ -124,9 +133,9 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        return self.post("/nodes_query", query)
+        return self.post("/nodes_query", query, database_name)
 
-    def delete_node(self, node_id: int):
+    def delete_node(self, node_id: int, database_name: str):
         """
         Send to the Graph API request to delete node
 
@@ -135,10 +144,10 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_params = {}
-        return self.delete(f"/nodes/{node_id}", request_params)
+        request_params = {"database_name": database_name}
+        return self.delete(f"/nodes/{node_id}", request_params, database_name)
 
-    def delete_node_properties(self, node_id: int):
+    def delete_node_properties(self, node_id: int, database_name: str):
         """
         Send to the Graph API request to delete node properties
 
@@ -147,8 +156,8 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_params = {}
-        return self.delete(f"/nodes/{node_id}/properties", request_params)
+        request_params = {"database_name": database_name}
+        return self.delete(f"/nodes/{node_id}/properties", request_params, database_name)
 
     def create_properties(self, node_id: int, node_model: BaseModel, database_name: str):
         """
@@ -171,7 +180,7 @@ class GraphApiService:
 
         return self.post("/nodes/{}/properties".format(node_id), request_body, database_name)
 
-    def create_relationships(self, start_node: int, end_node: int, name: str):
+    def create_relationships(self, start_node: int, end_node: int, name: str, database_name: str):
         """
         Send to the Graph API request to create a relationship
 
@@ -183,10 +192,10 @@ class GraphApiService:
         Returns:
             Result of request
        """
-        request_body = {"start_node": start_node, "end_node": end_node, "name": name}
-        return self.post("/relationships", request_body)
+        request_body = {"start_node": start_node, "end_node": end_node, "name": name, "database_name": [database_name]}
+        return self.post("/relationships", request_body, database_name)
 
-    def delete_relationship(self, relationship_id: int):
+    def delete_relationship(self, relationship_id: int, database_name: str):
         """
         Send to the Graph API request to delete relationship
 
@@ -195,8 +204,8 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_params = {}
-        return self.delete(f"/relationships/{relationship_id}", request_params)
+        request_params = {"database_name": database_name}
+        return self.delete(f"/relationships/{relationship_id}", request_params, database_name)
 
     def create_additional_properties(self, property_dict: dict):
         """

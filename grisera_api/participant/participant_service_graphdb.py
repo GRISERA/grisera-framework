@@ -14,7 +14,7 @@ class ParticipantServiceGraphDB(ParticipantService):
     """
     graph_api_service = GraphApiService()
 
-    def save_participant(self, participant: ParticipantIn):
+    def save_participant(self, participant: ParticipantIn, database_name: str):
         """
         Send request to graph api to create new participant
 
@@ -24,26 +24,26 @@ class ParticipantServiceGraphDB(ParticipantService):
         Returns:
             Result of request as participant object
         """
-        node_response = self.graph_api_service.create_node("Participant")
+        node_response = self.graph_api_service.create_node("Participant", database_name)
 
         if node_response["errors"] is not None:
             return ParticipantOut(**participant.dict(), errors=node_response["errors"])
 
         participant_id = node_response["id"]
-        properties_response = self.graph_api_service.create_properties(participant_id, participant)
+        properties_response = self.graph_api_service.create_properties(participant_id, participant, database_name)
         if properties_response["errors"] is not None:
             return ParticipantOut(**participant.dict(), errors=properties_response["errors"])
 
         return ParticipantOut(**participant.dict(), id=participant_id)
 
-    def get_participants(self):
+    def get_participants(self, database_name: str):
         """
         Send request to graph api to get participants
 
         Returns:
             Result of request as list of participants objects
         """
-        get_response = self.graph_api_service.get_nodes("Participant")
+        get_response = self.graph_api_service.get_nodes("Participant", database_name)
 
         participants = []
 
@@ -59,7 +59,7 @@ class ParticipantServiceGraphDB(ParticipantService):
 
         return ParticipantsOut(participants=participants)
 
-    def get_participant(self, participant_id: int):
+    def get_participant(self, participant_id: int, database_name: str):
         """
         Send request to graph api to get given participant
 
@@ -69,7 +69,7 @@ class ParticipantServiceGraphDB(ParticipantService):
         Returns:
             Result of request as participant object
         """
-        get_response = self.graph_api_service.get_node(participant_id)
+        get_response = self.graph_api_service.get_node(participant_id, database_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=participant_id, errors=get_response["errors"])
@@ -83,7 +83,7 @@ class ParticipantServiceGraphDB(ParticipantService):
             else:
                 participant['additional_properties'].append({'key': property['key'], 'value': property['value']})
 
-        relations_response = self.graph_api_service.get_node_relationships(participant_id)
+        relations_response = self.graph_api_service.get_node_relationships(participant_id, database_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == participant_id:
@@ -96,7 +96,7 @@ class ParticipantServiceGraphDB(ParticipantService):
 
         return ParticipantOut(**participant)
 
-    def delete_participant(self, participant_id: int):
+    def delete_participant(self, participant_id: int, database_name: str):
         """
         Send request to graph api to delete given participant
 
@@ -106,15 +106,15 @@ class ParticipantServiceGraphDB(ParticipantService):
         Returns:
             Result of request as participant object
         """
-        get_response = self.get_participant(participant_id)
+        get_response = self.get_participant(participant_id, database_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node(participant_id)
+        self.graph_api_service.delete_node(participant_id, database_name)
         return get_response
 
-    def update_participant(self, participant_id: int, participant: ParticipantIn):
+    def update_participant(self, participant_id: int, participant: ParticipantIn, database_name: str):
         """
         Send request to graph api to update given participant
 
@@ -125,7 +125,7 @@ class ParticipantServiceGraphDB(ParticipantService):
         Returns:
             Result of request as participant object
         """
-        get_response = self.get_participant(participant_id)
+        get_response = self.get_participant(participant_id, database_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
@@ -133,8 +133,8 @@ class ParticipantServiceGraphDB(ParticipantService):
         if participant.date_of_birth is not None:
             participant.date_of_birth = participant.date_of_birth.__str__()
 
-        self.graph_api_service.delete_node_properties(participant_id)
-        self.graph_api_service.create_properties(participant_id, participant)
+        self.graph_api_service.delete_node_properties(participant_id, database_name)
+        self.graph_api_service.create_properties(participant_id, participant, database_name)
 
         participant_result = {"id": participant_id, 'relations': get_response.relations,
                               'reversed_relations': get_response.reversed_relations}

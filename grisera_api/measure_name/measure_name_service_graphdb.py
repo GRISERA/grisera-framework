@@ -14,7 +14,7 @@ class MeasureNameServiceGraphDB(MeasureNameService):
     """
     graph_api_service = GraphApiService()
 
-    def save_measure_name(self, measure_name: MeasureNameIn):
+    def save_measure_name(self, measure_name: MeasureNameIn, database_name: str):
         """
         Send request to graph api to create new measure name
 
@@ -24,26 +24,26 @@ class MeasureNameServiceGraphDB(MeasureNameService):
         Returns:
             Result of request as measure name object
         """
-        create_response = self.graph_api_service.create_node("`Measure Name`")
+        create_response = self.graph_api_service.create_node("`Measure Name`", database_name)
 
         if create_response["errors"] is not None:
             return MeasureNameOut(name=measure_name.name, type=measure_name.type, errors=create_response["errors"])
 
         measure_name_id = create_response["id"]
-        properties_response = self.graph_api_service.create_properties(measure_name_id, measure_name)
+        properties_response = self.graph_api_service.create_properties(measure_name_id, measure_name, database_name)
         if properties_response["errors"] is not None:
             return MeasureNameOut(name=measure_name.name, type=measure_name.type, errors=properties_response["errors"])
 
         return MeasureNameOut(name=measure_name.name, type=measure_name.type, id=measure_name_id)
 
-    def get_measure_names(self):
+    def get_measure_names(self, database_name: str):
         """
         Send request to graph api to get all measure names
 
         Returns:
             Result of request as list of measure name objects
         """
-        get_response = self.graph_api_service.get_nodes("`Measure Name`")
+        get_response = self.graph_api_service.get_nodes("`Measure Name`", database_name)
         if get_response["errors"] is not None:
             return MeasureNamesOut(errors=get_response["errors"])
         measure_names = [BasicMeasureNameOut(id=measure_name["id"],
@@ -55,7 +55,7 @@ class MeasureNameServiceGraphDB(MeasureNameService):
 
         return MeasureNamesOut(measure_names=measure_names)
 
-    def get_measure_name(self, measure_name_id: int):
+    def get_measure_name(self, measure_name_id: int, database_name: str):
         """
         Send request to graph api to get given measure name
 
@@ -65,7 +65,7 @@ class MeasureNameServiceGraphDB(MeasureNameService):
         Returns:
             Result of request as measure name object
         """
-        get_response = self.graph_api_service.get_node(measure_name_id)
+        get_response = self.graph_api_service.get_node(measure_name_id, database_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=measure_name_id, errors=get_response["errors"])
@@ -76,7 +76,7 @@ class MeasureNameServiceGraphDB(MeasureNameService):
         for property in get_response["properties"]:
             measure_name[property["key"]] = property["value"]
 
-        relations_response = self.graph_api_service.get_node_relationships(measure_name_id)
+        relations_response = self.graph_api_service.get_node_relationships(measure_name_id, database_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == measure_name_id:

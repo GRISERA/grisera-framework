@@ -25,11 +25,11 @@ class LifeActivityRouter:
 
     @router.get("/life_activities/{life_activity_id}", tags=["life activities"],
                 response_model=Union[LifeActivityOut, NotFoundByIdModel])
-    async def get_life_activity(self, life_activity_id: int, response: Response):
+    async def get_life_activity(self, life_activity_id: int, response: Response, database_name: str):
         """
         Get life activity from database
         """
-        get_response = self.life_activity_service.get_life_activity(life_activity_id)
+        get_response = self.life_activity_service.get_life_activity(life_activity_id, database_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -39,12 +39,12 @@ class LifeActivityRouter:
         return get_response
 
     @router.get("/life_activities", tags=["life activities"], response_model=LifeActivitiesOut)
-    async def get_life_activities(self, response: Response):
+    async def get_life_activities(self, response: Response, database_name: str):
         """
         Get life activities from database
         """
 
-        get_response = self.life_activity_service.get_life_activities()
+        get_response = self.life_activity_service.get_life_activities(database_name)
 
         # add links from hateoas
         get_response.links = get_links(router)

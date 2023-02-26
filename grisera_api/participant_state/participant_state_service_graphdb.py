@@ -24,7 +24,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
     appearance_service = AppearanceServiceGraphDB()
     personality_service = PersonalityServiceGraphDB()
 
-    def save_participant_state(self, participant_state: ParticipantStateIn):
+    def save_participant_state(self, participant_state: ParticipantStateIn, database_name: str):
         """
         Send request to graph api to create new participant state
 
@@ -34,7 +34,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         Returns:
             Result of request as participant state object
         """
-        node_response = self.graph_api_service.create_node("`Participant State`")
+        node_response = self.graph_api_service.create_node("`Participant State`", database_name)
 
         if node_response["errors"] is not None:
             return ParticipantStateOut(**participant_state.dict(), errors=node_response["errors"])
@@ -42,34 +42,37 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         participant_state_id = node_response["id"]
 
         if participant_state.participant_id is not None and \
-                type(self.participant_service.get_participant(participant_state.participant_id)) is not NotFoundByIdModel:
+                type(self.participant_service.get_participant(participant_state.participant_id, database_name=database_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                         end_node=participant_state.participant_id,
-                                                        name="hasParticipant")
+                                                        name="hasParticipant",
+                                                        database_name=database_name)
         if participant_state.personality_id is not None and \
-                type(self.personality_service.get_personality(participant_state.personality_id)) is not NotFoundByIdModel:
+                type(self.personality_service.get_personality(participant_state.personality_id, database_name=database_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                         end_node=participant_state.personality_id,
-                                                        name="hasPersonality")
+                                                        name="hasPersonality",
+                                                        database_name=database_name)
         if participant_state.appearance_id is not None and \
-                type(self.appearance_service.get_appearance(participant_state.appearance_id)) is not NotFoundByIdModel:
+                type(self.appearance_service.get_appearance(participant_state.appearance_id, database_name=database_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                         end_node=participant_state.appearance_id,
-                                                        name="hasAppearance")
+                                                        name="hasAppearance",
+                                                        database_name=database_name)
 
         participant_state.participant_id = participant_state.personality_id = participant_state.appearance_id = None
-        self.graph_api_service.create_properties(participant_state_id, participant_state)
+        self.graph_api_service.create_properties(participant_state_id, participant_state, database_name)
 
-        return self.get_participant_state(participant_state_id)
+        return self.get_participant_state(participant_state_id, database_name)
 
-    def get_participant_states(self):
+    def get_participant_states(self, database_name: str):
         """
         Send request to graph api to get participant states
 
         Returns:
             Result of request as list of participant states objects
         """
-        get_response = self.graph_api_service.get_nodes("`Participant State`")
+        get_response = self.graph_api_service.get_nodes("`Participant State`", database_name)
 
         participant_states = []
 
@@ -85,7 +88,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
 
         return ParticipantStatesOut(participant_states=participant_states)
 
-    def get_participant_state(self, participant_state_id: int):
+    def get_participant_state(self, participant_state_id: int, database_name: str):
         """
         Send request to graph api to get given participant state
 
@@ -95,7 +98,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         Returns:
             Result of request as participant state object
         """
-        get_response = self.graph_api_service.get_node(participant_state_id)
+        get_response = self.graph_api_service.get_node(participant_state_id, database_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=participant_state_id, errors=get_response["errors"])
@@ -110,7 +113,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
             else:
                 participant_state['additional_properties'].append({'key': property['key'], 'value': property['value']})
 
-        relations_response = self.graph_api_service.get_node_relationships(participant_state_id)
+        relations_response = self.graph_api_service.get_node_relationships(participant_state_id, database_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == participant_state_id:
@@ -124,7 +127,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
 
         return ParticipantStateOut(**participant_state)
 
-    def delete_participant_state(self, participant_state_id: int):
+    def delete_participant_state(self, participant_state_id: int, database_name: str):
         """
         Send request to graph api to delete given participant state
 
@@ -134,15 +137,15 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         Returns:
             Result of request as participant state object
         """
-        get_response = self.get_participant_state(participant_state_id)
+        get_response = self.get_participant_state(participant_state_id, database_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node(participant_state_id)
+        self.graph_api_service.delete_node(participant_state_id, database_name)
         return get_response
 
-    def update_participant_state(self, participant_state_id: int, participant_state: ParticipantStatePropertyIn):
+    def update_participant_state(self, participant_state_id: int, participant_state: ParticipantStatePropertyIn, database_name: str):
         """
         Send request to graph api to update given participant state
 
@@ -153,13 +156,13 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         Returns:
             Result of request as participant state object
         """
-        get_response = self.get_participant_state(participant_state_id)
+        get_response = self.get_participant_state(participant_state_id, database_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node_properties(participant_state_id)
-        self.graph_api_service.create_properties(participant_state_id, participant_state)
+        self.graph_api_service.delete_node_properties(participant_state_id, database_name)
+        self.graph_api_service.create_properties(participant_state_id, participant_state, database_name)
 
         participant_state_result = {"id": participant_state_id, "relations": get_response.relations,
                                     "reversed_relations": get_response.reversed_relations}
@@ -168,7 +171,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         return ParticipantStateOut(**participant_state_result)
 
     def update_participant_state_relationships(self, participant_state_id: int,
-                                               participant_state: ParticipantStateRelationIn):
+                                               participant_state: ParticipantStateRelationIn, database_name: str):
         """
         Send request to graph api to update given participant state
 
@@ -179,26 +182,29 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         Returns:
             Result of request as participant state object
         """
-        get_response = self.get_participant_state(participant_state_id)
+        get_response = self.get_participant_state(participant_state_id, database_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
         if participant_state.participant_id is not None and \
                 type(self.participant_service.get_participant(
-                    participant_state.participant_id)) is not NotFoundByIdModel:
+                    participant_state.participant_id, database_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                         end_node=participant_state.participant_id,
-                                                        name="hasParticipant")
+                                                        name="hasParticipant",
+                                                        database_name=database_name)
         if participant_state.personality_id is not None and \
-                type(self.personality_service.get_personality(participant_state.personality_id)) is not NotFoundByIdModel:
+                type(self.personality_service.get_personality(participant_state.personality_id, database_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                         end_node=participant_state.personality_id,
-                                                        name="hasPersonality")
+                                                        name="hasPersonality",
+                                                        database_name=database_name)
         if participant_state.appearance_id is not None and \
-                type(self.appearance_service.get_appearance(participant_state.appearance_id)) is not NotFoundByIdModel:
+                type(self.appearance_service.get_appearance(participant_state.appearance_id, database_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                         end_node=participant_state.appearance_id,
-                                                        name="hasAppearance")
+                                                        name="hasAppearance",
+                                                        database_name=database_name)
 
-        return self.get_participant_state(participant_state_id)
+        return self.get_participant_state(participant_state_id, database_name)

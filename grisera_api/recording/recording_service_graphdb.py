@@ -20,7 +20,7 @@ class RecordingServiceGraphDB(RecordingService):
     participation_service = ParticipationServiceGraphDB()
     registered_channel_service = RegisteredChannelServiceGraphDB()
 
-    def save_recording(self, recording: RecordingIn):
+    def save_recording(self, recording: RecordingIn, database_name: str):
         """
         Send request to graph api to create new recording node
 
@@ -30,7 +30,7 @@ class RecordingServiceGraphDB(RecordingService):
         Returns:
             Result of request as recording object
         """
-        node_response = self.graph_api_service.create_node("Recording")
+        node_response = self.graph_api_service.create_node("Recording", database_name)
 
         if node_response["errors"] is not None:
             return RecordingOut(**recording.dict(), errors=node_response["errors"])
@@ -38,28 +38,30 @@ class RecordingServiceGraphDB(RecordingService):
         recording_id = node_response["id"]
 
         if recording.participation_id is not None and \
-                type(self.participation_service.get_participation(recording.participation_id)) is not NotFoundByIdModel:
+                type(self.participation_service.get_participation(recording.participation_id, database_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=recording_id,
                                                         end_node=recording.participation_id,
-                                                        name="hasParticipation")
+                                                        name="hasParticipation",
+                                                        database_name=database_name)
         if recording.registered_channel_id is not None and \
-                type(self.registered_channel_service.get_registered_channel(recording.registered_channel_id)) \
+                type(self.registered_channel_service.get_registered_channel(recording.registered_channel_id, database_name)) \
                 is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=recording_id,
                                                         end_node=recording.registered_channel_id,
-                                                        name="hasRegisteredChannel")
+                                                        name="hasRegisteredChannel",
+                                                        database_name=database_name)
         recording.participation_id = recording.registered_channel_id = None
-        self.graph_api_service.create_properties(recording_id, recording)
+        self.graph_api_service.create_properties(recording_id, recording, database_name)
         
-        return self.get_recording(recording_id)
+        return self.get_recording(recording_id, database_name)
 
-    def get_recordings(self):
+    def get_recordings(self, database_name: str):
         """
         Send request to graph api to get recordings
         Returns:
             Result of request as list of recordings objects
         """
-        get_response = self.graph_api_service.get_nodes("Recording")
+        get_response = self.graph_api_service.get_nodes("Recording", database_name)
 
         recordings = []
 
@@ -72,7 +74,7 @@ class RecordingServiceGraphDB(RecordingService):
 
         return RecordingsOut(recordings=recordings)
 
-    def get_recording(self, recording_id: int):
+    def get_recording(self, recording_id: int, database_name: str):
         """
         Send request to graph api to get given recording
         Args:
@@ -80,7 +82,7 @@ class RecordingServiceGraphDB(RecordingService):
         Returns:
             Result of request as recording object
         """
-        get_response = self.graph_api_service.get_node(recording_id)
+        get_response = self.graph_api_service.get_node(recording_id, database_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=recording_id, errors=get_response["errors"])
@@ -93,7 +95,7 @@ class RecordingServiceGraphDB(RecordingService):
         for property in get_response["properties"]:
             recording['additional_properties'].append({'key': property['key'], 'value': property['value']})
 
-        relations_response = self.graph_api_service.get_node_relationships(recording_id)
+        relations_response = self.graph_api_service.get_node_relationships(recording_id, database_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == recording_id:
@@ -108,7 +110,7 @@ class RecordingServiceGraphDB(RecordingService):
 
         return RecordingOut(**recording)
 
-    def delete_recording(self, recording_id: int):
+    def delete_recording(self, recording_id: int, database_name: str):
         """
         Send request to graph api to delete given recording
         Args:
@@ -116,15 +118,15 @@ class RecordingServiceGraphDB(RecordingService):
         Returns:
             Result of request as recording object
         """
-        get_response = self.get_recording(recording_id)
+        get_response = self.get_recording(recording_id, database_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node(recording_id)
+        self.graph_api_service.delete_node(recording_id, database_name)
         return get_response
 
-    def update_recording(self, recording_id: int, recording: RecordingPropertyIn):
+    def update_recording(self, recording_id: int, recording: RecordingPropertyIn, database_name: str):
         """
         Send request to graph api to update given participant state
         Args:
@@ -133,13 +135,13 @@ class RecordingServiceGraphDB(RecordingService):
         Returns:
             Result of request as participant state object
         """
-        get_response = self.get_recording(recording_id)
+        get_response = self.get_recording(recording_id, database_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node_properties(recording_id)
-        self.graph_api_service.create_properties(recording_id, recording)
+        self.graph_api_service.delete_node_properties(recording_id, database_name)
+        self.graph_api_service.create_properties(recording_id, recording, database_name)
 
         recording_result = {"id": recording_id, "relations": get_response.relations,
                             "reversed_relations": get_response.reversed_relations}
@@ -148,7 +150,7 @@ class RecordingServiceGraphDB(RecordingService):
         return RecordingOut(**recording_result)
     
     def update_recording_relationships(self, recording_id: int,
-                                       recording: RecordingIn):
+                                       recording: RecordingIn, database_name: str):
         """
         Send request to graph api to update given recording
         Args:
@@ -157,21 +159,23 @@ class RecordingServiceGraphDB(RecordingService):
         Returns:
             Result of request as recording object
         """
-        get_response = self.get_recording(recording_id)
+        get_response = self.get_recording(recording_id, database_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
         if recording.participation_id is not None and \
-                type(self.participation_service.get_participation(recording.participation_id)) is not NotFoundByIdModel:
+                type(self.participation_service.get_participation(recording.participation_id, database_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=recording_id,
                                                         end_node=recording.participation_id,
-                                                        name="hasParticipation")
+                                                        name="hasParticipation",
+                                                        database_name=database_name)
         if recording.registered_channel_id is not None and \
-                type(self.registered_channel_service.get_registered_channel(recording.registered_channel_id)) \
+                type(self.registered_channel_service.get_registered_channel(recording.registered_channel_id, database_name)) \
                 is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=recording_id,
                                                         end_node=recording.registered_channel_id,
-                                                        name="hasRegisteredChannel")
+                                                        name="hasRegisteredChannel",
+                                                        database_name=database_name)
 
-        return self.get_recording(recording_id)
+        return self.get_recording(recording_id, database_name)

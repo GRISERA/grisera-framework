@@ -45,9 +45,6 @@ class ExperimentServiceGraphDB(ExperimentService):
         Returns:
             Result of request as list of experiments objects
         """
-
-
-
         get_response = self.graph_api_service.get_nodes("Experiment", database_name)
 
         print("--------get_response_: ", get_response)
@@ -61,7 +58,7 @@ class ExperimentServiceGraphDB(ExperimentService):
                     properties[property["key"]] = property["value"]
                 else:
                     properties['additional_properties'].append({'key': property['key'], 'value': property['value']})
-            experiment = BasicExperimentOut(**properties)
+            experiment = BasicExperimentOut(**properties)  # TODO fix the error
             experiments.append(experiment)
 
         return ExperimentsOut(experiments=experiments)
@@ -103,7 +100,7 @@ class ExperimentServiceGraphDB(ExperimentService):
 
         return ExperimentOut(**experiment)
 
-    def delete_experiment(self, experiment_id: int):
+    def delete_experiment(self, experiment_id: int, database_name: str):
         """
         Send request to graph api to delete given experiment
 
@@ -113,15 +110,15 @@ class ExperimentServiceGraphDB(ExperimentService):
         Returns:
             Result of request as experiment object
         """
-        get_response = self.get_experiment(experiment_id)
+        get_response = self.get_experiment(experiment_id, database_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node(experiment_id)
+        self.graph_api_service.delete_node(experiment_id, database_name)
         return get_response
 
-    def update_experiment(self, experiment_id: int, experiment: ExperimentIn):
+    def update_experiment(self, experiment_id: int, experiment: ExperimentIn, database_name: str):
         """
         Send request to graph api to update given experiment
 
@@ -132,13 +129,13 @@ class ExperimentServiceGraphDB(ExperimentService):
         Returns:
             Result of request as experiment object
         """
-        get_response = self.get_experiment(experiment_id)
+        get_response = self.get_experiment(experiment_id, database_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node_properties(experiment_id)
-        self.graph_api_service.create_properties(experiment_id, experiment)
+        self.graph_api_service.delete_node_properties(experiment_id, database_name)
+        self.graph_api_service.create_properties(experiment_id, experiment, database_name)
 
         experiment_result = {'id': experiment_id, 'relations': get_response.relations,
                              'reversed_relations': get_response.reversed_relations}

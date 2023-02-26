@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from node.node_router import router as node_router
 from relationship.relationship_router import router as relationship_router
+from dataset.dataset_router import router as dataset_router
+
 from hateoas import get_links
 
 app = FastAPI(title="GRISERA GraphDB API",
@@ -10,6 +12,7 @@ app = FastAPI(title="GRISERA GraphDB API",
 
 app.include_router(node_router)
 app.include_router(relationship_router)
+app.include_router(dataset_router)
 
 
 @app.get("/", tags=["root"])

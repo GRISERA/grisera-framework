@@ -23,12 +23,12 @@ class MeasureRouter:
         self.measure_service = Services().measure_service()
 
     @router.post("/measures", tags=["measures"], response_model=MeasureOut)
-    async def create_measure(self, measure: MeasureIn, response: Response):
+    async def create_measure(self, measure: MeasureIn, response: Response, database_name: str):
         """
         Create measure in database
         """
 
-        create_response = self.measure_service.save_measure(measure)
+        create_response = self.measure_service.save_measure(measure, database_name)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -38,12 +38,12 @@ class MeasureRouter:
         return create_response
 
     @router.get("/measures", tags=["measures"], response_model=MeasuresOut)
-    async def get_measures(self, response: Response):
+    async def get_measures(self, response: Response, database_name: str):
         """
         Get measures from database
         """
 
-        get_response = self.measure_service.get_measures()
+        get_response = self.measure_service.get_measures(database_name)
 
         # add links from hateoas
         get_response.links = get_links(router)
@@ -52,12 +52,12 @@ class MeasureRouter:
 
     @router.get("/measures/{measure_id}", tags=["measures"],
                 response_model=Union[MeasureOut, NotFoundByIdModel])
-    async def get_measure(self, measure_id: int, response: Response):
+    async def get_measure(self, measure_id: int, response: Response, database_name: str):
         """
         Get measure from database
         """
 
-        get_response = self.measure_service.get_measure(measure_id)
+        get_response = self.measure_service.get_measure(measure_id, database_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -68,11 +68,11 @@ class MeasureRouter:
 
     @router.delete("/measures/{measure_id}", tags=["measures"],
                    response_model=Union[MeasureOut, NotFoundByIdModel])
-    async def delete_measure(self, measure_id: int, response: Response):
+    async def delete_measure(self, measure_id: int, response: Response, database_name: str):
         """
         Delete measure from database
         """
-        get_response = self.measure_service.delete_measure(measure_id)
+        get_response = self.measure_service.delete_measure(measure_id, database_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -83,13 +83,11 @@ class MeasureRouter:
 
     @router.put("/measures/{measure_id}", tags=["measures"],
                 response_model=Union[MeasureOut, NotFoundByIdModel])
-    async def update_measure(self, measure_id: int, measure: MeasurePropertyIn,
-                                       response: Response):
+    async def update_measure(self, measure_id: int, measure: MeasurePropertyIn, response: Response, database_name: str):
         """
         Update measure model in database
         """
-        update_response = self.measure_service.update_measure(measure_id,
-                                                                                  measure)
+        update_response = self.measure_service.update_measure(measure_id, measure, database_name)
         if update_response.errors is not None:
             response.status_code = 404
 
@@ -101,12 +99,11 @@ class MeasureRouter:
     @router.put("/measures/{measure_id}/relationships", tags=["measures"],
                 response_model=Union[MeasureOut, NotFoundByIdModel])
     async def update_measure_relationships(self, measure_id: int,
-                                                     measure: MeasureRelationIn, response: Response):
+                                                     measure: MeasureRelationIn, response: Response, database_name: str):
         """
         Update measure relations in database
         """
-        update_response = self.measure_service.update_measure_relationships(measure_id,
-                                                                                                measure)
+        update_response = self.measure_service.update_measure_relationships(measure_id, measure, database_name)
         if update_response.errors is not None:
             response.status_code = 404
 

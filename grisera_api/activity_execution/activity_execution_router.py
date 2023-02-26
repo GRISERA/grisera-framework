@@ -26,11 +26,11 @@ class ActivityExecutionRouter:
         self.activity_execution_service = Services().activity_execution_service()
 
     @router.post("/activity_executions", tags=["activity executions"], response_model=ActivityExecutionOut)
-    async def create_activity_execution(self, activity_execution: ActivityExecutionIn, response: Response):
+    async def create_activity_execution(self, activity_execution: ActivityExecutionIn, response: Response, database_name: str):
         """
         Create activity execution in database
         """
-        create_response = self.activity_execution_service.save_activity_execution(activity_execution)
+        create_response = self.activity_execution_service.save_activity_execution(activity_execution,database_name)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -40,12 +40,12 @@ class ActivityExecutionRouter:
         return create_response
 
     @router.get("/activity_executions", tags=["activity executions"], response_model=ActivityExecutionsOut)
-    async def get_activity_executions(self, response: Response):
+    async def get_activity_executions(self, response: Response, database_name: str):
         """
         Get activity executions from database
         """
 
-        get_response = self.activity_execution_service.get_activity_executions()
+        get_response = self.activity_execution_service.get_activity_executions(database_name)
 
         # add links from hateoas
         get_response.links = get_links(router)
@@ -54,12 +54,12 @@ class ActivityExecutionRouter:
 
     @router.get("/activity_executions/{activity_execution_id}", tags=["activity executions"],
                 response_model=Union[ActivityExecutionOut, NotFoundByIdModel])
-    async def get_activity_execution(self, activity_execution_id: int, response: Response):
+    async def get_activity_execution(self, activity_execution_id: int, response: Response, database_name: str):
         """
         Get activity executions from database
         """
 
-        get_response = self.activity_execution_service.get_activity_execution(activity_execution_id)
+        get_response = self.activity_execution_service.get_activity_execution(activity_execution_id, database_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -70,11 +70,11 @@ class ActivityExecutionRouter:
 
     @router.delete("/activity_executions/{activity_execution_id}", tags=["activity executions"],
                    response_model=Union[ActivityExecutionOut, NotFoundByIdModel])
-    async def delete_activity_execution(self, activity_execution_id: int, response: Response):
+    async def delete_activity_execution(self, activity_execution_id: int, response: Response, database_name: str):
         """
         Delete activity executions from database
         """
-        get_response = self.activity_execution_service.delete_activity_execution(activity_execution_id)
+        get_response = self.activity_execution_service.delete_activity_execution(activity_execution_id, database_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -87,12 +87,13 @@ class ActivityExecutionRouter:
                 response_model=Union[ActivityExecutionOut, NotFoundByIdModel])
     async def update_activity_execution(self, activity_execution_id: int,
                                         activity_execution: ActivityExecutionPropertyIn,
-                                        response: Response):
+                                        response: Response,
+                                        database_name: str):
         """
         Update activity execution model in database
         """
         update_response = self.activity_execution_service.update_activity_execution(activity_execution_id,
-                                                                                    activity_execution)
+                                                                                    activity_execution, database_name)
         if update_response.errors is not None:
             response.status_code = 404
 
@@ -105,12 +106,13 @@ class ActivityExecutionRouter:
                 response_model=Union[ActivityExecutionOut, NotFoundByIdModel])
     async def update_activity_execution_relationships(self, activity_execution_id: int,
                                                       activity_execution: ActivityExecutionRelationIn,
-                                                      response: Response):
+                                                      response: Response,
+                                                      database_name: str):
         """
         Update activity executions relations in database
         """
         update_response = self.activity_execution_service.update_activity_execution_relationships(activity_execution_id,
-                                                                                                  activity_execution)
+                                                                                                  activity_execution, database_name)
         if update_response.errors is not None:
             response.status_code = 404
 

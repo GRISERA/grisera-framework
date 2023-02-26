@@ -45,6 +45,7 @@ class DatabaseService:
             "statements": [{"statement": statement}]
         }
         response = self.post(commit_body, database_name)
+        print("response in post_statement: ", response)
         return response
 
     def post(self, commit_body, database_name):
@@ -64,7 +65,29 @@ class DatabaseService:
         response = requests.post(url=self.database_url,
                                  json=commit_body,
                                  auth=self.database_auth).json()
+        print("response in post: ", response)
+
         return response
+
+    def create_database_with_name(self, database_to_create, database_name):
+        create_statement = "create database " + database_to_create
+        # create_statement = 'CREATE (n:Database {name:"' + database_to_create + '"}) RETURN n;'
+        return self.post_statement(create_statement, database_name)
+
+    def show_databases_with_name(self, database_name):
+        statement = "show databases"
+        return self.post_statement(statement, database_name)
+
+    def check_if_database_exists(self, database_name):
+        check_node_statement = "SHOW databases"
+        response = self.post_statement(check_node_statement, database_name)
+        print("###check names ### check_if_database_exists - response(): ", response['results'][0]['data'][0]['row'][0])
+        print("###check names ### FOR:")
+        for db in response['results'][0]['data']:
+            db_name = db['row'][0]
+            if database_name is db_name:
+                return True
+        return False
 
     def node_exists(self, node_id, database_name):
         """
@@ -78,8 +101,7 @@ class DatabaseService:
             True if exists, otherwise false 
         """
 
-        check_node_statement = "MATCH (n) where id(n) ={node_id} return n".format(
-            node_id=node_id)
+        check_node_statement = "MATCH (n) where id(n) ={node_id} return n".format(node_id=node_id)
         response = self.post_statement(check_node_statement, database_name)
         return len(response['results']) != 0 and len(response['results'][0]['data']) == 1
 
@@ -95,9 +117,24 @@ class DatabaseService:
             Result of request      
         """
 
+        print("##### ")
+        response = self.create_database_with_name("SZTYWNA", database_name)
+        print("response 'create' in create_node:", response)
+
+        response = self.show_databases_with_name(database_name).json()
+        print("response 'show' in create_node:", response)
+
         create_statement = "CREATE (n:{labels}) RETURN n".format(
-            labels=":".join(list(node.labels)))
+                  labels=":".join(list(node.labels)))
+
         return self.post_statement(create_statement, database_name)
+
+        # if self.check_if_database_exists(database_name):
+        #     create_statement = "CREATE (n:{labels}) RETURN n".format(
+        #         labels=":".join(list(node.labels)))
+        #     return self.post_statement(create_statement, database_name)
+        #
+        # return "The database with name '" + database_name + "' does not exist! Give proper database name!"
 
     def get_node(self, node_id, database_name):
         """
@@ -336,7 +373,8 @@ class DatabaseService:
         }
         return self.post(commit_body, database_name)
 
-    def replace_string_between_two_substring(self, original_string, delimiter_before, delimiter_after, replacement_string):
+    def replace_string_between_two_substring(self, original_string, delimiter_before, delimiter_after,
+                                             replacement_string):
         """
         Replace the substring in the original string with the replacement string.
         The substring to replace is between two substrings (delimiters) given as parameters.
