@@ -25,7 +25,7 @@ class InstanceService:
         if owl_class is None:
             onto.destroy()
             return InstanceModelOut(errors="Class named " + str(class_name) + " not found in Model " + str(model_id))
-        #t
+        
         instance = owl_class(model_in.name)
         instance.label = [locstr(model_in.name, lang = "en")]
         model_out = self.model_service.update_ontology(model_id, onto)
