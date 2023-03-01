@@ -37,6 +37,17 @@ services:
       - ONTOLOGY_API_HOST=host.docker.internal
       - ONTOLOGY_API_PORT=18082
       - PERSISTENCE_TYPE=2
+
+  grisera_api_time_series:
+    build: grisera_api
+    ports:
+      - "18084:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - GRAPH_API_HOST=host.docker.internal
+      - GRAPH_API_PORT=18080
+      - PERSISTENCE_TYPE=3
       
   ontology_api:
     build: ontology_api
