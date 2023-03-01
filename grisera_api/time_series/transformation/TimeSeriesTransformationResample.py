@@ -24,35 +24,45 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
             New time series object
         """
         assert len(time_series) == 1, "Number of time series should equals 1 for resample transformation"
-        assert time_series[0].type == Type.timestamp, "Timestamp type should be timestamp for resample transformation"
         period = get_additional_parameter(additional_properties, "period")
         assert period is not None, "period additional parameter is required"
         period = int(period)
+        begin_timestamp_label = "timestamp" if time_series[0].type == Type.timestamp else "start_timestamp"
+        end_timestamp_label = "timestamp" if time_series[0].type == Type.timestamp else "end_timestamp"
+        start_timestamp = get_additional_parameter(additional_properties, "start_timestamp")
+        end_timestamp = get_additional_parameter(additional_properties, "end_timestamp")
+        if start_timestamp is None:
+            start_timestamp = 0
+        else:
+            start_timestamp = int(start_timestamp)
+        if end_timestamp is not None:
+            end_timestamp = int(end_timestamp)
+        else:
+            end_timestamp = period + int(
+                get_node_property(time_series[0].signal_values[-1]["timestamp"], end_timestamp_label))
 
         if additional_properties is None:
             additional_properties = []
-        additional_properties.append(PropertyIn(key="transformation_name", value="resample"))
+        additional_properties.append(PropertyIn(key="transformation_name", value="resample_nearest"))
 
         new_signal_values = []
         new_signal_values_index_mapping = []
-        current_time = 0
+        current_time = start_timestamp
         current_signal_value_index = 0
-        while True:
-            print('period', period)
-            print('timestamp', time_series[0].signal_values[current_signal_value_index]["timestamp"])
+        while current_time < end_timestamp:
             while current_signal_value_index + 1 < len(time_series[0].signal_values) and \
                     int(get_node_property(time_series[0].signal_values[current_signal_value_index]["timestamp"],
-                                          "timestamp")) < current_time:
+                                          end_timestamp_label)) <= current_time:
                 current_signal_value_index += 1
             if current_signal_value_index < len(time_series[0].signal_values):
                 new_signal_value_index = current_signal_value_index
                 if current_signal_value_index > 0:
                     after_signal_value_timestamp = int(
                         get_node_property(time_series[0].signal_values[current_signal_value_index]["timestamp"],
-                                          "timestamp"))
+                                          begin_timestamp_label))
                     before_signal_value_timestamp = int(
                         get_node_property(time_series[0].signal_values[current_signal_value_index - 1]["timestamp"],
-                                          "timestamp"))
+                                          end_timestamp_label))
                     if abs(current_time - before_signal_value_timestamp) <= abs(
                             after_signal_value_timestamp - current_time):
                         new_signal_value_index = current_signal_value_index - 1
@@ -62,8 +72,6 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
                 new_signal_values_index_mapping.append(
                     [time_series[0].signal_values[new_signal_value_index]["signal_value"]["id"]])
                 current_time += period
-                if current_signal_value_index + 1 == len(time_series[0].signal_values):
-                    break
 
         return TimeSeriesIn(type=time_series[0].type,
                             additional_properties=additional_properties,
