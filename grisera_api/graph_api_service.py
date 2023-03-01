@@ -190,6 +190,27 @@ class GraphApiService:
         request_params = {}
         return self.delete(f"/relationships/{relationship_id}", request_params)
 
+    def create_relationship_properties(self, relationship_id: int, relationship_model: BaseModel):
+        """
+        Send to the Graph API request to create properties for given relationship
+
+        Args:
+            relationship_id (int): Id of relationship for which properties will be added
+            relationship_model (BaseModel): Model of relationship with properties to add
+
+        Returns:
+            Result of request
+        """
+        relationship_dict = relationship_model.dict()
+        request_body = []
+        for key, value in relationship_dict.items():
+            if key == 'additional_properties' and value is not None:
+                request_body.extend(self.create_additional_properties(property_dict=relationship_dict))
+            elif value is not None and not isinstance(value, list) and not isinstance(value, dict):
+                request_body.append({"key": key, "value": value})
+
+        return self.post("/relationships/{}/properties".format(relationship_id), request_body)
+
     def create_additional_properties(self, property_dict: dict):
         """
         Creates request body for additional properties

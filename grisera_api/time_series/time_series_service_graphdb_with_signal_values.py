@@ -5,7 +5,8 @@ from starlette.datastructures import QueryParams
 from models.not_found_model import NotFoundByIdModel
 from time_series.helpers import get_node_property
 from time_series.time_series_model import Type, TimeSeriesIn, TimeSeriesOut, SignalIn, SignalValueNodesIn, \
-    TimestampNodesIn, TimeSeriesNodesOut, BasicTimeSeriesOut, TimeSeriesTransformationIn
+    TimestampNodesIn, TimeSeriesNodesOut, BasicTimeSeriesOut, TimeSeriesTransformationIn, \
+    TimeSeriesTransformationRelationshipIn
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 from time_series.transformation.TimeSeriesTransformationFactory import TimeSeriesTransformationFactory
 
@@ -59,14 +60,23 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         result = self.save_time_series(new_time_series)
         print(result)
 
-        for time_series_id in time_series_transformation.source_time_series_ids:
-            self.graph_api_service.create_relationships(result.id, time_series_id, "transformedFrom")
+        for index, time_series_id in enumerate(time_series_transformation.source_time_series_ids):
+            relationship = self.graph_api_service.create_relationships(result.id, time_series_id, "transformedFrom")
+            self.graph_api_service.create_relationship_properties(relationship["id"],
+                                                                  TimeSeriesTransformationRelationshipIn(
+                                                                      additional_properties=[
+                                                                          {'key': 'order', 'value': index + 1}]))
         assert len(new_signal_values_index_mapping) == len(
             result.signal_values), "transformation signal values mapping does not have correct length"
         for new_signal_value_index in range(len(new_signal_values_index_mapping)):
             new_signal_value_id = result.signal_values[new_signal_value_index]["signal_value"]["id"]
-            for old_signal_value_id in new_signal_values_index_mapping[new_signal_value_index]:
-                self.graph_api_service.create_relationships(new_signal_value_id, old_signal_value_id, "basedOn")
+            for index, old_signal_value_id in enumerate(new_signal_values_index_mapping[new_signal_value_index]):
+                relationship = self.graph_api_service.create_relationships(new_signal_value_id, old_signal_value_id,
+                                                                           "basedOn")
+                self.graph_api_service.create_relationship_properties(relationship["id"],
+                                                                      TimeSeriesTransformationRelationshipIn(
+                                                                          additional_properties=[
+                                                                              {'key': 'order', 'value': index + 1}]))
 
         return result
 
