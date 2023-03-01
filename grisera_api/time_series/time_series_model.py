@@ -90,6 +90,16 @@ class TimeSeriesTransformationIn(BaseModel):
     additional_properties: Optional[List[PropertyIn]]
 
 
+class TimeSeriesTransformationRelationshipIn(BaseModel):
+    """
+    Model of time series transformation relationship
+
+    Attributes:
+        additional_properties (Optional[List[PropertyIn]]): Additional properties for transformation
+    """
+    additional_properties: Optional[List[PropertyIn]]
+
+
 class TimeSeriesRelationIn(BaseModel):
     """
     Model of time series relations to acquire from client
