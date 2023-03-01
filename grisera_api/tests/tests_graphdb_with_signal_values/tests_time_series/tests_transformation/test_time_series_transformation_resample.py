@@ -44,7 +44,7 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
                     'timestamp': {'labels': ['Timestamp'], 'id': 9, 'properties': [
                         {'key': 'timestamp', 'value': 29}]}
                 }
-            ], )
+            ])
     ]
 
     time_series_epoch = [
@@ -83,7 +83,7 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
                         {'key': 'start_timestamp', 'value': 25},
                         {'key': 'end_timestamp', 'value': 30}]}
                 }
-            ], )
+            ])
     ]
 
     def test_transform_timestamp(self):
