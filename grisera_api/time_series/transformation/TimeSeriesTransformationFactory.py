@@ -19,7 +19,7 @@ class TimeSeriesTransformationFactory:
         Returns:
             New time series transformation class
         """
-        if transformation_name == "resample":
+        if transformation_name == "resample_nearest":
             return TimeSeriesTransformationResample()
         elif transformation_name == "quadrants":
             return TimeSeriesTransformationQuadrants()
