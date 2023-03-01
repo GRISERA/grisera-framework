@@ -3,7 +3,6 @@ from enum import Enum
 
 from pydantic import BaseModel
 
-from activity_execution.activity_execution_model import ActivityExecutionOut
 from models.base_model_out import BaseModelOut
 
 
@@ -57,7 +56,7 @@ class ArrangementOut(BasicArrangementOut, BaseModelOut):
     activity_executions (Optional[ActivityExecutionOut]): activity_executions related to this arrangement
     """
 
-    activity_executions: Optional[ActivityExecutionOut]
+    activity_executions: "Optional[ActivityExecutionOut]"
 
 
 class ArrangementsOut(BaseModelOut):
@@ -69,3 +68,9 @@ class ArrangementsOut(BaseModelOut):
     """
 
     arrangements: List[BasicArrangementOut] = []
+
+
+# circular import exeption prevention
+from activity_execution.activity_execution_model import ActivityExecutionOut
+
+ArrangementOut.update_forward_refs()

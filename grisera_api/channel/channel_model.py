@@ -4,7 +4,6 @@ from enum import Enum
 from pydantic import BaseModel
 
 from models.base_model_out import BaseModelOut
-from registered_channel.registered_channel_model import RegisteredChannelOut
 
 
 class Type(str, Enum):
@@ -67,7 +66,7 @@ class ChannelOut(BasicChannelOut, BaseModelOut):
 
     """
 
-    registered_channels: Optional[List[RegisteredChannelOut]]
+    registered_channels: "Optional[List[RegisteredChannelOut]]"
 
 
 class ChannelsOut(BaseModelOut):
@@ -79,3 +78,9 @@ class ChannelsOut(BaseModelOut):
     """
 
     channels: List[BasicChannelOut] = []
+
+
+# circular import exeption prevention
+from registered_channel.registered_channel_model import RegisteredChannelOut
+
+ChannelOut.update_forward_refs()

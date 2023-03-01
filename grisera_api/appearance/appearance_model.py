@@ -4,7 +4,6 @@ from enum import Enum
 from pydantic import BaseModel
 
 from models.base_model_out import BaseModelOut
-from participant_state.participant_state_model import ParticipantStateOut
 
 
 class FacialHair(str, Enum):
@@ -48,7 +47,7 @@ class AppearanceOcclusionOut(BasicAppearanceOcclusionOut, BaseModelOut):
             personality
     """
 
-    participant_states: Optional[List[ParticipantStateOut]] = None
+    participant_states: "Optional[List[ParticipantStateOut]]"
 
 
 class AppearanceSomatotypeIn(BaseModel):
@@ -88,7 +87,7 @@ class AppearanceSomatotypeOut(BasicAppearanceSomatotypeOut, BaseModelOut):
             personality
     """
 
-    participant_states: Optional[List[ParticipantStateOut]]
+    participant_states: "Optional[List[ParticipantStateOut]]"
 
 
 class AppearancesOut(BaseModelOut):
@@ -104,3 +103,10 @@ class AppearancesOut(BaseModelOut):
     appearances: List[
         Union[BasicAppearanceSomatotypeOut, BasicAppearanceOcclusionOut]
     ] = []
+
+
+# circular import exeption prevention
+from participant_state.participant_state_model import ParticipantStateOut
+
+AppearanceOcclusionOut.update_forward_refs()
+AppearanceSomatotypeOut.update_forward_refs()
