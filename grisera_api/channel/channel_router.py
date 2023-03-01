@@ -20,16 +20,22 @@ class ChannelRouter:
     Attributes:
         channel_service (ChannelService): Service instance for channel
     """
+
     def __init__(self):
         self.channel_service = Services().channel_service()
 
-    @router.get("/channels/{channel_id}", tags=["channels"],
-                response_model=Union[ChannelOut, NotFoundByIdModel])
-    async def get_channel(self, channel_id: int, response: Response):
+    @router.get(
+        "/channels/{channel_id}",
+        tags=["channels"],
+        response_model=Union[ChannelOut, NotFoundByIdModel],
+    )
+    async def get_channel(
+        self, channel_id: Union[int, str], depth: Union[int, str], response: Response
+    ):
         """
-        Get channel from database
+        Get channel from database. Depth attribute specifies how many models will be traversed to create the response.
         """
-        get_response = self.channel_service.get_channel(channel_id)
+        get_response = self.channel_service.get_channel(channel_id, depth)
         if get_response.errors is not None:
             response.status_code = 404
 

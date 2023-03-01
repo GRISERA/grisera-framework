@@ -19,6 +19,7 @@ class ExperimentRouter:
     Attributes:
         experiment_service (ExperimentService): Service instance for experiments
     """
+
     def __init__(self):
         self.experiment_service = Services().experiment_service()
 
@@ -36,14 +37,20 @@ class ExperimentRouter:
 
         return create_response
 
-    @router.get("/experiments/{experiment_id}", tags=["experiments"],
-                response_model=Union[ExperimentOut, NotFoundByIdModel])
-    async def get_experiment(self, experiment_id: int, response: Response):
+    @router.get(
+        "/experiments/{experiment_id}",
+        tags=["experiments"],
+        response_model=Union[ExperimentOut, NotFoundByIdModel],
+    )
+    async def get_experiment(
+        self, experiment_id: Union[int, str], depth: int, response: Response
+    ):
         """
-        Get experiment from database
+        Get experiment from database. Depth attribute specifies how many models will be traversed to create the
+        response.
         """
 
-        get_response = self.experiment_service.get_experiment(experiment_id)
+        get_response = self.experiment_service.get_experiment(experiment_id, depth)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -65,9 +72,14 @@ class ExperimentRouter:
 
         return get_response
 
-    @router.delete("/experiments/{experiment_id}", tags=["experiments"],
-                   response_model=Union[ExperimentOut, NotFoundByIdModel])
-    async def delete_experiment(self, experiment_id: int, response: Response):
+    @router.delete(
+        "/experiments/{experiment_id}",
+        tags=["experiments"],
+        response_model=Union[ExperimentOut, NotFoundByIdModel],
+    )
+    async def delete_experiment(
+        self, experiment_id: Union[int, str], response: Response
+    ):
         """
         Delete experiment from database
         """
@@ -80,13 +92,23 @@ class ExperimentRouter:
 
         return get_response
 
-    @router.put("/experiments/{experiment_id}", tags=["experiments"],
-                response_model=Union[ExperimentOut, NotFoundByIdModel])
-    async def update_experiment(self, experiment_id: int, experiment: ExperimentIn, response: Response):
+    @router.put(
+        "/experiments/{experiment_id}",
+        tags=["experiments"],
+        response_model=Union[ExperimentOut, NotFoundByIdModel],
+    )
+    async def update_experiment(
+        self,
+        experiment_id: Union[int, str],
+        experiment: ExperimentIn,
+        response: Response,
+    ):
         """
         Update experiment model in database
         """
-        update_response = self.experiment_service.update_experiment(experiment_id, experiment)
+        update_response = self.experiment_service.update_experiment(
+            experiment_id, experiment
+        )
         if update_response.errors is not None:
             response.status_code = 404
 

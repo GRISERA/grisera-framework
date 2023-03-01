@@ -4,9 +4,17 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
 from models.not_found_model import NotFoundByIdModel
-from scenario.scenario_model import ScenarioIn, ScenarioOut, OrderChangeIn, OrderChangeOut
+from scenario.scenario_model import (
+    ScenarioIn,
+    ScenarioOut,
+    OrderChangeIn,
+    OrderChangeOut,
+)
 from scenario.scenario_service import ScenarioService
-from activity_execution.activity_execution_model import ActivityExecutionOut, ActivityExecutionIn
+from activity_execution.activity_execution_model import (
+    ActivityExecutionOut,
+    ActivityExecutionIn,
+)
 from services import Services
 
 router = InferringRouter()
@@ -20,6 +28,7 @@ class ScenarioRouter:
     Attributes:
         scenario_service (ScenarioService): Service instance for scenarios
     """
+
     def __init__(self):
         self.scenario_service = Services().scenario_service()
 
@@ -37,13 +46,23 @@ class ScenarioRouter:
 
         return create_response
 
-    @router.post("/scenarios/{previous_id}", tags=["scenarios"], response_model=ActivityExecutionOut)
-    async def add_activity_execution(self, previous_id: int, activity_execution: ActivityExecutionIn,
-                                     response: Response):
+    @router.post(
+        "/scenarios/{previous_id}",
+        tags=["scenarios"],
+        response_model=ActivityExecutionOut,
+    )
+    async def add_activity_execution(
+        self,
+        previous_id: Union[int, str],
+        activity_execution: ActivityExecutionIn,
+        response: Response,
+    ):
         """
         Add new activity execution to scenario
         """
-        create_response = self.scenario_service.add_activity_execution(previous_id, activity_execution)
+        create_response = self.scenario_service.add_activity_execution(
+            previous_id, activity_execution
+        )
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -66,12 +85,20 @@ class ScenarioRouter:
 
         return put_response
 
-    @router.delete("/scenarios/{activity_execution_id}", tags=["scenarios"], response_model=ActivityExecutionOut)
-    async def delete_activity_execution(self, activity_execution_id: int, response: Response):
+    @router.delete(
+        "/scenarios/{activity_execution_id}",
+        tags=["scenarios"],
+        response_model=ActivityExecutionOut,
+    )
+    async def delete_activity_execution(
+        self, activity_execution_id: Union[int, str], response: Response
+    ):
         """
         Delete activity execution from scenario
         """
-        delete_response = self.scenario_service.delete_activity_execution(activity_execution_id)
+        delete_response = self.scenario_service.delete_activity_execution(
+            activity_execution_id
+        )
         if delete_response.errors is not None:
             response.status_code = 404
 
@@ -80,12 +107,18 @@ class ScenarioRouter:
 
         return delete_response
 
-    @router.get("/scenarios/{node_id}", tags=["scenarios"], response_model=Union[ScenarioOut, NotFoundByIdModel])
-    async def get_scenario(self, node_id: int, response: Response):
+    @router.get(
+        "/scenarios/{node_id}",
+        tags=["scenarios"],
+        response_model=Union[ScenarioOut, NotFoundByIdModel],
+    )
+    async def get_scenario(
+        self, node_id: Union[int, str], depth: int, response: Response
+    ):
         """
-        Get scenario from database
+        Get scenario from database. Depth attribute specifies how many models will be traversed to create the response.
         """
-        get_response = self.scenario_service.get_scenario(node_id)
+        get_response = self.scenario_service.get_scenario(node_id, depth)
         if get_response.errors is not None:
             response.status_code = 404
 

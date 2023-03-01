@@ -1,7 +1,12 @@
-from typing import List
+from typing import Optional, Union, List
+
 from pydantic import BaseModel
-from typing import Optional, Any
-from activity_execution.activity_execution_model import ActivityExecutionIn, ActivityExecutionOut
+
+from activity_execution.activity_execution_model import (
+    ActivityExecutionIn,
+    ActivityExecutionOut,
+)
+from models.base_model_out import BaseModelOut
 
 
 class ScenarioIn(BaseModel):
@@ -10,24 +15,22 @@ class ScenarioIn(BaseModel):
 
     Attributes:
     activity_executions (List[ActivityExecutionIn]): list of activity executions in scenario
-    experiment_id (int): Id of experiment
+    experiment_id (Union[int, str]): Id of experiment
     """
-    experiment_id: int
+
+    experiment_id: Union[int, str]
     activity_executions: List[ActivityExecutionIn]
 
 
-class ScenarioOut(ScenarioIn):
+class ScenarioOut(ScenarioIn, BaseModelOut):
     """
     Model of scenario to send to client as a result of request
 
     Attributes:
     activity_executions (List[ActivityExecutionOut]): List of activity executions in scenario
-    errors (Optional[Any]): Optional errors appeared during query executions
-    links (Optional[list]): List of links available from api
     """
+
     activity_executions: List[ActivityExecutionOut]
-    errors: Optional[Any] = None
-    links: Optional[list] = None
 
 
 class OrderChangeIn(BaseModel):
@@ -35,20 +38,15 @@ class OrderChangeIn(BaseModel):
     Model of ids to change order in scenario
 
     Attributes:
-    previous_id (int): Id of activity execution/experiment to put activity execution after that
-    activity_execution_id (int): Id of activity execution to change order of it
+    previous_id (Union[int, str]): Id of activity execution/experiment to put activity execution after that
+    activity_execution_id (Union[int, str]): Id of activity execution to change order of it
     """
-    previous_id: int
-    activity_execution_id: int
+
+    previous_id: Union[int, str]
+    activity_execution_id: Union[int, str]
 
 
-class OrderChangeOut(OrderChangeIn):
+class OrderChangeOut(BaseModelOut):
     """
     Model of changed order in scenario
-
-    Attributes:
-    errors (Optional[Any]): Optional errors appeared during query executions
-    links (Optional[list]): List of links available from api
     """
-    errors: Optional[Any] = None
-    links: Optional[list] = None

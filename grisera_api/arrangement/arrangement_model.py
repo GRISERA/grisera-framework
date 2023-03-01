@@ -1,7 +1,10 @@
-from pydantic import BaseModel
-from typing import Optional, Any, List
+from typing import Optional, Union, List
 from enum import Enum
-from models.relation_information_model import RelationInformation
+
+from pydantic import BaseModel
+
+from activity_execution.activity_execution_model import ActivityExecutionOut
+from models.base_model_out import BaseModelOut
 
 
 class Arrangement(tuple, Enum):
@@ -15,6 +18,7 @@ class Arrangement(tuple, Enum):
         socio_consultive_zone (tuple): Personal two persons arrangement - socio consultive zone
         personal_group (tuple): Personal group arrangement
     """
+
     casual_personal_zone = ("personal two persons", "casual personal zone")
     intimate_zone = ("personal two persons", "intimate zone")
     public_zone = ("personal two persons", "public zone")
@@ -29,6 +33,7 @@ class ArrangementIn(BaseModel):
     Attributes:
     arrangement (str): Type of arrangement
     """
+
     arrangement_type: str
     arrangement_distance: Optional[str]
 
@@ -38,36 +43,29 @@ class BasicArrangementOut(ArrangementIn):
     Model of arrangement in database
 
     Attributes:
-    id (Optional[int]): Id of arrangement returned from graph api
+    id (Optional[Union[int, str]]): Id of arrangement returned from api
     """
-    id: Optional[int]
+
+    id: Optional[Union[int, str]]
 
 
-class ArrangementOut(BasicArrangementOut):
+class ArrangementOut(BasicArrangementOut, BaseModelOut):
     """
     Model of arrangement to send to client as a result of request
 
     Attributes:
-    relations (List[RelationInformation]): List of relations starting in arrangement node
-    reversed_relations (List[RelationInformation]): List of relations ending in arrangement node
-    errors (Optional[Any]): Optional errors appeared during query executions
-    links (Optional[list]): List of links available from api
+    activity_executions (Optional[ActivityExecutionOut]): activity_executions related to this arrangement
     """
-    relations: List[RelationInformation] = []
-    reversed_relations: List[RelationInformation] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
+
+    activity_executions: Optional[ActivityExecutionOut]
 
 
-class ArrangementsOut(BaseModel):
+class ArrangementsOut(BaseModelOut):
     """
     Model of arrangements to send to client as a result of request
 
     Attributes:
     arrangement_types (List[BasicArrangementOut]): Arrangement types from database
-    errors (Optional[Any]): Optional errors appeared during query executions
-    links (Optional[list]): List of links available from api
     """
+
     arrangements: List[BasicArrangementOut] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None

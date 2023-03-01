@@ -1,8 +1,17 @@
 from typing import List
+from typing import Optional, Union
+
 from pydantic import BaseModel
-from typing import Optional, Any
+
+from appearance.appearance_model import (
+    AppearanceSomatotypeOut,
+    AppearanceOcclusionOut,
+)
+from participation.participation_model import ParticipationOut
+from participant.participant_model import ParticipantOut
+from personality.personality_model import PersonalityBigFiveOut, PersonalityPanasOut
 from property.property_model import PropertyIn
-from models.relation_information_model import RelationInformation
+from models.base_model_out import BaseModelOut
 
 
 class ParticipantStatePropertyIn(BaseModel):
@@ -13,6 +22,7 @@ class ParticipantStatePropertyIn(BaseModel):
         age (Optional[int]): Age of participant state
         additional_properties (Optional[List[PropertyIn]]): Additional properties for participant state
     """
+
     age: Optional[int]
     additional_properties: Optional[List[PropertyIn]]
 
@@ -26,9 +36,10 @@ class ParticipantStateRelationIn(BaseModel):
         personality_id (Optional[int]): Id of personality describing participant
         appearance_id (Optional[int]): Id of appearance describing participant
     """
-    participant_id: Optional[int] = None
-    personality_id: Optional[int] = None
-    appearance_id: Optional[int] = None
+
+    participant_id: Optional[Union[int, str]] = None
+    personality_id: Optional[Union[int, str]] = None
+    appearance_id: Optional[Union[int, str]] = None
 
 
 class ParticipantStateIn(ParticipantStatePropertyIn, ParticipantStateRelationIn):
@@ -42,36 +53,37 @@ class BasicParticipantStateOut(ParticipantStatePropertyIn):
     Basic model of participant
 
     Attributes:
-        id (Optional[int]): Id of participant returned from graph api
+        id (Optional[int]): Id of participant returned from api
     """
-    id: Optional[int]
+
+    id: Optional[Union[int, str]]
 
 
-class ParticipantStateOut(BasicParticipantStateOut):
+class ParticipantStateOut(BasicParticipantStateOut, BaseModelOut):
     """
-    Model of participant state with relations to send to client as a result of request
+    Model of participant state with optional related fields to send to client as a result of request
 
     Attributes:
-        relations (List[RelationInformation]): List of relations starting in participant state node
-        reversed_relations (List[RelationInformation]): List of relations ending in participant state node
-        errors (Optional[Any]): Optional errors appeared during query executions
-        links (Optional[list]): List of links available from api
+        participations (Optional[List[BasicParticipationOut]]): participations with this participant state
+        participant (Optional[BasicParticipantOut]): participant related to this participant state
+        appearance (Optional[Union[BasicAppearanceSomatotypeOut, BasicAppearanceOcclusionOut]]): appearance related to
+            this participant state
+        personality (Optional[Union[BasicPersonalityBigFiveOut, BasicPersonalityPanasOut]]): personality related to this
+            participant state
     """
-    relations: List[RelationInformation] = []
-    reversed_relations: List[RelationInformation] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
+
+    participations: Optional[List[ParticipationOut]]
+    participant: Optional[ParticipantOut]
+    appearance: Optional[Union[AppearanceSomatotypeOut, AppearanceOcclusionOut]]
+    personality: Optional[Union[PersonalityBigFiveOut, PersonalityPanasOut]]
 
 
-class ParticipantStatesOut(BaseModel):
+class ParticipantStatesOut(BaseModelOut):
     """
     Model of participant states to send to client as a result of request
 
     Attributes:
         participant_states (List[BasicParticipantStateOut]): Participant states from database
-        errors (Optional[Any]): Optional errors appeared during query executions
-        links (Optional[list]): List of links available from api
     """
+
     participant_states: List[BasicParticipantStateOut] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None

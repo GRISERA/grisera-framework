@@ -1,8 +1,10 @@
-from typing import List
+from typing import List, Union, Optional
+
 from pydantic import BaseModel
-from typing import Optional, Any
+
 from property.property_model import PropertyIn
-from models.relation_information_model import RelationInformation
+from models.base_model_out import BaseModelOut
+from registered_channel.registered_channel_model import RegisteredChannelOut
 
 
 class RegisteredDataIn(BaseModel):
@@ -13,6 +15,7 @@ class RegisteredDataIn(BaseModel):
     source (str): URI address where recorded data is located
 
     """
+
     source: str
     additional_properties: Optional[List[PropertyIn]]
 
@@ -22,36 +25,29 @@ class BasicRegisteredDataOut(RegisteredDataIn):
     Basic model of registered data to send to client as a result of request
 
     Attributes:
-    id (Optional[int]): Id of registered data returned from graph api
+    id (Optional[Union[int, str]]): Id of registered data returned from api
     """
-    id: Optional[int]
+
+    id: Optional[Union[int, str]]
 
 
-class RegisteredDataOut(BasicRegisteredDataOut):
+class RegisteredDataOut(BasicRegisteredDataOut, BaseModelOut):
     """
     Model of registered data with relationships to send to client as a result of request
 
     Attributes:
-    relations (List[RelationInformation]): List of relations starting in registered data node
-    reversed_relations (List[RelationInformation]): List of relations ending in registered data node
-    errors (Optional[Any]): Optional errors appeared during query executions
-    links (Optional[list]): List of links available from api
+    registered_channels (Optional[List[RegisteredChannelOut]]): registered channels related to this registered data
     """
-    relations: List[RelationInformation] = []
-    reversed_relations: List[RelationInformation] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
+
+    registered_channels: Optional[List[RegisteredChannelOut]]
 
 
-class RegisteredDataNodesOut(BaseModel):
+class RegisteredDataNodesOut(BaseModelOut):
     """
     Model of registered data nodes to send to client as a result of request
 
     Attributes:
     registered_data_nodes (List[BasicRegisteredDataOut]): Registered Data nodes from database
-    errors (Optional[Any]): Optional errors appeared during query executions
-    links (Optional[list]): List of links available from api
     """
+
     registered_data_nodes: List[BasicRegisteredDataOut] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None

@@ -1,7 +1,10 @@
-from pydantic import BaseModel
-from typing import Optional, Any, List, Union
+from typing import Optional, List, Union
 from enum import Enum
-from models.relation_information_model import RelationInformation
+
+from pydantic import BaseModel
+
+from models.base_model_out import BaseModelOut
+from participant_state.participant_state_model import ParticipantStateOut
 
 
 class FacialHair(str, Enum):
@@ -19,6 +22,7 @@ class AppearanceOcclusionIn(BaseModel):
         beard (FacialHair): Length of beard
         moustache (FacialHair): Length of moustache
     """
+
     beard: FacialHair
     moustache: FacialHair
     glasses: bool
@@ -29,25 +33,22 @@ class BasicAppearanceOcclusionOut(AppearanceOcclusionIn):
     Basic model of appearance occlusion to send to client as a result of request
 
     Attributes:
-        id (Optional[int]): Id of appearance occlusion model returned from graph api
+        id (Optional[Union[int, str]]): Id of appearance occlusion model returned from api
     """
-    id: Optional[int]
+
+    id: Optional[Union[int, str]]
 
 
-class AppearanceOcclusionOut(BasicAppearanceOcclusionOut):
+class AppearanceOcclusionOut(BasicAppearanceOcclusionOut, BaseModelOut):
     """
     Model of appearance occlusion with relationships to send to client as a result of request
 
     Attributes:
-        relations (List[RelationInformation]): List of relations starting in appearance node
-        reversed_relations (List[RelationInformation]): List of relations ending in appearance node
-        errors (Optional[Any]): Optional errors appeared during query executions
-        links (Optional[list]): List of links available from api
+        participant_states (Optional[List[ParticipantStateOut]]): List of participant states related to this
+            personality
     """
-    relations: List[RelationInformation] = []
-    reversed_relations: List[RelationInformation] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
+
+    participant_states: Optional[List[ParticipantStateOut]] = None
 
 
 class AppearanceSomatotypeIn(BaseModel):
@@ -60,6 +61,7 @@ class AppearanceSomatotypeIn(BaseModel):
         mesomorph (float): Range of mesomorph appearance measure
 
     """
+
     ectomorph: float
     endomorph: float
     mesomorph: float
@@ -70,13 +72,26 @@ class BasicAppearanceSomatotypeOut(AppearanceSomatotypeIn):
     Basic model of appearance somatotype to send to client as a result of request
 
     Attributes:
-        id (Optional[int]): Id of appearance somatotype model returned from graph api
+        id (Optional[int]): Id of appearance somatotype model returned from api
 
     """
-    id: Optional[int]
+
+    id: Optional[Union[int, str]]
 
 
-class AppearancesOut(BaseModel):
+class AppearanceSomatotypeOut(BasicAppearanceSomatotypeOut, BaseModelOut):
+    """
+    Model of appearance somatotype with relationships to send to client as a result of request
+
+    Attributes:
+        participant_states (Optional[List[ParticipantStateOut]]): List of participant states related to this
+            personality
+    """
+
+    participant_states: Optional[List[ParticipantStateOut]]
+
+
+class AppearancesOut(BaseModelOut):
     """
     Model of appearances to send to client as a result of request
 
@@ -85,22 +100,7 @@ class AppearancesOut(BaseModel):
         errors (Optional[Any]): Optional errors appeared during query executions
         links (Optional[list]): List of links available from api
     """
-    appearances: List[Union[BasicAppearanceSomatotypeOut, BasicAppearanceOcclusionOut]] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
 
-
-class AppearanceSomatotypeOut(BasicAppearanceSomatotypeOut):
-    """
-    Model of appearance somatotype with relationships to send to client as a result of request
-
-    Attributes:
-        relations (List[RelationInformation]): List of relations starting in appearance node
-        reversed_relations (List[RelationInformation]): List of relations ending in appearance node
-        errors (Optional[Any]): Optional errors appeared during query executions
-        links (Optional[list]): List of links available from api
-    """
-    relations: List[RelationInformation] = []
-    reversed_relations: List[RelationInformation] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
+    appearances: List[
+        Union[BasicAppearanceSomatotypeOut, BasicAppearanceOcclusionOut]
+    ] = []

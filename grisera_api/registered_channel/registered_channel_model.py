@@ -1,7 +1,11 @@
-from typing import Optional, Any, List
+from typing import Optional, List, Union
 
-from models.relation_information_model import RelationInformation
 from pydantic import BaseModel
+
+from channel.channel_model import ChannelOut
+from models.base_model_out import BaseModelOut
+from recording.recording_model import RecordingOut
+from registered_data.registered_data_model import RegisteredDataOut
 
 
 class RegisteredChannelIn(BaseModel):
@@ -9,11 +13,12 @@ class RegisteredChannelIn(BaseModel):
     Model of registered channel to acquire from client
 
     Attributes:
-    channel_id (int): Channel by which data was registered
-    registered_data_id (int): Id of created registered data
+    channel_id (Union[int, str]): Channel by which data was registered
+    registered_data_id (Union[int, str]): Id of created registered data
     """
-    channel_id: Optional[int]
-    registered_data_id: Optional[int]
+
+    channel_id: Optional[Union[int, str]]
+    registered_data_id: Optional[Union[int, str]]
 
 
 class BasicRegisteredChannelOut(BaseModel):
@@ -21,36 +26,34 @@ class BasicRegisteredChannelOut(BaseModel):
     Basic model of registered channel
 
     Attributes:
-    id (Optional[int]): Id of registered channel returned from graph api
+    id (Optional[Union[int, str]]): Id of registered channel returned from api
     """
-    id: Optional[int]
+
+    id: Optional[Union[int, str]]
 
 
-class RegisteredChannelOut(BasicRegisteredChannelOut):
+class RegisteredChannelOut(BasicRegisteredChannelOut, BaseModelOut):
     """
     Model of registered channel with relations to send to client as a result of request
 
     Attributes:
-    relations (List[RelationInformation]): List of relations starting in registered channel node
-    reversed_relations (List[RelationInformation]): List of relations ending in registered channel node
-    errors (Optional[Any]): Optional errors appeared during query executions
-    links (Optional[list]): List of links available from api
+    recordings (Optional[List[RecordingOut]]): recordings related to this registered channel
+    channel (Optional[ChannelOut]): channel related to this registered channel
+    registeredData (Optional[RegisteredDataOut]): registeredData related to this registered channel
     """
-    relations: List[RelationInformation] = []
-    reversed_relations: List[RelationInformation] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
+
+    recordings: Optional[List[RecordingOut]]
+    channel: Optional[ChannelOut]
+    registeredData: Optional[RegisteredDataOut]
 
 
-class RegisteredChannelsOut(BaseModel):
+class RegisteredChannelsOut(BaseModelOut):
     """
     Model of registered channels to send to client as a result of request
 
     Attributes:
     registered_channels (List[BasicRegisteredChannelOut]): Registered channels from database
-    errors (Optional[Any]): Optional errors appeared during query executions
-    links (Optional[list]): List of links available from api
+
     """
+
     registered_channels: List[BasicRegisteredChannelOut] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
