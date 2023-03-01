@@ -1,7 +1,11 @@
-from typing import Optional, Any, List
+from typing import Optional, List, Union
 
-from models.relation_information_model import RelationInformation
 from pydantic import BaseModel
+
+from models.base_model_out import BaseModelOut
+from activity_execution.activity_execution_model import ActivityExecutionOut
+from participant_state.participant_state_model import ParticipantStateOut
+from recording.recording_model import RecordingOut
 
 
 class ParticipationIn(BaseModel):
@@ -12,8 +16,9 @@ class ParticipationIn(BaseModel):
     activity_execution_id (Optional[int]): Activity execution of participation
     participant_state_id (Optional[int]): Participant state of participation
     """
-    activity_execution_id: Optional[int]
-    participant_state_id: Optional[int]
+
+    activity_execution_id: Optional[Union[int, str]]
+    participant_state_id: Optional[Union[int, str]]
 
 
 class BasicParticipationOut(BaseModel):
@@ -21,36 +26,33 @@ class BasicParticipationOut(BaseModel):
     Basic model of participation
 
     Attributes:
-    id (Optional[int]): Id of participation returned from graph api
+    id (Optional[Union[int, str]]): Id of participation returned from api
     """
-    id: Optional[int]
+
+    id: Optional[Union[int, str]]
 
 
-class ParticipationOut(BasicParticipationOut):
+class ParticipationOut(BasicParticipationOut, BaseModelOut):
     """
     Model of participation with relations to send to client as a result of request
 
     Attributes:
-    relations (List[RelationInformation]): List of relations starting in participation node
-    reversed_relations (List[RelationInformation]): List of relations ending in participation node
-    errors (Optional[Any]): Optional errors appeared during query executions
-    links (Optional[list]): List of links available from api
+    participant_state (Optional[List[ParticipantStateOut]]): participant state related to this participation
+    activity_execution (Optional[List[ActivityExecutionOut]]): activity execution related to this participation
+    recordings (Optional[List[RecordingOut]]): recordings related to this participation
     """
-    relations: List[RelationInformation] = []
-    reversed_relations: List[RelationInformation] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
+
+    participant_state: Optional[ParticipantStateOut]
+    activity_execution: Optional[ActivityExecutionOut]
+    recordings: Optional[List[RecordingOut]]
 
 
-class ParticipationsOut(BaseModel):
+class ParticipationsOut(BaseModelOut):
     """
     Model of participations to send to client as a result of request
 
     Attributes:
     participations (List[BasicParticipationOut]): Participations from database
-    errors (Optional[Any]): Optional errors appeared during query executions
-    links (Optional[list]): List of links available from api
     """
+
     participations: List[BasicParticipationOut] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None

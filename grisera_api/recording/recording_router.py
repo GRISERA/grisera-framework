@@ -5,7 +5,13 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
 from models.not_found_model import NotFoundByIdModel
-from recording.recording_model import RecordingPropertyIn, RecordingRelationIn, RecordingIn, RecordingOut, RecordingsOut
+from recording.recording_model import (
+    RecordingPropertyIn,
+    RecordingRelationIn,
+    RecordingIn,
+    RecordingOut,
+    RecordingsOut,
+)
 from recording.recording_service import RecordingService
 from services import Services
 
@@ -51,14 +57,20 @@ class RecordingRouter:
 
         return get_response
 
-    @router.get("/recordings/{recording_id}", tags=["recordings"],
-                response_model=Union[RecordingOut, NotFoundByIdModel])
-    async def get_recording(self, recording_id: int, response: Response):
+    @router.get(
+        "/recordings/{recording_id}",
+        tags=["recordings"],
+        response_model=Union[RecordingOut, NotFoundByIdModel],
+    )
+    async def get_recording(
+        self, recording_id: Union[int, str], depth: int, response: Response
+    ):
         """
-        Get recordings from database
+        Get recordings from database. Depth attribute specifies how many models will be traversed to create the
+        response.
         """
 
-        get_response = self.recording_service.get_recording(recording_id)
+        get_response = self.recording_service.get_recording(recording_id, depth)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -67,9 +79,12 @@ class RecordingRouter:
 
         return get_response
 
-    @router.delete("/recordings/{recording_id}", tags=["recordings"],
-                   response_model=Union[RecordingOut, NotFoundByIdModel])
-    async def delete_recording(self, recording_id: int, response: Response):
+    @router.delete(
+        "/recordings/{recording_id}",
+        tags=["recordings"],
+        response_model=Union[RecordingOut, NotFoundByIdModel],
+    )
+    async def delete_recording(self, recording_id: Union[int, str], response: Response):
         """
         Delete recordings from database
         """
@@ -82,13 +97,23 @@ class RecordingRouter:
 
         return get_response
 
-    @router.put("/recordings/{recording_id}", tags=["recordings"],
-                response_model=Union[RecordingOut, NotFoundByIdModel])
-    async def update_recording(self, recording_id: int, recording: RecordingPropertyIn, response: Response):
+    @router.put(
+        "/recordings/{recording_id}",
+        tags=["recordings"],
+        response_model=Union[RecordingOut, NotFoundByIdModel],
+    )
+    async def update_recording(
+        self,
+        recording_id: Union[int, str],
+        recording: RecordingPropertyIn,
+        response: Response,
+    ):
         """
         Update recording model in database
         """
-        update_response = self.recording_service.update_recording(recording_id, recording)
+        update_response = self.recording_service.update_recording(
+            recording_id, recording
+        )
         if update_response.errors is not None:
             response.status_code = 404
 
@@ -96,14 +121,24 @@ class RecordingRouter:
         update_response.links = get_links(router)
 
         return update_response
-    
-    @router.put("/recordings/{recording_id}/relationships", tags=["recordings"],
-                response_model=Union[RecordingOut, NotFoundByIdModel])
-    async def update_recording_relationships(self, recording_id: int, recording: RecordingRelationIn, response: Response):
+
+    @router.put(
+        "/recordings/{recording_id}/relationships",
+        tags=["recordings"],
+        response_model=Union[RecordingOut, NotFoundByIdModel],
+    )
+    async def update_recording_relationships(
+        self,
+        recording_id: Union[int, str],
+        recording: RecordingRelationIn,
+        response: Response,
+    ):
         """
         Update recordings relations in database
         """
-        update_response = self.recording_service.update_recording_relationships(recording_id, recording)
+        update_response = self.recording_service.update_recording_relationships(
+            recording_id, recording
+        )
         if update_response.errors is not None:
             response.status_code = 404
 

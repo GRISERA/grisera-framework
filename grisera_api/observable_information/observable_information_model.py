@@ -1,6 +1,12 @@
+from typing import Optional, Union, List
+
 from pydantic import BaseModel
-from typing import Optional, Any, List
-from models.relation_information_model import RelationInformation
+
+from models.base_model_out import BaseModelOut
+from life_activity.life_activity_model import LifeActivityOut
+from modality.modality_model import ModalityOut
+from recording.recording_model import RecordingOut
+from time_series.time_series_model import TimeSeriesOut
 
 
 class ObservableInformationIn(BaseModel):
@@ -8,13 +14,14 @@ class ObservableInformationIn(BaseModel):
     Model of information observed during experiment
 
     Attributes:
-    modality_id (Optional[int]): Id od modality
-    life_activity_id (Optional[int]): Id of life activity
-    recording_id (Optional[int]): Id of recording
+    modality_id (Optional[Union[int, str]]): Id od modality
+    life_activity_id (Optional[Union[int, str]]): Id of life activity
+    recording_id (Optional[Union[int, str]]): Id of recording
     """
-    modality_id: Optional[int]
-    life_activity_id: Optional[int]
-    recording_id: Optional[int]
+
+    modality_id: Optional[Union[int, str]]
+    life_activity_id: Optional[Union[int, str]]
+    recording_id: Optional[Union[int, str]]
 
 
 class BasicObservableInformationOut(ObservableInformationIn):
@@ -22,36 +29,35 @@ class BasicObservableInformationOut(ObservableInformationIn):
     Model of information observed during experiment in database
 
     Attributes:
-    id (Optional[int]): Id of node returned from graph api
+    id (Optional[Union[int, str]]): Id of node returned from api
     """
-    id: Optional[int]
+
+    id: Optional[Union[int, str]]
 
 
-class ObservableInformationOut(BasicObservableInformationOut):
+class ObservableInformationOut(BasicObservableInformationOut, BaseModelOut):
     """
     Model of information observed during experiment to send to client as a result of request
 
     Attributes:
-
-    relations (List[RelationInformation]): List of relations starting in observable information node
-    reversed_relations (List[RelationInformation]): List of relations ending in observable information node
-    errors (Optional[Any]): Optional errors appeared during query executions
-    links (Optional[list]): List of links available from api
+    recording (Optional[RecordingOut]): recording related to this observable information
+    timeSeries (Optional[List[TimeSeriesOut]]): list of time series related to this observable information
+    modality (Optional[ModalityOut]): modality related to this observable information
+    life_activity (Optional[LifeActivityOut]): life activity related to this observable information
     """
-    relations: List[RelationInformation] = []
-    reversed_relations: List[RelationInformation] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
+
+    recording: Optional[RecordingOut]
+    timeSeries: Optional[List[TimeSeriesOut]]
+    modality: Optional[ModalityOut]
+    life_activity: Optional[LifeActivityOut]
 
 
-class ObservableInformationsOut(BaseModel):
+class ObservableInformationsOut(BaseModelOut):
     """
     Model of information observed during experiment to send to client as a result of request
+
     Attributes:
-    life_activities (List[BasicLifeActivityOut]): Life activities from database
-    errors (Optional[Any]): Optional errors appeared during query executions
-    links (Optional[list]): List of links available from api
+    observable_informations (List[BasicLifeActivityOut]): Observable informations from database
     """
+
     observable_informations: List[BasicObservableInformationOut] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
