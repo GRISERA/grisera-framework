@@ -140,11 +140,11 @@ class DatabaseServiceTestCase(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'post')
     def test_create_relationship_properties(self, post_mock):
         post_mock.return_value = self.response_content
-        node_id = 1
+        relationship_id = 1
         relationship_model = TimeSeriesTransformationRelationshipIn(
             additional_properties=[{'key': 'test', 'value': '1234'}])
 
-        result = self.graph_api_service.create_relationship_properties(node_id, relationship_model)
+        result = self.graph_api_service.create_relationship_properties(relationship_id, relationship_model)
 
         self.assertEqual(result, self.response_content)
         post_mock.assert_called_with("/relationships/1/properties", [{'key': 'test', 'value': '1234'}])
