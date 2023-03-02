@@ -56,9 +56,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         new_time_series.measure_id = time_series_transformation.destination_measure_id
         new_time_series.observable_information_id = time_series_transformation.destination_observable_information_id
 
-        print(new_time_series)
         result = self.save_time_series(new_time_series)
-        print(result)
 
         for index, time_series_id in enumerate(time_series_transformation.source_time_series_ids):
             relationship = self.graph_api_service.create_relationships(result.id, time_series_id, "transformedFrom")
