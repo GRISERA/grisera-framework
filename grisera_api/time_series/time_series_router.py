@@ -41,7 +41,8 @@ class TimeSeriesRouter:
 
         return create_response
 
-    @router.post("/time_series/transformation", tags=["time series"], response_model=TimeSeriesOut)
+    @router.post("/time_series/transformation", tags=["time series"],
+                 response_model=Union[TimeSeriesOut, NotFoundByIdModel])
     async def transform_time_series(self, time_series_transformation: TimeSeriesTransformationIn, response: Response):
         """
         Create new transformed time series in database

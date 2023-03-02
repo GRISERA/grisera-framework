@@ -46,13 +46,19 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         Returns:
             Result of request as time series object
         """
-        source_time_series = [self.get_time_series(time_series_id) for time_series_id in
-                              time_series_transformation.source_time_series_ids]
-
-        new_time_series, new_signal_values_index_mapping = TimeSeriesTransformationFactory().get_transformation(
-            time_series_transformation.name) \
-            .transform(source_time_series, time_series_transformation.additional_properties)
-
+        source_time_series = []
+        for time_series_id in time_series_transformation.source_time_series_ids:
+            time_series = self.get_time_series(time_series_id)
+            if time_series.errors is not None:
+                print(time_series)
+                return time_series
+            source_time_series.append(time_series)
+        try:
+            new_time_series, new_signal_values_index_mapping = TimeSeriesTransformationFactory().get_transformation(
+                time_series_transformation.name) \
+                .transform(source_time_series, time_series_transformation.additional_properties)
+        except Exception as e:
+            return TimeSeriesNodesOut(errors=str(e))
         new_time_series.measure_id = time_series_transformation.destination_measure_id
         new_time_series.observable_information_id = time_series_transformation.destination_observable_information_id
 
@@ -75,7 +81,6 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                                                                       TimeSeriesTransformationRelationshipIn(
                                                                           additional_properties=[
                                                                               {'key': 'order', 'value': index + 1}]))
-
         return result
 
     def get_experiment_id(self, time_series_id: int):
