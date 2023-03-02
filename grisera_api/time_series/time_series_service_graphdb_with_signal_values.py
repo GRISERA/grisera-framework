@@ -50,7 +50,6 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         for time_series_id in time_series_transformation.source_time_series_ids:
             time_series = self.get_time_series(time_series_id)
             if time_series.errors is not None:
-                print(time_series)
                 return time_series
             source_time_series.append(time_series)
         try:
