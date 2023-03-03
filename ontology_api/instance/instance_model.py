@@ -18,3 +18,6 @@ class MinimalModelOut(BaseModel):
     links: Optional[str]
     label: Optional[str]
     errors: Optional[str]
+
+class FullInstanceModelOut(MinimalModelOut):
+    instance_id: Optional[str]
