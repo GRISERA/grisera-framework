@@ -22,11 +22,11 @@ class DatasetRouter:
     dataset_service = DatasetService()
 
     @router.post("/dataset", tags=["datasets"], response_model=DatasetOut)
-    async def create_dataset(self, dataset: DatasetIn, response: Response, database_name_to_create: str, database_name: str):
+    async def create_dataset(self, response: Response, database_name_to_create: str):
         """
         Create directed and named dataset
         """
-        create_response = self.dataset_service.create_dataset(dataset, database_name_to_create, database_name)
+        create_response = self.dataset_service.create_dataset(database_name_to_create)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -36,10 +36,12 @@ class DatasetRouter:
         return create_response
 
     @router.get("/datasets", tags=["datasets"], response_model=DatasetsOut)
-    async def get_datasets(self, response: Response, database_name: str):
+    async def get_datasets(self, response: Response):
         """
         Create directed and named dataset
         """
+        #It don't have to be 'neo4j', any existing database will pass
+        database_name = "neo4j"
         datasets = self.dataset_service.get_datasets(database_name)
         if datasets.errors is not None:
             response.status_code = 422

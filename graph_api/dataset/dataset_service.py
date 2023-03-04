@@ -14,7 +14,7 @@ class DatasetService:
     """
     db: DatabaseService = DatabaseService()
 
-    def create_dataset(self, dataset: DatasetIn, database_name_to_create: str, database_name: str):
+    def create_dataset(self, database_name_to_create: str):
         """
         Send request to database by its API to create new relationship
 
@@ -25,11 +25,11 @@ class DatasetService:
             Result of request as relationship object
         """
 
-        response = self.db.create_database_with_name(database_name_to_create, database_name)
+        response = self.db.create_database_with_name(database_name_to_create)
         if len(response["errors"]) > 0:
             result = DatasetOut(errors=response["errors"])
         else:
-            result = DatasetOut(name=database_name)
+            result = DatasetOut(name=database_name_to_create)
 
         return result
 
@@ -48,6 +48,7 @@ class DatasetService:
             return DatasetsOut(errors=response["errors"])
         
         result = DatasetsOut(datasets=[])
+        
         for node in response["results"][0]["data"]:
             name = node['row'][0]
             result.datasets.append(BasicDatasetOut(name=name))

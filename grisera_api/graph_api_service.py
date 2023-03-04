@@ -30,8 +30,12 @@ class GraphApiService:
             Result of request
         """
 
+
         url_part += self.add_database_name_to_url(database_name)
-        response = requests.post(url=self.graph_api_url + url_part, json=request_body).json()
+        print("###### URL_PART: ", url_part)
+        response = requests.post(url=self.graph_api_url + url_part,
+                                 json=request_body).json()
+        print("###### RESPONSE: ", response)
         # print("###### RESPONSE: ", response)
         # try:
         #     response_data = response.json()
