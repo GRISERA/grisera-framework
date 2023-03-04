@@ -3,9 +3,6 @@ from typing import Optional, List, Union
 from pydantic import BaseModel
 
 from models.base_model_out import BaseModelOut
-from activity_execution.activity_execution_model import ActivityExecutionOut
-from participant_state.participant_state_model import ParticipantStateOut
-from recording.recording_model import RecordingOut
 
 
 class ParticipationIn(BaseModel):
@@ -42,9 +39,9 @@ class ParticipationOut(BasicParticipationOut, BaseModelOut):
     recordings (Optional[List[RecordingOut]]): recordings related to this participation
     """
 
-    participant_state: Optional[ParticipantStateOut]
-    activity_execution: Optional[ActivityExecutionOut]
-    recordings: Optional[List[RecordingOut]]
+    participant_state: "Optional[ParticipantStateOut]"
+    activity_execution: "Optional[ActivityExecutionOut]"
+    recordings: "Optional[List[RecordingOut]]"
 
 
 class ParticipationsOut(BaseModelOut):
@@ -56,3 +53,11 @@ class ParticipationsOut(BaseModelOut):
     """
 
     participations: List[BasicParticipationOut] = []
+
+
+# circular import exeption prevention
+from activity_execution.activity_execution_model import ActivityExecutionOut
+from participant_state.participant_state_model import ParticipantStateOut
+from recording.recording_model import RecordingOut
+
+ParticipationOut.update_forward_refs()

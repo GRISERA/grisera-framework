@@ -27,7 +27,7 @@ class ModelServiceTestCase(unittest.TestCase):
         new_file.write("<rdf:RDF xml:base=\"http://www.semanticweb.org/GRISERA/contextualOntology\"><owl:Ontology rdf:about=\"http://www.semanticweb.org/GRISERA/contextualOntology\"/></rdf:RDF> ")
         new_file.close()
         with open("tests" + os.path.sep + "tmp_owl" + os.path.sep + "testfile.owl", "rb") as f:
-            file = UploadFile('testfile.owl', f)
+            file = UploadFile(filename='testfile.owl', file=f)
             result = model_service.save_model(file)
         os.remove("tests" + os.path.sep + "tmp_owl" + os.path.sep + "testfile.owl")
         os.remove("database" + os.path.sep + "1.owl")
@@ -39,7 +39,7 @@ class ModelServiceTestCase(unittest.TestCase):
         new_file.write("content")
         new_file.close()
         with open("tests" + os.path.sep + "tmp_owl" + os.path.sep + "testfile.txt", "rb") as f:
-            file = UploadFile('testfile.txt', f)
+            file = UploadFile(filename='testfile.txt', file=f)
             result = model_service.save_model(file)
         os.remove("tests" + os.path.sep + "tmp_owl" + os.path.sep + "testfile.txt")
         self.assertEqual(result.errors, "Wrong extension of file")

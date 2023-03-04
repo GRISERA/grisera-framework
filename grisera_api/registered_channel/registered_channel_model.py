@@ -2,10 +2,7 @@ from typing import Optional, List, Union
 
 from pydantic import BaseModel
 
-from channel.channel_model import ChannelOut
 from models.base_model_out import BaseModelOut
-from recording.recording_model import RecordingOut
-from registered_data.registered_data_model import RegisteredDataOut
 
 
 class RegisteredChannelIn(BaseModel):
@@ -42,9 +39,9 @@ class RegisteredChannelOut(BasicRegisteredChannelOut, BaseModelOut):
     registeredData (Optional[RegisteredDataOut]): registeredData related to this registered channel
     """
 
-    recordings: Optional[List[RecordingOut]]
-    channel: Optional[ChannelOut]
-    registeredData: Optional[RegisteredDataOut]
+    recordings: "Optional[List[RecordingOut]]"
+    channel: "Optional[ChannelOut]"
+    registeredData: "Optional[RegisteredDataOut]"
 
 
 class RegisteredChannelsOut(BaseModelOut):
@@ -57,3 +54,11 @@ class RegisteredChannelsOut(BaseModelOut):
     """
 
     registered_channels: List[BasicRegisteredChannelOut] = []
+
+
+# circular import exeption prevention
+from channel.channel_model import ChannelOut
+from recording.recording_model import RecordingOut
+from registered_data.registered_data_model import RegisteredDataOut
+
+RegisteredChannelOut.update_forward_refs()

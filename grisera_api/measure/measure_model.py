@@ -3,8 +3,6 @@ from typing import Optional, Union, List
 from pydantic import BaseModel
 
 from models.base_model_out import BaseModelOut
-from measure_name.measure_name_model import MeasureNameOut
-from time_series.time_series_model import TimeSeriesOut
 
 
 class MeasurePropertyIn(BaseModel):
@@ -59,8 +57,8 @@ class MeasureOut(BasicMeasureOut, BaseModelOut):
     measure_name (Optional[MeasureNameOut]): measure name related to this measure
     """
 
-    time_series: Optional[List[TimeSeriesOut]]
-    measure_name: Optional[MeasureNameOut]
+    time_series: "Optional[List[TimeSeriesOut]]"
+    measure_name: "Optional[MeasureNameOut]"
 
 
 class MeasuresOut(BaseModelOut):
@@ -72,3 +70,10 @@ class MeasuresOut(BaseModelOut):
     """
 
     measures: List[BasicMeasureOut] = []
+
+
+# circular import exeption prevention
+from measure_name.measure_name_model import MeasureNameOut
+from time_series.time_series_model import TimeSeriesOut
+
+MeasureOut.update_forward_refs()

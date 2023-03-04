@@ -3,7 +3,6 @@ from enum import Enum
 
 from pydantic import BaseModel
 
-from measure.measure_model import MeasureOut
 from models.base_model_out import BaseModelOut
 
 
@@ -72,7 +71,7 @@ class MeasureNameOut(BasicMeasureNameOut, BaseModelOut):
     measures (List[RelationInformation]): list of measures related to this measure name
     """
 
-    measures: Optional[List[MeasureOut]]
+    measures: "Optional[List[MeasureOut]]"
 
 
 class MeasureNamesOut(BaseModelOut):
@@ -84,3 +83,9 @@ class MeasureNamesOut(BaseModelOut):
     """
 
     measure_names: List[BasicMeasureNameOut] = []
+
+
+# circular import exeption prevention
+from measure.measure_model import MeasureOut
+
+MeasureNameOut.update_forward_refs()
