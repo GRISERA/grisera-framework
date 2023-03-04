@@ -4,10 +4,9 @@ from recording.recording_service_mongodb import RecordingServiceMongoDB
 from registered_channel.registered_channel_service import RegisteredChannelService
 from registered_data.registered_data_service_mongodb import RegisteredDataServiceMongoDB
 from registered_channel.registered_channel_model import (
-    BasicRegisteredChannelOut,
-    RegisteredChannelsOut,
     RegisteredChannelOut,
     RegisteredChannelIn,
+    BasicRegisteredChannelOut,
 )
 from models.not_found_model import NotFoundByIdModel
 
@@ -17,9 +16,9 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
     Object to handle logic of registered channels requests
 
     Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
-    channel_service (ChannelService): Service to send channel requests
-    registered_data_service (RegisteredDataService): Service to send registered data requests
+    channel_service (ChannelServiceMongoDB): Service to send channel requests
+    registered_data_service (RegisteredDataServiceMongoDB): Service to send registered data requests
+    recording_service (RecordingServiceMongoDB): Service to send recording requests
     """
 
     channel_service = ChannelServiceMongoDB()
@@ -28,7 +27,7 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
 
     def save_registered_channel(self, registered_channel: RegisteredChannelIn):
         """
-        Send request to graph api to create new registered channel
+        Send request to mongo api to create new registered channel
 
         Args:
             registered_channel (RegisteredChannelIn): Registered channel to be added
@@ -63,15 +62,18 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
 
         return self.get_registered_channel(registered_channel_id)
 
-    def get_registered_channels(self):
+    def get_registered_channels(self, query: dict = {}):
         """
         Send request to mongo api to get registered channels
+
+        Args:
+            query (dict): Query for mongo request. Gets all registered channels by default.
 
         Returns:
             Result of request as list of registered channels objects
         """
-        registered_channels = mongo_api_service.db.registered_channels.find({})
-        result = [RegisteredChannelIn(**rc) for rc in registered_channels]
+        registered_channels = mongo_api_service.db.registered_channels.find(query)
+        result = [BasicRegisteredChannelOut(**rc) for rc in registered_channels]
 
         return result
 
@@ -79,10 +81,15 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
         self, registered_channel_id: int, depth: int = 0, source: str = ""
     ):
         """
-        Send request to graph api to get given registered channel
+        Send request to mongo api to get given registered channel
 
         Args:
             registered_channel_id (int): Id of registered channel
+            depth (int): this attribute specifies how many models will be traversed to create the response.
+                         for depth=0, only no further models will be travesed.
+            source (str): internal argument for mongo services, used to tell the direcion of model fetching.
+                          i.e. if for this service, if source="recording", it means that this method was invoked
+                          from recording service, so recording model will not be fetched, as it is already in response.
 
         Returns:
             Result of request as registered channel object
@@ -129,7 +136,7 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
 
     def delete_registered_channel(self, registered_channel_id: int):
         """
-        Send request to graph api to delete given registered channel
+        Send request to mongo api to delete given registered channel
 
         Args:
             registered_channel_id (int): Id of registered channel
@@ -137,23 +144,28 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
         Returns:
             Result of request as registered channel object
         """
-        get_response = self.get_registered_channel(registered_channel_id)
+        registered_channel = self.get_registered_channel(registered_channel_id)
 
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
+        if registered_channel is None:
+            return NotFoundByIdModel(
+                id=registered_channel_id,
+                errors={"errors": "registered channel not found"},
+            )
 
-        self.graph_api_service.delete_node(registered_channel_id)
-        return get_response
+        mongo_api_service.db.registered_channels.delete_one(
+            {"id": registered_channel_id}
+        )
+        return registered_channel
 
     def update_registered_channel_relationships(
         self, registered_channel_id: int, registered_channel: RegisteredChannelIn
     ):
         """
-        Send request to graph api to update given registered channel
+        Send request to mongo api to update given registered channel
 
         Args:
             registered_channel_id (int): Id of registered channel
-            registered_channel (RegisteredChannelIn): Relationships to update
+            registered_channel (RegisteredChannelIn): Document to update
 
         Returns:
             Result of request as registered channel object
@@ -168,10 +180,9 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
             and type(self.channel_service.get_channel(registered_channel.channel_id))
             is not NotFoundByIdModel
         ):
-            self.graph_api_service.create_relationships(
-                start_node=registered_channel_id,
-                end_node=registered_channel.channel_id,
-                name="hasChannel",
+            mongo_api_service.db.registered_channels.update_one(
+                {"id": registered_channel_id},
+                {"channel_id": registered_channel.channel_id},
             )
         if (
             registered_channel.registered_data_id is not None
@@ -182,10 +193,9 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
             )
             is not NotFoundByIdModel
         ):
-            self.graph_api_service.create_relationships(
-                start_node=registered_channel_id,
-                end_node=registered_channel.registered_data_id,
-                name="hasRegisteredData",
+            mongo_api_service.db.registered_channels.update_one(
+                {"id": registered_channel_id},
+                {"registered_data_id": registered_channel.registered_data_id},
             )
 
         return self.get_registered_channel(registered_channel_id)
