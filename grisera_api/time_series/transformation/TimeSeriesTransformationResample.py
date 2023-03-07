@@ -3,7 +3,7 @@ from typing import List, Optional
 from property.property_model import PropertyIn
 from time_series.helpers import get_node_property, get_additional_parameter
 from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, Type, SignalIn
-from time_series.transformation.TimeSeriesTransformation import TimeSeriesTransformation
+from time_series.transformation.TimeSeriesTransformation import TimeSeriesTransformation, TransformationType
 
 
 class TimeSeriesTransformationResample(TimeSeriesTransformation):
@@ -43,7 +43,7 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
 
         if additional_properties is None:
             additional_properties = []
-        additional_properties.append(PropertyIn(key="transformation_name", value="resample_nearest"))
+        additional_properties.append(PropertyIn(key="transformation_name", value=TransformationType.RESAMPLE_NEAREST))
 
         new_signal_values = []
         new_signal_values_index_mapping = []
