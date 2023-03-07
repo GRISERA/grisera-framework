@@ -125,6 +125,11 @@ class DatabaseService:
         Returns:
             Result of request
         """
+        operators = {
+            "equals": "=",
+            "less": "<=",
+            "greater": ">="
+        }
         return_list = []
         where_list = []
         match_list = []
@@ -146,6 +151,14 @@ class DatabaseService:
                 return_list.append(node_label)
             if node.id is not None:
                 where_list.append(f"ID({node_label})={str(node.id)}")
+            if node.parameters is not None:
+                for parameter in node.parameters:
+                    if parameter.operator in operators:
+                        operator = operators[parameter.operator]
+                        if operator == "=":
+                            where_list.append(f"{node_label}.{parameter.key}{operator}'{parameter.value}'")
+                        else:
+                            where_list.append(f"toInteger({node_label}.{parameter.key}){operator}{parameter.value}")
             if node.label is not None:
                 statement += f":`{node.label}`"
             statement += ")"
