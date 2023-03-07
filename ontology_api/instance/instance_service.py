@@ -3,7 +3,6 @@ from model.model_model import ModelOut
 from instance.instance_model import MinimalInstanceModelIn, FullInstanceModelOut
 from instance.instance_model import MinimalModelOut as InstanceModelOut
 from model.model_service import ModelService
-from fastapi import UploadFile
 import os
 
 
