@@ -44,20 +44,25 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
         new_signal_values_index_mapping = []
         current_time = start_timestamp
         current_signal_value_index = 0
-        while current_time < end_timestamp:
-            while current_signal_value_index + 1 < len(time_series[0].signal_values) and \
-                    int(get_node_property(time_series[0].signal_values[current_signal_value_index]["timestamp"],
-                                          end_timestamp_label)) <= current_time:
-                current_signal_value_index += 1
-            if current_signal_value_index < len(time_series[0].signal_values):
+        if len(time_series[0].signal_values) > 0:
+            while current_time < end_timestamp:
+                # For current timestamp find first signal value with greater or equal begin timestamp value
+                # If not found, return last signal value
+                while current_signal_value_index + 1 < len(time_series[0].signal_values) and \
+                        int(get_node_property(time_series[0].signal_values[current_signal_value_index]["timestamp"],
+                                              begin_timestamp_label)) < current_time:
+                    current_signal_value_index += 1
                 new_signal_value_index = current_signal_value_index
                 if current_signal_value_index > 0:
+                    # Get timestamps of found signal value (mostly greater or equal current_time)
+                    # and preceding signal value (less than current_time)
                     after_signal_value_timestamp = int(
                         get_node_property(time_series[0].signal_values[current_signal_value_index]["timestamp"],
                                           begin_timestamp_label))
                     before_signal_value_timestamp = int(
                         get_node_property(time_series[0].signal_values[current_signal_value_index - 1]["timestamp"],
                                           end_timestamp_label))
+                    # Determine which of two signal values is nearer
                     if abs(current_time - before_signal_value_timestamp) <= abs(
                             after_signal_value_timestamp - current_time):
                         new_signal_value_index = current_signal_value_index - 1

@@ -38,13 +38,17 @@ class TimeSeriesTransformationQuadrants(TimeSeriesTransformation):
         new_signal_values_index_mapping = []
         current_signal_value_y_index = 0
         timestamp_label = "timestamp" if time_series[0].type == Type.timestamp else "start_timestamp"
+        # Iterate over all X signal values
         for current_signal_value_x_index in range(len(time_series[0].signal_values)):
+            # For current X signal value find first Y signal value with greater or equal timestamp value
+            # If not found, return not existing index
             while current_signal_value_y_index < len(time_series[1].signal_values) and \
                     int(get_node_property(time_series[1].signal_values[current_signal_value_y_index]["timestamp"],
                                           timestamp_label)) < int(
                 get_node_property(time_series[0].signal_values[current_signal_value_x_index]["timestamp"],
                                   timestamp_label)):
                 current_signal_value_y_index += 1
+            # Check if X and Y signal timestamps are the same
             if current_signal_value_y_index < len(time_series[1].signal_values) and \
                     get_node_property(time_series[0].signal_values[current_signal_value_x_index]["timestamp"],
                                       "timestamp") == get_node_property(
@@ -55,6 +59,7 @@ class TimeSeriesTransformationQuadrants(TimeSeriesTransformation):
                     get_node_property(time_series[0].signal_values[current_signal_value_x_index]["timestamp"],
                                       "end_timestamp") == get_node_property(
                 time_series[1].signal_values[current_signal_value_y_index]["timestamp"], "end_timestamp"):
+                # Determine quadrant comparing X and Y signal values with origin point
                 x_positive = 1 if int(
                     get_node_property(time_series[0].signal_values[current_signal_value_x_index]["signal_value"],
                                       "value")) >= origin_x else 0
