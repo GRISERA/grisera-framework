@@ -31,15 +31,10 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
         end_timestamp_label = "timestamp" if time_series[0].type == Type.timestamp else "end_timestamp"
         start_timestamp = get_additional_parameter(additional_properties, "start_timestamp")
         end_timestamp = get_additional_parameter(additional_properties, "end_timestamp")
-        if start_timestamp is None:
-            start_timestamp = 0
-        else:
-            start_timestamp = int(start_timestamp)
-        if end_timestamp is not None:
-            end_timestamp = int(end_timestamp)
-        else:
-            end_timestamp = period + int(
-                get_node_property(time_series[0].signal_values[-1]["timestamp"], end_timestamp_label))
+
+        start_timestamp = int(start_timestamp) if start_timestamp is not None else 0
+        end_timestamp = int(end_timestamp) if end_timestamp is not None else (period + int(
+            get_node_property(time_series[0].signal_values[-1]["timestamp"], end_timestamp_label)))
 
         if additional_properties is None:
             additional_properties = []

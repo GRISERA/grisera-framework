@@ -27,14 +27,8 @@ class TimeSeriesTransformationQuadrants(TimeSeriesTransformation):
         assert time_series[0].type == time_series[1].type, "Time series types should be equal"
         origin_x = get_additional_parameter(additional_properties, "origin_x")
         origin_y = get_additional_parameter(additional_properties, "origin_y")
-        if origin_x is None:
-            origin_x = 0
-        else:
-            origin_x = int(origin_x)
-        if origin_y is None:
-            origin_y = 0
-        else:
-            origin_y = int(origin_y)
+        origin_x = int(origin_x) if origin_x is not None else 0
+        origin_y = int(origin_y) if origin_y is not None else 0
 
         if additional_properties is None:
             additional_properties = []
