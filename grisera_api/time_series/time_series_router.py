@@ -137,7 +137,7 @@ class TimeSeriesRouter:
 
     @router.get("/time_series/multidimensional/{time_series_ids}", tags=["time series"],
                 response_model=Union[TimeSeriesMultidimensionalOut, NotFoundByIdModel])
-    async def get_time_series_multidimensional(self, response: Response, time_series_ids: str):
+    async def get_time_series_multidimensional(self, time_series_ids: str, response: Response):
         """
         Get multidimensional time series by ids from database with signal values.
 
