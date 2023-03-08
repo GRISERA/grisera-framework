@@ -7,6 +7,14 @@ from models.relation_information_model import RelationInformation
 from property.property_model import PropertyIn
 
 
+class TransformationType(str, Enum):
+    """
+    The type of transformation
+    """
+    RESAMPLE_NEAREST = "resample_nearest"
+    QUADRANTS = "quadrants"
+
+
 class TimestampNodesIn(BaseModel):
     """
     Model of timestamp node
@@ -77,13 +85,13 @@ class TimeSeriesTransformationIn(BaseModel):
     Model of time series transformation to acquire from client
 
     Attributes:
-        name (str): Name of the transformation
+        name (TransformationType): Name of the transformation
         source_time_series_ids (List[int]): Ids of source time series
         destination_observable_information_id (Optional[int]): Id of destination observable information
         destination_measure_id (Optional[int]): Id of destination measure
         additional_properties (Optional[List[PropertyIn]]): Additional properties for transformation
     """
-    name: str
+    name: TransformationType
     source_time_series_ids: List[int]
     destination_observable_information_id: Optional[int]
     destination_measure_id: Optional[int]

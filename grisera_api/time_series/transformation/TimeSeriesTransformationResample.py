@@ -2,8 +2,8 @@ from typing import List, Optional
 
 from property.property_model import PropertyIn
 from time_series.helpers import get_node_property, get_additional_parameter
-from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, Type, SignalIn
-from time_series.transformation.TimeSeriesTransformation import TimeSeriesTransformation, TransformationType
+from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, Type, SignalIn, TransformationType
+from time_series.transformation.TimeSeriesTransformation import TimeSeriesTransformation
 
 
 class TimeSeriesTransformationResample(TimeSeriesTransformation):
@@ -14,7 +14,10 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
 
     def transform(self, time_series: List[TimeSeriesOut], additional_properties: Optional[List[PropertyIn]]):
         """
-        Transform time series data
+        Transform time series data.
+
+        Get signal values with new sampling period.
+        This transformation will find the nearest signal value including values in the future.
 
         Args:
             time_series (List[TimeSeriesOut]): Time series to be transformed
