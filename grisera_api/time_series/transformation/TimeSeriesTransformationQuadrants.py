@@ -2,8 +2,8 @@ from typing import List, Optional
 
 from property.property_model import PropertyIn
 from time_series.helpers import get_node_property, get_additional_parameter
-from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, SignalIn, Type
-from time_series.transformation.TimeSeriesTransformation import TimeSeriesTransformation, TransformationType
+from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, SignalIn, Type, TransformationType
+from time_series.transformation.TimeSeriesTransformation import TimeSeriesTransformation
 
 
 class TimeSeriesTransformationQuadrants(TimeSeriesTransformation):
@@ -14,7 +14,10 @@ class TimeSeriesTransformationQuadrants(TimeSeriesTransformation):
 
     def transform(self, time_series: List[TimeSeriesOut], additional_properties: Optional[List[PropertyIn]]):
         """
-        Transform time series data
+        Transform time series data.
+
+        Get quadrants for (X, Y) signal values pairs matched by timestamp values.
+        This transformation will ignore all signal values which timestamps will not be equal.
 
         Args:
             time_series (List[TimeSeriesOut]): Time series to be transformed
