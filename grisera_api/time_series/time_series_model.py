@@ -37,10 +37,10 @@ class SignalIn(BaseModel):
     """
     Model of signal to acquire from client
     Attributes:
-        timestamp (int): Timestamp of signal measure of type Timestamp in milliseconds
-        start_timestamp (int): Timestamp of begin signal measure of type Epoch in milliseconds
-        end_timestamp (int): Timestamp of end signal measure of type Epoch in milliseconds
-        value (SignalValueIn): Value of signal
+        timestamp (Optional[int]): Timestamp of signal measure of type Timestamp in milliseconds
+        start_timestamp (Optional[int]): Timestamp of begin signal measure of type Epoch in milliseconds
+        end_timestamp (Optional[int]): Timestamp of end signal measure of type Epoch in milliseconds
+        value (Union[str, float]): Value of signal
     """
     timestamp: Optional[int]
     start_timestamp: Optional[int]
@@ -149,6 +149,20 @@ class TimeSeriesOut(BasicTimeSeriesOut):
     """
     relations: List[RelationInformation] = []
     reversed_relations: List[RelationInformation] = []
+    signal_values: list = []
+    errors: Optional[Any] = None
+    links: Optional[list] = None
+
+
+class TimeSeriesMultidimensionalOut(BaseModel):
+    """
+    Model of time multidimensional series to send to client as a result of request
+
+    Attributes:
+        signal_values (list): List of signal values
+        errors (Optional[Any]): Optional errors appeared during query executions
+        links (Optional[list]): List of links available from api
+    """
     signal_values: list = []
     errors: Optional[Any] = None
     links: Optional[list] = None

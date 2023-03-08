@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from starlette.datastructures import QueryParams
 
@@ -63,6 +63,18 @@ class TimeSeriesService:
             Result of request as time series object
         """
         raise Exception("get_time_series not implemented yet")
+
+    def get_time_series_multidimensional(self, time_series_ids: List[int]):
+        """
+        Send request to graph api to get given time series
+
+        Args:
+            time_series_ids (List[int]): Ids of the time series
+
+        Returns:
+            Result of request as time series object
+        """
+        raise Exception("get_time_series_multidimensional not implemented yet")
 
     def delete_time_series(self, time_series_id: int):
         """

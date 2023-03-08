@@ -9,7 +9,7 @@ from hateoas import get_links
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 from time_series.time_series_model import TimeSeriesIn, TimeSeriesNodesOut, TimeSeriesOut, \
-    TimeSeriesPropertyIn, TimeSeriesRelationIn, TimeSeriesTransformationIn
+    TimeSeriesPropertyIn, TimeSeriesRelationIn, TimeSeriesTransformationIn, TimeSeriesMultidimensionalOut
 from time_series.time_series_service import TimeSeriesService
 
 router = InferringRouter()
@@ -23,6 +23,7 @@ class TimeSeriesRouter:
     Attributes:
         time_series_service (TimeSeriesService): Service instance for time series
     """
+
     def __init__(self):
         self.time_series_service = Services().time_series_service()
 
@@ -126,6 +127,29 @@ class TimeSeriesRouter:
         """
 
         get_response = self.time_series_service.get_time_series(time_series_id, signal_min_value, signal_max_value)
+        if get_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        get_response.links = get_links(router)
+
+        return get_response
+
+    @router.get("/time_series/multidimensional/{time_series_ids}", tags=["time series"],
+                response_model=Union[TimeSeriesMultidimensionalOut, NotFoundByIdModel])
+    async def get_time_series_multidimensional(self, response: Response, time_series_ids: str):
+        """
+        Get multidimensional time series by ids from database with signal values.
+
+        Time series ids is comma separated string.
+        """
+        try:
+            ids = [int(time_series_id.strip()) for time_series_id in time_series_ids.split(",")]
+        except ValueError:
+            response.status_code = 422
+            return TimeSeriesMultidimensionalOut(errors="Ids must be integers")
+
+        get_response = self.time_series_service.get_time_series_multidimensional(ids)
         if get_response.errors is not None:
             response.status_code = 404
 
