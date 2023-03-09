@@ -22,13 +22,13 @@ class RoleService:
         onto_property = onto[model_in.role_name]
         property_domain = onto_property.domain
         property_range = onto_property.range
-        src_instance = onto.search(type=property_domain, iri=f"*{model_in.src_instance_name}")
+        src_instance = onto.search_one(type=property_domain, iri=f"*{model_in.src_instance_name}")
 
         if src_instance is None:
             onto.destroy()
             return ObjectPropertyRoleModelOut(errors=f"Instance {model_in.src_instance_name} not found")
 
-        dst_instance = onto.search(type=property_range, iri=f"*{model_in.dst_instance_name}")
+        dst_instance = onto.search_one(type=property_range, iri=f"*{model_in.dst_instance_name}")
 
         if dst_instance is None:
             onto.destroy()
@@ -39,11 +39,8 @@ class RoleService:
         model_out = self.model_service.update_ontology(model_id, onto)
 
         if model_out.errors is not None:
-            onto.destroy()
             return ObjectPropertyRoleModelOut(errors=model_out.errors)
 
-        onto.destroy()
-        
         return ObjectPropertyRoleModelOut(role_name=model_in.role_name, src_instance_name=model_in.src_instance_name,
                                           dst_instance_name=model_in.dst_instance_name)
         
