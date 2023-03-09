@@ -48,4 +48,4 @@ class OntologyApiService:
         Returns: Request result
         """
         request_body = {"name": instance_label}
-        return self.post(f"models/{model_id}/classes/{class_name}/instances", request_body)
+        return self.post(f"/models/{model_id}/classes/{class_name}/instances", request_body)
