@@ -9,6 +9,7 @@ class TestTimeSeriesRouterPut(unittest.TestCase):
 
     @mock.patch.object(TimeSeriesServiceGraphDB, 'update_time_series')
     def test_update_time_series_without_error(self, update_time_series_mock):
+        database_name = "neo4j"
         time_series_id = 1
         update_time_series_mock.return_value = TimeSeriesOut(id=1, type="Epoch", source="cos")
         response = Response()
@@ -16,14 +17,15 @@ class TestTimeSeriesRouterPut(unittest.TestCase):
         time_series_router = TimeSeriesRouter()
 
         result = asyncio.run(time_series_router.update_time_series(
-            time_series_id, time_series, response))
+            time_series_id, time_series, response, database_name))
 
         self.assertEqual(result, TimeSeriesOut(id=1, type="Epoch", source="cos", links=get_links(router)))
-        update_time_series_mock.assert_called_once_with(time_series_id, time_series)
+        update_time_series_mock.assert_called_once_with(time_series_id, time_series, database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(TimeSeriesServiceGraphDB, 'update_time_series')
     def test_update_time_series_with_error(self, update_time_series_mock):
+        database_name = "neo4j"
         time_series_id = 1
         update_time_series_mock.return_value = TimeSeriesOut(id=1, type="Epoch", source="cos", errors={'errors': ['test']})
         response = Response()
@@ -31,15 +33,16 @@ class TestTimeSeriesRouterPut(unittest.TestCase):
         time_series_router = TimeSeriesRouter()
 
         result = asyncio.run(time_series_router.update_time_series(
-            time_series_id, time_series, response))
+            time_series_id, time_series, response, database_name))
 
         self.assertEqual(result, TimeSeriesOut(id=1, type="Epoch", source="cos", errors={'errors': ['test']},
                                                links=get_links(router)))
-        update_time_series_mock.assert_called_once_with(time_series_id, time_series)
+        update_time_series_mock.assert_called_once_with(time_series_id, time_series, database_name)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(TimeSeriesServiceGraphDB, 'update_time_series_relationships')
     def test_update_time_series_relationships_without_error(self, update_time_series_relationships_mock):
+        database_name = "neo4j"
         id_node = 1
         update_time_series_relationships_mock.return_value = TimeSeriesOut(id=1, type="Epoch", source="cos")
         response = Response()
@@ -48,14 +51,15 @@ class TestTimeSeriesRouterPut(unittest.TestCase):
         time_series_router = TimeSeriesRouter()
 
         result = asyncio.run(time_series_router.
-                             update_time_series_relationships(id_node, time_series_in, response))
+                             update_time_series_relationships(id_node, time_series_in, response, database_name))
 
         self.assertEqual(result, time_series_out)
-        update_time_series_relationships_mock.assert_called_once_with(id_node, time_series_in)
+        update_time_series_relationships_mock.assert_called_once_with(id_node, time_series_in, database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(TimeSeriesServiceGraphDB, 'update_time_series_relationships')
     def test_update_time_series_relationships_with_error(self, update_time_series_relationships_mock):
+        database_name = "neo4j"
         id_node = 1
         update_time_series_relationships_mock.return_value = TimeSeriesOut(id=1, type="Epoch", source="cos",
                                                                            errors="error")
@@ -65,8 +69,8 @@ class TestTimeSeriesRouterPut(unittest.TestCase):
         time_series_router = TimeSeriesRouter()
 
         result = asyncio.run(time_series_router.
-                             update_time_series_relationships(id_node, time_series_in, response))
+                             update_time_series_relationships(id_node, time_series_in, response, database_name))
 
         self.assertEqual(result, time_series_out)
-        update_time_series_relationships_mock.assert_called_once_with(id_node, time_series_in)
+        update_time_series_relationships_mock.assert_called_once_with(id_node, time_series_in, database_name)
         self.assertEqual(response.status_code, 404)

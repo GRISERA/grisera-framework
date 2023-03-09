@@ -16,6 +16,7 @@ class TestParticipantServicePut(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_update_participant_without_error(self, get_node_relationships_mock, delete_node_properties_mock,
                                               get_node_mock, create_properties_mock):
+        database_name = "neo4j"
         id_node = 1
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
@@ -41,14 +42,15 @@ class TestParticipantServicePut(unittest.TestCase):
                                                                   relation_id=0)])
         participant_service = ParticipantServiceGraphDB()
 
-        result = participant_service.update_participant(id_node, participant_in)
+        result = participant_service.update_participant(id_node, participant_in, database_name)
 
         self.assertEqual(result, participant_out)
-        get_node_mock.assert_called_once_with(id_node)
-        create_properties_mock.assert_called_once_with(id_node, participant_in)
+        get_node_mock.assert_called_once_with(id_node, database_name)
+        create_properties_mock.assert_called_once_with(id_node, participant_in, database_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_participant_without_participant_label(self, get_node_mock):
+        database_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
@@ -58,13 +60,14 @@ class TestParticipantServicePut(unittest.TestCase):
                                        additional_properties=additional_properties)
         participant_service = ParticipantServiceGraphDB()
 
-        result = participant_service.update_participant(id_node, participant_in)
+        result = participant_service.update_participant(id_node, participant_in, database_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, database_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_participant_with_error(self, get_node_mock):
+        database_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
@@ -73,7 +76,7 @@ class TestParticipantServicePut(unittest.TestCase):
                                        additional_properties=additional_properties)
         participant_service = ParticipantServiceGraphDB()
 
-        result = participant_service.update_participant(id_node, participant_in)
+        result = participant_service.update_participant(id_node, participant_in, database_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, database_name)

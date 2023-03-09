@@ -21,6 +21,7 @@ class TestTimeSeriesServicePost(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_save_time_series_without_errors(self, get_node_relationships_mock, get_node_mock,
                                                    create_relationships_mock, create_properties_mock, create_node_mock):
+        database_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Time Series'],
                                       'properties': [{'key': 'type', 'value': "Epoch"},
@@ -48,21 +49,22 @@ class TestTimeSeriesServicePost(unittest.TestCase):
         calls = [mock.call(end_node=3, start_node=1, name="hasMeasure")]
         time_series_service = TimeSeriesServiceGraphDB()
 
-        result = time_series_service.save_time_series(time_series_in)
+        result = time_series_service.save_time_series(time_series_in, database_name)
 
         self.assertEqual(result, time_series_out)
-        create_node_mock.assert_called_once_with('`Time Series`')
-        create_properties_mock.assert_called_once_with(id_node, time_series_in)
+        create_node_mock.assert_called_once_with('`Time Series`', database_name)
+        create_properties_mock.assert_called_once_with(id_node, time_series_in, database_name)
         create_relationships_mock.assert_not_called()
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_time_series_with_node_error(self, create_node_mock):
+        database_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         time_series = TimeSeriesIn(type="Epoch", source="cos", observable_information_id=1, measure_id=2)
         time_series_service = TimeSeriesServiceGraphDB()
 
-        result = time_series_service.save_time_series(time_series)
+        result = time_series_service.save_time_series(time_series, database_name)
 
         self.assertEqual(result, TimeSeriesOut(type="Epoch", source="cos", errors=['error']))
-        create_node_mock.assert_called_once_with('`Time Series`')
+        create_node_mock.assert_called_once_with('`Time Series`', database_name)

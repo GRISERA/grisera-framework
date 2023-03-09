@@ -9,6 +9,7 @@ class TestAppearanceRouterPut(unittest.TestCase):
 
     @mock.patch.object(AppearanceServiceGraphDB, 'update_appearance_occlusion')
     def test_update_appearance_occlusion_without_error(self, update_appearance_occlusion_mock):
+        database_name = "neo4j"
         appearance_id = 1
         update_appearance_occlusion_mock.return_value = AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy",
                                                                                id=appearance_id)
@@ -16,15 +17,16 @@ class TestAppearanceRouterPut(unittest.TestCase):
         appearance = AppearanceOcclusionIn(glasses=False, beard="Heavy", moustache="Heavy")
         appearance_router = AppearanceRouter()
 
-        result = asyncio.run(appearance_router.update_appearance_occlusion(appearance_id, appearance, response))
+        result = asyncio.run(appearance_router.update_appearance_occlusion(appearance_id, appearance, response, database_name))
 
         self.assertEqual(result, AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy",
                                                         id=appearance_id, links=get_links(router)))
-        update_appearance_occlusion_mock.assert_called_once_with(appearance_id, appearance)
+        update_appearance_occlusion_mock.assert_called_once_with(appearance_id, appearance, database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(AppearanceServiceGraphDB, 'update_appearance_occlusion')
     def test_update_appearance_occlusion_with_error(self, update_appearance_occlusion_mock):
+        database_name = "neo4j"
         appearance_id = 1
         update_appearance_occlusion_mock.return_value = AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy",
                                                                                errors={'errors': ['test']})
@@ -32,15 +34,16 @@ class TestAppearanceRouterPut(unittest.TestCase):
         appearance = AppearanceOcclusionIn(glasses=False, beard="Heavy", moustache="Heavy")
         appearance_router = AppearanceRouter()
 
-        result = asyncio.run(appearance_router.update_appearance_occlusion(appearance_id, appearance, response))
+        result = asyncio.run(appearance_router.update_appearance_occlusion(appearance_id, appearance, response, database_name))
 
         self.assertEqual(result, AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy", errors={'errors': ['test']},
                                                         links=get_links(router)))
-        update_appearance_occlusion_mock.assert_called_once_with(appearance_id, appearance)
+        update_appearance_occlusion_mock.assert_called_once_with(appearance_id, appearance, database_name)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(AppearanceServiceGraphDB, 'update_appearance_somatotype')
     def test_update_appearance_somatotype_without_error(self, update_appearance_somatotype_mock):
+        database_name = "neo4j"
         appearance_id = 1
         update_appearance_somatotype_mock.return_value = AppearanceSomatotypeOut(ectomorph=2.7,
                                                                                  endomorph=1.6, mesomorph=3.8,
@@ -49,15 +52,16 @@ class TestAppearanceRouterPut(unittest.TestCase):
         appearance = AppearanceSomatotypeIn(ectomorph=2.7, endomorph=1.6, mesomorph=3.8)
         appearance_router = AppearanceRouter()
 
-        result = asyncio.run(appearance_router.update_appearance_somatotype(appearance_id, appearance, response))
+        result = asyncio.run(appearance_router.update_appearance_somatotype(appearance_id, appearance, response, database_name))
 
         self.assertEqual(result, AppearanceSomatotypeOut(ectomorph=2.7, endomorph=1.6, mesomorph=3.8,
                                                          id=appearance_id, links=get_links(router)))
-        update_appearance_somatotype_mock.assert_called_once_with(appearance_id, appearance)
+        update_appearance_somatotype_mock.assert_called_once_with(appearance_id, appearance, database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(AppearanceServiceGraphDB, 'update_appearance_somatotype')
     def test_update_appearance_somatotype_with_error(self, update_appearance_somatotype_mock):
+        database_name = "neo4j"
         update_appearance_somatotype_mock.return_value = AppearanceSomatotypeOut(ectomorph=2.7,
                                                                                  endomorph=1.6, mesomorph=3.8,
                                                                                  errors={'errors': ['test']})
@@ -66,9 +70,9 @@ class TestAppearanceRouterPut(unittest.TestCase):
         appearance = AppearanceSomatotypeIn(ectomorph=2.7, endomorph=1.6, mesomorph=3.8)
         appearance_router = AppearanceRouter()
 
-        result = asyncio.run(appearance_router.update_appearance_somatotype(appearance_id, appearance, response))
+        result = asyncio.run(appearance_router.update_appearance_somatotype(appearance_id, appearance, response, database_name))
 
         self.assertEqual(result, AppearanceSomatotypeOut(ectomorph=2.7, endomorph=1.6, mesomorph=3.8,
                                                         errors={'errors': ['test']}, links=get_links(router)))
-        update_appearance_somatotype_mock.assert_called_once_with(appearance_id, appearance)
+        update_appearance_somatotype_mock.assert_called_once_with(appearance_id, appearance, database_name)
         self.assertEqual(response.status_code, 422)

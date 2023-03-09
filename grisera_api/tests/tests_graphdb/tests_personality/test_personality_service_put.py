@@ -15,6 +15,7 @@ class TestPersonalityServicePut(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_update_personality_big_five_without_error(self, get_node_relationships_mock, get_node_mock,
                                                        create_properties_mock):
+        database_name = "neo4j"
         id_node = 1
         create_properties_mock.return_value = {}
         get_node_mock.return_value = {'id': id_node, 'labels': ['Personality'],
@@ -43,17 +44,18 @@ class TestPersonalityServicePut(unittest.TestCase):
                                                                     relation_id=0)])
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.update_personality_big_five(id_node, personality_in)
+        result = personality_service.update_personality_big_five(id_node, personality_in, database_name)
 
         self.assertEqual(result, personality_out)
-        get_node_mock.assert_called_once_with(id_node)
-        create_properties_mock.assert_called_once_with(id_node, personality_in)
+        get_node_mock.assert_called_once_with(id_node, database_name)
+        create_properties_mock.assert_called_once_with(id_node, personality_in, database_name)
 
     @mock.patch.object(GraphApiService, 'create_properties')
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_update_personality_panas_without_error(self, get_node_relationships_mock, get_node_mock,
                                                     create_properties_mock):
+        database_name = "neo4j"
         id_node = 1
         create_properties_mock.return_value = {}
         get_node_mock.return_value = {'id': id_node, 'labels': ['Personality'],
@@ -76,15 +78,16 @@ class TestPersonalityServicePut(unittest.TestCase):
                                                                   relation_id=0)])
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.update_personality_panas(id_node, personality_in)
+        result = personality_service.update_personality_panas(id_node, personality_in, database_name)
 
         self.assertEqual(result, personality_out)
-        get_node_mock.assert_called_once_with(id_node)
-        create_properties_mock.assert_called_once_with(id_node, personality_in)
+        get_node_mock.assert_called_once_with(id_node, database_name)
+        create_properties_mock.assert_called_once_with(id_node, personality_in, database_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_update_personality_big_five_without_appearance_label(self, get_node_relationships_mock, get_node_mock):
+        database_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
@@ -100,14 +103,15 @@ class TestPersonalityServicePut(unittest.TestCase):
                                               neuroticism=0.5, openess=0.5)
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.update_personality_big_five(id_node, personality_in)
+        result = personality_service.update_personality_big_five(id_node, personality_in, database_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, database_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_update_personality_panas_without_appearance_label(self, get_node_relationships_mock, get_node_mock):
+        database_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
@@ -122,14 +126,15 @@ class TestPersonalityServicePut(unittest.TestCase):
         personality_in = PersonalityPanasIn(negative_affect=0.5, positive_affect=0.5)
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.update_personality_panas(id_node, personality_in)
+        result = personality_service.update_personality_panas(id_node, personality_in, database_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, database_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_update_personality_big_five_with_error(self, get_node_relationships_mock, get_node_mock):
+        database_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
@@ -144,14 +149,15 @@ class TestPersonalityServicePut(unittest.TestCase):
                                               neuroticism=0.5, openess=0.5)
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.update_personality_big_five(id_node, personality_in)
+        result = personality_service.update_personality_big_five(id_node, personality_in, database_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, database_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_update_personality_panas_with_error(self, get_node_relationships_mock, get_node_mock):
+        database_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
@@ -165,12 +171,13 @@ class TestPersonalityServicePut(unittest.TestCase):
         personality_in = PersonalityPanasIn(negative_affect=0.5, positive_affect=0.5)
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.update_personality_panas(id_node, personality_in)
+        result = personality_service.update_personality_panas(id_node, personality_in, database_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, database_name)
 
     def test_update_personality_big_five_with_wrong_range(self):
+        database_name = "neo4j"
         id_node = 1
         personality_in = PersonalityBigFiveIn(agreeableness=2.5, conscientiousness=2.5, extroversion=2.5,
                                               neuroticism=2.5,
@@ -179,6 +186,6 @@ class TestPersonalityServicePut(unittest.TestCase):
                                                 neuroticism=2.5, openess=2.5, errors="Value not between 0 and 1")
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.update_personality_big_five(id_node, personality_in)
+        result = personality_service.update_personality_big_five(id_node, personality_in, database_name)
 
         self.assertEqual(result, personality_out)

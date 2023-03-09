@@ -16,6 +16,7 @@ class TestMeasureServicePut(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_update_measure_without_error(self, get_node_relationships_mock, delete_node_properties_mock,
                                                     get_node_mock, create_properties_mock):
+        database_name = "neo4j"
         id_node = 1
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
@@ -36,18 +37,19 @@ class TestMeasureServicePut(unittest.TestCase):
                                  [RelationInformation(second_node_id=19, name="testRelation", relation_id=0)],
                                                     reversed_relations=
                                  [RelationInformation(second_node_id=15, name="testReversedRelation", relation_id=0)])
-        calls = [mock.call(1)]
+        calls = [mock.call(1, database_name)]
         measure_service = MeasureServiceGraphDB()
 
-        result = measure_service.update_measure(id_node, measure_in)
+        result = measure_service.update_measure(id_node, measure_in, database_name)
 
         self.assertEqual(result, measure_out)
         get_node_mock.assert_has_calls(calls)
-        create_properties_mock.assert_called_once_with(id_node, measure_in)
-        get_node_relationships_mock.assert_called_once_with(id_node)
+        create_properties_mock.assert_called_once_with(id_node, measure_in, database_name)
+        get_node_relationships_mock.assert_called_once_with(id_node, database_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_measure_without_label(self, get_node_mock):
+        database_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
@@ -55,20 +57,21 @@ class TestMeasureServicePut(unittest.TestCase):
         measure_in = MeasurePropertyIn(datatype="Test", range="Unknown", unit="cm")
         measure_service = MeasureServiceGraphDB()
 
-        result = measure_service.update_measure(id_node, measure_in)
+        result = measure_service.update_measure(id_node, measure_in, database_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, database_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_measure_with_error(self, get_node_mock):
+        database_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         measure_in = MeasurePropertyIn(datatype="Test", range="Unknown", unit="cm")
         measure_service = MeasureServiceGraphDB()
 
-        result = measure_service.update_measure(id_node, measure_in)
+        result = measure_service.update_measure(id_node, measure_in, database_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, database_name)

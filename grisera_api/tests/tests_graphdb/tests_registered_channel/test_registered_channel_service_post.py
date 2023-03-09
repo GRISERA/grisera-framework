@@ -15,6 +15,7 @@ class TestRegisteredChannelServicePost(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_save_registered_channel_without_errors(self, get_node_relationships_mock, get_node_mock,
                                                    create_relationships_mock, create_properties_mock, create_node_mock):
+        database_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Channel'],
                                       'properties': [],
@@ -37,25 +38,26 @@ class TestRegisteredChannelServicePost(unittest.TestCase):
                                                     reversed_relations=
                                                     [RelationInformation(second_node_id=15, name="testReversedRelation",
                                                                          relation_id=0)], id=id_node)
-        calls = [mock.call(2), mock.call(3), mock.call(1)]
+        calls = [mock.call(2, database_name), mock.call(3, database_name), mock.call(1, database_name)]
         registered_channel_service = RegisteredChannelServiceGraphDB()
 
-        result = registered_channel_service.save_registered_channel(registered_channel_in)
+        result = registered_channel_service.save_registered_channel(registered_channel_in, database_name)
 
         self.assertEqual(result, registered_channel_out)
-        create_node_mock.assert_called_once_with('`Registered Channel`')
+        create_node_mock.assert_called_once_with('`Registered Channel`', database_name)
         create_properties_mock.assert_not_called()
         create_relationships_mock.assert_not_called()
         get_node_mock.assert_has_calls(calls)
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_registered_channel_with_node_error(self, create_node_mock):
+        database_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         registered_channel = RegisteredChannelIn(channel_id=2, registered_data_id=3)
         registered_channel_service = RegisteredChannelServiceGraphDB()
 
-        result = registered_channel_service.save_registered_channel(registered_channel)
+        result = registered_channel_service.save_registered_channel(registered_channel, database_name)
 
         self.assertEqual(result, RegisteredChannelOut(errors=['error']))
-        create_node_mock.assert_called_once_with('`Registered Channel`')
+        create_node_mock.assert_called_once_with('`Registered Channel`', database_name)
