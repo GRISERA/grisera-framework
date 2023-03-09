@@ -20,7 +20,7 @@ class TestExperimentServicePost(unittest.TestCase):
         result = experiment_service.save_experiment(experiment)
 
         self.assertEqual(result, ExperimentOut(experiment_name="test", additional_properties=additional_properties))
-        add_instance_mock.assert_called_once_with(model_id,'Experiment')
+        add_instance_mock.assert_called_once_with(model_id, 'Experiment', 'test')
 
     @mock.patch.object(OntologyApiService, 'add_instance')
     def test_save_experiment_with_error(self, add_instance_mock):
@@ -34,4 +34,4 @@ class TestExperimentServicePost(unittest.TestCase):
 
         self.assertEqual(result, ExperimentOut(experiment_name="test", additional_properties=additional_properties,
                                                errors='error'))
-        add_instance_mock.assert_called_once_with(model_id,'Experiment')
+        add_instance_mock.assert_called_once_with(model_id, 'Experiment', 'test')
