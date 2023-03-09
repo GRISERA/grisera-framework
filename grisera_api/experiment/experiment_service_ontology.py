@@ -24,7 +24,8 @@ class ExperimentServiceOntology(ExperimentService):
             Result of request as experiment object
         """
         model_id = 1
-        instance_response_experiment = self.ontology_api_service.add_instance(model_id, "Experiment")
+        instance_response_experiment = self.ontology_api_service.add_instance(model_id, "Experiment",
+                                                                              experiment.experiment_name)
 
         if instance_response_experiment["errors"] is not None:
             return ExperimentOut(**experiment.dict(), errors=instance_response_experiment["errors"])

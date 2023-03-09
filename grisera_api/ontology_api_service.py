@@ -37,14 +37,15 @@ class OntologyApiService:
                                 params=params).json()
         return response
 
-    def add_instance(self, model_id, class_name):
+    def add_instance(self, model_id, class_name, instance_label):
         """
         Send a request to add an instance to Ontology API
         Args:
+            instance_label (str): Label of instance
             model_id (int): ID of the model to which the instance is to be added
             class_name (str): Name of the class of the instance
 
         Returns: Request result
         """
-        request_body = {}
-        return self.post(f"model/{model_id}/class/{class_name}/instance", request_body)
+        request_body = {"name": instance_label}
+        return self.post(f"models/{model_id}/classes/{class_name}/instances", request_body)
