@@ -13,12 +13,12 @@ class RoleRouter:
     """
         Class for routing role based requests
         Attributes:
-            role_service (RoleService)
+            role_service (RoleService): Service instance for roles
     """
     role_service = RoleService()
 
     @router.post("/models/{model_id}/roles", tags=["role"], response_model=None)
-    def add_object_property_role(self, model_id: int, model_in: ObjectPropertyRoleModelIn, response: Response):
+    async def add_object_property_role(self, model_id: int, model_in: ObjectPropertyRoleModelIn, response: Response):
         """
                 Create an instance of an object property in the given model
                 Return 404 when model with the given id does not exist
