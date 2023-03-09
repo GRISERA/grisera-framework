@@ -30,3 +30,4 @@ class RoleRouter:
         role.links = get_links(router)
         
         return role_out
+    
