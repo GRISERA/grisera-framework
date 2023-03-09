@@ -23,11 +23,11 @@ class RoleRouter:
                 Create an instance of an object property in the given model
                 Return 404 when model with the given id does not exist
         """
-        role_out = role_service.add_object_property_role(model_id, model_in)
+        role_out = self.role_service.add_object_property_role(model_id, model_in)
         if role_out.errors is not None:
             response.status_code = 404
 
-        role.links = get_links(router)
+        role_out.links = get_links(router)
         
         return role_out
     
