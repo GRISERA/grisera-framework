@@ -1,4 +1,4 @@
-from owlready2 import get_ontology
+from owlready2 import get_ontology, FunctionalProperty
 from role.role_model import ObjectPropertyRoleModelIn
 from role.role_model import ObjectPropertyRoleModelOut
 from model.model_service import ModelService
@@ -33,8 +33,16 @@ class RoleService:
         if dst_instance is None:
             onto.destroy()
             return ObjectPropertyRoleModelOut(errors=f"Instance {model_in.dst_instance_name} not found")
-
-        exec(f"src_instance.{model_in.role_name} = dst_instance")
+        code = f"""
+        if FunctionalProperty in onto_property.is_a:
+            src_instance.{model_in.role_name} = dst_instance
+        else:
+            if src_instance.{model_in.role_name} is not None:
+                src_instance.{model_in.role_name}.append(dst_instance)
+            else:
+                src_instance.{model_in.role_name} = [dst_instance]                
+        """
+        exec(code)
 
         model_out = self.model_service.update_ontology(model_id, onto)
 
