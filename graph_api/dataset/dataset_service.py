@@ -48,9 +48,8 @@ class DatasetService:
             return DatasetsOut(errors=response["errors"])
         
         result = DatasetsOut(datasets=[])
-        
-        for node in response["results"][0]["data"]:
-            name = node['row'][0]
-            result.datasets.append(BasicDatasetOut(name=name))
+
+        for dataset in response["results"][0]["data"]:
+            result.datasets.append(BasicDatasetOut(name=dataset['row'][0]))
 
         return result
