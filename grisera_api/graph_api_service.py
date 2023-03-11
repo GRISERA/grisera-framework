@@ -30,12 +30,10 @@ class GraphApiService:
             Result of request
         """
 
-
         url_part += self.add_database_name_to_url(database_name)
-        print("###### URL_PART: ", url_part)
+        # print("###### URL_PART: ", url_part)
         response = requests.post(url=self.graph_api_url + url_part,
                                  json=request_body).json()
-        print("###### RESPONSE: ", response)
         # print("###### RESPONSE: ", response)
         # try:
         #     response_data = response.json()
@@ -87,10 +85,10 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        print("LABEL: ", label)
-        #request_body = {"labels": [label], "database_name": database_name}
+        # print("LABEL: ", label)
+        # request_body = {"labels": [label], "database_name": database_name}
         request_body = {"labels": [label], "database_name": [database_name]}
-        print("LABEL DISCTIONARY", request_body)
+        # print("LABEL DISCTIONARY", request_body)
         return self.post("/nodes", request_body, database_name)
 
     def get_nodes(self, label: str, database_name: str):
@@ -115,7 +113,7 @@ class GraphApiService:
             Result of request
         """
         request_params = {"database_name": database_name}
-        return self.get("/nodes/"+str(id), request_params, database_name)
+        return self.get("/nodes/" + str(id), request_params, database_name)
 
     def get_node_relationships(self, node_id: int, database_name: str):
         """

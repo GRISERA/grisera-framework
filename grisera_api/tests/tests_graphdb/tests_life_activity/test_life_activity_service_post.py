@@ -10,6 +10,7 @@ class TestLifeActivityServicePost(unittest.TestCase):
 
     @mock.patch('graph_api_service.requests')
     def test_life_activity_post_service_without_error(self, mock_requests):
+        database_name = "neo4j"
         response = Response()
         response._content = json.dumps({'id': 1, 'properties': None, "errors": None,
                                         'links': None}).encode('utf-8')
@@ -17,12 +18,13 @@ class TestLifeActivityServicePost(unittest.TestCase):
         life_activity = LifeActivityIn(life_activity="movement")
         life_activity_service = LifeActivityServiceGraphDB()
 
-        result = life_activity_service.save_life_activity(life_activity)
+        result = life_activity_service.save_life_activity(life_activity, database_name)
 
         self.assertEqual(result, LifeActivityOut(life_activity="movement", id=1))
 
     @mock.patch('graph_api_service.requests')
     def test_life_activity_post_service_with_error(self, mock_requests):
+        database_name = "neo4j"
         response = Response()
         response._content = json.dumps({'id': None, 'properties': None, "errors": {'error': 'test'},
                                         'links': None}).encode('utf-8')
@@ -30,6 +32,6 @@ class TestLifeActivityServicePost(unittest.TestCase):
         life_activity = LifeActivityIn(life_activity="movement")
         life_activity_service = LifeActivityServiceGraphDB()
 
-        result = life_activity_service.save_life_activity(life_activity)
+        result = life_activity_service.save_life_activity(life_activity, database_name)
 
         self.assertEqual(result, LifeActivityOut(life_activity="movement", errors={'error': 'test'}))

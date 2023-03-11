@@ -11,38 +11,41 @@ class TestChannelRouterGet(unittest.TestCase):
 
     @mock.patch.object(ChannelServiceGraphDB, 'get_channel')
     def test_get_channel_without_error(self, get_channel_mock):
+        database_name = "neo4j"
         channel_id = 1
         get_channel_mock.return_value = ChannelOut(type='url', id=channel_id)
         response = Response()
         channel_router = ChannelRouter()
 
-        result = asyncio.run(channel_router.get_channel(channel_id, response))
+        result = asyncio.run(channel_router.get_channel(channel_id, response, database_name))
 
         self.assertEqual(result, ChannelOut(type='url', id=channel_id, links=get_links(router)))
-        get_channel_mock.assert_called_once_with(channel_id)
+        get_channel_mock.assert_called_once_with(channel_id, database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(ChannelServiceGraphDB, 'get_channel')
     def test_get_channel_with_error(self, get_channel_mock):
+        database_name = "neo4j"
         get_channel_mock.return_value = ChannelOut(type='url', errors={'errors': ['test']})
         response = Response()
         channel_id = 1
         channel_router = ChannelRouter()
 
-        result = asyncio.run(channel_router.get_channel(channel_id, response))
+        result = asyncio.run(channel_router.get_channel(channel_id, response, database_name))
 
         self.assertEqual(result, ChannelOut(type='url', errors={'errors': ['test']}, links=get_links(router)))
-        get_channel_mock.assert_called_once_with(channel_id)
+        get_channel_mock.assert_called_once_with(channel_id, database_name)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(ChannelServiceGraphDB, 'get_channels')
     def test_get_channel_nodes_without_error(self, get_channels_mock):
+        database_name = "neo4j"
         get_channels_mock.return_value = ChannelsOut(channels=[
             BasicChannelOut(type='url', id=1), BasicChannelOut(type='url2', id=2)])
         response = Response()
         channel_router = ChannelRouter()
 
-        result = asyncio.run(channel_router.get_channels(response))
+        result = asyncio.run(channel_router.get_channels(response, database_name))
 
         self.assertEqual(result, ChannelsOut(channels=[
             BasicChannelOut(type='url', id=1), BasicChannelOut(type='url2', id=2)],

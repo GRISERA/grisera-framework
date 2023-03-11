@@ -16,6 +16,7 @@ class TestRecordingServicePost(unittest.TestCase):
     def test_save_recording_without_errors(self, get_node_relationships_mock, get_node_mock,
                                                     create_relationships_mock, create_properties_mock,
                                                     create_node_mock):
+        database_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Recording'],
                                       'properties': [],
@@ -40,26 +41,27 @@ class TestRecordingServicePost(unittest.TestCase):
                                                       [RelationInformation(second_node_id=15,
                                                                            name="testReversedRelation",
                                                                            relation_id=0)], id=id_node)
-        calls = [mock.call(2), mock.call(3), mock.call(1)]
+        calls = [mock.call(2, database_name), mock.call(3, database_name), mock.call(1, database_name)]
         recording_service = RecordingServiceGraphDB()
 
-        result = recording_service.save_recording(recording_in)
+        result = recording_service.save_recording(recording_in, database_name)
 
         self.assertEqual(result, recording_out)
-        create_node_mock.assert_called_once_with('Recording')
+        create_node_mock.assert_called_once_with('Recording', database_name)
         # create_properties_mock.assert_not_called()
         create_relationships_mock.assert_not_called()
         get_node_mock.assert_has_calls(calls)
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_recording_with_node_error(self, create_node_mock):
+        database_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         recording = RecordingIn()
         recording_service = RecordingServiceGraphDB()
 
-        result = recording_service.save_recording(recording)
+        result = recording_service.save_recording(recording, database_name)
 
         self.assertEqual(result, RecordingOut(errors=['error']))
-        create_node_mock.assert_called_once_with('Recording')
+        create_node_mock.assert_called_once_with('Recording', database_name)
 

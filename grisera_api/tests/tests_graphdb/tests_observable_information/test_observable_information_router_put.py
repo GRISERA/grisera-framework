@@ -10,6 +10,7 @@ class TestObservableInformationRouterPut(unittest.TestCase):
 
     @mock.patch.object(ObservableInformationServiceGraphDB, 'update_observable_information_relationships')
     def test_update_observable_information_relationships_without_error(self, update_observable_information_relationships_mock):
+        database_name = "neo4j"
         id_node = 1
         update_observable_information_relationships_mock.return_value = ObservableInformationOut(id=id_node)
         response = Response()
@@ -18,14 +19,15 @@ class TestObservableInformationRouterPut(unittest.TestCase):
         observable_information_router = ObservableInformationRouter()
 
         result = asyncio.run(observable_information_router.
-                             update_observable_information_relationships(id_node, observable_information_in, response))
+                             update_observable_information_relationships(id_node, observable_information_in, response, database_name))
 
         self.assertEqual(result, observable_information_out)
-        update_observable_information_relationships_mock.assert_called_once_with(id_node, observable_information_in)
+        update_observable_information_relationships_mock.assert_called_once_with(id_node, observable_information_in, database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(ObservableInformationServiceGraphDB, 'update_observable_information_relationships')
     def test_update_observable_information_relationships_with_error(self, update_observable_information_relationships_mock):
+        database_name = "neo4j"
         id_node = 1
         update_observable_information_relationships_mock.return_value = ObservableInformationOut(id=id_node, errors="error")
         response = Response()
@@ -34,8 +36,8 @@ class TestObservableInformationRouterPut(unittest.TestCase):
         observable_information_router = ObservableInformationRouter()
 
         result = asyncio.run(observable_information_router.
-                             update_observable_information_relationships(id_node, observable_information_in, response))
+                             update_observable_information_relationships(id_node, observable_information_in, response, database_name))
 
         self.assertEqual(result, observable_information_out)
-        update_observable_information_relationships_mock.assert_called_once_with(id_node, observable_information_in)
+        update_observable_information_relationships_mock.assert_called_once_with(id_node, observable_information_in, database_name)
         self.assertEqual(response.status_code, 404)

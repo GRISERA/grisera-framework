@@ -10,6 +10,7 @@ class TestRegisteredChannelRouterPut(unittest.TestCase):
 
     @mock.patch.object(RegisteredChannelServiceGraphDB, 'update_registered_channel_relationships')
     def test_update_registered_channel_relationships_without_error(self, update_registered_channel_relationships_mock):
+        database_name = "neo4j"
         id_node = 1
         update_registered_channel_relationships_mock.return_value = RegisteredChannelOut(id=id_node)
         response = Response()
@@ -18,14 +19,15 @@ class TestRegisteredChannelRouterPut(unittest.TestCase):
         registered_channel_router = RegisteredChannelRouter()
 
         result = asyncio.run(registered_channel_router.
-                             update_registered_channel_relationships(id_node, registered_channel_in, response))
+                             update_registered_channel_relationships(id_node, registered_channel_in, response, database_name))
 
         self.assertEqual(result, registered_channel_out)
-        update_registered_channel_relationships_mock.assert_called_once_with(id_node, registered_channel_in)
+        update_registered_channel_relationships_mock.assert_called_once_with(id_node, registered_channel_in, database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(RegisteredChannelServiceGraphDB, 'update_registered_channel_relationships')
     def test_update_registered_channel_relationships_with_error(self, update_registered_channel_relationships_mock):
+        database_name = "neo4j"
         id_node = 1
         update_registered_channel_relationships_mock.return_value = RegisteredChannelOut(id=id_node, errors="error")
         response = Response()
@@ -34,8 +36,8 @@ class TestRegisteredChannelRouterPut(unittest.TestCase):
         registered_channel_router = RegisteredChannelRouter()
 
         result = asyncio.run(registered_channel_router.
-                             update_registered_channel_relationships(id_node, registered_channel_in, response))
+                             update_registered_channel_relationships(id_node, registered_channel_in, response, database_name))
 
         self.assertEqual(result, registered_channel_out)
-        update_registered_channel_relationships_mock.assert_called_once_with(id_node, registered_channel_in)
+        update_registered_channel_relationships_mock.assert_called_once_with(id_node, registered_channel_in, database_name)
         self.assertEqual(response.status_code, 404)

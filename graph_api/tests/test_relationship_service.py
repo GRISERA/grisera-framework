@@ -8,6 +8,9 @@ from relationship.relationship_service import RelationshipService
 
 class TestRelationshipService(unittest.TestCase):
 
+    def setUp(self):
+        self.database_name = "neo4j"
+
     @mock.patch.object(DatabaseService, 'create_relationship')
     @mock.patch.object(DatabaseService, 'node_exists')
     def test_save_relationship_without_error(self, node_exists_mock, create_relationship_mock):
@@ -17,10 +20,10 @@ class TestRelationshipService(unittest.TestCase):
         relationship = RelationshipIn(start_node=1, end_node=2, name="test")
         relationship_service = RelationshipService()
 
-        result = relationship_service.save_relationship(relationship)
+        result = relationship_service.save_relationship(relationship, self.database_name)
 
         self.assertEqual(result, RelationshipOut(start_node=1, end_node=2, name="test", id=5, errors=None))
-        create_relationship_mock.assert_called_once_with(relationship)
+        create_relationship_mock.assert_called_once_with(relationship, self.database_name)
 
     @mock.patch.object(DatabaseService, 'create_relationship')
     @mock.patch.object(DatabaseService, 'node_exists')
@@ -31,10 +34,10 @@ class TestRelationshipService(unittest.TestCase):
         relationship = RelationshipIn(start_node=1, end_node=2, name="test")
         relationship_service = RelationshipService()
 
-        result = relationship_service.save_relationship(relationship)
+        result = relationship_service.save_relationship(relationship, self.database_name)
 
         self.assertEqual(result, RelationshipOut(start_node=1, end_node=2, name="test", errors=['error']))
-        create_relationship_mock.assert_called_once_with(relationship)
+        create_relationship_mock.assert_called_once_with(relationship, self.database_name)
 
     @mock.patch.object(DatabaseService, 'create_relationship')
     @mock.patch.object(DatabaseService, 'node_exists')
@@ -45,7 +48,7 @@ class TestRelationshipService(unittest.TestCase):
         relationship = RelationshipIn(start_node=1, end_node=2, name="test")
         relationship_service = RelationshipService()
 
-        result = relationship_service.save_relationship(relationship)
+        result = relationship_service.save_relationship(relationship, self.database_name)
 
         self.assertEqual(result, RelationshipOut(start_node=1, end_node=2, name="test",
                                                  errors={"errors": "not matching node id"}))
@@ -57,10 +60,10 @@ class TestRelationshipService(unittest.TestCase):
             'results': [{'data': [{'row': [0, 1, "test", 5]}]}], 'errors': []}
         relationship_service = RelationshipService()
 
-        result = relationship_service.get_relationship(5)
+        result = relationship_service.get_relationship(5, self.database_name)
 
         self.assertEqual(result, RelationshipOut(start_node=0, end_node=1, name="test", id=5))
-        get_relationship_mock.assert_called_once_with(5)
+        get_relationship_mock.assert_called_once_with(5, self.database_name)
 
     @mock.patch.object(DatabaseService, 'get_relationship')
     def test_get_relationship_without_relationships_exists(self, get_relationship_mock):
@@ -68,10 +71,10 @@ class TestRelationshipService(unittest.TestCase):
                                                'errors': ['error']}
         relationship_service = RelationshipService()
 
-        result = relationship_service.get_relationship(5)
+        result = relationship_service.get_relationship(5, self.database_name)
 
         self.assertEqual(result, RelationshipOut(errors="Relationship not found"))
-        get_relationship_mock.assert_called_once_with(5)
+        get_relationship_mock.assert_called_once_with(5, self.database_name)
 
     @mock.patch.object(RelationshipService, 'get_relationship')
     @mock.patch.object(DatabaseService, 'delete_relationship')
@@ -82,11 +85,11 @@ class TestRelationshipService(unittest.TestCase):
         relationship_id = 5
         relationship_service = RelationshipService()
 
-        result = relationship_service.delete_relationship(relationship_id)
+        result = relationship_service.delete_relationship(relationship_id, self.database_name)
 
         self.assertEqual(result, RelationshipOut(start_node=1, end_node=2, name="test", id=5, errors=None))
-        delete_relationship_mock.assert_called_once_with(relationship_id)
-        get_relationship_mock.assert_called_once_with(relationship_id)
+        delete_relationship_mock.assert_called_once_with(relationship_id, self.database_name)
+        get_relationship_mock.assert_called_once_with(relationship_id, self.database_name)
 
     @mock.patch.object(RelationshipService, 'get_relationship')
     @mock.patch.object(DatabaseService, 'delete_relationship')
@@ -97,11 +100,11 @@ class TestRelationshipService(unittest.TestCase):
         relationship_id = 5
         relationship_service = RelationshipService()
 
-        result = relationship_service.delete_relationship(relationship_id)
+        result = relationship_service.delete_relationship(relationship_id, self.database_name)
 
         self.assertEqual(result, RelationshipOut(errors=['error']))
-        delete_relationship_mock.assert_called_once_with(relationship_id)
-        get_relationship_mock.assert_called_once_with(relationship_id)
+        delete_relationship_mock.assert_called_once_with(relationship_id, self.database_name)
+        get_relationship_mock.assert_called_once_with(relationship_id, self.database_name)
 
     @mock.patch.object(DatabaseService, 'create_relationship_properties')
     @mock.patch.object(DatabaseService, 'relationship_exist')
@@ -112,11 +115,11 @@ class TestRelationshipService(unittest.TestCase):
         relationship_service = RelationshipService()
         properties = [PropertyIn(key="testkey", value="testvalue")]
 
-        result = relationship_service.save_properties(id=5, properties=properties)
+        result = relationship_service.save_properties(id=5, properties=properties, database_name=self.database_name)
 
         self.assertEqual(result, RelationshipOut(start_node=0, end_node=1, name="test",
                                                  id=5, properties=properties))
-        create_properties_mock.assert_called_once_with(5, properties)
+        create_properties_mock.assert_called_once_with(5, properties, self.database_name)
 
     @mock.patch.object(DatabaseService, 'create_relationship_properties')
     @mock.patch.object(DatabaseService, 'relationship_exist')
@@ -127,10 +130,10 @@ class TestRelationshipService(unittest.TestCase):
         relationship_service = RelationshipService()
         properties = [PropertyIn(key="testkey", value="testvalue")]
 
-        result = relationship_service.save_properties(id=5, properties=properties)
+        result = relationship_service.save_properties(id=5, properties=properties, database_name=self.database_name)
 
         self.assertEqual(result, RelationshipOut(errors=['error']))
-        create_properties_mock.assert_called_once_with(5, properties)
+        create_properties_mock.assert_called_once_with(5, properties, self.database_name)
 
     @mock.patch.object(DatabaseService, 'create_relationship_properties')
     @mock.patch.object(DatabaseService, 'relationship_exist')
@@ -141,6 +144,6 @@ class TestRelationshipService(unittest.TestCase):
         relationship_service = RelationshipService()
         properties = [PropertyIn(key="testkey", value="testvalue")]
 
-        result = relationship_service.save_properties(id=5, properties=properties)
+        result = relationship_service.save_properties(id=5, properties=properties, database_name=self.database_name)
 
         self.assertEqual(result, RelationshipOut(id=5, errors={"errors": "not matching id"}))

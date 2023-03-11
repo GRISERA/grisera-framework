@@ -16,6 +16,7 @@ class TestObservableInformationServicePost(unittest.TestCase):
     def test_save_observable_information_without_errors(self, get_node_relationships_mock, get_node_mock,
                                                     create_relationships_mock, create_properties_mock,
                                                     create_node_mock):
+        database_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Observable Information'],
                                       'properties': None,
@@ -39,25 +40,26 @@ class TestObservableInformationServicePost(unittest.TestCase):
                                              reversed_relations=[RelationInformation(second_node_id=15,
                                                                                      name="testReversedRelation",
                                                                                      relation_id=0)], id=id_node)
-        calls = [mock.call(2), mock.call(3), mock.call(1)]
+        calls = [mock.call(2, database_name), mock.call(3, database_name), mock.call(1, database_name)]
         observable_information_service = ObservableInformationServiceGraphDB()
 
-        result = observable_information_service.save_observable_information(observable_information_in)
+        result = observable_information_service.save_observable_information(observable_information_in, database_name)
 
         self.assertEqual(result, observable_information_out)
-        create_node_mock.assert_called_once_with("`Observable Information`")
+        create_node_mock.assert_called_once_with("`Observable Information`", database_name)
         # create_properties_mock.assert_not_called()
         create_relationships_mock.assert_not_called()
         get_node_mock.assert_has_calls(calls)
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_observable_information_with_node_error(self, create_node_mock):
+        database_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         observable_information = ObservableInformationIn(modality_id=2, life_activity_id=3)
         observable_information_service = ObservableInformationServiceGraphDB()
 
-        result = observable_information_service.save_observable_information(observable_information)
+        result = observable_information_service.save_observable_information(observable_information, database_name)
 
         self.assertEqual(result, ObservableInformationOut(errors=['error']))
-        create_node_mock.assert_called_once_with("`Observable Information`")
+        create_node_mock.assert_called_once_with("`Observable Information`", database_name)

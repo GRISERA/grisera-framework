@@ -14,6 +14,7 @@ class TestAppearanceServiceDelete(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_delete_appearance_occlusion_without_error(self, get_node_relationships_mock, get_node_mock, delete_node_mock):
+        database_name = "neo4j"
         id_node = 1
         delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Appearance'],
                                                                       'properties': [{'key': 'glasses', 'value': True},
@@ -36,16 +37,17 @@ class TestAppearanceServiceDelete(unittest.TestCase):
                                                                     relation_id=0)])
         appearance_service = AppearanceServiceGraphDB()
 
-        result = appearance_service.delete_appearance(id_node)
+        result = appearance_service.delete_appearance(id_node, database_name)
 
         self.assertEqual(result, appearance)
-        get_node_mock.assert_called_once_with(id_node)
-        delete_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, database_name)
+        delete_node_mock.assert_called_once_with(id_node, database_name)
 
     @mock.patch.object(GraphApiService, 'delete_node')
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_delete_appearance_somatotype_without_error(self, get_node_relationships_mock, get_node_mock, delete_node_mock):
+        database_name = "neo4j"
         id_node = 1
         delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Appearance'],
                                                                       'properties': [{'key': 'ectomorph', 'value': 1.5},
@@ -69,15 +71,16 @@ class TestAppearanceServiceDelete(unittest.TestCase):
                                              )
         appearance_service = AppearanceServiceGraphDB()
 
-        result = appearance_service.delete_appearance(id_node)
+        result = appearance_service.delete_appearance(id_node, database_name)
 
         self.assertEqual(result, appearance)
-        get_node_mock.assert_called_once_with(id_node)
-        delete_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, database_name)
+        delete_node_mock.assert_called_once_with(id_node, database_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_delete_appearance_without_appearance_label(self, get_node_relationships_mock, get_node_mock):
+        database_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                          "errors": None, 'links': None}
@@ -91,14 +94,15 @@ class TestAppearanceServiceDelete(unittest.TestCase):
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         appearance_service = AppearanceServiceGraphDB()
 
-        result = appearance_service.delete_appearance(id_node)
+        result = appearance_service.delete_appearance(id_node, database_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, database_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_delete_appearance_with_error(self, get_node_relationships_mock, get_node_mock):
+        database_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
@@ -111,7 +115,7 @@ class TestAppearanceServiceDelete(unittest.TestCase):
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         appearance_service = AppearanceServiceGraphDB()
 
-        result = appearance_service.delete_appearance(id_node)
+        result = appearance_service.delete_appearance(id_node, database_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, database_name)

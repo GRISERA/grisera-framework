@@ -9,63 +9,68 @@ from relationship.relationship_model import *
 
 class NodeServiceTestCase(unittest.TestCase):
 
+    def setUp(self):
+        self.database_name = "neo4j"
+
     @mock.patch.object(DatabaseService, 'create_node')
     def test_save_node_without_error(self, create_node_mock):
         create_node_mock.return_value = {'results': [{'data': [{'meta': [{'id': '5'}]}]}],
-                                      'errors': []}
+                                         'errors': []}
         node = NodeIn(labels={"test"})
         node_service = NodeService()
 
-        result = node_service.save_node(node)
+        result = node_service.save_node(node, self.database_name)
 
         self.assertEqual(result, NodeOut(id=5, labels={"test"}))
-        create_node_mock.assert_called_once_with(node)
+        create_node_mock.assert_called_once_with(node, self.database_name)
 
     @mock.patch.object(DatabaseService, 'create_node')
     def test_save_node_with_error(self, create_node_mock):
         create_node_mock.return_value = {'results': [{'data': [{'meta': [{}]}]}],
-                                      'errors': ['error']}
+                                         'errors': ['error']}
         node = NodeIn(labels={"test"})
         node_service = NodeService()
+        database_name = "neo4j"
 
-        result = node_service.save_node(node)
+        result = node_service.save_node(node, self.database_name)
 
         self.assertEqual(result, NodeOut(errors=['error']))
-        create_node_mock.assert_called_once_with(node)
+        create_node_mock.assert_called_once_with(node, self.database_name)
 
     @mock.patch.object(DatabaseService, 'get_node')
     def test_get_node_with_existing_node(self, get_node_mock):
         get_node_mock.return_value = {'results': [{'data': [{'row': [{'key': 'value'}, ["Test"]]}]}], 'errors': []}
         node_id = 1
         node_service = NodeService()
-
-        result = node_service.get_node(node_id)
+        result = node_service.get_node(node_id, self.database_name)
 
         self.assertEqual(result, NodeOut(id=1, properties=[PropertyIn(key='key', value='value')], labels={"Test"}))
-        get_node_mock.assert_called_once_with(node_id)
+        get_node_mock.assert_called_once_with(node_id, self.database_name)
 
     @mock.patch.object(DatabaseService, 'get_node')
     def test_get_node_without_existing_node(self, get_node_mock):
         get_node_mock.return_value = {'results': [{'data': []}], 'errors': []}
         node_id = 1
         node_service = NodeService()
+        database_name = "neo4j"
 
-        result = node_service.get_node(node_id)
+        result = node_service.get_node(node_id, self.database_name)
 
         self.assertEqual(result, NodeOut(errors='Node not found'))
-        get_node_mock.assert_called_once_with(node_id)
+        get_node_mock.assert_called_once_with(node_id, self.database_name)
 
     @mock.patch.object(DatabaseService, 'get_nodes')
     def test_get_nodes_without_error(self, get_nodes_mock):
         get_nodes_mock.return_value = {'results': [{'data': [{'row': [{}], 'meta': [{'id': '5'}]}]}],
-                                      'errors': []}
+                                       'errors': []}
         label = "Test"
         node_service = NodeService()
+        database_name = "neo4j"
 
-        result = node_service.get_nodes(label)
+        result = node_service.get_nodes(label, self.database_name)
 
         self.assertEqual(result, NodesOut(nodes=[BasicNodeOut(id=5, labels={"Test"}, properties=[])]))
-        get_nodes_mock.assert_called_once_with(label)
+        get_nodes_mock.assert_called_once_with(label, self.database_name)
 
     @mock.patch.object(DatabaseService, 'get_nodes')
     def test_get_nodes_with_error(self, get_nodes_mock):
@@ -73,10 +78,10 @@ class NodeServiceTestCase(unittest.TestCase):
         label = "Test"
         node_service = NodeService()
 
-        result = node_service.get_nodes(label)
+        result = node_service.get_nodes(label, self.database_name)
 
         self.assertEqual(result, NodesOut(errors=['error']))
-        get_nodes_mock.assert_called_once_with(label)
+        get_nodes_mock.assert_called_once_with(label, self.database_name)
 
     @mock.patch.object(NodeService, 'get_node')
     @mock.patch.object(DatabaseService, 'delete_node')
@@ -86,11 +91,11 @@ class NodeServiceTestCase(unittest.TestCase):
         node_id = 1
         node_service = NodeService()
 
-        result = node_service.delete_node(node_id)
+        result = node_service.delete_node(node_id, self.database_name)
 
         self.assertEqual(result, NodeOut(id=1, properties=[PropertyIn(key='key', value='value')], labels={"Test"}))
-        delete_node_mock.assert_called_once_with(node_id)
-        get_node_mock.assert_called_once_with(node_id)
+        delete_node_mock.assert_called_once_with(node_id, self.database_name)
+        get_node_mock.assert_called_once_with(node_id, self.database_name)
 
     @mock.patch.object(DatabaseService, 'get_node')
     @mock.patch.object(DatabaseService, 'delete_node')
@@ -99,11 +104,11 @@ class NodeServiceTestCase(unittest.TestCase):
         node_id = 1
         node_service = NodeService()
 
-        result = node_service.delete_node(node_id)
+        result = node_service.delete_node(node_id, self.database_name)
 
         self.assertEqual(result, NodeOut(errors=['error']))
-        delete_node_mock.assert_called_once_with(node_id)
-        get_node_mock.assert_called_once_with(node_id)
+        delete_node_mock.assert_called_once_with(node_id, self.database_name)
+        get_node_mock.assert_called_once_with(node_id, self.database_name)
 
     @mock.patch.object(DatabaseService, 'get_relationships')
     def test_get_relationships_without_error(self, get_relationships_mock):
@@ -111,11 +116,11 @@ class NodeServiceTestCase(unittest.TestCase):
         node_id = 1
         node_service = NodeService()
 
-        result = node_service.get_relationships(node_id)
+        result = node_service.get_relationships(node_id, self.database_name)
 
         self.assertEqual(result, RelationshipsOut(relationships=[BasicRelationshipOut(start_node=1, end_node=2,
-                                                  id=0, name="Test")]))
-        get_relationships_mock.assert_called_once_with(node_id)
+                                                                                      id=0, name="Test")]))
+        get_relationships_mock.assert_called_once_with(node_id, self.database_name)
 
     @mock.patch.object(DatabaseService, 'get_relationships')
     def test_get_relationships_with_error(self, get_relationships_mock):
@@ -123,10 +128,10 @@ class NodeServiceTestCase(unittest.TestCase):
         node_id = 1
         node_service = NodeService()
 
-        result = node_service.get_relationships(node_id)
+        result = node_service.get_relationships(node_id, self.database_name)
 
         self.assertEqual(result, RelationshipsOut(errors=["error"]))
-        get_relationships_mock.assert_called_once_with(node_id)
+        get_relationships_mock.assert_called_once_with(node_id, self.database_name)
 
     @mock.patch.object(DatabaseService, 'create_node_properties')
     @mock.patch.object(DatabaseService, 'node_exists')
@@ -139,10 +144,10 @@ class NodeServiceTestCase(unittest.TestCase):
         properties = [PropertyIn(key="testkey", value="testvalue")]
         node_id = 5
 
-        result = node_service.save_properties(id=node_id, properties=properties)
+        result = node_service.save_properties(id=node_id, properties=properties, database_name=self.database_name)
 
         self.assertEqual(result, NodeOut(labels={"test"}, id=node_id, properties=properties))
-        create_properties_mock.assert_called_once_with(node_id, properties)
+        create_properties_mock.assert_called_once_with(node_id, properties, self.database_name)
 
     @mock.patch.object(DatabaseService, 'create_node_properties')
     @mock.patch.object(DatabaseService, 'node_exists')
@@ -154,7 +159,7 @@ class NodeServiceTestCase(unittest.TestCase):
         properties = [PropertyIn(key="testkey", value="testvalue")]
         node_id = 5
 
-        result = node_service.save_properties(id=node_id, properties=properties)
+        result = node_service.save_properties(id=node_id, properties=properties, database_name=self.database_name)
 
         self.assertEqual(result, NodeOut(errors=['error']))
 
@@ -168,7 +173,7 @@ class NodeServiceTestCase(unittest.TestCase):
         properties = [PropertyIn(key="testkey", value="testvalue")]
         node_id = 5
 
-        result = node_service.save_properties(id=node_id, properties=properties)
+        result = node_service.save_properties(id=node_id, properties=properties, database_name=self.database_name)
 
         self.assertEqual(result, NodeOut(id=node_id, errors={"errors": "not matching id"}))
 
@@ -215,7 +220,7 @@ class NodeServiceTestCase(unittest.TestCase):
             ])
         node_service = NodeService()
 
-        result = node_service.get_nodes_by_query(query)
+        result = node_service.get_nodes_by_query(query, self.database_name)
 
         self.assertEqual(NodeRowsOut(rows=[
             [BasicNodeOut(labels={'Signal Value'}, id=2, properties=[PropertyIn(key='value', value='10')]),
@@ -225,7 +230,7 @@ class NodeServiceTestCase(unittest.TestCase):
             [BasicNodeOut(labels={'Signal Value'}, id=6, properties=[PropertyIn(key='value', value='30')]),
              BasicNodeOut(labels={'Timestamp'}, id=5, properties=[PropertyIn(key='timestamp', value='300')])]
         ]), result)
-        get_nodes_by_query_mock.assert_called_once_with(query)
+        get_nodes_by_query_mock.assert_called_once_with(query, self.database_name)
 
     @mock.patch.object(DatabaseService, 'get_nodes_by_query')
     def test_get_nodes_by_query_with_error(self, get_nodes_by_query_mock):
@@ -246,10 +251,10 @@ class NodeServiceTestCase(unittest.TestCase):
             ])
         node_service = NodeService()
 
-        result = node_service.get_nodes_by_query(query)
+        result = node_service.get_nodes_by_query(query, self.database_name)
 
         self.assertEqual(NodeRowsOut(errors=['error']), result)
-        get_nodes_by_query_mock.assert_called_once_with(query)
+        get_nodes_by_query_mock.assert_called_once_with(query,self.database_name)
 
     @mock.patch.object(NodeService, 'get_node')
     @mock.patch.object(DatabaseService, 'delete_node_properties')
@@ -260,11 +265,11 @@ class NodeServiceTestCase(unittest.TestCase):
         node_id = 1
         node_service = NodeService()
 
-        result = node_service.delete_node_properties(node_id)
+        result = node_service.delete_node_properties(node_id, self.database_name)
 
         self.assertEqual(result, NodeOut(id=1, properties=[PropertyIn(key='key', value='value')], labels={"Test"}))
-        delete_node_properties_mock.assert_called_once_with(node_id)
-        get_node_mock.assert_called_once_with(node_id)
+        delete_node_properties_mock.assert_called_once_with(node_id, self.database_name)
+        get_node_mock.assert_called_once_with(node_id, self.database_name)
 
     @mock.patch.object(DatabaseService, 'get_node')
     @mock.patch.object(DatabaseService, 'delete_node_properties')
@@ -273,8 +278,8 @@ class NodeServiceTestCase(unittest.TestCase):
         node_id = 1
         node_service = NodeService()
 
-        result = node_service.delete_node_properties(node_id)
+        result = node_service.delete_node_properties(node_id, self.database_name)
 
         self.assertEqual(result, NodeOut(errors=['error']))
-        delete_node_properties_mock.assert_called_once_with(node_id)
-        get_node_mock.assert_called_once_with(node_id)
+        delete_node_properties_mock.assert_called_once_with(node_id, self.database_name)
+        get_node_mock.assert_called_once_with(node_id,self.database_name)
