@@ -34,14 +34,14 @@ class RoleService:
             onto.destroy()
             return ObjectPropertyRoleModelOut(errors=f"Instance {model_in.dst_instance_name} not found")
         code = f"""
-        if FunctionalProperty in onto_property.is_a:
-            src_instance.{model_in.role_name} = dst_instance
-        else:
-            if src_instance.{model_in.role_name} is not None:
-                src_instance.{model_in.role_name}.append(dst_instance)
-            else:
-                src_instance.{model_in.role_name} = [dst_instance]                
-        """
+if FunctionalProperty in onto_property.is_a:
+    src_instance.{model_in.role_name} = dst_instance
+else:
+    if src_instance.{model_in.role_name} is not None:
+        src_instance.{model_in.role_name}.append(dst_instance)
+    else:
+        src_instance.{model_in.role_name} = [dst_instance]                
+"""
         exec(code)
 
         model_out = self.model_service.update_ontology(model_id, onto)
