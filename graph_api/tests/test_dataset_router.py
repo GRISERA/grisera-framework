@@ -31,21 +31,21 @@ class TestDatasetRouter(unittest.TestCase):
         database_name_to_create = "test"
         result = asyncio.run(dataset_router.create_dataset(response, database_name_to_create))
 
-        self.assertEqual(result, DatasetOut(name="test", errors=None))
+        self.assertEqual(result, DatasetOut(name="test", errors=None, links=get_links(router)))
         create_dataset_mock.assert_called_with(database_name_to_create)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(DatasetService, 'create_dataset')
     def test_create_dataset_with_error(self, create_dataset_mock):
-        create_dataset_mock.return_value = DatasetOut(name="test", errors={'errors': ['test']},links=get_links(router))
+        create_dataset_mock.return_value = DatasetOut(name="test", errors={'errors': ['test']})
         response = Response()
         dataset_router = DatasetRouter()
         database_name_to_create = "test"
 
         result = asyncio.run(dataset_router.create_dataset(response, database_name_to_create))
 
-        self.assertEqual(result, DatasetOut(name='test', errors={'errors': ['test']}))
-        create_dataset_mock.assert_called_with(dataset, self.database_name)
+        self.assertEqual(result, DatasetOut(name='test', errors={'errors': ['test']}, links=get_links(router)))
+        create_dataset_mock.assert_called_with(database_name_to_create)
         self.assertEqual(response.status_code, 422)
 
     @mock.patch.object(DatasetService, 'get_datasets')
@@ -71,4 +71,4 @@ class TestDatasetRouter(unittest.TestCase):
 
         self.assertEqual(result, DatasetsOut(errors={'errors': ['test']}, links=get_links(router)))
 
-        self.assertEqual(response.status_code, 4)
+        self.assertEqual(response.status_code, 422)
