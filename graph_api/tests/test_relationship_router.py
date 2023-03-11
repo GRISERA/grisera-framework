@@ -20,6 +20,9 @@ def return_relationship_with_properties(*args, **kwargs):
 
 class TestRelationshipRouter(unittest.TestCase):
 
+    def setUp(self):
+        self.database_name = "neo4j"
+
     @mock.patch.object(RelationshipService, 'save_relationship')
     def test_create_relationship_without_error(self, save_relationship_mock):
         save_relationship_mock.side_effect = return_relationship
@@ -27,11 +30,11 @@ class TestRelationshipRouter(unittest.TestCase):
         relationship = RelationshipIn(start_node=1, end_node=2, name="test")
         relationship_router = RelationshipRouter()
 
-        result = asyncio.run(relationship_router.create_relationship(relationship, response))
+        result = asyncio.run(relationship_router.create_relationship(relationship, response, self.database_name))
 
         self.assertEqual(result, RelationshipOut(start_node=1, end_node=2, name="test", id=5,
                                                  errors=None, links=get_links(router)))
-        save_relationship_mock.assert_called_with(relationship)
+        save_relationship_mock.assert_called_with(relationship, self.database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(RelationshipService, 'save_relationship')
@@ -42,11 +45,11 @@ class TestRelationshipRouter(unittest.TestCase):
         relationship = RelationshipIn(start_node=1, end_node=2, name="test")
         relationship_router = RelationshipRouter()
 
-        result = asyncio.run(relationship_router.create_relationship(relationship, response))
+        result = asyncio.run(relationship_router.create_relationship(relationship, response, self.database_name))
 
         self.assertEqual(result, RelationshipOut(start_node=1, end_node=2, name="test", id=5,
                                                  errors={'errors': ['test']}, links=get_links(router)))
-        save_relationship_mock.assert_called_with(relationship)
+        save_relationship_mock.assert_called_with(relationship, self.database_name)
         self.assertEqual(response.status_code, 422)
 
     @mock.patch.object(RelationshipService, 'save_properties')
@@ -57,11 +60,11 @@ class TestRelationshipRouter(unittest.TestCase):
         properties = [PropertyIn(key="testkey", value="testvalue")]
         node_router = RelationshipRouter()
 
-        result = asyncio.run(node_router.create_relationship_properties(id, properties, response))
+        result = asyncio.run(node_router.create_relationship_properties(id, properties, response, self.database_name))
 
         self.assertEqual(result, RelationshipOut(start_node=0, end_node=1, name="test", id=5,
                                                  properties=properties, links=get_links(router)))
-        save_properties_mock.assert_called_once_with(id, properties)
+        save_properties_mock.assert_called_once_with(id, properties, self.database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(RelationshipService, 'save_properties')
@@ -73,11 +76,11 @@ class TestRelationshipRouter(unittest.TestCase):
                                                     id=5, errors={'errors': ['test']})
         node_router = RelationshipRouter()
 
-        result = asyncio.run(node_router.create_relationship_properties(id, properties, response))
+        result = asyncio.run(node_router.create_relationship_properties(id, properties, response, self.database_name))
 
         self.assertEqual(result, RelationshipOut(start_node=0, end_node=1, name="test", properties=properties,
                                                  id=5, errors={'errors': ['test']}, links=get_links(router)))
-        save_properties_mock.assert_called_once_with(id, properties)
+        save_properties_mock.assert_called_once_with(id, properties, self.database_name)
         self.assertEqual(response.status_code, 422)
 
     @mock.patch.object(RelationshipService, 'delete_relationship')
@@ -86,11 +89,11 @@ class TestRelationshipRouter(unittest.TestCase):
         response = Response()
         node_router = RelationshipRouter()
 
-        result = asyncio.run(node_router.delete_relationship(5, response))
+        result = asyncio.run(node_router.delete_relationship(5, response, self.database_name))
 
         self.assertEqual(result, RelationshipOut(start_node=1, end_node=2, name="Test", id=5,
                                                  errors=None, links=get_links(router)))
-        delete_relationship_mock.assert_called_with(5)
+        delete_relationship_mock.assert_called_with(5, self.database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(RelationshipService, 'delete_relationship')
@@ -99,8 +102,8 @@ class TestRelationshipRouter(unittest.TestCase):
         response = Response()
         node_router = RelationshipRouter()
 
-        result = asyncio.run(node_router.delete_relationship(5, response))
+        result = asyncio.run(node_router.delete_relationship(5, response, self.database_name))
 
         self.assertEqual(result, RelationshipOut(errors="error", links=get_links(router)))
-        delete_relationship_mock.assert_called_with(5)
+        delete_relationship_mock.assert_called_with(5, self.database_name)
         self.assertEqual(response.status_code, 404)

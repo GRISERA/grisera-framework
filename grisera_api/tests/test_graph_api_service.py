@@ -23,10 +23,9 @@ class DatabaseServiceTestCase(unittest.TestCase):
         node = {}
 
         result = self.graph_api_service.post(url_part, node, database_name)
-
         self.assertEqual(result, self.response_content)
-        requests_mock.post.assert_called_with(url=self.graph_api_service.graph_api_url + url_part,
-                                              json=node, database_name=database_name)
+        requests_mock.post.assert_called_with(url=self.graph_api_service.graph_api_url + url_part + "?database_name=" + database_name,
+                           json=node)
 
     @mock.patch('graph_api_service.requests')
     def test_get(self, requests_mock):
@@ -38,8 +37,8 @@ class DatabaseServiceTestCase(unittest.TestCase):
         result = self.graph_api_service.get(url_part, params, database_name)
 
         self.assertEqual(result, self.response_content)
-        requests_mock.get.assert_called_with(url=self.graph_api_service.graph_api_url + url_part,
-                                             params=params, database_name=database_name)
+        requests_mock.get.assert_called_with(url=self.graph_api_service.graph_api_url + url_part + "?database_name=" + database_name,
+                                                params=params)
 
     @mock.patch('graph_api_service.requests')
     def test_delete(self, requests_mock):
@@ -51,8 +50,8 @@ class DatabaseServiceTestCase(unittest.TestCase):
         result = self.graph_api_service.delete(url_part, params, database_name)
 
         self.assertEqual(result, self.response_content)
-        requests_mock.delete.assert_called_with(url=self.graph_api_service.graph_api_url + url_part,
-                                             params=params, database_name=database_name)
+        requests_mock.delete.assert_called_with(url=self.graph_api_service.graph_api_url + url_part + "?database_name=" + database_name,
+                                                params=params)
 
     @mock.patch.object(GraphApiService, 'post')
     def test_create_node(self, post_mock):
@@ -109,9 +108,10 @@ class DatabaseServiceTestCase(unittest.TestCase):
         result = self.graph_api_service.create_properties(node_id, node_model, database_name)
 
         self.assertEqual(result, self.response_content)
-        post_mock.assert_called_with("/nodes/1/properties", [{'key': 'activity_id', 'value': 1, "database_name": database_name},
-                                                             {'key':'arrangement_id', 'value': 2, "database_name": database_name},
-                                                             {'key': 'test', 'value': 'test'}], database_name)
+        post_mock.assert_called_with("/nodes/1/properties",
+                                     [{'key': 'activity_id', 'value': 1, "database_name": database_name},
+                                      {'key': 'arrangement_id', 'value': 2, "database_name": database_name},
+                                      {'key': 'test', 'value': 'test'}], database_name)
 
     @mock.patch.object(GraphApiService, 'post')
     def test_create_relationships(self, post_mock):
@@ -124,7 +124,8 @@ class DatabaseServiceTestCase(unittest.TestCase):
         result = self.graph_api_service.create_relationships(start_node, end_node, name, database_name)
 
         self.assertEqual(result, self.response_content)
-        post_mock.assert_called_with("/relationships", {"start_node": 1, "end_node": 2, "name": 'hasNode', "database_name": [database_name]}, database_name)
+        post_mock.assert_called_with("/relationships", {"start_node": 1, "end_node": 2, "name": 'hasNode',
+                                                        "database_name": [database_name]}, database_name)
 
     @mock.patch.object(GraphApiService, 'delete')
     def test_delete_relationship(self, delete_mock):

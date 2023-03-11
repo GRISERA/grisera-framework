@@ -26,7 +26,7 @@ class ExperimentServiceGraphDB(ExperimentService):
         """
         node_response_experiment = self.graph_api_service.create_node("Experiment", database_name)
 
-        print("--------node_response_experiment: ", node_response_experiment)
+        # print("--------node_response_experiment: ", node_response_experiment)
 
         if node_response_experiment["errors"] is not None:
             return ExperimentOut(**experiment.dict(), errors=node_response_experiment["errors"])
@@ -47,7 +47,7 @@ class ExperimentServiceGraphDB(ExperimentService):
         """
         get_response = self.graph_api_service.get_nodes("Experiment", database_name)
 
-        print("--------get_response_: ", get_response)
+        # print("--------get_response_: ", get_response)
 
         experiments = []
 

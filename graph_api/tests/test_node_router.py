@@ -22,12 +22,15 @@ def return_node(*args, **kwargs):
 def return_nodes(*args, **kwargs):
     return NodesOut(nodes=[BasicNodeOut(id=5, labels={args[0]})])
 
+
 def return_relationships(*args, **kwargs):
     return RelationshipsOut(relationships=[BasicRelationshipOut(id=5), BasicRelationshipOut(id=6)])
 
 
-
 class NodeRouterTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.database_name = "neo4j"
 
     @mock.patch.object(NodeService, 'save_node')
     def test_create_node_without_error(self, save_node_mock):
@@ -36,10 +39,10 @@ class NodeRouterTestCase(unittest.TestCase):
         node = NodeIn(labels={"test"})
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.create_node(node, response))
+        result = asyncio.run(node_router.create_node(node, self.database_name, response))
 
         self.assertEqual(result, NodeOut(id=5, labels={"test"}, links=get_links(router)))
-        save_node_mock.assert_called_with(node)
+        save_node_mock.assert_called_with(node, self.database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(NodeService, 'save_node')
@@ -49,10 +52,10 @@ class NodeRouterTestCase(unittest.TestCase):
         node = NodeIn()
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.create_node(node, response))
+        result = asyncio.run(node_router.create_node(node, self.database_name, response))
 
         self.assertEqual(result, NodeOut(errors={'errors': ['test']}, links=get_links(router)))
-        save_node_mock.assert_called_with(node)
+        save_node_mock.assert_called_with(node, self.database_name)
         self.assertEqual(response.status_code, 422)
 
     @mock.patch.object(NodeService, 'get_node')
@@ -62,10 +65,10 @@ class NodeRouterTestCase(unittest.TestCase):
         label = "Test"
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.get_node(5, response))
+        result = asyncio.run(node_router.get_node(5, response, self.database_name))
 
         self.assertEqual(result, NodeOut(id=5, labels={label}, links=get_links(router)))
-        get_node_mock.assert_called_with(5)
+        get_node_mock.assert_called_with(5, self.database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(NodeService, 'get_node')
@@ -75,10 +78,10 @@ class NodeRouterTestCase(unittest.TestCase):
         label = "Test"
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.get_node(5, response))
+        result = asyncio.run(node_router.get_node(5, response, self.database_name))
 
         self.assertEqual(result, NodeOut(errors='error', links=get_links(router)))
-        get_node_mock.assert_called_with(5)
+        get_node_mock.assert_called_with(5, self.database_name)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(NodeService, 'delete_node')
@@ -88,10 +91,10 @@ class NodeRouterTestCase(unittest.TestCase):
         label = "Test"
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.delete_node(5, response))
+        result = asyncio.run(node_router.delete_node(5, response, self.database_name))
 
         self.assertEqual(result, NodeOut(id=5, labels={label}, links=get_links(router)))
-        delete_node_mock.assert_called_with(5)
+        delete_node_mock.assert_called_with(5, self.database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(NodeService, 'delete_node')
@@ -100,10 +103,10 @@ class NodeRouterTestCase(unittest.TestCase):
         response = Response()
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.delete_node(5, response))
+        result = asyncio.run(node_router.delete_node(5, response, self.database_name))
 
         self.assertEqual(result, NodeOut(errors='error', links=get_links(router)))
-        delete_node_mock.assert_called_with(5)
+        delete_node_mock.assert_called_with(5, self.database_name)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(NodeService, 'get_nodes')
@@ -113,10 +116,10 @@ class NodeRouterTestCase(unittest.TestCase):
         label = "Test"
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.get_nodes(label, response))
+        result = asyncio.run(node_router.get_nodes(label, response, self.database_name))
 
         self.assertEqual(result, NodesOut(nodes=[BasicNodeOut(id=5, labels={label})], links=get_links(router)))
-        get_nodes_mock.assert_called_with(label)
+        get_nodes_mock.assert_called_with(label, self.database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(NodeService, 'get_nodes')
@@ -126,10 +129,10 @@ class NodeRouterTestCase(unittest.TestCase):
         label = "Test"
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.get_nodes(label, response))
+        result = asyncio.run(node_router.get_nodes(label, response, self.database_name))
 
         self.assertEqual(result, NodesOut(errors='error', links=get_links(router)))
-        get_nodes_mock.assert_called_with(label)
+        get_nodes_mock.assert_called_with(label, self.database_name)
         self.assertEqual(response.status_code, 422)
 
     @mock.patch.object(NodeService, 'save_properties')
@@ -140,10 +143,10 @@ class NodeRouterTestCase(unittest.TestCase):
         properties = [PropertyIn(key="testkey", value="testvalue")]
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.create_node_properties(id, properties, response))
+        result = asyncio.run(node_router.create_node_properties(id, properties, response, self.database_name))
 
         self.assertEqual(result, NodeOut(labels={"test"}, id=id, properties=properties, links=get_links(router)))
-        save_properties_mock.assert_called_with(id, properties)
+        save_properties_mock.assert_called_with(id, properties, self.database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(NodeService, 'save_properties')
@@ -154,10 +157,10 @@ class NodeRouterTestCase(unittest.TestCase):
         properties = [PropertyIn(key="testkey", value="testvalue")]
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.create_node_properties(id, properties, response))
+        result = asyncio.run(node_router.create_node_properties(id, properties, response, self.database_name))
 
         self.assertEqual(result, NodeOut(id=5, errors={'errors': ['test']}, links=get_links(router)))
-        save_properties_mock.assert_called_with(id, properties)
+        save_properties_mock.assert_called_with(id, properties, self.database_name)
         self.assertEqual(response.status_code, 422)
 
     @mock.patch.object(NodeService, 'get_relationships')
@@ -167,24 +170,24 @@ class NodeRouterTestCase(unittest.TestCase):
         id = 5
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.get_node_relationships(id, response))
+        result = asyncio.run(node_router.get_node_relationships(id, response, self.database_name))
 
         self.assertEqual(result, RelationshipsOut(relationships=[BasicRelationshipOut(id=5),
                                                                  BasicRelationshipOut(id=6)], links=get_links(router)))
-        get_relationships_mock.assert_called_with(id)
+        get_relationships_mock.assert_called_with(id, self.database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(NodeService, 'get_relationships')
     def test_get_node_relationships_post_with_error(self, get_relationships_mock):
-        get_relationships_mock.return_value = RelationshipsOut( errors={'errors': ['test']})
+        get_relationships_mock.return_value = RelationshipsOut(errors={'errors': ['test']})
         response = Response()
         id = 5
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.get_node_relationships(id, response))
+        result = asyncio.run(node_router.get_node_relationships(id, response, self.database_name))
 
         self.assertEqual(result, RelationshipsOut(errors={'errors': ['test']}, links=get_links(router)))
-        get_relationships_mock.assert_called_with(id)
+        get_relationships_mock.assert_called_with(id, self.database_name)
         self.assertEqual(response.status_code, 422)
 
     @mock.patch.object(NodeService, 'delete_node_properties')
@@ -194,10 +197,10 @@ class NodeRouterTestCase(unittest.TestCase):
         label = "Test"
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.delete_node_properties(5, response))
+        result = asyncio.run(node_router.delete_node_properties(5, response, self.database_name))
 
         self.assertEqual(result, NodeOut(id=5, labels={label}, links=get_links(router)))
-        delete_node_properties_mock.assert_called_with(5)
+        delete_node_properties_mock.assert_called_with(5, self.database_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(NodeService, 'delete_node_properties')
@@ -206,8 +209,8 @@ class NodeRouterTestCase(unittest.TestCase):
         response = Response()
         node_router = NodeRouter()
 
-        result = asyncio.run(node_router.delete_node_properties(5, response))
+        result = asyncio.run(node_router.delete_node_properties(5, response, self.database_name))
 
         self.assertEqual(result, NodeOut(errors='error', links=get_links(router)))
-        delete_node_properties_mock.assert_called_with(5)
+        delete_node_properties_mock.assert_called_with(5, self.database_name)
         self.assertEqual(response.status_code, 404)
