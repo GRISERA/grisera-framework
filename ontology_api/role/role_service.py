@@ -23,6 +23,11 @@ class RoleService:
             return ObjectPropertyRoleModelOut(errors=f"Model with id {model_id} not found")
 
         onto_property = onto[model_in.role_name]
+
+        if onto_property is None:
+            onto.destroy()
+            return DataTypePropertyRoleModelOut(errors=f"Property {model_in.role_name} not found")
+
         property_domain = onto_property.domain
         property_range = onto_property.range
         src_instance = onto.search_one(type=property_domain, iri=f"*{model_in.src_instance_name}")
