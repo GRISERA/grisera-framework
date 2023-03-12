@@ -1,7 +1,6 @@
 from channel.channel_service import ChannelService
 from channel.channel_model import ChannelIn, ChannelOut, ChannelsOut, BasicChannelOut
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
 from registered_channel.registered_channel_service_mongodb import (
     RegisteredChannelService,
 )
@@ -49,7 +48,7 @@ class ChannelServiceMongoDB(ChannelService):
         channels = mongo_api_service.db.channels.find(query)
         result = [BasicChannelOut(**c) for c in channels]
 
-        return result
+        return ChannelsOut(channels=result)
 
     def get_channel(self, channel_id: int, depth: int = 0, source: str = ""):
         """
@@ -80,6 +79,6 @@ class ChannelServiceMongoDB(ChannelService):
                 "registered_channels"
             ] = self.registered_channel_service.get_registered_channels(
                 query={"channel_id": channel_id}
-            )
+            ).registered_channels
 
         return ChannelOut(**channel)

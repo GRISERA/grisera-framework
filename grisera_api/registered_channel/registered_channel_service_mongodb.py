@@ -7,6 +7,7 @@ from registered_channel.registered_channel_model import (
     RegisteredChannelOut,
     RegisteredChannelIn,
     BasicRegisteredChannelOut,
+    RegisteredChannelsOut,
 )
 from models.not_found_model import NotFoundByIdModel
 
@@ -75,7 +76,7 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
         registered_channels = mongo_api_service.db.registered_channels.find(query)
         result = [BasicRegisteredChannelOut(**rc) for rc in registered_channels]
 
-        return result
+        return RegisteredChannelsOut(registered_channels=result)
 
     def get_registered_channel(
         self, registered_channel_id: int, depth: int = 0, source: str = ""
