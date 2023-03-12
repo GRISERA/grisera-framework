@@ -43,6 +43,19 @@ class RoleServiceTestCase(unittest.TestCase):
         self.assertEqual(result.errors, f"Instance ps not found")
         os.remove("database" + os.path.sep + f"{model_id}.owl")
 
+    def test_add_object_property_role_property_does_not_exist(self):
+        role_service = RoleService()
+        model_id = 1
+        onto = get_ontology("https://road.affectivese.org/documentation/owlAC.owl").load()
+        src = onto["ParticipantState"]("ps")
+        dst = onto["Participant"]("p")
+        onto.save(file="database" + os.path.sep + f"{model_id}.owl", format="rdfxml")
+        onto.destroy()
+        model_in = ObjectPropertyRoleModelIn(src_instance_name="ps", dst_instance_name="p", role_name="notHere")
+        result = role_service.add_object_property_role(model_id, model_in)
+        self.assertEqual(result.errors, f"Property {model_in.role_name} not found")
+        os.remove("database" + os.path.sep + f"{model_id}.owl")
+
     def test_add_datatype_property_role_wrong_type_of_value(self):
         role_service = RoleService()
         model_id = 1
