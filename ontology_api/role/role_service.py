@@ -26,7 +26,7 @@ class RoleService:
 
         if onto_property is None:
             onto.destroy()
-            return DataTypePropertyRoleModelOut(errors=f"Property {model_in.role_name} not found")
+            return ObjectPropertyRoleModelOut(errors=f"Property {model_in.role_name} not found")
 
         property_domain = onto_property.domain
         property_range = onto_property.range
