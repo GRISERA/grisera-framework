@@ -1,9 +1,6 @@
 from channel.channel_service import ChannelService
 from channel.channel_model import ChannelIn, ChannelOut, ChannelsOut, BasicChannelOut
 from models.not_found_model import NotFoundByIdModel
-from registered_channel.registered_channel_service_mongodb import (
-    RegisteredChannelService,
-)
 from mongo_api_service import mongo_api_service
 
 
@@ -15,7 +12,8 @@ class ChannelServiceMongoDB(ChannelService):
     registered_channel_service (RegisteredChannelService): Service to send registered channel requests
     """
 
-    registered_channel_service = RegisteredChannelService()
+    def __init__(self, registered_channel_service):
+        self.registered_channel_service = registered_channel_service
 
     def save_channel(self, channel: ChannelIn):
         """

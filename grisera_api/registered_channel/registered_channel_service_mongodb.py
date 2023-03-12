@@ -1,8 +1,5 @@
 from mongo_api_service import mongo_api_service
-from channel.channel_service_mongodb import ChannelServiceMongoDB
-from recording.recording_service_mongodb import RecordingServiceMongoDB
 from registered_channel.registered_channel_service import RegisteredChannelService
-from registered_data.registered_data_service_mongodb import RegisteredDataServiceMongoDB
 from registered_channel.registered_channel_model import (
     RegisteredChannelOut,
     RegisteredChannelIn,
@@ -22,9 +19,10 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
     recording_service (RecordingServiceMongoDB): Service to send recording requests
     """
 
-    channel_service = ChannelServiceMongoDB()
-    registered_data_service = RegisteredDataServiceMongoDB()
-    recording_service = RecordingServiceMongoDB()
+    def __init__(self, channel_service, registered_data_service, recording_service):
+        self.channel_service = channel_service()
+        self.registered_data_service = registered_data_service()
+        self.recording_service = recording_service()
 
     def save_registered_channel(self, registered_channel: RegisteredChannelIn):
         """
