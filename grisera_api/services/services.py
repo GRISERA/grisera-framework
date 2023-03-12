@@ -3,7 +3,11 @@ from enum import Enum
 from typing import Dict
 
 from services.service_factory import ServiceFactory
-from services.graph_services import GraphServiceFactory, GraphWithSignalValuesServiceFactory
+from services.graph_services import (
+    GraphServiceFactory,
+    GraphWithSignalValuesServiceFactory,
+)
+from services.ontology_services import OntologyServiceFactory
 from activity.activity_service import ActivityService
 from activity_execution.activity_execution_service import ActivityExecutionService
 from appearance.appearance_service import AppearanceService
@@ -14,7 +18,9 @@ from life_activity.life_activity_service import LifeActivityService
 from measure.measure_service import MeasureService
 from measure_name.measure_name_service import MeasureNameService
 from modality.modality_service import ModalityService
-from observable_information.observable_information_service import ObservableInformationService
+from observable_information.observable_information_service import (
+    ObservableInformationService,
+)
 from participant.participant_service import ParticipantService
 from participant_state.participant_state_service import ParticipantStateService
 from participation.participation_service import ParticipationService
@@ -35,20 +41,25 @@ class PersistenceTypes(Enum):
 
 class Services:
     def __new__(cls):
-        if not hasattr(cls, 'instance'):
+        if not hasattr(cls, "instance"):
             cls.instance = super(Services, cls).__new__(cls)
         return cls.instance
 
     def __init__(self):
-        self.persistence_type = PersistenceTypes(
-            int(os.environ.get('PERSISTENCE_TYPE'))) if 'PERSISTENCE_TYPE' in os.environ else PersistenceTypes.GRAPHDB
+        self.persistence_type = (
+            PersistenceTypes(int(os.environ.get("PERSISTENCE_TYPE")))
+            if "PERSISTENCE_TYPE" in os.environ
+            else PersistenceTypes.GRAPHDB
+        )
         self.service_factory = self.get_service_factory()
-        
+
     def get_service_factory(self) -> ServiceFactory:
         if self.persistence_type == PersistenceTypes.GRAPHDB:
             return GraphServiceFactory()
         elif self.persistence_type == PersistenceTypes.GRAPHDB_WITH_SIGNAL_VALUES:
             return GraphWithSignalValuesServiceFactory()
+        elif self.persistence_type == PersistenceTypes.ONTOLOGY:
+            return OntologyServiceFactory()
         else:
             return ServiceFactory()
 
