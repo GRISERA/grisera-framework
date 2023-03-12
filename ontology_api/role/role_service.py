@@ -89,14 +89,11 @@ else:
         code = f"""        
 if FunctionalProperty in onto_property.is_a:
     src_instance.{model_in.role_name} = value
-    print("role_name is functional")
 else:
     if src_instance.{model_in.role_name} is not None:
         src_instance.{model_in.role_name}.append(value)
-        print("role_name is append")
     else:
-        src_instance.{model_in.role_name} = [value]  
-        print("role_name is list")              
+        src_instance.{model_in.role_name} = [value]           
         """
         exec(code)
 
