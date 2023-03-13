@@ -85,7 +85,7 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
             registered_channel_id (int): Id of registered channel
             depth (int): this attribute specifies how many models will be traversed to create the response.
                          for depth=0, only no further models will be travesed.
-            source (str): internal argument for mongo services, used to tell the direcion of model fetching.
+            source (str): internal argument for mongo services, used to tell the direction of model fetching.
                           i.e. if for this service, if source="recording", it means that this method was invoked
                           from recording service, so recording model will not be fetched, as it is already in response.
 
@@ -99,33 +99,7 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
         if registered_channel is NotFoundByIdModel:
             return registered_channel
 
-        if depth == 0:
-            return RegisteredChannelOut(**registered_channel)
-
-        if source != "recording":
-            registered_channel["recorgings"] = self.recording_service.get_recordings(
-                {"registered_channel": registered_channel["id"]},
-                depth=depth - 1,
-                source="registered_channel",
-            )
-
-        has_related_channel = registered_channel["channel_id"] is not None
-        if source != "channel" and has_related_channel:
-            registered_channel["channel"] = self.channel_service.get_channel(
-                channel_id=registered_channel["channel_id"],
-                depth=depth - 1,
-                source="registered_channel",
-            )
-
-        has_related_rd = registered_channel["registered_data_id"] is not None
-        if source != "registered_data" and has_related_rd:
-            registered_channel[
-                "registered_data"
-            ] = self.channel_service.get_registered_data(
-                registered_data_id=registered_channel["registered_data_id"],
-                depth=depth - 1,
-                source="registered_channel",
-            )
+        self._add_related_documents(registered_channel, depth, source)
 
         return RegisteredChannelOut(**registered_channel)
 
@@ -168,22 +142,90 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
         if type(existing_registered_channel) is NotFoundByIdModel:
             return existing_registered_channel
 
-        related_channel = self.channel_service.get_channel(registered_channel.channel_id)
+        related_channel = self.channel_service.get_channel(
+            registered_channel.channel_id
+        )
         related_channel_exists = type(related_channel) is not NotFoundByIdModel
-        if (related_channel_exists):
+        if related_channel_exists:
             mongo_api_service.update_document_with_dict(
-                "registered_channels"
+                "registered_channels",
                 registered_channel_id,
                 {"channel_id": registered_channel.channel_id},
             )
 
-        related_registered_channel = self.registered_data_service.get_channel(registered_channel.registered_data_id)
-        related_registered_channel_exists = type(related_registered_channel) is not NotFoundByIdModel
-        if (related_registered_channel_exists):
+        related_registered_channel = self.registered_data_service.get_channel(
+            registered_channel.registered_data_id
+        )
+        related_registered_channel_exists = (
+            type(related_registered_channel) is not NotFoundByIdModel
+        )
+        if related_registered_channel_exists:
             mongo_api_service.update_document_with_dict(
-                "registered_channels"
+                "registered_channels",
                 registered_channel_id,
                 {"registered_data_id": registered_channel.registered_data_id},
             )
 
         return self.get_registered_channel(registered_channel_id)
+
+    def get_registered_channels_traverse(self, query: dict, depth: int, source: str):
+        """
+        Send request to mongo api to get registered channels with related models
+
+        Args:
+            query (dict): Query for mongo request. Gets all registered channels by default.
+            depth (int): this attribute specifies how many models will be traversed to create the response.
+                         for depth=0, only no further models will be travesed.
+            source (str): internal argument for mongo services, used to tell the direction of model fetching.
+
+        Returns:
+            Result of request as list of registered channels
+        """
+        registered_channels = mongo_api_service.load_documents(
+            query, "registered_channels", RegisteredChannelOut
+        )
+
+        for rc in registered_channels:
+            self._add_related_documents(rc, depth, source)
+
+        return registered_channels
+
+    def _add_related_documents(self, registered_channel: dict, depth: int, source: str):
+        if depth > 0:
+            self._add_related_recordings(registered_channel, depth, source)
+            self._add_related_channel(registered_channel, depth, source)
+            self._add_related_registered_data(registered_channel, depth, source)
+
+    def _add_related_recordings(
+        self, registered_channel: dict, depth: int, source: str
+    ):
+        if source != "recording":
+            registered_channel[
+                "recorgings"
+            ] = self.recording_service.get_recordings_traverse(
+                {"registered_channel": registered_channel["id"]},
+                depth=depth - 1,
+                source="registered_channel",
+            )
+
+    def _add_related_channel(self, registered_channel: dict, depth: int, source: str):
+        has_related_channel = registered_channel["channel_id"] is not None
+        if source != "channel" and has_related_channel:
+            registered_channel["channel"] = self.channel_service.get_channel_traverse(
+                channel_id=registered_channel["channel_id"],
+                depth=depth - 1,
+                source="registered_channel",
+            )
+
+    def _add_related_registered_data(
+        self, registered_channel: dict, depth: int, source: str
+    ):
+        has_related_rd = registered_channel["registered_data_id"] is not None
+        if source != "registered_data" and has_related_rd:
+            registered_channel[
+                "registered_data"
+            ] = self.channel_service.get_registered_data(
+                registered_data_id=registered_channel["registered_data_id"],
+                depth=depth - 1,
+                source="registered_channel",
+            )

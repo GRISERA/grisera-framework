@@ -34,37 +34,52 @@ class RegisteredDataServiceMongoDB(RegisteredDataService):
 
         return self.get_registered_data(registered_data_id)
 
-    def get_registered_data_nodes(self, query={}):
+    def get_registered_data_nodes(self):
         """
-        Send request to mongo api to get registered_data_nodes
+        Send request to mongo api to get ass registered data nodes
 
         Args:
-            query (dict): Query for mongo request. Gets all registered data by default.
+            query (dict): Query for mongo request.
 
         Returns:
             Result of request as list of registered data objects
         """
         registed_data = mongo_api_service.load_documents(
-            query, "registered_data", BasicRegisteredDataOut
+            {}, "registered_data", BasicRegisteredDataOut
         )
         result = [BasicRegisteredDataOut(**rd) for rd in registed_data]
 
         return RegisteredDataNodesOut(registered_data_nodes=result)
 
-    def get_registered_data(
-        self, registered_data_id: int, depth: int = 0, source: str = ""
-    ):
+    def get_registered_data(self, registered_data_id: int):
         """
         Send request to graph api to get given registered data
 
         Args:
             registered_channel_id (int): Id of registered data
-            depth (int): this attribute specifies how many models will be traversed to create the response.
-                         for depth=0, only no further models will be travesed.
-            source (str): internal argument for mongo services, used to tell the direcion of model fetching.
 
         Returns:
             Result of request as registered data object
+        """
+        registered_data = self.get_registered_data_traverse(registered_data_id, 0, "")
+        if registered_data is NotFoundByIdModel:
+            return registered_data
+        return RegisteredDataOut(**registered_data)
+
+    def get_registered_data_traverse(
+        self, registered_data_id: int, depth: int, source: str
+    ):
+        """
+        Send request to graph api to get given registered data with related models
+
+        Args:
+            registered_channel_id (int): Id of registered data
+            depth (int): this attribute specifies how many models will be traversed to create the response.
+                         for depth=0, only no further models will be travesed.
+            source (str): internal argument for mongo services, used to tell the direction of model fetching.
+
+        Returns:
+            Result of request as registered data dictionary
         """
         registered_data = mongo_api_service.load_document(
             registered_data_id, "registered_data", RegisteredDataOut
@@ -73,15 +88,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService):
         if registered_data is NotFoundByIdModel:
             return registered_data
 
-        if depth == 0:
-            return RegisteredDataOut(**registered_data)
-
-        if source != "registered_channel":
-            registered_data[
-                "registered_channels"
-            ] = self.registered_channel_service.get_registered_channels(
-                query={"registered_data_id": registered_data_id}
-            ).registered_channels
+        self._add_related_registered_channels(registered_data, depth, source)
 
         return RegisteredDataOut(**registered_data)
 
@@ -129,3 +136,15 @@ class RegisteredDataServiceMongoDB(RegisteredDataService):
         )
 
         return self.get_registered_data(registered_data_id)
+
+    def _add_related_registered_channels(
+        self, registered_data: dict, depth: int, source: str
+    ):
+        if source != "recording" and depth > 0:
+            registered_data[
+                "registered_channels"
+            ] = self.registered_channel_service.get_registered_channels_traverse(
+                {"registered_data_id": registered_data["id"]},
+                depth=depth - 1,
+                source="registered_data",
+            )

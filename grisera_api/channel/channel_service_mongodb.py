@@ -1,3 +1,4 @@
+from typing import Union
 from channel.channel_service import ChannelService
 from channel.channel_model import ChannelIn, ChannelOut, ChannelsOut, BasicChannelOut
 from models.not_found_model import NotFoundByIdModel
@@ -29,47 +30,60 @@ class ChannelServiceMongoDB(ChannelService):
 
         return self.get_channel(channel_id)
 
-    def get_channels(self, query: dict = {}):
+    def get_channels(self):
         """
-        Send request to mongo api to get channels
-
-        Args:
-            query (dict): Query for mongo request. Gets all channels by default.
+        Send request to mongo api to get all channels
 
         Returns:
-            Result of request as list of channel objects
+            Result of request as ChannelsOut object
         """
-        channels = mongo_api_service.load_documents(query, "channels", BasicChannelOut)
+        channels = mongo_api_service.load_documents({}, "channels", BasicChannelOut)
         result = [BasicChannelOut(**c) for c in channels]
-
         return ChannelsOut(channels=result)
 
-    def get_channel(self, channel_id: int, depth: int = 0, source: str = ""):
+    def get_channel(self, channel_id: Union[str, int]):
         """
         Send request to mongo api to get given channel
 
         Args:
             channel_id (int): Id of channel
-            depth (int): this attribute specifies how many models will be traversed to create the response.
-                         for depth=0, only no further models will be travesed.
-            source (str): internal argument for mongo services, used to tell the direcion of model fetching.
 
         Returns:
-            Result of request as registered channel object
+            Result of request as channel object
+        """
+        channel = self.get_channel_traverse(channel_id, 0, "")
+        if channel is NotFoundByIdModel:
+            return channel
+        return ChannelOut(*channel)
+
+    def get_channel_traverse(self, channel_id: int, depth: int, source: str):
+        """
+        Send request to mongo api to get given channel with related models
+
+        Args:
+            channel_id (int): Id of channel
+            depth (int): this attribute specifies how many models will be traversed to create the response.
+                         for depth=0, only no further models will be travesed.
+            source (str): internal argument for mongo services, used to tell the direction of model fetching.
+
+        Returns:
+            Result of request as channel dictionary
         """
         channel = mongo_api_service.load_document(channel_id, "channels", ChannelOut)
 
         if channel is NotFoundByIdModel:
             return channel
 
-        if depth == 0:
-            return ChannelOut(**channel)
+        self._add_related_registered_channels(channel, depth, source)
 
-        if source != "registered_channel":
+        return channel
+
+    def _add_related_registered_channels(self, channel: dict, depth: int, source: str):
+        if source != "recording" and depth > 0:
             channel[
                 "registered_channels"
-            ] = self.registered_channel_service.get_registered_channels(
-                query={"channel_id": channel_id}
-            ).registered_channels
-
-        return ChannelOut(**channel)
+            ] = self.registered_channel_service.get_registered_channels_traverse(
+                {"channel_id": channel["id"]},
+                depth=depth - 1,
+                source="channel",
+            )
