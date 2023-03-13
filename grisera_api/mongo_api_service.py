@@ -11,6 +11,9 @@ class MongoApiService:
     Object that handles communication with mongodb
     """
 
+    MONGO_ID_FIELD = "_id"
+    MODEL_ID_FIELD = "id"
+
     def __init__(self):
         """
         Connect to MongoDB database
@@ -33,13 +36,14 @@ class MongoApiService:
         """
         Load single document, with "additional properties" field handling
         """
-        result_dict = self.db[collection_name].find_one({"id": id})
+        result_dict = self.db[collection_name].find_one({self.MONGO_ID_FIELD: id})
         if result_dict is None:
             return NotFoundByIdModel(
                 id=id,
                 errors={"errors": "document not found"},
             )
 
+        self._update_mongo_output_id(result_dict)
         expected_fields = model_class.__fields__.keys()
         if "additional_properties" in expected_fields:
             self._move_additional_properties_to_array(result_dict, expected_fields)
@@ -51,6 +55,7 @@ class MongoApiService:
         """
         results = self.db[collection_name].find(query)
 
+        [self._update_mongo_output_id(result) for result in result]
         expected_fields = model_class.__fields__.keys()
         if "additional_properties" in expected_fields:
             for result in results:
@@ -75,8 +80,9 @@ class MongoApiService:
         """
         Update document with data as dict
         """
+        self._update_mongo_input_id(data_to_update)
         self.db[collection_name].update_one(
-            {"id": id},
+            {self.MONGO_ID_FIELD: id},
             data_to_update,
         )
 
@@ -84,7 +90,7 @@ class MongoApiService:
         """
         Delete document in collection
         """
-        self.db[collection_name].delete_one({"id": id})
+        self.db[collection_name].delete_one({self.MONGO_ID_FIELD: id})
         return id
 
     @staticmethod
@@ -104,6 +110,16 @@ class MongoApiService:
             additional_properties.append({"key": key, "value": value})
             del result_dict[key]
         result_dict["additional_properties"] = additional_properties
+
+    def _update_mongo_input_id(self, mongo_input: dict):
+        if self.MODEL_ID_FIELD in mongo_input:
+            mongo_input[self.MONGO_ID_FIELD] = mongo_input[self.MODEL_ID_FIELD]
+        del mongo_input[self.MODEL_ID_FIELD]
+
+    def _update_mongo_output_id(self, mongo_output: dict):
+        if self.MONGO_ID_FIELD in mongo_output:
+            mongo_output[self.MODEL_ID_FIELD] = mongo_output[self.MONGO_ID_FIELD]
+        del mongo_output[self.MONGO_ID_FIELD]
 
 
 mongo_api_service = MongoApiService()
