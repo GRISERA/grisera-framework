@@ -25,17 +25,13 @@ class ChannelServiceMongoDB(ChannelService):
         Returns:
             Result of request as channel object
         """
-        channel_id = mongo_api_service.db.channels.insert_one(
-            {
-                "type": channel.type,
-            }
-        )
+        channel_id = mongo_api_service.create_document("channels", channel)
 
         return self.get_channel(channel_id)
 
     def get_channels(self, query: dict = {}):
         """
-        Send request to mongo api to get all channels
+        Send request to mongo api to get channels
 
         Args:
             query (dict): Query for mongo request. Gets all channels by default.
@@ -43,7 +39,7 @@ class ChannelServiceMongoDB(ChannelService):
         Returns:
             Result of request as list of channel objects
         """
-        channels = mongo_api_service.db.channels.find(query)
+        channels = mongo_api_service.load_documents(query, "channels", BasicChannelOut)
         result = [BasicChannelOut(**c) for c in channels]
 
         return ChannelsOut(channels=result)
@@ -61,13 +57,10 @@ class ChannelServiceMongoDB(ChannelService):
         Returns:
             Result of request as registered channel object
         """
-        channel = mongo_api_service.db.channels.find_one({"id": channel_id})
+        channel = mongo_api_service.load_document(channel_id, "channels", ChannelOut)
 
-        if channel is None:
-            return NotFoundByIdModel(
-                id=channel_id,
-                errors={"errors": "registered channel not found"},
-            )
+        if channel is NotFoundByIdModel:
+            return channel
 
         if depth == 0:
             return ChannelOut(**channel)

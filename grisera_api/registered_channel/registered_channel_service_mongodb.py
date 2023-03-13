@@ -52,11 +52,8 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
                 errors={"errors": "given registered data does not exist"}
             )
 
-        registered_channel_id = mongo_api_service.db.registered_channels.insert_one(
-            {
-                "channel_id": registered_channel.channel_id,
-                "registered_data_id": registered_channel.registered_data_id,
-            }
+        registered_channel_id = mongo_api_service.create_document(
+            "registered_channels", registered_channel
         )
 
         return self.get_registered_channel(registered_channel_id)
@@ -71,7 +68,9 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
         Returns:
             Result of request as list of registered channels objects
         """
-        registered_channels = mongo_api_service.db.registered_channels.find(query)
+        registered_channels = mongo_api_service.load_documents(
+            query, "registered_channels", BasicRegisteredChannelOut
+        )
         result = [BasicRegisteredChannelOut(**rc) for rc in registered_channels]
 
         return RegisteredChannelsOut(registered_channels=result)
@@ -93,15 +92,12 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
         Returns:
             Result of request as registered channel object
         """
-        registered_channel = mongo_api_service.db.registered_channels.find_one(
-            {"id": registered_channel_id}
+        registered_channel = mongo_api_service.load_document(
+            registered_channel_id, "registered_channels", RegisteredChannelOut
         )
 
-        if registered_channel is None:
-            return NotFoundByIdModel(
-                id=registered_channel_id,
-                errors={"errors": "registered channel not found"},
-            )
+        if registered_channel is NotFoundByIdModel:
+            return registered_channel
 
         if depth == 0:
             return RegisteredChannelOut(**registered_channel)
@@ -151,9 +147,7 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
                 errors={"errors": "registered channel not found"},
             )
 
-        mongo_api_service.db.registered_channels.delete_one(
-            {"id": registered_channel_id}
-        )
+        mongo_api_service.delete_document("registered_channels", registered_channel_id)
         return registered_channel
 
     def update_registered_channel_relationships(
@@ -169,31 +163,26 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
         Returns:
             Result of request as registered channel object
         """
-        get_response = self.get_registered_channel(registered_channel_id)
+        existing_registered_channel = self.get_registered_channel(registered_channel_id)
 
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
+        if type(existing_registered_channel) is NotFoundByIdModel:
+            return existing_registered_channel
 
-        if (
-            registered_channel.channel_id is not None
-            and type(self.channel_service.get_channel(registered_channel.channel_id))
-            is not NotFoundByIdModel
-        ):
-            mongo_api_service.db.registered_channels.update_one(
-                {"id": registered_channel_id},
+        related_channel = self.channel_service.get_channel(registered_channel.channel_id)
+        related_channel_exists = type(related_channel) is not NotFoundByIdModel
+        if (related_channel_exists):
+            mongo_api_service.update_document_with_dict(
+                "registered_channels"
+                registered_channel_id,
                 {"channel_id": registered_channel.channel_id},
             )
-        if (
-            registered_channel.registered_data_id is not None
-            and type(
-                self.registered_data_service.get_registered_data(
-                    registered_channel.registered_data_id
-                )
-            )
-            is not NotFoundByIdModel
-        ):
-            mongo_api_service.db.registered_channels.update_one(
-                {"id": registered_channel_id},
+
+        related_registered_channel = self.registered_data_service.get_channel(registered_channel.registered_data_id)
+        related_registered_channel_exists = type(related_registered_channel) is not NotFoundByIdModel
+        if (related_registered_channel_exists):
+            mongo_api_service.update_document_with_dict(
+                "registered_channels"
+                registered_channel_id,
                 {"registered_data_id": registered_channel.registered_data_id},
             )
 
