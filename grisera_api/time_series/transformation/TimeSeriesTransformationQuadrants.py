@@ -42,47 +42,39 @@ class TimeSeriesTransformationQuadrants(TimeSeriesTransformation):
         current_signal_value_y_index = 0
         timestamp_label = "timestamp" if time_series[0].type == Type.timestamp else "start_timestamp"
         # Iterate over all X signal values
-        for current_signal_value_x_index in range(len(time_series[0].signal_values)):
+        for current_signal_value_x in time_series[0].signal_values:
             # For current X signal value find first Y signal value with greater or equal timestamp value
             # If not found, return not existing index
             while current_signal_value_y_index < len(time_series[1].signal_values) and \
                     int(get_node_property(time_series[1].signal_values[current_signal_value_y_index]["timestamp"],
                                           timestamp_label)) < int(
-                get_node_property(time_series[0].signal_values[current_signal_value_x_index]["timestamp"],
-                                  timestamp_label)):
+                get_node_property(current_signal_value_x["timestamp"], timestamp_label)):
                 current_signal_value_y_index += 1
             # Check if X and Y signal timestamps are the same
             if current_signal_value_y_index < len(time_series[1].signal_values) and \
-                    get_node_property(time_series[0].signal_values[current_signal_value_x_index]["timestamp"],
-                                      "timestamp") == get_node_property(
+                    get_node_property(current_signal_value_x["timestamp"], "timestamp") == get_node_property(
                 time_series[1].signal_values[current_signal_value_y_index]["timestamp"], "timestamp") and \
-                    get_node_property(time_series[0].signal_values[current_signal_value_x_index]["timestamp"],
-                                      "start_timestamp") == get_node_property(
+                    get_node_property(current_signal_value_x["timestamp"], "start_timestamp") == get_node_property(
                 time_series[1].signal_values[current_signal_value_y_index]["timestamp"], "start_timestamp") and \
-                    get_node_property(time_series[0].signal_values[current_signal_value_x_index]["timestamp"],
-                                      "end_timestamp") == get_node_property(
+                    get_node_property(current_signal_value_x["timestamp"], "end_timestamp") == get_node_property(
                 time_series[1].signal_values[current_signal_value_y_index]["timestamp"], "end_timestamp"):
                 # Determine quadrant comparing X and Y signal values with origin point
                 x_positive = 1 if int(
-                    get_node_property(time_series[0].signal_values[current_signal_value_x_index]["signal_value"],
-                                      "value")) >= origin_x else 0
+                    get_node_property(current_signal_value_x["signal_value"], "value")) >= origin_x else 0
                 y_positive = 1 if int(
                     get_node_property(time_series[1].signal_values[current_signal_value_y_index]["signal_value"],
                                       "value")) >= origin_y else 0
                 quadrant = 1 + [(1, 1), (0, 1), (0, 0), (1, 0)].index((x_positive, y_positive))
                 new_signal_values.append(SignalIn(value=quadrant,
                                                   timestamp=get_node_property(
-                                                      time_series[0].signal_values[current_signal_value_x_index][
-                                                          "timestamp"], "timestamp"),
+                                                      current_signal_value_x["timestamp"], "timestamp"),
                                                   start_timestamp=get_node_property(
-                                                      time_series[0].signal_values[current_signal_value_x_index][
-                                                          "timestamp"], "start_timestamp"),
+                                                      current_signal_value_x["timestamp"], "start_timestamp"),
                                                   end_timestamp=get_node_property(
-                                                      time_series[0].signal_values[current_signal_value_x_index][
-                                                          "timestamp"], "end_timestamp"),
+                                                      current_signal_value_x["timestamp"], "end_timestamp"),
                                                   ))
                 new_signal_values_index_mapping.append([
-                    time_series[0].signal_values[current_signal_value_x_index]["signal_value"]["id"],
+                    current_signal_value_x["signal_value"]["id"],
                     time_series[1].signal_values[current_signal_value_y_index]["signal_value"]["id"]
                 ])
 

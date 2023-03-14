@@ -31,9 +31,9 @@ class TimeSeriesTransformationMultidimensional:
         current_signal_value_rest_indexes = [0] * len(time_series)
         timestamp_label = "timestamp" if time_series[0].type == Type.timestamp else "start_timestamp"
         # Iterate over all X signal values
-        for current_signal_value_x_index in range(len(time_series[0].signal_values)):
+        for current_signal_value_x in time_series[0].signal_values:
             match = True
-            signal_values = [time_series[0].signal_values[current_signal_value_x_index]["signal_value"]]
+            signal_values = [current_signal_value_x["signal_value"]]
             for i in range(1, len(time_series)):
                 # For current X signal value find first Y, Z and other signal values with greater or equal timestamp
                 # value
@@ -42,20 +42,16 @@ class TimeSeriesTransformationMultidimensional:
                         int(get_node_property(
                             time_series[i].signal_values[current_signal_value_rest_indexes[i]]["timestamp"],
                             timestamp_label)) < int(
-                    get_node_property(time_series[0].signal_values[current_signal_value_x_index]["timestamp"],
-                                      timestamp_label)):
+                    get_node_property(current_signal_value_x["timestamp"], timestamp_label)):
                     current_signal_value_rest_indexes[i] += 1
                 # Check if X, Y, Z and other signal timestamps are the same
                 if current_signal_value_rest_indexes[i] < len(time_series[1].signal_values) and \
-                        get_node_property(time_series[0].signal_values[current_signal_value_x_index]["timestamp"],
-                                          "timestamp") == get_node_property(
+                        get_node_property(current_signal_value_x["timestamp"], "timestamp") == get_node_property(
                     time_series[i].signal_values[current_signal_value_rest_indexes[i]]["timestamp"], "timestamp") and \
-                        get_node_property(time_series[0].signal_values[current_signal_value_x_index]["timestamp"],
-                                          "start_timestamp") == get_node_property(
+                        get_node_property(current_signal_value_x["timestamp"], "start_timestamp") == get_node_property(
                     time_series[i].signal_values[current_signal_value_rest_indexes[i]]["timestamp"],
                     "start_timestamp") and \
-                        get_node_property(time_series[0].signal_values[current_signal_value_x_index]["timestamp"],
-                                          "end_timestamp") == get_node_property(
+                        get_node_property(current_signal_value_x["timestamp"], "end_timestamp") == get_node_property(
                     time_series[i].signal_values[current_signal_value_rest_indexes[i]]["timestamp"], "end_timestamp"):
                     signal_values.append(
                         time_series[i].signal_values[current_signal_value_rest_indexes[i]]["signal_value"])
@@ -64,7 +60,7 @@ class TimeSeriesTransformationMultidimensional:
                     break
             if match:
                 new_signal_values.append({
-                    "timestamp": time_series[0].signal_values[current_signal_value_x_index]["timestamp"],
+                    "timestamp": current_signal_value_x["timestamp"],
                     "signal_values": signal_values
                 })
 
