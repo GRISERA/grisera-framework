@@ -55,7 +55,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 return time_series
             source_time_series.append(time_series)
         try:
-            new_time_series, new_signal_values_index_mapping = TimeSeriesTransformationFactory().get_transformation(
+            new_time_series, new_signal_values_id_mapping = TimeSeriesTransformationFactory().get_transformation(
                 time_series_transformation.name) \
                 .transform(source_time_series, time_series_transformation.additional_properties)
         except Exception as e:
@@ -71,11 +71,11 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                                                                   TimeSeriesTransformationRelationshipIn(
                                                                       additional_properties=[
                                                                           {'key': 'order', 'value': index + 1}]))
-        assert len(new_signal_values_index_mapping) == len(
+        assert len(new_signal_values_id_mapping) == len(
             result.signal_values), "transformation signal values mapping does not have correct length"
-        for new_signal_value_index in range(len(new_signal_values_index_mapping)):
-            new_signal_value_id = result.signal_values[new_signal_value_index]["signal_value"]["id"]
-            for index, old_signal_value_id in enumerate(new_signal_values_index_mapping[new_signal_value_index]):
+        for signal_value_ids, new_signal_value in zip(new_signal_values_id_mapping, result.signal_values):
+            new_signal_value_id = new_signal_value["signal_value"]["id"]
+            for index, old_signal_value_id in enumerate(signal_value_ids):
                 relationship = self.graph_api_service.create_relationships(new_signal_value_id, old_signal_value_id,
                                                                            "basedOn")
                 self.graph_api_service.create_relationship_properties(relationship["id"],
