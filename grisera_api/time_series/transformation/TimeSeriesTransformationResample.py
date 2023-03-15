@@ -45,7 +45,7 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
         additional_properties.append(PropertyIn(key="transformation_name", value=TransformationType.RESAMPLE_NEAREST))
 
         new_signal_values = []
-        new_signal_values_index_mapping = []
+        new_signal_values_id_mapping = []
         current_time = start_timestamp
         current_signal_value_index = 0
         if len(time_series[0].signal_values) > 0:
@@ -73,11 +73,11 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
                 new_signal_values.append(SignalIn(signal_value=SignalValueNodesIn(value=int(
                     get_node_property(time_series[0].signal_values[new_signal_value_index]["signal_value"], "value"))),
                     timestamp=current_time))
-                new_signal_values_index_mapping.append(
+                new_signal_values_id_mapping.append(
                     [time_series[0].signal_values[new_signal_value_index]["signal_value"]["id"]])
                 current_time += period
 
         return TimeSeriesIn(type=time_series[0].type,
                             additional_properties=additional_properties,
                             signal_values=new_signal_values
-                            ), new_signal_values_index_mapping
+                            ), new_signal_values_id_mapping

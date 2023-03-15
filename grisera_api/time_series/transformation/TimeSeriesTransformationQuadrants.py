@@ -39,7 +39,7 @@ class TimeSeriesTransformationQuadrants(TimeSeriesTransformation):
         additional_properties.append(PropertyIn(key="transformation_name", value=TransformationType.QUADRANTS))
 
         new_signal_values = []
-        new_signal_values_index_mapping = []
+        new_signal_values_id_mapping = []
         current_signal_value_y_index = 0
         timestamp_label = "timestamp" if time_series[0].type == Type.timestamp else "start_timestamp"
         # Iterate over all X signal values
@@ -74,7 +74,7 @@ class TimeSeriesTransformationQuadrants(TimeSeriesTransformation):
                                                   end_timestamp=get_node_property(
                                                       current_signal_value_x["timestamp"], "end_timestamp"),
                                                   ))
-                new_signal_values_index_mapping.append([
+                new_signal_values_id_mapping.append([
                     current_signal_value_x["signal_value"]["id"],
                     time_series[1].signal_values[current_signal_value_y_index]["signal_value"]["id"]
                 ])
@@ -82,4 +82,4 @@ class TimeSeriesTransformationQuadrants(TimeSeriesTransformation):
         return TimeSeriesIn(type=time_series[0].type,
                             additional_properties=additional_properties,
                             signal_values=new_signal_values
-                            ), new_signal_values_index_mapping
+                            ), new_signal_values_id_mapping
