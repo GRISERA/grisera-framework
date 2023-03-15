@@ -29,8 +29,10 @@ class SignalValueNodesIn(BaseModel):
     Model of signal value node
     Attributes:
         value (Union[str, float]): Value of signal
+        additional_properties (Optional[List[PropertyIn]]): Additional properties for signal value
     """
     value: Union[str, float]
+    additional_properties: Optional[List[PropertyIn]]
 
 
 class SignalIn(BaseModel):
@@ -40,12 +42,12 @@ class SignalIn(BaseModel):
         timestamp (Optional[int]): Timestamp of signal measure of type Timestamp in milliseconds
         start_timestamp (Optional[int]): Timestamp of begin signal measure of type Epoch in milliseconds
         end_timestamp (Optional[int]): Timestamp of end signal measure of type Epoch in milliseconds
-        value (Union[str, float]): Value of signal
+        signal_value (SignalValueNodesIn): Value of signal
     """
     timestamp: Optional[int]
     start_timestamp: Optional[int]
     end_timestamp: Optional[int]
-    value: Union[str, float]
+    signal_value: SignalValueNodesIn
 
 
 class Type(str, Enum):

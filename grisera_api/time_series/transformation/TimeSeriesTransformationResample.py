@@ -2,7 +2,8 @@ from typing import List, Optional
 
 from property.property_model import PropertyIn
 from time_series.helpers import get_node_property, get_additional_parameter
-from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, Type, SignalIn, TransformationType
+from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, Type, SignalIn, TransformationType, \
+    SignalValueNodesIn
 from time_series.transformation.TimeSeriesTransformation import TimeSeriesTransformation
 
 
@@ -69,8 +70,8 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
                     if abs(current_time - before_signal_value_timestamp) <= abs(
                             after_signal_value_timestamp - current_time):
                         new_signal_value_index = current_signal_value_index - 1
-                new_signal_values.append(SignalIn(value=int(
-                    get_node_property(time_series[0].signal_values[new_signal_value_index]["signal_value"], "value")),
+                new_signal_values.append(SignalIn(signal_value=SignalValueNodesIn(value=int(
+                    get_node_property(time_series[0].signal_values[new_signal_value_index]["signal_value"], "value"))),
                     timestamp=current_time))
                 new_signal_values_index_mapping.append(
                     [time_series[0].signal_values[new_signal_value_index]["signal_value"]["id"]])

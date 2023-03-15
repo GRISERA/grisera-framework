@@ -1,7 +1,7 @@
 import unittest
 
 from property.property_model import PropertyIn
-from time_series.time_series_model import TimeSeriesOut, Type, TimeSeriesIn, SignalIn
+from time_series.time_series_model import TimeSeriesOut, Type, TimeSeriesIn, SignalIn, SignalValueNodesIn
 from time_series.transformation.TimeSeriesTransformationResample import TimeSeriesTransformationResample
 
 
@@ -97,10 +97,10 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
                 TimeSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
-                        SignalIn(timestamp=0, value='10'),
-                        SignalIn(timestamp=10, value='30'),
-                        SignalIn(timestamp=20, value='40'),
-                        SignalIn(timestamp=30, value='50')
+                        SignalIn(timestamp=0, signal_value=SignalValueNodesIn(value='10')),
+                        SignalIn(timestamp=10, signal_value=SignalValueNodesIn(value='30')),
+                        SignalIn(timestamp=20, signal_value=SignalValueNodesIn(value='40')),
+                        SignalIn(timestamp=30, signal_value=SignalValueNodesIn(value='50'))
                     ],
                     additional_properties=[
                         PropertyIn(key='period', value='10'),
@@ -126,10 +126,10 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
                 TimeSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
-                        SignalIn(timestamp=3, value='20'),
-                        SignalIn(timestamp=8, value='30'),
-                        SignalIn(timestamp=13, value='40'),
-                        SignalIn(timestamp=18, value='40')
+                        SignalIn(timestamp=3, signal_value=SignalValueNodesIn(value='20')),
+                        SignalIn(timestamp=8, signal_value=SignalValueNodesIn(value='30')),
+                        SignalIn(timestamp=13, signal_value=SignalValueNodesIn(value='40')),
+                        SignalIn(timestamp=18, signal_value=SignalValueNodesIn(value='40'))
                     ],
                     additional_properties=[
                         PropertyIn(key="period", value="5"),
@@ -153,13 +153,13 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
                 TimeSeriesIn(
                     type=Type.epoch,
                     signal_values=[
-                        SignalIn(timestamp=0, value='10'),
-                        SignalIn(timestamp=5, value='10'),
-                        SignalIn(timestamp=10, value='20'),
-                        SignalIn(timestamp=15, value='20'),
-                        SignalIn(timestamp=20, value='30'),
-                        SignalIn(timestamp=25, value='40'),
-                        SignalIn(timestamp=30, value='40')
+                        SignalIn(timestamp=0, signal_value=SignalValueNodesIn(value='10')),
+                        SignalIn(timestamp=5, signal_value=SignalValueNodesIn(value='10')),
+                        SignalIn(timestamp=10, signal_value=SignalValueNodesIn(value='20')),
+                        SignalIn(timestamp=15, signal_value=SignalValueNodesIn(value='20')),
+                        SignalIn(timestamp=20, signal_value=SignalValueNodesIn(value='30')),
+                        SignalIn(timestamp=25, signal_value=SignalValueNodesIn(value='40')),
+                        SignalIn(timestamp=30, signal_value=SignalValueNodesIn(value='40'))
                     ],
                     additional_properties=[
                         PropertyIn(key='period', value='5'),
@@ -185,9 +185,9 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
                 TimeSeriesIn(
                     type=Type.epoch,
                     signal_values=[
-                        SignalIn(timestamp=6, value='20'),
-                        SignalIn(timestamp=16, value='20'),
-                        SignalIn(timestamp=26, value='40')
+                        SignalIn(timestamp=6, signal_value=SignalValueNodesIn(value='20')),
+                        SignalIn(timestamp=16, signal_value=SignalValueNodesIn(value='20')),
+                        SignalIn(timestamp=26, signal_value=SignalValueNodesIn(value='40'))
                     ],
                     additional_properties=[
                         PropertyIn(key="period", value="10"),
