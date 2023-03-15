@@ -108,12 +108,14 @@ class TestTimeSeriesTransformationMultiplication(unittest.TestCase):
                         SignalIn(timestamp=5, signal_value=SignalValueNodesIn(value=40)),
                         SignalIn(timestamp=10, signal_value=SignalValueNodesIn(value=60))
                     ],
-                    additional_properties=[
-                        PropertyIn(key='multiplier', value='2'),
-                        PropertyIn(key='transformation_name', value='multiplication')
-                    ]
+                   additional_properties=[
+                      PropertyIn(key='multiplier', value='2'),
+                      PropertyIn(key='transformation_name', value='multiplication')
+                   ]
                 ),
                 [[2], [4], [6]]
             ),
-            result)
+           result)
 ```
+
+6. Write documentation in `grisera_api/docs/time_series` directory.
