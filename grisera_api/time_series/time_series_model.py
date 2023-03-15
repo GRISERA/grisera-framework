@@ -160,10 +160,12 @@ class TimeSeriesMultidimensionalOut(BaseModel):
 
     Attributes:
         signal_values (list): List of signal values
+        time_series (List[TimeSeriesOut]): Time series nodes from database
         errors (Optional[Any]): Optional errors appeared during query executions
         links (Optional[list]): List of links available from api
     """
     signal_values: list = []
+    time_series: List[TimeSeriesOut] = []
     errors: Optional[Any] = None
     links: Optional[list] = None
 

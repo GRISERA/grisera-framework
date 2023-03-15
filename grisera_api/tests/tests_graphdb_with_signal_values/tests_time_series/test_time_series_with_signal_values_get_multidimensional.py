@@ -34,6 +34,10 @@ class TestTimeSeriesWithSignalValuesServiceGetMultidimensional(unittest.TestCase
                          }
                     ]
                 }
+            ],
+            time_series=[
+                TimeSeriesOut(type=Type.timestamp, id=60),
+                TimeSeriesOut(type=Type.timestamp, id=61)
             ]
         )
 
