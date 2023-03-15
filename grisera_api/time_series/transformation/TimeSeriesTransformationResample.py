@@ -77,7 +77,7 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
                     [time_series[0].signal_values[new_signal_value_index]["signal_value"]["id"]])
                 current_time += period
 
-        return TimeSeriesIn(type=time_series[0].type,
+        return TimeSeriesIn(type=Type.timestamp,
                             additional_properties=additional_properties,
                             signal_values=new_signal_values
                             ), new_signal_values_id_mapping
