@@ -245,7 +245,9 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             if current_timestamp["errors"] is not None:
                 return current_timestamp["errors"]
 
-            if signal_value_node is None and current_timestamp != timestamp:
+            if signal_value_node is None and (
+                    timestamp is None or int(get_node_property(current_timestamp, "timestamp")) < int(
+                    get_node_property(timestamp, "timestamp"))):
                 if experiment_timestamp_relation_id is not None:
                     self.graph_api_service.delete_relationship(experiment_timestamp_relation_id)
                 if experiment_id is not None:

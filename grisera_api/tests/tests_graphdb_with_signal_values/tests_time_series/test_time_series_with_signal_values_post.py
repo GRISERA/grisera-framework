@@ -278,11 +278,10 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
         create_properties_mock.assert_not_called()
         self.assertEqual([mock.call(1000)], get_node_mock.call_args_list)
         self.assertEqual([
-            mock.call(start_node=20, end_node=60, name='takes'),
             mock.call(start_node=60, end_node=70, name='startInSec'),
             mock.call(start_node=60, end_node=70, name='endInSec')
         ], create_relationships_mock.call_args_list)
-        self.assertEqual([mock.call(15)], delete_relationship_mock.call_args_list)
+        delete_relationship_mock.assert_not_called()
         self.assertEqual([mock.call(20)], get_node_relationships_mock.call_args_list)
         self.assertEqual([mock.call(SignalValueNodesIn(value=10), None, 15)], create_signal_value_mock.call_args_list)
         self.assertEqual([mock.call(100, previous_timestamp_node), mock.call(200, timestamp_node)],
