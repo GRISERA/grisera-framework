@@ -6,11 +6,11 @@ This transformation manipulates timestamp values and finds the nearest signal va
 
 ## Input parameters
 
-| Name            | Required | Default value                         | Description                                                          |
-|-----------------|----------|---------------------------------------|----------------------------------------------------------------------|
-| period          | Yes      | -                                     | New time interval between new timestamps                             |
-| start_timestamp | No       | 0                                     | The first of the new timestamp value                                 |
-| end_timestamp   | No       | period + the greatest input timestamp | The last of the new timestamp values will be less than end_timestamp |
+| Name            | Required |             Default value             | Description                                                          |
+|-----------------|:--------:|:-------------------------------------:|----------------------------------------------------------------------|
+| period          |   Yes    |                                       | New time interval between new timestamps                             |
+| start_timestamp |    No    |                   0                   | The first of the new timestamp value                                 |
+| end_timestamp   |    No    | period + the greatest input timestamp | The last of the new timestamp values will be less than end_timestamp |
 
 ## Additional remarks
 
