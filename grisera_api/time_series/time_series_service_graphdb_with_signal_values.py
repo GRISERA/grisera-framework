@@ -307,7 +307,11 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 return time_series
             source_time_series.append(time_series)
         try:
-            return TimeSeriesTransformationMultidimensional().transform(source_time_series)
+            result = TimeSeriesTransformationMultidimensional().transform(source_time_series)
+            for time_series in source_time_series:
+                time_series.signal_values = []
+            result.time_series = source_time_series
+            return result
         except Exception as e:
             return TimeSeriesMultidimensionalOut(errors=str(e))
 
