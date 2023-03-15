@@ -4,10 +4,10 @@ from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 
-from activity.activity_model import ActivityOut, ActivitiesOut
-from hateoas import get_links
-from models.not_found_model import NotFoundByIdModel
-from services import Services
+from ..activity.activity_model import ActivityOut, ActivitiesOut
+from ..hateoas import get_links
+from ..models.not_found_model import NotFoundByIdModel
+from ..services import Services
 
 router = InferringRouter()
 

@@ -1,8 +1,8 @@
 import asyncio
 import unittest
 import unittest.mock as mock
-from time_series.time_series_router import *
-from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
+from grisera_api.time_series.time_series_router import *
+from grisera_api.time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 
 
 class TestTimeSeriesRouterPut(unittest.TestCase):
@@ -25,7 +25,8 @@ class TestTimeSeriesRouterPut(unittest.TestCase):
     @mock.patch.object(TimeSeriesServiceGraphDB, 'update_time_series')
     def test_update_time_series_with_error(self, update_time_series_mock):
         time_series_id = 1
-        update_time_series_mock.return_value = TimeSeriesOut(id=1, type="Epoch", source="cos", errors={'errors': ['test']})
+        update_time_series_mock.return_value = TimeSeriesOut(id=1, type="Epoch", source="cos",
+                                                             errors={'errors': ['test']})
         response = Response()
         time_series = TimeSeriesPropertyIn(id=1, type="Epoch", source="cos")
         time_series_router = TimeSeriesRouter()

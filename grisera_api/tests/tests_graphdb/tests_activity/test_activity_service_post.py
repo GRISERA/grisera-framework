@@ -1,11 +1,10 @@
 import json
 import unittest
 import unittest.mock as mock
-from activity.activity_model import *
+from grisera_api.activity.activity_model import *
 from requests import Response
-
-from activity.activity_service_graphdb import ActivityServiceGraphDB
-from graph_api_service import GraphApiService
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.services import Services
 
 
 class TestActivityService(unittest.TestCase):
@@ -17,7 +16,7 @@ class TestActivityService(unittest.TestCase):
                                         'links': None}).encode('utf-8')
         mock_requests.post.return_value = response
         activity = ActivityIn(activity="group")
-        activity_service = ActivityServiceGraphDB()
+        activity_service = Services().activity_service()
 
         result = activity_service.save_activity(activity)
 
@@ -30,7 +29,7 @@ class TestActivityService(unittest.TestCase):
                                         'links': None}).encode('utf-8')
         mock_requests.post.return_value = response
         activity = ActivityIn(activity="group")
-        activity_service = ActivityServiceGraphDB()
+        activity_service = Services().activity_service()
 
         result = activity_service.save_activity(activity)
 
@@ -43,7 +42,7 @@ class TestActivityService(unittest.TestCase):
             create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
             create_properties_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
             activity = ActivityIn(activity="group")
-            activity_service = ActivityServiceGraphDB()
+            activity_service = Services().activity_service()
             result = activity_service.save_activity(activity)
             self.assertEqual(result, ActivityOut(activity="group", errors=['error']))
             create_node_mock.assert_called_once_with('Activity')

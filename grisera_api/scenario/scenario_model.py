@@ -1,12 +1,13 @@
-from typing import Optional, Union, List
+from typing import Union, List
 
 from pydantic import BaseModel
 
-from activity_execution.activity_execution_model import (
+from ..activity_execution.activity_execution_model import (
     ActivityExecutionIn,
     ActivityExecutionOut,
 )
-from models.base_model_out import BaseModelOut
+from ..models.base_model_out import BaseModelOut
+from ..experiment.experiment_model import ExperimentOut
 
 
 class ScenarioIn(BaseModel):
@@ -27,10 +28,11 @@ class ScenarioOut(ScenarioIn, BaseModelOut):
     Model of scenario to send to client as a result of request
 
     Attributes:
-    activity_executions (List[ActivityExecutionOut]): List of activity executions in scenario
+        activity_executions (List[ActivityExecutionOut]): List of activity executions in scenario
     """
 
     activity_executions: List[ActivityExecutionOut]
+    experiment: ExperimentOut
 
 
 class OrderChangeIn(BaseModel):

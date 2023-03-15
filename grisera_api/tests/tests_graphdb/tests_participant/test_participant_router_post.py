@@ -2,8 +2,8 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from participant.participant_router import *
-from participant.participant_service_graphdb import ParticipantServiceGraphDB
+from grisera_api.participant.participant_router import *
+from grisera_api.participant.participant_service_graphdb import ParticipantServiceGraphDB
 
 
 class TestParticipantRouterPost(unittest.TestCase):
@@ -31,7 +31,7 @@ class TestParticipantRouterPost(unittest.TestCase):
 
         result = asyncio.run(participant_router.create_participant(participant, response))
 
-        self.assertEqual(result, ParticipantOut(name="Test Test",sex='male', id=1, errors={'errors': ['test']},
+        self.assertEqual(result, ParticipantOut(name="Test Test", sex='male', id=1, errors={'errors': ['test']},
                                                 links=get_links(router)))
         save_participant_mock.assert_called_once_with(participant)
         self.assertEqual(response.status_code, 422)

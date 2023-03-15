@@ -1,11 +1,12 @@
 import unittest
 import unittest.mock as mock
 
-from experiment.experiment_model import *
-from models.not_found_model import *
+from grisera_api.activity_execution.activity_execution_model import BasicActivityExecutionOut
+from grisera_api.experiment.experiment_model import *
+from grisera_api.models.not_found_model import *
 
-from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
-from graph_api_service import GraphApiService
+from grisera_api.experiment.experiment_service_graphdb import ExperimentServiceGraphDB
+from grisera_api.graph_api_service import GraphApiService
 
 
 class TestExperimentServiceDelete(unittest.TestCase):
@@ -16,22 +17,17 @@ class TestExperimentServiceDelete(unittest.TestCase):
     def test_delete_experiment_without_error(self, get_node_relationships_mock, get_node_mock, delete_node_mock):
         id_node = 1
         delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Experiment'],
-                                      'properties': [{'key': 'experiment_name', 'value': 'test'},
-                                                     {'key': 'test', 'value': 'test'}],
-                                      "errors": None, 'links': None}
+                                                                      'properties': [
+                                                                          {'key': 'experiment_name', 'value': 'test'},
+                                                                          {'key': 'test', 'value': 'test'}],
+                                                                      "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
-                                                    {"start_node": id_node, "end_node": 19,
-                                                     "name": "testRelation", "id": 0,
-                                                     "properties": None},
-                                                    {"start_node": 15, "end_node": id_node,
-                                                     "name": "testReversedRelation", "id": 0,
-                                                     "properties": None}]}
+            {"start_node": id_node, "end_node": 19,
+             "name": "hasScenario", "id": 0,
+             "properties": None}]}
         additional_properties = [PropertyIn(key="test", value="test")]
         experiment = ExperimentOut(experiment_name="test", additional_properties=additional_properties, id=id_node,
-                                   relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                                  relation_id=0)],
-                                   reversed_relations=[RelationInformation(second_node_id=15,
-                                                                           name="testReversedRelation", relation_id=0)])
+                                   activity_executions=[BasicActivityExecutionOut(**{id: 19})])
         experiment_service = ExperimentServiceGraphDB()
 
         result = experiment_service.delete_experiment(id_node)

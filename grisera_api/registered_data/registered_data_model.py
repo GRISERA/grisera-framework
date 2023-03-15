@@ -2,9 +2,9 @@ from typing import List, Union, Optional
 
 from pydantic import BaseModel
 
-from property.property_model import PropertyIn
-from models.base_model_out import BaseModelOut
-from registered_channel.registered_channel_model import RegisteredChannelOut
+from ..property.property_model import PropertyIn
+from ..models.base_model_out import BaseModelOut
+from ..registered_channel.registered_channel_model import RegisteredChannelOut
 
 
 class RegisteredDataIn(BaseModel):

@@ -2,9 +2,10 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from activity.activity_model import BasicActivityOut
-from activity.activity_router import *
-from activity.activity_service_graphdb import ActivityServiceGraphDB
+from grisera_api.activity.activity_model import BasicActivityOut
+from grisera_api.activity.activity_service_graphdb import ActivityServiceGraphDB
+from grisera_api.activity.activity_router import *
+from fastapi import Response
 
 
 class TestActivityRouterGet(unittest.TestCase):
@@ -31,7 +32,8 @@ class TestActivityRouterGet(unittest.TestCase):
 
         result = asyncio.run(activity_router.get_activity(activity_id, response))
 
-        self.assertEqual(result, ActivityOut(activity='two-people', errors={'errors': ['test']}, links=get_links(router)))
+        self.assertEqual(result,
+                         ActivityOut(activity='two-people', errors={'errors': ['test']}, links=get_links(router)))
         get_activity_mock.assert_called_once_with(activity_id)
         self.assertEqual(response.status_code, 404)
 

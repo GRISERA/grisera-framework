@@ -2,10 +2,10 @@ from typing import Optional, List, Union
 
 from pydantic import BaseModel
 
-from channel.channel_model import ChannelOut
-from models.base_model_out import BaseModelOut
-from recording.recording_model import RecordingOut
-from registered_data.registered_data_model import RegisteredDataOut
+from ..channel.channel_model import ChannelOut
+from ..models.base_model_out import BaseModelOut
+from ..recording.recording_model import RecordingOut
+from ..registered_data.registered_data_model import RegisteredDataOut
 
 
 class RegisteredChannelIn(BaseModel):

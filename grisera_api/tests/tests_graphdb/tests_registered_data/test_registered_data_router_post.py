@@ -2,8 +2,8 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from registered_data.registered_data_router import *
-from registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
+from grisera_api.registered_data.registered_data_router import *
+from grisera_api.registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
 
 
 class TestRegisteredDataRouterPost(unittest.TestCase):

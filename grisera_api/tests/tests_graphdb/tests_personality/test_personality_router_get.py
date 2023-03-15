@@ -1,8 +1,10 @@
 import asyncio
 import unittest
 import unittest.mock as mock
-from personality.personality_router import *
-from personality.personality_service_graphdb import PersonalityServiceGraphDB
+
+from grisera_api.personality.personality_model import BasicPersonalityBigFiveOut
+from grisera_api.personality.personality_router import *
+from grisera_api.personality.personality_service_graphdb import PersonalityServiceGraphDB
 
 
 class TestPersonalityRouterGet(unittest.TestCase):

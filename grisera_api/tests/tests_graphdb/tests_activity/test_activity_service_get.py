@@ -1,13 +1,16 @@
 import unittest
 import unittest.mock as mock
 
-from activity.activity_model import *
-from activity.activity_service_graphdb import ActivityServiceGraphDB
-from graph_api_service import GraphApiService
-from models.not_found_model import *
+from grisera_api.activity.activity_model import *
+from grisera_api.activity.activity_service_graphdb import ActivityServiceGraphDB
+from grisera_api.activity_execution.activity_execution_model import BasicActivityExecutionOut
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.models.not_found_model import *
 
 
 class TestActivityServiceGet(unittest.TestCase):
+
+    """TODO: expand unit test for get with depth different from  0"""
 
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
@@ -18,17 +21,11 @@ class TestActivityServiceGet(unittest.TestCase):
                                                      {'key': 'test', 'value': 'test'}],
                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
-            {"start_node": id_node, "end_node": 19,
-             "name": "testRelation", "id": 0,
-             "properties": None},
             {"start_node": 15, "end_node": id_node,
-             "name": "testReversedRelation", "id": 0,
+             "name": "hasActivity", "id": 0,
              "properties": None}]}
         activity = ActivityOut(activity="test", id=id_node,
-                               relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                              relation_id=0)],
-                               reversed_relations=[RelationInformation(second_node_id=15,
-                                                                       name="testReversedRelation", relation_id=0)])
+                               activity_executions=[BasicActivityExecutionOut(**{id: 15})])
         activity_service = ActivityServiceGraphDB()
 
         result = activity_service.get_activity(id_node)

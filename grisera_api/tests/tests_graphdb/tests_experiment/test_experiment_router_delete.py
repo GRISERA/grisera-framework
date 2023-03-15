@@ -1,9 +1,9 @@
 import asyncio
 import unittest
 import unittest.mock as mock
-from experiment.experiment_router import *
-from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
-from property.property_model import PropertyIn
+from grisera_api.experiment.experiment_router import *
+from grisera_api.experiment.experiment_service_graphdb import ExperimentServiceGraphDB
+from grisera_api.property.property_model import PropertyIn
 
 
 class TestExperimentRouterDelete(unittest.TestCase):
@@ -12,7 +12,8 @@ class TestExperimentRouterDelete(unittest.TestCase):
     def test_delete_experiment_without_error(self, delete_experiment_mock):
         experiment_id = 1
         delete_experiment_mock.return_value = ExperimentOut(experiment_name="test", id=experiment_id,
-                                                            additional_properties=[PropertyIn(key="test", value="test")])
+                                                            additional_properties=[
+                                                                PropertyIn(key="test", value="test")])
         response = Response()
         experiment_router = ExperimentRouter()
 

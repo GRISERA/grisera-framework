@@ -1,10 +1,11 @@
 import unittest
 import unittest.mock as mock
 
-from channel.channel_model import *
-from channel.channel_service_graphdb import ChannelServiceGraphDB
-from graph_api_service import GraphApiService
-from models.not_found_model import *
+from grisera_api.channel.channel_model import *
+from grisera_api.channel.channel_service_graphdb import ChannelServiceGraphDB
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.models.not_found_model import *
+from grisera_api.registered_channel.registered_channel_model import BasicRegisteredChannelOut
 
 
 class TestChannelServiceGet(unittest.TestCase):
@@ -18,17 +19,10 @@ class TestChannelServiceGet(unittest.TestCase):
                                                      {'key': 'test', 'value': 'test'}],
                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
-            {"start_node": id_node, "end_node": 19,
-             "name": "testRelation", "id": 0,
-             "properties": None},
-            {"start_node": 15, "end_node": id_node,
-             "name": "testReversedRelation", "id": 0,
+            {"start_node": 19, "end_node": id_node,
+             "name": "hasChannel", "id": 0,
              "properties": None}]}
-        channel = ChannelOut(type="test", id=id_node,
-                             relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                            relation_id=0)],
-                             reversed_relations=[RelationInformation(second_node_id=15,
-                                                                     name="testReversedRelation", relation_id=0)])
+        channel = ChannelOut(type="test", id=id_node, registered_channels=[BasicRegisteredChannelOut(**{id: 19})])
         channel_service = ChannelServiceGraphDB()
 
         result = channel_service.get_channel(id_node)

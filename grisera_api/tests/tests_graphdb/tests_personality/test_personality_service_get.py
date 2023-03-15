@@ -1,11 +1,12 @@
 import unittest
 import unittest.mock as mock
 
-from personality.personality_model import *
-from models.not_found_model import *
+from grisera_api.participant_state.participant_state_model import BasicParticipantStateOut
+from grisera_api.personality.personality_model import *
+from grisera_api.models.not_found_model import *
 
-from personality.personality_service_graphdb import PersonalityServiceGraphDB
-from graph_api_service import GraphApiService
+from grisera_api.personality.personality_service_graphdb import PersonalityServiceGraphDB
+from grisera_api.graph_api_service import GraphApiService
 
 
 class TestPersonalityServiceGet(unittest.TestCase):
@@ -22,19 +23,12 @@ class TestPersonalityServiceGet(unittest.TestCase):
                                                      {'key': 'openess', 'value': 2.5}],
                                       'errors': None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
-                                                    {"start_node": id_node, "end_node": 19,
-                                                     "name": "testRelation", "id": 0,
-                                                     "properties": None},
-                                                    {"start_node": 15, "end_node": id_node,
-                                                     "name": "testReversedRelation", "id": 0,
-                                                     "properties": None}]}
-        personality = PersonalityBigFiveOut(agreeableness=2.5, conscientiousness=2.5,extroversion=2.5, neuroticism=2.5,
-                                            openess=2.5, id=id_node, relations=[
-                                                RelationInformation(second_node_id=19, name="testRelation",
-                                                                    relation_id=0)],
-                                            reversed_relations=[
-                                                RelationInformation(second_node_id=15, name="testReversedRelation",
-                                                                    relation_id=0)])
+            {"start_node": 19, "end_node": id_node,
+             "name": "hasPersonality", "id": 0,
+             "properties": None}]}
+        personality = PersonalityBigFiveOut(agreeableness=2.5, conscientiousness=2.5, extroversion=2.5, neuroticism=2.5,
+                                            openess=2.5, id=id_node,
+                                            participant_states=[BasicParticipantStateOut(**{id: 19})])
         personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.get_personality(id_node)
@@ -52,18 +46,11 @@ class TestPersonalityServiceGet(unittest.TestCase):
                                                      {'key': 'positive_affect', 'value': 0.5}],
                                       'errors': None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
-            {"start_node": id_node, "end_node": 19,
-             "name": "testRelation", "id": 0,
-             "properties": None},
-            {"start_node": 15, "end_node": id_node,
-             "name": "testReversedRelation", "id": 0,
+            {"start_node": 19, "end_node": id_node,
+             "name": "hasPersonality", "id": 0,
              "properties": None}]}
-        personality = PersonalityPanasOut(negative_affect=0.5, positive_affect=0.5, id=id_node, relations=[
-                                                RelationInformation(second_node_id=19, name="testRelation",
-                                                                    relation_id=0)],
-                                          reversed_relations=[
-                                                RelationInformation(second_node_id=15, name="testReversedRelation",
-                                                                    relation_id=0)])
+        personality = PersonalityPanasOut(negative_affect=0.5, positive_affect=0.5, id=id_node,
+                                          participant_states=[BasicParticipantStateOut(**{id: 19})])
         personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.get_personality(id_node)
@@ -101,13 +88,13 @@ class TestPersonalityServiceGet(unittest.TestCase):
     def test_get_personalities(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Personality'],
                                                   'properties': [{'key': 'agreeableness', 'value': 2.5},
-                                                     {'key': 'conscientiousness', 'value': 2.5},
-                                                     {'key': 'extroversion', 'value': 2.5},
-                                                     {'key': 'neuroticism', 'value': 2.5},
-                                                     {'key': 'openess', 'value': 2.5}]},
+                                                                 {'key': 'conscientiousness', 'value': 2.5},
+                                                                 {'key': 'extroversion', 'value': 2.5},
+                                                                 {'key': 'neuroticism', 'value': 2.5},
+                                                                 {'key': 'openess', 'value': 2.5}]},
                                                  {'id': 2, 'labels': ['Personality'],
                                                   'properties': [{'key': 'negative_affect', 'value': 0.5},
-                                                     {'key': 'positive_affect', 'value': 0.5}]}]}
+                                                                 {'key': 'positive_affect', 'value': 0.5}]}]}
         personality_big_five = BasicPersonalityBigFiveOut(agreeableness=2.5, conscientiousness=2.5, extroversion=2.5,
                                                           neuroticism=2.5, openess=2.5, id=1)
         personality_panas = BasicPersonalityPanasOut(negative_affect=0.5, positive_affect=0.5, id=2)

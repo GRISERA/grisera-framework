@@ -3,8 +3,8 @@ from enum import Enum
 
 from pydantic import BaseModel
 
-from activity_execution.activity_execution_model import ActivityExecutionOut
-from models.base_model_out import BaseModelOut
+from ..activity_execution.activity_execution_model import ActivityExecutionOut
+from ..models.base_model_out import BaseModelOut
 
 
 class Arrangement(tuple, Enum):

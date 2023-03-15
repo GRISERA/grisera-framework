@@ -1,9 +1,14 @@
 import unittest
 import unittest.mock as mock
 
-from graph_api_service import GraphApiService
-from activity_execution.activity_execution_model import *
-from activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
+from grisera_api.activity import BasicActivityOut
+from grisera_api.experiment.experiment_model import BasicExperimentOut
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.activity_execution.activity_execution_model import *
+from grisera_api.activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
+from grisera_api.participation.participation_model import BasicParticipationOut
+
+"""TODO: expand unit test for get with depth different from  0"""
 
 
 class TestActivityExecutionServicePost(unittest.TestCase):
@@ -22,24 +27,28 @@ class TestActivityExecutionServicePost(unittest.TestCase):
                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
             {"start_node": id_node, "end_node": 19,
-             "name": "testRelation", "id": 0,
+             "name": "hasActivity", "id": 0,
              "properties": None},
             {"start_node": 15, "end_node": id_node,
-             "name": "testReversedRelation", "id": 0,
-             "properties": None}]}
+             "name": "hasScenario", "id": 0,
+             "properties": None},
+            {"start_node": 16, "end_node": id_node,
+             "name": "hasScenario", "id": 0,
+             "properties": None},
+            {"start_node": 20, "end_node": id_node,
+             "name": "hasActivityExecution", "id": 0,
+             "properties": None},
+        ]}
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'errors': None, 'links': None}
         create_relationships_mock.return_value = {'start_node': 1, 'end_node': 2,
                                                   'name': 'hasParticipant', 'errors': None}
-        additional_properties = []
         activity_execution_in = ActivityExecutionIn(activity_id=2, arrangement_id=3)
-        activity_execution_out = ActivityExecutionOut(additional_properties=additional_properties, relations=
-                                                      [RelationInformation(second_node_id=19, name="testRelation",
-                                                                           relation_id=0)],
-                                                      reversed_relations=
-                                                      [RelationInformation(second_node_id=15,
-                                                                           name="testReversedRelation",
-                                                                           relation_id=0)], id=id_node)
+        activity_execution_out = ActivityExecutionOut(additional_properties=[], id=id_node,
+                                                      activity=BasicActivityOut(**{id: 19}),
+                                                      experiments=[BasicExperimentOut(**{id: 15}),
+                                                                   BasicExperimentOut(**{id: 16})],
+                                                      participations=[BasicParticipationOut(**{id: 20})])
         calls = [mock.call(2), mock.call(3), mock.call(1)]
         activity_execution_service = ActivityExecutionServiceGraphDB()
 

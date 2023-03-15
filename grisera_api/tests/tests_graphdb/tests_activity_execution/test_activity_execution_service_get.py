@@ -1,11 +1,16 @@
 import unittest
 import unittest.mock as mock
 
-from graph_api_service import GraphApiService
-from models.not_found_model import *
-from activity_execution.activity_execution_model import *
-from activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
-from property.property_model import *
+from grisera_api.activity import BasicActivityOut
+from grisera_api.experiment.experiment_model import BasicExperimentOut
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.models.not_found_model import *
+from grisera_api.activity_execution.activity_execution_model import *
+from grisera_api.activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
+from grisera_api.participation.participation_model import BasicParticipationOut
+from grisera_api.property.property_model import *
+
+"""TODO: expand unit test for get with depth different from  0"""
 
 
 class TestActivityExecutionServiceGet(unittest.TestCase):
@@ -19,18 +24,23 @@ class TestActivityExecutionServiceGet(unittest.TestCase):
                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
             {"start_node": id_node, "end_node": 19,
-             "name": "testRelation", "id": 0,
+             "name": "hasActivity", "id": 0,
              "properties": None},
             {"start_node": 15, "end_node": id_node,
-             "name": "testReversedRelation", "id": 0,
-             "properties": None}]}
+             "name": "hasScenario", "id": 0,
+             "properties": None},
+            {"start_node": 16, "end_node": id_node,
+             "name": "hasScenario", "id": 0,
+             "properties": None},
+            {"start_node": 20, "end_node": id_node,
+             "name": "hasActivityExecution", "id": 0,
+             "properties": None},
+        ]}
         activity_execution = ActivityExecutionOut(additional_properties=[], id=id_node,
-                                                  relations=[RelationInformation(second_node_id=19,
-                                                                                 name="testRelation",
-                                                                                 relation_id=0)],
-                                                  reversed_relations=[RelationInformation(second_node_id=15,
-                                                                                          name="testReversedRelation",
-                                                                                          relation_id=0)])
+                                                  activity=BasicActivityOut(**{id: 19}),
+                                                  experiments=[BasicExperimentOut(**{id: 15}),
+                                                               BasicExperimentOut(**{id: 16})],
+                                                  participations=[BasicParticipationOut(**{id: 20})])
         activity_execution_service = ActivityExecutionServiceGraphDB()
 
         result = activity_execution_service.get_activity_execution(id_node)
@@ -72,8 +82,9 @@ class TestActivityExecutionServiceGet(unittest.TestCase):
                                                   'properties': [{'key': 'test2', 'value': 'test3'}]}]}
         activity_execution_one = BasicActivityExecutionOut(additional_properties=[PropertyIn(key='test', value='test')],
                                                            id=1)
-        activity_execution_two = BasicActivityExecutionOut(additional_properties=[PropertyIn(key='test2', value='test3')],
-                                                           id=2)
+        activity_execution_two = BasicActivityExecutionOut(
+            additional_properties=[PropertyIn(key='test2', value='test3')],
+            id=2)
         activity_executions = ActivityExecutionsOut(
             activity_executions=[activity_execution_one, activity_execution_two])
         activity_executions_service = ActivityExecutionServiceGraphDB()

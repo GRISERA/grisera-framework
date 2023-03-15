@@ -1,10 +1,6 @@
-from graph_api_service import GraphApiService
-from channel.channel_service import ChannelService
-from registered_data.registered_data_service import RegisteredDataService
-from registered_channel.registered_channel_model import BasicRegisteredChannelOut, RegisteredChannelsOut, \
-    RegisteredChannelOut, RegisteredChannelIn
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from typing import Union
+
+from ..registered_channel.registered_channel_model import RegisteredChannelIn
 
 
 class RegisteredChannelService:
@@ -34,37 +30,38 @@ class RegisteredChannelService:
         """
         raise Exception("get_registered_channels not implemented yet")
 
-    def get_registered_channel(self, registered_channel_id: int):
+    def get_registered_channel(self, registered_channel_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given registered channel
 
         Args:
-            registered_channel_id (int): Id of registered channel
+            depth: (int): specifies how many related entities will be traversed to create the response
+            registered_channel_id (int | str): identity of registered channel
 
         Returns:
             Result of request as registered channel object
         """
         raise Exception("get_registered_channel not implemented yet")
 
-    def delete_registered_channel(self, registered_channel_id: int):
+    def delete_registered_channel(self, registered_channel_id: Union[int, str]):
         """
         Send request to graph api to delete given registered channel
 
         Args:
-            registered_channel_id (int): Id of registered channel
+            registered_channel_id (int | str): identity of registered channel
 
         Returns:
             Result of request as registered channel object
         """
         raise Exception("delete_registered_channel not implemented yet")
 
-    def update_registered_channel_relationships(self, registered_channel_id: int,
+    def update_registered_channel_relationships(self, registered_channel_id: Union[int, str],
                                                 registered_channel: RegisteredChannelIn):
         """
         Send request to graph api to update given registered channel
 
         Args:
-            registered_channel_id (int): Id of registered channel
+            registered_channel_id (int | str): identity of registered channel
             registered_channel (RegisteredChannelIn): Relationships to update
 
         Returns:

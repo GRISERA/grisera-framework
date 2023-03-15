@@ -1,10 +1,15 @@
 import unittest
 import unittest.mock as mock
 
-from graph_api_service import GraphApiService
-from models.not_found_model import *
-from observable_information.observable_information_model import *
-from observable_information.observable_information_service_graphdb import ObservableInformationServiceGraphDB
+from grisera_api.activity.activity_model import BasicActivityOut
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.modality.modality_model import BasicModalityOut
+from grisera_api.models.not_found_model import *
+from grisera_api.observable_information.observable_information_model import *
+from grisera_api.observable_information.observable_information_service_graphdb import \
+    ObservableInformationServiceGraphDB
+from grisera_api.recording.recording_model import BasicRecordingOut
+from grisera_api.time_series.time_series_model import BasicTimeSeriesOut
 
 
 class TestObservableInformationServiceGet(unittest.TestCase):
@@ -17,18 +22,23 @@ class TestObservableInformationServiceGet(unittest.TestCase):
                                       'properties': [],
                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
-            {"start_node": id_node, "end_node": 19,
-             "name": "testRelation", "id": 0,
+            {"start_node": 19, "end_node": id_node,
+             "name": "hasObservableInformation", "id": 0,
              "properties": None},
-            {"start_node": 15, "end_node": id_node,
-             "name": "testReversedRelation", "id": 0,
-             "properties": None}]}
-        observable_information = ObservableInformationOut(id=id_node,
-                                                  relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                                                 relation_id=0)],
-                                                  reversed_relations=[RelationInformation(second_node_id=15,
-                                                                                          name="testReversedRelation",
-                                                                                          relation_id=0)])
+            {"start_node": id_node, "end_node": 15,
+             "name": "hasModality", "id": 0,
+             "properties": None},
+            {"start_node": id_node, "end_node": 16,
+             "name": "hasRecording", "id": 0,
+             "properties": None},
+            {"start_node": id_node, "end_node": 17,
+             "name": "hasLifeActivity", "id": 0,
+             "properties": None},
+        ]}
+        observable_information = ObservableInformationOut(id=id_node, recording=BasicRecordingOut(**{id: 16}),
+                                                          timeSeries=[BasicTimeSeriesOut(**{id: 19})],
+                                                          modality=BasicModalityOut(**{id: 15}),
+                                                          lifeActivity=BasicActivityOut(**{id: 17}))
         observable_information_service = ObservableInformationServiceGraphDB()
 
         result = observable_information_service.get_observable_information(id_node)

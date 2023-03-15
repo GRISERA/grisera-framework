@@ -1,8 +1,6 @@
-from graph_api_service import GraphApiService
-from appearance.appearance_model import AppearanceOcclusionIn, AppearanceOcclusionOut, BasicAppearanceOcclusionOut, \
-    AppearanceSomatotypeIn, AppearanceSomatotypeOut, BasicAppearanceSomatotypeOut, AppearancesOut
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from typing import Union
+
+from ..appearance.appearance_model import AppearanceOcclusionIn, AppearanceSomatotypeIn
 
 
 class AppearanceService:
@@ -35,12 +33,13 @@ class AppearanceService:
         """
         raise Exception("save_appearance_somatotype not implemented yet")
 
-    def get_appearance(self, appearance_id: int):
+    def get_appearance(self, appearance_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given appearance
 
         Args:
-            appearance_id (int): Id of appearance
+            depth: (int): specifies how many related entities will be traversed to create the response
+            appearance_id (int | str): identity of appearance
 
         Returns:
             Result of request as appearance object
@@ -56,24 +55,24 @@ class AppearanceService:
         """
         raise Exception("get_appearances not implemented yet")
 
-    def delete_appearance(self, appearance_id: int):
+    def delete_appearance(self, appearance_id: Union[int, str]):
         """
         Send request to graph api to delete given appearance
 
         Args:
-            appearance_id (int): Id of appearance
+            appearance_id (int | str): identity of appearance
 
         Returns:
             Result of request as appearance object
         """
         raise Exception("delete_appearance not implemented yet")
 
-    def update_appearance_occlusion(self, appearance_id: int, appearance: AppearanceOcclusionIn):
+    def update_appearance_occlusion(self, appearance_id: Union[int, str], appearance: AppearanceOcclusionIn):
         """
         Send request to graph api to update given appearance occlusion model
 
         Args:
-            appearance_id (int): Id of appearance
+            appearance_id (int | str): identity of appearance
             appearance (AppearanceOcclusionIn): Properties to update
 
         Returns:
@@ -81,12 +80,12 @@ class AppearanceService:
         """
         raise Exception("update_appearance_occlusion not implemented yet")
 
-    def update_appearance_somatotype(self, appearance_id: int, appearance: AppearanceSomatotypeIn):
+    def update_appearance_somatotype(self, appearance_id: Union[int, str], appearance: AppearanceSomatotypeIn):
         """
         Send request to graph api to update given appearance somatotype model
 
         Args:
-            appearance_id (int): Id of appearance
+            appearance_id (int | str): identity of appearance
             appearance (AppearanceSomatotypeIn): Properties to update
 
         Returns:

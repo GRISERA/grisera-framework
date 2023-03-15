@@ -3,15 +3,15 @@ from typing import Optional, Union
 
 from pydantic import BaseModel
 
-from appearance.appearance_model import (
+from ..appearance.appearance_model import (
     AppearanceSomatotypeOut,
     AppearanceOcclusionOut,
 )
-from participation.participation_model import ParticipationOut
-from participant.participant_model import ParticipantOut
-from personality.personality_model import PersonalityBigFiveOut, PersonalityPanasOut
-from property.property_model import PropertyIn
-from models.base_model_out import BaseModelOut
+from ..participation.participation_model import ParticipationOut
+from ..participant.participant_model import ParticipantOut
+from ..personality.personality_model import PersonalityBigFiveOut, PersonalityPanasOut
+from ..property.property_model import PropertyIn
+from ..models.base_model_out import BaseModelOut
 
 
 class ParticipantStatePropertyIn(BaseModel):
@@ -33,13 +33,13 @@ class ParticipantStateRelationIn(BaseModel):
 
     Attributes:
         participant_id (Optional[int]): Participant whose state is described
-        personality_id (Optional[int]): Id of personality describing participant
-        appearance_id (Optional[int]): Id of appearance describing participant
+        personality_ids List(Optional[int]): identities of personalities describing participant
+        appearance_ids List(Optional[int]): identities of appearances describing participant
     """
 
     participant_id: Optional[Union[int, str]] = None
-    personality_id: Optional[Union[int, str]] = None
-    appearance_id: Optional[Union[int, str]] = None
+    personality_ids: List[Optional[Union[int, str]]] = None
+    appearance_ids: List[Optional[Union[int, str]]] = None
 
 
 class ParticipantStateIn(ParticipantStatePropertyIn, ParticipantStateRelationIn):
@@ -66,16 +66,16 @@ class ParticipantStateOut(BasicParticipantStateOut, BaseModelOut):
     Attributes:
         participations (Optional[List[BasicParticipationOut]]): participations with this participant state
         participant (Optional[BasicParticipantOut]): participant related to this participant state
-        appearance (Optional[Union[BasicAppearanceSomatotypeOut, BasicAppearanceOcclusionOut]]): appearance related to
+        appearances (Optional[Union[BasicAppearanceSomatotypeOut, BasicAppearanceOcclusionOut]]): appearance related to
             this participant state
-        personality (Optional[Union[BasicPersonalityBigFiveOut, BasicPersonalityPanasOut]]): personality related to this
+        personalities (Optional[Union[BasicPersonalityBigFiveOut, BasicPersonalityPanasOut]]): personality related to this
             participant state
     """
 
     participations: Optional[List[ParticipationOut]]
     participant: Optional[ParticipantOut]
-    appearance: Optional[Union[AppearanceSomatotypeOut, AppearanceOcclusionOut]]
-    personality: Optional[Union[PersonalityBigFiveOut, PersonalityPanasOut]]
+    appearances: Optional[List[Union[AppearanceSomatotypeOut, AppearanceOcclusionOut]]]
+    personalities: Optional[List[Union[PersonalityBigFiveOut, PersonalityPanasOut]]]
 
 
 class ParticipantStatesOut(BaseModelOut):

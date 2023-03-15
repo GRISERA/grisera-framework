@@ -1,11 +1,12 @@
 import unittest
 import unittest.mock as mock
 
-from life_activity.life_activity_model import *
-from models.not_found_model import *
+from grisera_api.life_activity.life_activity_model import *
+from grisera_api.models.not_found_model import *
 
-from life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
-from graph_api_service import GraphApiService
+from grisera_api.life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.observable_information.observable_information_model import BasicObservableInformationOut
 
 
 class TestLifeActivityServiceGet(unittest.TestCase):
@@ -19,17 +20,11 @@ class TestLifeActivityServiceGet(unittest.TestCase):
                                                      {'key': 'test', 'value': 'test'}],
                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
-                                                    {"start_node": id_node, "end_node": 19,
-                                                     "name": "testRelation", "id": 0,
-                                                     "properties": None},
-                                                    {"start_node": 15, "end_node": id_node,
-                                                     "name": "testReversedRelation", "id": 0,
-                                                     "properties": None}]}
+            {"start_node": 19, "end_node": id_node,
+             "name": "hasLifeActivity", "id": 0,
+             "properties": None}]}
         life_activity = LifeActivityOut(life_activity="test", id=id_node,
-                                   relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                                  relation_id=0)],
-                                   reversed_relations=[RelationInformation(second_node_id=15,
-                                                                           name="testReversedRelation", relation_id=0)])
+                                        observable_informations=[BasicObservableInformationOut(**{id: 19})])
         life_activity_service = LifeActivityServiceGraphDB()
 
         result = life_activity_service.get_life_activity(id_node)

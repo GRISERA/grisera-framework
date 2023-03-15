@@ -1,11 +1,13 @@
 import unittest
 import unittest.mock as mock
 
-from time_series.time_series_model import *
-from models.not_found_model import *
+from grisera_api.measure.measure_model import BasicMeasureOut
+from grisera_api.observable_information.observable_information_model import BasicObservableInformationOut
+from grisera_api.time_series.time_series_model import *
+from grisera_api.models.not_found_model import *
 
-from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
-from graph_api_service import GraphApiService
+from grisera_api.time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
+from grisera_api.graph_api_service import GraphApiService
 
 
 class TestTimeSeriesServiceGet(unittest.TestCase):
@@ -20,19 +22,15 @@ class TestTimeSeriesServiceGet(unittest.TestCase):
                                                      {'key': 'test', 'value': 'test2'}],
                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
-                                                    {"start_node": id_node, "end_node": 19,
-                                                     "name": "testRelation", "id": 0,
-                                                     "properties": None},
-                                                    {"start_node": 15, "end_node": id_node,
-                                                     "name": "testReversedRelation", "id": 0,
-                                                     "properties": None}]}
-        additional_properties = [PropertyIn(key='test', value='test2')]
-        time_series = TimeSeriesOut(id=1, type="Epoch", source="cos",additional_properties=additional_properties,
-                                                relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                                               relation_id=0)],
-                                                reversed_relations=[RelationInformation(second_node_id=15,
-                                                                                        name="testReversedRelation",
-                                                                                        relation_id=0)])
+            {"start_node": id_node, "end_node": 19,
+             "name": "hasObservableInformation", "id": 0,
+             "properties": None},
+            {"start_node": id_node, "end_node": 15,
+             "name": "hasMeasure", "id": 0,
+             "properties": None}]}
+        time_series = TimeSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[],
+                                    observable_informations=[BasicObservableInformationOut(**{id: 19})],
+                                    measure=BasicMeasureOut(**{id: 15}))
         time_series_service = TimeSeriesServiceGraphDB()
 
         result = time_series_service.get_time_series(id_node)
@@ -70,11 +68,11 @@ class TestTimeSeriesServiceGet(unittest.TestCase):
     def test_get_time_series_nodes(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Time Series'],
                                                   'properties': [{'key': 'type', 'value': "Epoch"},
-                                                     {'key': 'source', 'value': "cos"},
+                                                                 {'key': 'source', 'value': "cos"},
                                                                  {'key': 'test', 'value': 'test'}]},
                                                  {'id': 2, 'labels': ['Time Series'],
                                                   'properties': [{'key': 'type', 'value': "Epoch"},
-                                                     {'key': 'source', 'value': "cos"},
+                                                                 {'key': 'source', 'value': "cos"},
                                                                  {'key': 'test2', 'value': 'test3'}]}]}
         time_series_one = BasicTimeSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[
             PropertyIn(key='test', value='test')])

@@ -1,11 +1,11 @@
 import unittest
 import unittest.mock as mock
 
-from graph_api_service import GraphApiService
-from measure.measure_model import *
-from measure.measure_service_graphdb import MeasureServiceGraphDB
-from measure_name.measure_name_model import MeasureNameOut, BasicMeasureNameOut
-from measure_name.measure_name_service_graphdb import MeasureNameServiceGraphDB
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.measure.measure_model import *
+from grisera_api.measure.measure_service_graphdb import MeasureServiceGraphDB
+from grisera_api.measure_name.measure_name_model import MeasureNameOut
+from grisera_api.measure_name.measure_name_service_graphdb import MeasureNameServiceGraphDB
 
 
 class TestMeasureServicePost(unittest.TestCase):
@@ -22,7 +22,8 @@ class TestMeasureServicePost(unittest.TestCase):
         create_relationships_mock.return_value = {'id': 3, 'start_node': 2, 'end_node': 3, "errors": None,
                                                   'links': None}
         get_measure_name_mock.return_value = MeasureNameOut(id=6, name="Test", type="Test")
-        get_measure_mock.return_value = MeasureOut(measure_name_id=6, datatype="Test", range="Unknown", unit="cm", id=id_node)
+        get_measure_mock.return_value = MeasureOut(measure_name_id=6, datatype="Test", range="Unknown", unit="cm",
+                                                   id=id_node)
         calls = [mock.call(start_node=id_node, end_node=6, name="hasMeasureName")]
         measure = MeasureIn(measure_name_id=6, datatype="Test", range="Unknown", unit="cm")
         measure_service = MeasureServiceGraphDB()

@@ -1,9 +1,12 @@
 import unittest
 import unittest.mock as mock
 
-from graph_api_service import GraphApiService
-from participation.participation_model import *
-from participation.participation_service_graphdb import ParticipationServiceGraphDB
+from grisera_api.activity_execution.activity_execution_model import BasicActivityExecutionOut
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.participant_state.participant_state_model import BasicParticipantStateOut
+from grisera_api.participation.participation_model import *
+from grisera_api.participation.participation_service_graphdb import ParticipationServiceGraphDB
+from grisera_api.recording.recording_model import BasicRecordingOut
 
 
 class TestParticipationServicePost(unittest.TestCase):
@@ -22,23 +25,24 @@ class TestParticipationServicePost(unittest.TestCase):
                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
             {"start_node": id_node, "end_node": 19,
-             "name": "testRelation", "id": 0,
+             "name": "hasParticipantState", "id": 0,
              "properties": None},
-            {"start_node": 15, "end_node": id_node,
-             "name": "testReversedRelation", "id": 0,
-             "properties": None}]}
+            {"start_node": id_node, "end_node": 15,
+             "name": "hasActivityExecution", "id": 0,
+             "properties": None},
+            {"start_node": 16, "end_node": id_node,
+             "name": "hasParticipation", "id": 0,
+             "properties": None},
+        ]}
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'errors': None, 'links': None}
         create_relationships_mock.return_value = {'start_node': 1, 'end_node': 2,
                                                   'name': 'hasActivityExecution', 'errors': None}
 
         participation_in = ParticipationIn(activity_execution_id=2, participant_state_id=3)
-        participation_out = ParticipationOut(relations=[RelationInformation(second_node_id=19,
-                                                                            name="testRelation",
-                                                                            relation_id=0)],
-                                             reversed_relations=[RelationInformation(second_node_id=15,
-                                                                                     name="testReversedRelation",
-                                                                                     relation_id=0)], id=id_node)
+        participation_out = ParticipationOut(id=id_node, participant_state=BasicParticipantStateOut(**{id: 19}),
+                                         activity_execution=BasicActivityExecutionOut(**{id: 15}),
+                                         recordings=[BasicRecordingOut(**{id: 16})])
         calls = [mock.call(2), mock.call(3), mock.call(1)]
         participation_service = ParticipationServiceGraphDB()
 

@@ -3,8 +3,8 @@ from enum import Enum
 
 from pydantic import BaseModel
 
-from models.base_model_out import BaseModelOut
-from participant_state.participant_state_model import ParticipantStateOut
+from ..models.base_model_out import BaseModelOut
+from ..participant_state.participant_state_model import ParticipantStateOut
 
 
 class FacialHair(str, Enum):

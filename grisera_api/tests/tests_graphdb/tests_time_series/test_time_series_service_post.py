@@ -1,9 +1,11 @@
 import unittest
 import unittest.mock as mock
 
-from graph_api_service import GraphApiService
-from time_series.time_series_model import *
-from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB, ObservableInformationServiceGraphDB, MeasureServiceGraphDB
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.measure.measure_model import BasicMeasureOut
+from grisera_api.observable_information.observable_information_model import BasicObservableInformationOut
+from grisera_api.time_series.time_series_model import *
+from grisera_api.time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 
 
 def relationship_function(*args, **kwargs):
@@ -20,31 +22,27 @@ class TestTimeSeriesServicePost(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_save_time_series_without_errors(self, get_node_relationships_mock, get_node_mock,
-                                                   create_relationships_mock, create_properties_mock, create_node_mock):
+                                             create_relationships_mock, create_properties_mock, create_node_mock):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Time Series'],
                                       'properties': [{'key': 'type', 'value': "Epoch"},
-                                                                                     {'key': 'source', 'value': "cos"}],
+                                                     {'key': 'source', 'value': "cos"}],
                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
-                                                    {"start_node": id_node, "end_node": 19,
-                                                     "name": "testRelation", "id": 0,
-                                                     "properties": None},
-                                                    {"start_node": 15, "end_node": id_node,
-                                                     "name": "testReversedRelation", "id": 0,
-                                                     "properties": None}]}
+            {"start_node": id_node, "end_node": 19,
+             "name": "hasObservableInformation", "id": 0,
+             "properties": None},
+            {"start_node": id_node, "end_node": 15,
+             "name": "hasMeasure", "id": 0,
+             "properties": None}]}
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'errors': None, 'links': None}
         create_relationships_mock.return_value = {'start_node': 1, 'end_node': 2,
                                                   'name': 'hasMeasure', 'errors': None}
         time_series_in = TimeSeriesIn(id=1, type="Epoch", source="cos", observable_information_id=2, measure_id=3)
         time_series_out = TimeSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[],
-                                                    relations=
-                                                    [RelationInformation(second_node_id=19, name="testRelation",
-                                                                         relation_id=0)],
-                                                    reversed_relations=
-                                                    [RelationInformation(second_node_id=15, name="testReversedRelation",
-                                                                         relation_id=0)])
+                                        observable_informations=[BasicObservableInformationOut(**{id: 19})],
+                                        measure=BasicMeasureOut(**{id: 15}))
         calls = [mock.call(end_node=3, start_node=1, name="hasMeasure")]
         time_series_service = TimeSeriesServiceGraphDB()
 

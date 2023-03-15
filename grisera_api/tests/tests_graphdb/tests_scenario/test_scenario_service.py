@@ -1,9 +1,10 @@
 import unittest
 import unittest.mock as mock
 
-from graph_api_service import GraphApiService
-from scenario.scenario_model import *
-from scenario.scenario_service_graphdb import ScenarioServiceGraphDB, ActivityExecutionServiceGraphDB
+from grisera_api.activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.scenario.scenario_model import *
+from grisera_api.scenario.scenario_service_graphdb import ScenarioServiceGraphDB
 
 
 class TestScenarioService(unittest.TestCase):
@@ -30,7 +31,7 @@ class TestScenarioService(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'create_relationships')
     @mock.patch.object(GraphApiService, 'delete_relationship')
     def test_add_activity_execution_after_experiment(self, delete_relationship_mock, create_relationships_mock,
-                                           get_node_relationships_mock, save_activity_execution_mock):
+                                                     get_node_relationships_mock, save_activity_execution_mock):
         get_node_relationships_mock.return_value = {'relationships': [{'start_node': 1, 'end_node': 2,
                                                                        'name': 'hasScenario', 'id': 0}]}
         activity_execution = ActivityExecutionIn(activity_id=1, arrangement_id=3, identifier=0, name='Test')
@@ -51,7 +52,7 @@ class TestScenarioService(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'create_relationships')
     @mock.patch.object(GraphApiService, 'delete_relationship')
     def test_add_activity_execution_at_end(self, delete_relationship_mock, create_relationships_mock,
-                                 get_node_relationships_mock, save_activity_execution_mock):
+                                           get_node_relationships_mock, save_activity_execution_mock):
         get_node_relationships_mock.return_value = {'relationships': [{'start_node': 0, 'end_node': 1,
                                                                        'name': 'nextActivityExecution', 'id': 0}
                                                                       ]}
@@ -76,7 +77,7 @@ class TestScenarioService(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'create_relationships')
     @mock.patch.object(GraphApiService, 'delete_relationship')
     def test_add_activity_execution_in_middle(self, delete_relationship_mock, create_relationships_mock,
-                                    get_node_relationships_mock, save_activity_execution_mock):
+                                              get_node_relationships_mock, save_activity_execution_mock):
         get_node_relationships_mock.return_value = {'relationships': [{'start_node': 1, 'end_node': 2,
                                                                        'name': 'nextActivityExecution', 'id': 0},
                                                                       {'start_node': 2, 'end_node': 3,
@@ -96,4 +97,3 @@ class TestScenarioService(unittest.TestCase):
         create_relationships_mock.assert_has_calls(calls)
         delete_relationship_mock.assert_called_once_with(1)
         save_activity_execution_mock.assert_called_with(activity_execution)
-

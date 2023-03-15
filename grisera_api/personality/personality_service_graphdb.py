@@ -1,9 +1,12 @@
-from graph_api_service import GraphApiService
-from personality.personality_model import PersonalityBigFiveIn, PersonalityBigFiveOut, \
+from typing import Union
+
+from ..graph_api_service import GraphApiService
+from ..helpers import create_stub_from_response
+from ..personality.personality_model import PersonalityBigFiveIn, PersonalityBigFiveOut, \
     PersonalityPanasIn, PersonalityPanasOut, BasicPersonalityBigFiveOut, BasicPersonalityPanasOut, PersonalitiesOut
-from models.relation_information_model import RelationInformation
-from models.not_found_model import NotFoundByIdModel
-from personality.personality_service import PersonalityService
+from ..models.not_found_model import NotFoundByIdModel
+from ..personality.personality_service import PersonalityService
+from ..services import Services
 
 
 class PersonalityServiceGraphDB(PersonalityService):
@@ -14,6 +17,9 @@ class PersonalityServiceGraphDB(PersonalityService):
         graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
     graph_api_service = GraphApiService()
+
+    def __init__(self):
+        self.participant_state_service = Services().participant_state_service()
 
     def save_personality_big_five(self, personality: PersonalityBigFiveIn):
         """
@@ -55,12 +61,13 @@ class PersonalityServiceGraphDB(PersonalityService):
 
         return PersonalityPanasOut(**personality.dict(), id=personality_id)
 
-    def get_personality(self, personality_id: int):
+    def get_personality(self, personality_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given personality
 
         Args:
-            personality_id (int): Id of personality
+            depth: (int): specifies how many related entities will be traversed to create the response
+            personality_id (int | str): identity of personality
 
         Returns:
             Result of request as personality object
@@ -72,22 +79,23 @@ class PersonalityServiceGraphDB(PersonalityService):
         if get_response["labels"][0] != "Personality":
             return NotFoundByIdModel(id=personality_id, errors="Node not found.")
 
-        personality = {'id': personality_id, 'relations': [], 'reversed_relations': []}
-        personality.update({property["key"]: property["value"] for property in get_response["properties"]})
+        personality = create_stub_from_response(get_response)
 
-        relations_response = self.graph_api_service.get_node_relationships(personality_id)
+        if depth != 0:
+            personality["participant_states"] = None
 
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == personality_id:
-                personality["relations"].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                    name=relation["name"], relation_id=relation["id"]))
-            else:
-                personality["reversed_relations"].append(RelationInformation(second_node_id=relation["start_node"],
-                                                                             name=relation["name"],
-                                                                             relation_id=relation["id"]))
+            relations_response = self.graph_api_service.get_node_relationships(personality_id)
 
-        return PersonalityPanasOut(**personality) if "negative_affect" in personality.keys() \
-            else PersonalityBigFiveOut(**personality)
+            for relation in relations_response["relationships"]:
+                if relation["end_node"] == personality_id & relation["name"] == "hasPersonality":
+                    personality["participant_states"].append(
+                        self.participant_state_service.get_participant_state(relation["start_node"], depth - 1))
+
+            return PersonalityPanasOut(**personality) if "negative_affect" in personality.keys() \
+                else PersonalityBigFiveOut(**personality)
+        else:
+            return BasicPersonalityPanasOut(**personality) if "negative_affect" in personality.keys() \
+                else BasicPersonalityBigFiveOut(**personality)
 
     def get_personalities(self):
         """
@@ -109,12 +117,12 @@ class PersonalityServiceGraphDB(PersonalityService):
 
         return PersonalitiesOut(personalities=personalities)
 
-    def delete_personality(self, personality_id: int):
+    def delete_personality(self, personality_id: Union[int, str]):
         """
         Send request to graph api to delete given personality
 
         Args:
-            personality_id (int): Id of personality
+            personality_id (int | str): identity of personality
 
         Returns:
             Result of request as personality object
@@ -126,12 +134,12 @@ class PersonalityServiceGraphDB(PersonalityService):
         self.graph_api_service.delete_node(personality_id)
         return get_response
 
-    def update_personality_big_five(self, personality_id: int, personality: PersonalityBigFiveIn):
+    def update_personality_big_five(self, personality_id: Union[int, str], personality: PersonalityBigFiveIn):
         """
         Send request to graph api to update given personality big five model
 
         Args:
-            personality_id (int): Id of personality
+            personality_id (int | str): identity of personality
             personality (PersonalityBigFiveIn): Properties to update
 
         Returns:
@@ -153,12 +161,12 @@ class PersonalityServiceGraphDB(PersonalityService):
         personality_response.update(personality)
         return PersonalityBigFiveOut(**personality_response)
 
-    def update_personality_panas(self, personality_id: int, personality: PersonalityPanasIn):
+    def update_personality_panas(self, personality_id: Union[int, str], personality: PersonalityPanasIn):
         """
         Send request to graph api to update given personality panas model
 
         Args:
-            personality_id (int): Id of personality
+            personality_id (int | str): identity of personality
             personality (PersonalityPanasIn): Properties to update
 
         Returns:

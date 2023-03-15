@@ -1,11 +1,14 @@
 import unittest
 import unittest.mock as mock
 
-from recording.recording_model import *
-from models.not_found_model import *
+from grisera_api.observable_information.observable_information_model import BasicObservableInformationOut
+from grisera_api.participation.participation_model import BasicParticipationOut
+from grisera_api.recording.recording_model import *
+from grisera_api.models.not_found_model import *
 
-from recording.recording_service_graphdb import RecordingServiceGraphDB
-from graph_api_service import GraphApiService
+from grisera_api.recording.recording_service_graphdb import RecordingServiceGraphDB
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.registered_channel.registered_channel_model import BasicRegisteredChannelOut
 
 
 class TestRecordingServicePut(unittest.TestCase):
@@ -15,29 +18,30 @@ class TestRecordingServicePut(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'delete_node_properties')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_update_recording_without_error(self, get_node_relationships_mock, delete_node_properties_mock,
-                                                     get_node_mock, create_properties_mock):
+                                            get_node_mock, create_properties_mock):
         id_node = 1
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
         get_node_relationships_mock.return_value = {"relationships": [
             {"start_node": id_node, "end_node": 19,
-             "name": "testRelation", "id": 0,
+             "name": "hasRegisteredChannel", "id": 0,
              "properties": None},
-            {"start_node": 15, "end_node": id_node,
-             "name": "testReversedRelation", "id": 0,
-             "properties": None}]}
+            {"start_node": id_node, "end_node": 15,
+             "name": "hasParticipation", "id": 0,
+             "properties": None},
+            {"start_node": 16, "end_node": id_node,
+             "name": "hasRecording", "id": 0,
+             "properties": None}
+        ]}
         get_node_mock.return_value = {'id': id_node, 'labels': ['Recording'],
                                       'properties': [{'key': 'identifier', 'value': 5}],
                                       "errors": None, 'links': None}
         additional_properties = [PropertyIn(key='identifier', value=5)]
         recording_in = RecordingPropertyIn(id=id_node, additional_properties=additional_properties)
-        recording_out = RecordingOut(additional_properties= additional_properties, id=id_node,
-                                                      relations=[RelationInformation(second_node_id=19,
-                                                                                     name="testRelation",
-                                                                                     relation_id=0)],
-                                                      reversed_relations=[RelationInformation(second_node_id=15,
-                                                                                             name="testReversedRelation",
-                                                                                             relation_id=0)])
+        recording_out = RecordingOut(additional_properties=[], id=id_node,
+                                     registered_channel=BasicRegisteredChannelOut(**{id: 19}),
+                                     participation=BasicParticipationOut(**{id: 15}),
+                                     observable_informations=[BasicObservableInformationOut(**{id: 16})])
         calls = [mock.call(1)]
         recording_service = RecordingServiceGraphDB()
 

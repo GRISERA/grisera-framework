@@ -1,8 +1,8 @@
 import asyncio
 import unittest
 import unittest.mock as mock
-from participant_state.participant_state_router import *
-from participant_state.participant_state_service_graphdb import ParticipantStateServiceGraphDB
+from grisera_api.participant_state.participant_state_router import *
+from grisera_api.participant_state.participant_state_service_graphdb import ParticipantStateServiceGraphDB
 
 
 class TestParticipantStateRouterPut(unittest.TestCase):
@@ -34,7 +34,7 @@ class TestParticipantStateRouterPut(unittest.TestCase):
             participant_state_id, participant_state, response))
 
         self.assertEqual(result, ParticipantStateOut(age=5, errors={'errors': ['test']},
-                                                             links=get_links(router)))
+                                                     links=get_links(router)))
         update_participant_state_mock.assert_called_once_with(participant_state_id, participant_state)
         self.assertEqual(response.status_code, 404)
 
@@ -57,7 +57,8 @@ class TestParticipantStateRouterPut(unittest.TestCase):
     @mock.patch.object(ParticipantStateServiceGraphDB, 'update_participant_state_relationships')
     def test_update_participant_state_relationships_with_error(self, update_participant_state_relationships_mock):
         id_node = 1
-        update_participant_state_relationships_mock.return_value = ParticipantStateOut(age=5, id=id_node, errors="error")
+        update_participant_state_relationships_mock.return_value = ParticipantStateOut(age=5, id=id_node,
+                                                                                       errors="error")
         response = Response()
         participant_state_in = ParticipantStateRelationIn(participant_id=2, personality_id=3, appearance_id=4)
         participant_state_out = ParticipantStateOut(age=5, id=id_node, errors="error", links=get_links(router))

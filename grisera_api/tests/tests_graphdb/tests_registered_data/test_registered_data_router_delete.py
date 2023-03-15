@@ -1,9 +1,9 @@
 import asyncio
 import unittest
 import unittest.mock as mock
-from registered_data.registered_data_router import *
-from property.property_model import PropertyIn
-from registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
+from grisera_api.registered_data.registered_data_router import *
+from grisera_api.property.property_model import PropertyIn
+from grisera_api.registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
 
 
 class TestRegisteredDataRouterDelete(unittest.TestCase):

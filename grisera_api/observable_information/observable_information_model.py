@@ -2,11 +2,11 @@ from typing import Optional, Union, List
 
 from pydantic import BaseModel
 
-from models.base_model_out import BaseModelOut
-from life_activity.life_activity_model import LifeActivityOut
-from modality.modality_model import ModalityOut
-from recording.recording_model import RecordingOut
-from time_series.time_series_model import TimeSeriesOut
+from ..models.base_model_out import BaseModelOut
+from ..life_activity.life_activity_model import LifeActivityOut
+from ..modality.modality_model import ModalityOut
+from ..recording.recording_model import RecordingOut
+from ..time_series.time_series_model import TimeSeriesOut
 
 
 class ObservableInformationIn(BaseModel):

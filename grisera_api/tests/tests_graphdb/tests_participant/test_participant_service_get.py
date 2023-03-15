@@ -1,11 +1,12 @@
 import unittest
 import unittest.mock as mock
 
-from participant.participant_model import *
-from models.not_found_model import *
+from grisera_api.participant.participant_model import *
+from grisera_api.models.not_found_model import *
 
-from participant.participant_service_graphdb import ParticipantServiceGraphDB
-from graph_api_service import GraphApiService
+from grisera_api.participant.participant_service_graphdb import ParticipantServiceGraphDB
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.participant_state.participant_state_model import BasicParticipantStateOut
 
 
 class TestParticipantServiceGet(unittest.TestCase):
@@ -20,20 +21,12 @@ class TestParticipantServiceGet(unittest.TestCase):
                                                      {'key': 'identifier', 'value': 5}],
                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
-                                                    {"start_node": id_node, "end_node": 19,
-                                                     "name": "testRelation", "id": 0,
-                                                     "properties": None},
-                                                    {"start_node": 15, "end_node": id_node,
-                                                     "name": "testReversedRelation", "id": 0,
-                                                     "properties": None}]}
+            {"start_node": 19, "end_node": id_node,
+             "name": "hasParticipant", "id": 0,
+             "properties": None}]}
         additional_properties = [PropertyIn(key='identifier', value=5)]
-        participant = ParticipantOut(name="test", sex='male', id=id_node,
-                                             additional_properties=additional_properties, relations=
-                                             [RelationInformation(second_node_id=19, name="testRelation",
-                                                                  relation_id=0)],
-                                             reversed_relations=
-                                             [RelationInformation(second_node_id=15, name="testReversedRelation",
-                                                                  relation_id=0)])
+        participant = ParticipantOut(name="test", sex='male', id=id_node, additional_properties=additional_properties,
+                                     participant_states=[BasicParticipantStateOut(**{id: 19})])
         participant_service = ParticipantServiceGraphDB()
 
         result = participant_service.get_participant(id_node)

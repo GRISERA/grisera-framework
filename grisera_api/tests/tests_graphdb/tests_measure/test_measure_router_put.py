@@ -2,8 +2,8 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from measure.measure_router import *
-from measure.measure_service_graphdb import MeasureServiceGraphDB
+from grisera_api.measure.measure_router import *
+from grisera_api.measure.measure_service_graphdb import MeasureServiceGraphDB
 
 
 class TestMeasureRouterPut(unittest.TestCase):
@@ -19,7 +19,8 @@ class TestMeasureRouterPut(unittest.TestCase):
         result = asyncio.run(measure_router.update_measure(
             measure_id, measure, response))
 
-        self.assertEqual(result, MeasureOut(datatype="Test", range="Unknown", unit="cm", id=measure_id, links=get_links(router)))
+        self.assertEqual(result, MeasureOut(datatype="Test", range="Unknown", unit="cm", id=measure_id,
+                                            links=get_links(router)))
         update_measure_mock.assert_called_once_with(measure_id, measure)
         self.assertEqual(response.status_code, 200)
 

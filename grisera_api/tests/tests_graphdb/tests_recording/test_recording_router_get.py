@@ -2,9 +2,9 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from recording.recording_model import *
-from recording.recording_router import *
-from recording.recording_service_graphdb import RecordingServiceGraphDB
+from grisera_api.recording.recording_model import *
+from grisera_api.recording.recording_router import *
+from grisera_api.recording.recording_service_graphdb import RecordingServiceGraphDB
 
 
 class TestRecordingRouterGet(unittest.TestCase):
@@ -32,7 +32,7 @@ class TestRecordingRouterGet(unittest.TestCase):
         result = asyncio.run(recording_router.get_recording(recording_id, response))
 
         self.assertEqual(result, RecordingOut(errors={'errors': ['test']},
-                                                      links=get_links(router)))
+                                              links=get_links(router)))
         get_recording_mock.assert_called_once_with(recording_id)
         self.assertEqual(response.status_code, 404)
 

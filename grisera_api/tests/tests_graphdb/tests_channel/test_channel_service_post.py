@@ -1,9 +1,9 @@
 import unittest
 import unittest.mock as mock
 
-from channel.channel_model import *
-from channel.channel_service_graphdb import ChannelServiceGraphDB
-from graph_api_service import GraphApiService
+from grisera_api.channel.channel_model import *
+from grisera_api.channel.channel_service_graphdb import ChannelServiceGraphDB
+from grisera_api.graph_api_service import GraphApiService
 
 
 class TestChannelServicePost(unittest.TestCase):

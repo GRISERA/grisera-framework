@@ -2,9 +2,9 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from measure.measure_model import BasicMeasureOut, MeasureOut
-from measure.measure_router import *
-from measure.measure_service_graphdb import MeasureServiceGraphDB
+from grisera_api.measure.measure_model import BasicMeasureOut
+from grisera_api.measure.measure_router import *
+from grisera_api.measure.measure_service_graphdb import MeasureServiceGraphDB
 
 
 class TestMeasureRouterGet(unittest.TestCase):

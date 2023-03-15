@@ -1,8 +1,8 @@
 import asyncio
 import unittest
 import unittest.mock as mock
-from personality.personality_router import *
-from personality.personality_service_graphdb import PersonalityServiceGraphDB
+from grisera_api.personality.personality_router import *
+from grisera_api.personality.personality_service_graphdb import PersonalityServiceGraphDB
 
 
 class TestPersonalityRouterPost(unittest.TestCase):
@@ -20,7 +20,7 @@ class TestPersonalityRouterPost(unittest.TestCase):
         result = asyncio.run(personality_router.create_personality_big_five(personality, response))
 
         self.assertEqual(result, PersonalityBigFiveOut(agreeableness=2.5, conscientiousness=2.5,
-                                                       extroversion=2.5,neuroticism=2.5, openess=2.5,
+                                                       extroversion=2.5, neuroticism=2.5, openess=2.5,
                                                        id=1, links=get_links(router)))
         save_personality_big_five_mock.assert_called_once_with(personality)
         self.assertEqual(response.status_code, 200)

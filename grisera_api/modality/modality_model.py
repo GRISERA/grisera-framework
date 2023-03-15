@@ -3,8 +3,8 @@ from enum import Enum
 
 from pydantic import BaseModel
 
-from models.base_model_out import BaseModelOut
-from observable_information.observable_information_model import (
+from ..models.base_model_out import BaseModelOut
+from ..observable_information.observable_information_model import (
     ObservableInformationOut,
 )
 

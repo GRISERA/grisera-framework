@@ -1,8 +1,11 @@
-from arrangement.arrangement_service import ArrangementService
-from graph_api_service import GraphApiService
-from arrangement.arrangement_model import ArrangementIn, ArrangementOut, ArrangementsOut, BasicArrangementOut
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from typing import Union
+
+from ..arrangement.arrangement_service import ArrangementService
+from ..graph_api_service import GraphApiService
+from ..arrangement.arrangement_model import ArrangementIn, ArrangementOut, ArrangementsOut, BasicArrangementOut
+from ..helpers import create_stub_from_response
+from ..models.not_found_model import NotFoundByIdModel
+from ..services import Services
 
 
 class ArrangementServiceGraphDB(ArrangementService):
@@ -13,6 +16,9 @@ class ArrangementServiceGraphDB(ArrangementService):
     graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
     graph_api_service = GraphApiService()
+
+    def __init__(self):
+        self.activity_state_service = Services().activity_state_service()
 
     def save_arrangement(self, arrangement: ArrangementIn):
         """
@@ -66,12 +72,13 @@ class ArrangementServiceGraphDB(ArrangementService):
 
         return ArrangementsOut(arrangements=arrangements)
 
-    def get_arrangement(self, arrangement_id: int):
+    def get_arrangement(self, arrangement_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given arrangement
 
         Args:
-            arrangement_id (int): Id of arrangement
+            depth: (int): specifies how many related entities will be traversed to create the response
+            arrangement_id (int | str): identity of arrangement
 
         Returns:
             Result of request as arrangement object
@@ -83,19 +90,18 @@ class ArrangementServiceGraphDB(ArrangementService):
         if get_response["labels"][0] != "Arrangement":
             return NotFoundByIdModel(id=arrangement_id, errors="Node not found.")
 
-        arrangement = {'id': get_response['id'], 'relations': [], 'reversed_relations': []}
-        for property in get_response["properties"]:
-            arrangement[property["key"]] = property["value"]
+        arrangement = create_stub_from_response(get_response)
 
-        relations_response = self.graph_api_service.get_node_relationships(arrangement_id)
+        if depth != 0:
+            arrangement["activity_executions"] = []
 
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == arrangement_id:
-                arrangement['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                    name=relation["name"], relation_id=relation["id"]))
-            else:
-                arrangement['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
-                                                                             name=relation["name"],
-                                                                             relation_id=relation["id"]))
+            relations_response = self.graph_api_service.get_node_relationships(arrangement_id)
 
-        return ArrangementOut(**arrangement)
+            for relation in relations_response["relationships"]:
+                if relation["end_node"] == arrangement_id & relation["name"] == "hasArrangement":
+                    arrangement['activity_executions'].append(
+                        self.activity_state_service.get_activity_state(relation["start_node"], depth - 1))
+
+            return ArrangementOut(**arrangement)
+        else:
+            return BasicArrangementOut(**arrangement)

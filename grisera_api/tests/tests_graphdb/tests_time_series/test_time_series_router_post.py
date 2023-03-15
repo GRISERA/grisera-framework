@@ -2,8 +2,8 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from time_series.time_series_router import *
-from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
+from grisera_api.time_series.time_series_router import *
+from grisera_api.time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 
 
 def return_time_series(*args, **kwargs):
@@ -35,6 +35,7 @@ class TestTimeSeriesRouterPost(unittest.TestCase):
 
         result = asyncio.run(time_series_router.create_time_series(time_series, response))
 
-        self.assertEqual(result, TimeSeriesOut(type="Epoch", source="cos", errors={'errors': ['test']}, links=get_links(router)))
+        self.assertEqual(result, TimeSeriesOut(type="Epoch", source="cos", errors={'errors': ['test']},
+                                               links=get_links(router)))
         save_time_series_mock.assert_called_once_with(time_series)
         self.assertEqual(response.status_code, 422)

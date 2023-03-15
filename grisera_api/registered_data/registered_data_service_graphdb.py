@@ -1,9 +1,12 @@
-from graph_api_service import GraphApiService
-from registered_data.registered_data_model import RegisteredDataIn, RegisteredDataNodesOut, \
+from typing import Union
+
+from ..graph_api_service import GraphApiService
+from ..helpers import create_stub_from_response
+from ..registered_data.registered_data_model import RegisteredDataIn, RegisteredDataNodesOut, \
     BasicRegisteredDataOut, RegisteredDataOut
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
-from registered_data.registered_data_service import RegisteredDataService
+from ..models.not_found_model import NotFoundByIdModel
+from ..registered_data.registered_data_service import RegisteredDataService
+from ..services import Services
 
 
 class RegisteredDataServiceGraphDB(RegisteredDataService):
@@ -11,9 +14,12 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
     Object to handle logic of registered data requests
 
     Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
+        graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
     graph_api_service = GraphApiService()
+
+    def __init__(self):
+        self.registered_channel_service = Services().registered_channel_service()
 
     def save_registered_data(self, registered_data: RegisteredDataIn):
         """
@@ -60,12 +66,13 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
 
         return RegisteredDataNodesOut(registered_data_nodes=registered_data_nodes)
 
-    def get_registered_data(self, registered_data_id: int):
+    def get_registered_data(self, registered_data_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given registered data
 
         Args:
-        registered_data_id (int): Id of registered data
+            depth: (int): specifies how many related entities will be traversed to create the response
+            registered_data_id (int | str): identity of registered data
 
         Returns:
             Result of request as registered data object
@@ -77,34 +84,29 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         if get_response["labels"][0] != "Registered Data":
             return NotFoundByIdModel(id=registered_data_id, errors="Node not found.")
 
-        registered_data = {'id': get_response['id'], 'additional_properties': [], 'relations': [],
-                           'reversed_relations': []}
-        for property in get_response["properties"]:
-            if property["key"] == "source":
-                registered_data[property["key"]] = property["value"]
-            else:
-                registered_data['additional_properties'].append({'key': property['key'], 'value': property['value']})
+        registered_data = create_stub_from_response(get_response)
 
-        relations_response = self.graph_api_service.get_node_relationships(registered_data_id)
+        if depth != 0:
+            registered_data["registered_channels"] = []
 
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == registered_data_id:
-                registered_data['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                        name=relation["name"],
-                                                                        relation_id=relation["id"]))
-            else:
-                registered_data['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
-                                                                                 name=relation["name"],
-                                                                                 relation_id=relation["id"]))
+            relations_response = self.graph_api_service.get_node_relationships(registered_data_id)
 
-        return RegisteredDataOut(**registered_data)
+            for relation in relations_response["relationships"]:
+                if relation["end_node"] == registered_data_id & relation["name"] == "hasRegisteredData":
+                    registered_data["registered_channels"].append(self.registered_channel_service.
+                                                                  get_registered_channel(relation["start_node"],
+                                                                                         depth - 1))
 
-    def delete_registered_data(self, registered_data_id: int):
+            return RegisteredDataOut(**registered_data)
+        else:
+            return BasicRegisteredDataOut(**registered_data)
+
+    def delete_registered_data(self, registered_data_id: Union[int, str]):
         """
         Send request to graph api to delete given registered data
 
         Args:
-        registered_data_id (int): Id of registered data
+            registered_data_id (int | str): identity of registered data
 
         Returns:
             Result of request as registered data object
@@ -117,13 +119,13 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         self.graph_api_service.delete_node(registered_data_id)
         return get_response
 
-    def update_registered_data(self, registered_data_id: int, registered_data: RegisteredDataIn):
+    def update_registered_data(self, registered_data_id: Union[int, str], registered_data: RegisteredDataIn):
         """
         Send request to graph api to update given registered data
 
         Args:
-        registered_data_id (int): Id of registered data
-        registered_data (RegisteredDataIn): Properties to update
+            registered_data_id (int | str): identity of registered data
+            registered_data (RegisteredDataIn): Properties to update
 
         Returns:
             Result of request as registered data object
@@ -136,8 +138,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         self.graph_api_service.delete_node_properties(registered_data_id)
         self.graph_api_service.create_properties(registered_data_id, registered_data)
 
-        registered_data_result = {'id': registered_data_id, 'relations': get_response.relations,
-                                  'reversed_relations': get_response.reversed_relations}
+        registered_data_result = {'id': registered_data_id, 'registered_channels': get_response.registered_channels}
         registered_data_result.update(registered_data.dict())
 
         return RegisteredDataOut(**registered_data_result)

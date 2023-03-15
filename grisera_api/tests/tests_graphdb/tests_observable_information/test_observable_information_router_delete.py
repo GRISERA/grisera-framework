@@ -2,8 +2,9 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from observable_information.observable_information_router import *
-from observable_information.observable_information_service_graphdb import ObservableInformationServiceGraphDB
+from grisera_api.observable_information.observable_information_router import *
+from grisera_api.observable_information.observable_information_service_graphdb import \
+    ObservableInformationServiceGraphDB
 
 
 class TestObservableInformationRouterDelete(unittest.TestCase):
@@ -15,7 +16,8 @@ class TestObservableInformationRouterDelete(unittest.TestCase):
         response = Response()
         observable_information_router = ObservableInformationRouter()
 
-        result = asyncio.run(observable_information_router.delete_observable_information(observable_information_id, response))
+        result = asyncio.run(observable_information_router.delete_observable_information(observable_information_id,
+                                                                                         response))
 
         self.assertEqual(result, ObservableInformationOut(id=observable_information_id, links=get_links(router)))
         delete_observable_information_mock.assert_called_once_with(observable_information_id)
@@ -28,7 +30,8 @@ class TestObservableInformationRouterDelete(unittest.TestCase):
         observable_information_id = 1
         observable_information_router = ObservableInformationRouter()
 
-        result = asyncio.run(observable_information_router.delete_observable_information(observable_information_id, response))
+        result = asyncio.run(observable_information_router.delete_observable_information(observable_information_id,
+                                                                                         response))
 
         self.assertEqual(result, ObservableInformationOut(errors={'errors': ['test']}, links=get_links(router)))
         delete_observable_information_mock.assert_called_once_with(observable_information_id)

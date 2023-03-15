@@ -1,10 +1,12 @@
 import unittest
 import unittest.mock as mock
 
-from graph_api_service import GraphApiService
-from measure.measure_model import *
-from measure.measure_service_graphdb import MeasureServiceGraphDB
-from models.not_found_model import *
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.measure.measure_model import *
+from grisera_api.measure.measure_service_graphdb import MeasureServiceGraphDB
+from grisera_api.measure_name.measure_name_model import BasicMeasureNameOut
+from grisera_api.models.not_found_model import *
+from grisera_api.time_series.time_series_model import BasicTimeSeriesOut
 
 
 class TestMeasureServiceDelete(unittest.TestCase):
@@ -21,18 +23,14 @@ class TestMeasureServiceDelete(unittest.TestCase):
                                                                           {'key': 'unit', 'value': 'cm'}],
                                                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
-            {"start_node": id_node, "end_node": 19,
-             "name": "testRelation", "id": 0,
+            {"start_node": 19, "end_node": id_node,
+             "name": "hasMeasure", "id": 0,
              "properties": None},
-            {"start_node": 15, "end_node": id_node,
-             "name": "testReversedRelation", "id": 0,
+            {"start_node": id_node, "end_node": 15,
+             "name": "hasMeasureName", "id": 0,
              "properties": None}]}
         measure = MeasureOut(datatype="Test", range="Unknown", unit="cm", id=id_node,
-                             relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                            relation_id=0)],
-                             reversed_relations=[RelationInformation(second_node_id=15,
-                                                                     name="testReversedRelation",
-                                                                     relation_id=0)])
+                             time_series=[BasicTimeSeriesOut(**{id: 15})], measure_name=BasicMeasureNameOut(**{id: 15}))
         measure_service = MeasureServiceGraphDB()
 
         result = measure_service.delete_measure(id_node)

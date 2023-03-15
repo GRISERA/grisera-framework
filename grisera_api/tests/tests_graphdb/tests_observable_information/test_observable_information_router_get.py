@@ -2,9 +2,10 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from observable_information.observable_information_model import *
-from observable_information.observable_information_router import *
-from observable_information.observable_information_service_graphdb import ObservableInformationServiceGraphDB
+from grisera_api.observable_information.observable_information_model import *
+from grisera_api.observable_information.observable_information_router import *
+from grisera_api.observable_information.observable_information_service_graphdb import \
+    ObservableInformationServiceGraphDB
 
 
 class TestObservableInformationRouterGet(unittest.TestCase):
@@ -16,7 +17,8 @@ class TestObservableInformationRouterGet(unittest.TestCase):
         response = Response()
         observable_information_router = ObservableInformationRouter()
 
-        result = asyncio.run(observable_information_router.get_observable_information(observable_information_id, response))
+        result = asyncio.run(observable_information_router.get_observable_information(observable_information_id,
+                                                                                      response))
 
         self.assertEqual(result, ObservableInformationOut(id=observable_information_id, links=get_links(router)))
         get_observable_information_mock.assert_called_once_with(observable_information_id)
@@ -29,10 +31,11 @@ class TestObservableInformationRouterGet(unittest.TestCase):
         observable_information_id = 1
         observable_information_router = ObservableInformationRouter()
 
-        result = asyncio.run(observable_information_router.get_observable_information(observable_information_id, response))
+        result = asyncio.run(observable_information_router.get_observable_information(observable_information_id,
+                                                                                      response))
 
         self.assertEqual(result, ObservableInformationOut(errors={'errors': ['test']},
-                                                      links=get_links(router)))
+                                                          links=get_links(router)))
         get_observable_information_mock.assert_called_once_with(observable_information_id)
         self.assertEqual(response.status_code, 404)
 

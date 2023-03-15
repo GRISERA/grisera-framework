@@ -3,17 +3,16 @@ from typing import Union
 from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
-from hateoas import get_links
-from models.not_found_model import NotFoundByIdModel
-from activity_execution.activity_execution_model import (
+from ..hateoas import get_links
+from ..models.not_found_model import NotFoundByIdModel
+from ..activity_execution.activity_execution_model import (
     ActivityExecutionIn,
     ActivityExecutionOut,
     ActivityExecutionsOut,
     ActivityExecutionPropertyIn,
     ActivityExecutionRelationIn,
 )
-from activity_execution.activity_execution_service import ActivityExecutionService
-from services import Services
+from ..services import Services
 
 router = InferringRouter()
 
@@ -78,7 +77,7 @@ class ActivityExecutionRouter:
         self, activity_execution_id: Union[int, str], depth: int, response: Response
     ):
         """
-        Get activity executions from database. Depth attribute specifies how many models will be traversed to create the
+        Get activity execution from database. Depth attribute specifies how many models will be traversed to create the
         response.
         """
 

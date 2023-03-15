@@ -1,9 +1,9 @@
 import unittest
 import unittest.mock as mock
 
-from graph_api_service import GraphApiService
-from registered_data.registered_data_model import *
-from registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.registered_data.registered_data_model import *
+from grisera_api.registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
 
 
 class TestRegisteredDataServicePost(unittest.TestCase):

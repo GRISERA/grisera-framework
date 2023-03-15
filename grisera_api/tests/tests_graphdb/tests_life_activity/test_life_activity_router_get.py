@@ -1,10 +1,9 @@
 import asyncio
 import unittest
 import unittest.mock as mock
-from life_activity.life_activity_router import *
-from life_activity.life_activity_model import BasicLifeActivityOut
-from life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
-from property.property_model import PropertyIn
+from grisera_api.life_activity.life_activity_router import *
+from grisera_api.life_activity.life_activity_model import BasicLifeActivityOut
+from grisera_api.life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
 
 
 class TestLifeActivityRouterGet(unittest.TestCase):
@@ -31,7 +30,8 @@ class TestLifeActivityRouterGet(unittest.TestCase):
 
         result = asyncio.run(life_activity_router.get_life_activity(life_activity_id, response))
 
-        self.assertEqual(result, LifeActivityOut(life_activity='url', errors={'errors': ['test']},  links=get_links(router)))
+        self.assertEqual(result, LifeActivityOut(life_activity='url', errors={'errors': ['test']},
+                                                 links=get_links(router)))
         get_life_activity_mock.assert_called_once_with(life_activity_id)
         self.assertEqual(response.status_code, 404)
 

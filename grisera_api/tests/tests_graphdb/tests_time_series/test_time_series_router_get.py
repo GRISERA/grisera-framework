@@ -6,6 +6,7 @@ from typing import Dict
 from pydantic import BaseModel
 
 from time_series.time_series_router import *
+from time_series.time_series_model import TimeSeriesOut, TimeSeriesNodesOut
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 
 

@@ -1,10 +1,13 @@
 import unittest
 import unittest.mock as mock
 
-from graph_api_service import GraphApiService
-from models.not_found_model import *
-from participation.participation_model import *
-from participation.participation_service_graphdb import ParticipationServiceGraphDB
+from grisera_api.activity_execution.activity_execution_model import BasicActivityExecutionOut
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.models.not_found_model import *
+from grisera_api.participant_state.participant_state_model import BasicParticipantStateOut
+from grisera_api.participation.participation_model import *
+from grisera_api.participation.participation_service_graphdb import ParticipationServiceGraphDB
+from grisera_api.recording.recording_model import BasicRecordingOut
 
 
 class TestParticipationServiceGet(unittest.TestCase):
@@ -18,17 +21,18 @@ class TestParticipationServiceGet(unittest.TestCase):
                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
             {"start_node": id_node, "end_node": 19,
-             "name": "testRelation", "id": 0,
+             "name": "hasParticipantState", "id": 0,
              "properties": None},
-            {"start_node": 15, "end_node": id_node,
-             "name": "testReversedRelation", "id": 0,
-             "properties": None}]}
-        participation = ParticipationOut(id=id_node,
-                                                  relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                                                 relation_id=0)],
-                                                  reversed_relations=[RelationInformation(second_node_id=15,
-                                                                                          name="testReversedRelation",
-                                                                                          relation_id=0)])
+            {"start_node": id_node, "end_node": 15,
+             "name": "hasActivityExecution", "id": 0,
+             "properties": None},
+            {"start_node": 16, "end_node": id_node,
+             "name": "hasParticipation", "id": 0,
+             "properties": None},
+        ]}
+        participation = ParticipationOut(id=id_node, participant_state=BasicParticipantStateOut(**{id: 19}),
+                                         activity_execution=BasicActivityExecutionOut(**{id: 15}),
+                                         recordings=[BasicRecordingOut(**{id: 16})])
         participation_service = ParticipationServiceGraphDB()
 
         result = participation_service.get_participation(id_node)

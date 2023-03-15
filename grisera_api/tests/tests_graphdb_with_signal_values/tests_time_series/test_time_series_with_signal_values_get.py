@@ -2,8 +2,10 @@ import unittest
 from unittest import mock
 
 from graph_api_service import GraphApiService
+from measure.measure_model import BasicMeasureOut
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
+from observable_information.observable_information_model import BasicObservableInformationOut
 from property.property_model import PropertyIn
 from time_series.time_series_model import TimeSeriesOut, TimeSeriesNodesOut, BasicTimeSeriesOut
 from time_series.time_series_service_graphdb_with_signal_values import TimeSeriesServiceGraphDBWithSignalValues
@@ -33,10 +35,10 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
         }
         get_node_relationships_mock.return_value = {"relationships": [
             {"start_node": id_node, "end_node": 19,
-             "name": "testRelation", "id": 0,
+             "name": "hasObservableInformation", "id": 0,
              "properties": None},
-            {"start_node": 15, "end_node": id_node,
-             "name": "testReversedRelation", "id": 0,
+            {"start_node": id_node, "end_node": 15,
+             "name": "hasMeasure", "id": 0,
              "properties": None}]}
         additional_properties = [PropertyIn(key='test', value='test2')]
         time_series = TimeSeriesOut(id=1, type="Timestamp", source="cos",
@@ -63,11 +65,8 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
                                         }
                                     ],
                                     additional_properties=additional_properties,
-                                    relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                                   relation_id=0)],
-                                    reversed_relations=[RelationInformation(second_node_id=15,
-                                                                            name="testReversedRelation",
-                                                                            relation_id=0)])
+                                    observable_informations=[BasicObservableInformationOut(**{id: 19})],
+                                    measure=BasicMeasureOut(**{id: 15}))
         time_series_service = TimeSeriesServiceGraphDBWithSignalValues()
 
         result = time_series_service.get_time_series(id_node)

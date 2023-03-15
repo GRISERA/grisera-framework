@@ -1,7 +1,6 @@
-from graph_api_service import GraphApiService
-from life_activity.life_activity_model import LifeActivityIn, LifeActivityOut, LifeActivitiesOut, BasicLifeActivityOut
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from typing import Union
+
+from ..life_activity.life_activity_model import LifeActivityIn
 
 
 class LifeActivityService:
@@ -31,12 +30,13 @@ class LifeActivityService:
         """
         raise Exception("get_life_activities not implemented yet")
 
-    def get_life_activity(self, life_activity_id: int):
+    def get_life_activity(self, life_activity_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given life activity
 
         Args:
-        life_activity_id (int): Id of life activity
+            life_activity_id (int | str): identity of life activity
+            depth: (int): specifies how many related entities will be traversed to create the response
 
         Returns:
             Result of request as life activity object

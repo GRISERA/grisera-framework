@@ -1,7 +1,6 @@
-from graph_api_service import GraphApiService
-from arrangement.arrangement_model import ArrangementIn, ArrangementOut, ArrangementsOut, BasicArrangementOut
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from typing import Union
+
+from ..arrangement.arrangement_model import ArrangementIn
 
 
 class ArrangementService:
@@ -31,12 +30,13 @@ class ArrangementService:
         """
         raise Exception("get_arrangements not implemented yet")
 
-    def get_arrangement(self, arrangement_id: int):
+    def get_arrangement(self, arrangement_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given arrangement
 
         Args:
-            arrangement_id (int): Id of arrangement
+            depth: (int): specifies how many related entities will be traversed to create the response
+            arrangement_id (int | str): identity of arrangement
 
         Returns:
             Result of request as arrangement object

@@ -1,11 +1,12 @@
 import unittest
 import unittest.mock as mock
 
-from appearance.appearance_model import *
-from models.not_found_model import *
+from grisera_api.appearance.appearance_model import *
+from grisera_api.models.not_found_model import *
 
-from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
-from graph_api_service import GraphApiService
+from grisera_api.appearance.appearance_service_graphdb import AppearanceServiceGraphDB
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.participant_state.participant_state_model import BasicParticipantStateOut
 
 
 class TestAppearanceServicePut(unittest.TestCase):
@@ -23,19 +24,13 @@ class TestAppearanceServicePut(unittest.TestCase):
                                                      {'key': 'moustache', 'value': "None"}],
                                       'errors': None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
-                                                    {"start_node": id_node, "end_node": 19,
-                                                     "name": "testRelation", "id": 0,
-                                                     "properties": None},
-                                                    {"start_node": 15, "end_node": id_node,
-                                                     "name": "testReversedRelation", "id": 0,
-                                                     "properties": None}]}
+            {"start_node": 19, "end_node": id_node,
+             "name": "hasAppearance", "id": 0,
+             "properties": None}]}
         appearance_in = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="None")
-        appearance_out = AppearanceOcclusionOut(id=id_node, glasses=True, beard="Heavy", moustache="None", relations=[
-                                                RelationInformation(second_node_id=19, name="testRelation",
-                                                                    relation_id=0)],
-                                                reversed_relations=[
-                                                RelationInformation(second_node_id=15, name="testReversedRelation",
-                                                                    relation_id=0)])
+        appearance_out = AppearanceOcclusionOut(id=id_node, glasses=True, beard="Heavy", moustache="Heavy",
+                                            participant_states=[
+                                                BasicParticipantStateOut(**{id: 19})])
         appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.update_appearance_occlusion(id_node, appearance_in)

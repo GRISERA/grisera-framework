@@ -1,7 +1,6 @@
-from graph_api_service import GraphApiService
-from modality.modality_model import ModalityIn, ModalityOut, ModalitiesOut, BasicModalityOut
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from typing import Union
+
+from ..modality.modality_model import ModalityIn
 
 
 class ModalityService:
@@ -31,12 +30,13 @@ class ModalityService:
         """
         raise Exception("get_modalities not implemented yet")
 
-    def get_modality(self, modality_id: int):
+    def get_modality(self, modality_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given modality
 
         Args:
-        modality_id (int): Id of modality
+            depth: (int): specifies how many related entities will be traversed to create the response
+            modality_id (int): identity of modality
 
         Returns:
             Result of request as modality object

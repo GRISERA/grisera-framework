@@ -1,8 +1,7 @@
 import json
 import unittest
 import unittest.mock as mock
-from modality.modality_model import *
-from modality.modality_service_graphdb import *
+from grisera_api.modality.modality_service_graphdb import *
 from requests import Response
 
 

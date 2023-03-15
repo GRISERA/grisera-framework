@@ -3,16 +3,14 @@ from typing import Union
 from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
-from hateoas import get_links
-from modality.modality_model import (
-    ModalityIn,
+from ..hateoas import get_links
+from ..modality.modality_model import (
     ModalityOut,
-    BasicModalityOut,
-    ModalitiesOut,
+    ModalitiesOut
 )
-from modality.modality_service import ModalityService
-from models.not_found_model import NotFoundByIdModel
-from services import Services
+
+from ..models.not_found_model import NotFoundByIdModel
+from ..services import Services
 
 router = InferringRouter()
 

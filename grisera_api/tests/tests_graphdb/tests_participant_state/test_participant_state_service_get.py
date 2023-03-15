@@ -1,11 +1,15 @@
 import unittest
 import unittest.mock as mock
 
-from participant_state.participant_state_model import *
-from models.not_found_model import *
+from grisera_api.appearance.appearance_model import BasicAppearanceSomatotypeOut, BasicAppearanceOcclusionOut
+from grisera_api.participant.participant_model import BasicParticipantOut
+from grisera_api.participant_state.participant_state_model import *
+from grisera_api.models.not_found_model import *
 
-from participant_state.participant_state_service_graphdb import ParticipantStateServiceGraphDB
-from graph_api_service import GraphApiService
+from grisera_api.participant_state.participant_state_service_graphdb import ParticipantStateServiceGraphDB
+from grisera_api.graph_api_service import GraphApiService
+from grisera_api.participation.participation_model import BasicParticipationOut
+from grisera_api.personality.personality_model import BasicPersonalityPanasOut, BasicPersonalityBigFiveOut
 
 
 class TestParticipantStateServiceGet(unittest.TestCase):
@@ -19,19 +23,32 @@ class TestParticipantStateServiceGet(unittest.TestCase):
                                                      {'key': 'test', 'value': 'test2'}],
                                       "errors": None, 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
-                                                    {"start_node": id_node, "end_node": 19,
-                                                     "name": "testRelation", "id": 0,
-                                                     "properties": None},
-                                                    {"start_node": 15, "end_node": id_node,
-                                                     "name": "testReversedRelation", "id": 0,
-                                                     "properties": None}]}
-        additional_properties = [PropertyIn(key='test', value='test2')]
-        participant_state = ParticipantStateOut(age=5, id=id_node,additional_properties=additional_properties,
-                                                relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                                               relation_id=0)],
-                                                reversed_relations=[RelationInformation(second_node_id=15,
-                                                                                        name="testReversedRelation",
-                                                                                        relation_id=0)])
+            {"start_node": 19, "end_node": id_node,
+             "name": "hasParticipantState", "id": 0,
+             "properties": None},
+            {"start_node": id_node, "end_node": 15,
+             "name": "hasParticipant", "id": 0,
+             "properties": None},
+            {"start_node": id_node, "end_node": 16,
+             "name": "hasAppearance", "id": 0,
+             "properties": None},
+            {"start_node": id_node, "end_node": 26,
+             "name": "hasAppearance", "id": 0,
+             "properties": None},
+            {"start_node": id_node, "end_node": 17,
+             "name": "hasPersonality", "id": 0,
+             "properties": None},
+            {"start_node": id_node, "end_node": 27,
+             "name": "hasPersonality", "id": 0,
+             "properties": None},
+        ]}
+        participant_state = ParticipantStateOut(age=5, id=id_node, additional_properties=[],
+                                                participations=[BasicParticipationOut(**{id: 19})],
+                                                participant=BasicParticipantOut(**{id: 15}),
+                                                appearances=[BasicAppearanceSomatotypeOut(**{id: 16}),
+                                                             BasicAppearanceOcclusionOut(**{id: 26})],
+                                                personalities=[BasicPersonalityPanasOut(**{id: 17}),
+                                                               BasicPersonalityBigFiveOut(**{id: 27})])
         participant_state_service = ParticipantStateServiceGraphDB()
 
         result = participant_state_service.get_participant_state(id_node)
