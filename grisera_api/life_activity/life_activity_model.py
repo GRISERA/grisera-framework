@@ -4,9 +4,6 @@ from enum import Enum
 from pydantic import BaseModel
 
 from models.base_model_out import BaseModelOut
-from observable_information.observable_information_model import (
-    ObservableInformationOut,
-)
 
 
 class LifeActivity(str, Enum):
@@ -65,7 +62,7 @@ class LifeActivityOut(BasicLifeActivityOut, BaseModelOut):
         this life activity
     """
 
-    observable_informations: Optional[List[ObservableInformationOut]]
+    observable_informations: "Optional[List[ObservableInformationOut]]"
 
 
 class LifeActivitiesOut(BaseModelOut):
@@ -77,3 +74,9 @@ class LifeActivitiesOut(BaseModelOut):
     """
 
     life_activities: List[BasicLifeActivityOut] = []
+
+
+# Circular import exception prevention
+from observable_information.observable_information_model import ObservableInformationOut
+
+LifeActivityOut.update_forward_refs()

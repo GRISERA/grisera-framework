@@ -3,13 +3,6 @@ from typing import Optional, Union
 
 from pydantic import BaseModel
 
-from appearance.appearance_model import (
-    AppearanceSomatotypeOut,
-    AppearanceOcclusionOut,
-)
-from participation.participation_model import ParticipationOut
-from participant.participant_model import ParticipantOut
-from personality.personality_model import PersonalityBigFiveOut, PersonalityPanasOut
 from property.property_model import PropertyIn
 from models.base_model_out import BaseModelOut
 
@@ -72,10 +65,10 @@ class ParticipantStateOut(BasicParticipantStateOut, BaseModelOut):
             participant state
     """
 
-    participations: Optional[List[ParticipationOut]]
-    participant: Optional[ParticipantOut]
-    appearances: Optional[List[Union[AppearanceSomatotypeOut, AppearanceOcclusionOut]]]
-    personalities: Optional[List[Union[PersonalityBigFiveOut, PersonalityPanasOut]]]
+    participations: "Optional[List[ParticipationOut]]"
+    participant: "Optional[ParticipantOut]"
+    appearances: "Optional[List[Union[AppearanceSomatotypeOut, AppearanceOcclusionOut]]]"
+    personalities: "Optional[List[Union[PersonalityBigFiveOut, PersonalityPanasOut]]]"
 
 
 class ParticipantStatesOut(BaseModelOut):
@@ -87,3 +80,12 @@ class ParticipantStatesOut(BaseModelOut):
     """
 
     participant_states: List[BasicParticipantStateOut] = []
+
+
+# Circular import exception prevention
+from participation.participation_model import ParticipationOut
+from participant.participant_model import ParticipantOut
+from personality.personality_model import PersonalityBigFiveOut, PersonalityPanasOut
+from appearance.appearance_model import AppearanceSomatotypeOut, AppearanceOcclusionOut
+
+ParticipantStateOut.update_forward_refs()

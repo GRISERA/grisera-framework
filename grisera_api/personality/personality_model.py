@@ -4,7 +4,6 @@ from enum import Enum
 from pydantic import BaseModel
 
 from models.base_model_out import BaseModelOut
-from participant_state.participant_state_model import ParticipantStateOut
 
 
 class FacialHair(str, Enum):
@@ -53,7 +52,7 @@ class PersonalityBigFiveOut(BasicPersonalityBigFiveOut, BaseModelOut):
             personality
     """
 
-    participant_states: Optional[List[ParticipantStateOut]]
+    participant_states: "Optional[List[ParticipantStateOut]]"
 
 
 class PersonalityPanasIn(BaseModel):
@@ -89,10 +88,10 @@ class PersonalityPanasOut(BasicPersonalityPanasOut, BaseModelOut):
             personality
     """
 
-    participant_states: Optional[List[ParticipantStateOut]]
+    participant_states: "Optional[List[ParticipantStateOut]]"
 
 
-class PersonalitiesOut(BaseModel, BaseModelOut):
+class PersonalitiesOut(BaseModelOut):
     """
     Model of personalities to send to client as a result of request
 
@@ -103,3 +102,10 @@ class PersonalitiesOut(BaseModel, BaseModelOut):
     personalities: List[
         Union[BasicPersonalityBigFiveOut, BasicPersonalityPanasOut]
     ] = []
+
+
+# Circular import exception prevention
+from participant_state.participant_state_model import ParticipantStateOut
+
+PersonalityBigFiveOut.update_forward_refs()
+PersonalityPanasOut.update_forward_refs()

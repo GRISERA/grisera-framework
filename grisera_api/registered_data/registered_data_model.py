@@ -4,7 +4,6 @@ from pydantic import BaseModel
 
 from property.property_model import PropertyIn
 from models.base_model_out import BaseModelOut
-from registered_channel.registered_channel_model import RegisteredChannelOut
 
 
 class RegisteredDataIn(BaseModel):
@@ -39,7 +38,7 @@ class RegisteredDataOut(BasicRegisteredDataOut, BaseModelOut):
     registered_channels (Optional[List[RegisteredChannelOut]]): registered channels related to this registered data
     """
 
-    registered_channels: Optional[List[RegisteredChannelOut]]
+    registered_channels: "Optional[List[RegisteredChannelOut]]"
 
 
 class RegisteredDataNodesOut(BaseModelOut):
@@ -51,3 +50,9 @@ class RegisteredDataNodesOut(BaseModelOut):
     """
 
     registered_data_nodes: List[BasicRegisteredDataOut] = []
+
+
+# Circular import exception prevention
+from registered_channel.registered_channel_model import RegisteredChannelOut
+
+RegisteredDataOut.update_forward_refs()

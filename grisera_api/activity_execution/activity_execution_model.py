@@ -2,11 +2,7 @@ from typing import Optional, List, Union
 
 from pydantic import BaseModel
 
-from participation.participation_model import ParticipationOut
 from property.property_model import PropertyIn
-from activity.activity_model import ActivityOut
-from experiment.experiment_model import ExperimentOut
-from arrangement.arrangement_model import ArrangementOut
 from models.base_model_out import BaseModelOut
 
 
@@ -62,10 +58,10 @@ class ActivityExecutionOut(BasicActivityExecutionOut, BaseModelOut):
     experiments (Optional[List[ExperimentOut]]): experiments related to this activity execution
     """
 
-    activity: Optional[ActivityOut]
-    participations: Optional[List[ParticipationOut]]
-    experiments: Optional[List[ExperimentOut]]
-    arrangements: Optional[List[ArrangementOut]]
+    activity: "Optional[ActivityOut]"
+    participations: "Optional[List[ParticipationOut]]"
+    experiments: "Optional[List[ExperimentOut]]"
+    arrangements: "Optional[List[ArrangementOut]]"
 
 
 class ActivityExecutionsOut(BaseModelOut):
@@ -77,3 +73,12 @@ class ActivityExecutionsOut(BaseModelOut):
     """
 
     activity_executions: List[BasicActivityExecutionOut] = []
+
+
+# Circular import exception prevention
+from participation.participation_model import ParticipationOut
+from activity.activity_model import ActivityOut
+from experiment.experiment_model import ExperimentOut
+from arrangement.arrangement_model import ArrangementOut
+
+ActivityExecutionOut.update_forward_refs()

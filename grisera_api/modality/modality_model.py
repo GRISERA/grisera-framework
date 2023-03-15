@@ -4,9 +4,6 @@ from enum import Enum
 from pydantic import BaseModel
 
 from models.base_model_out import BaseModelOut
-from observable_information.observable_information_model import (
-    ObservableInformationOut,
-)
 
 
 class Modality(str, Enum):
@@ -79,7 +76,7 @@ class ModalityOut(BasicModalityOut, BaseModelOut):
         this modality
     """
 
-    observable_informations: Optional[List[ObservableInformationOut]]
+    observable_informations: "Optional[List[ObservableInformationOut]]"
 
 
 class ModalitiesOut(BaseModelOut):
@@ -91,3 +88,9 @@ class ModalitiesOut(BaseModelOut):
     """
 
     modalities: List[BasicModalityOut] = []
+
+
+# Circular import exception prevention
+from observable_information.observable_information_model import ObservableInformationOut
+
+ModalityOut.update_forward_refs()

@@ -2,12 +2,8 @@ from typing import Union, List
 
 from pydantic import BaseModel
 
-from activity_execution.activity_execution_model import (
-    ActivityExecutionIn,
-    ActivityExecutionOut,
-)
+from activity_execution.activity_execution_model import ActivityExecutionIn
 from models.base_model_out import BaseModelOut
-from experiment.experiment_model import ExperimentOut
 
 
 class ScenarioIn(BaseModel):
@@ -31,8 +27,8 @@ class ScenarioOut(ScenarioIn, BaseModelOut):
         activity_executions (List[ActivityExecutionOut]): List of activity executions in scenario
     """
 
-    activity_executions: List[ActivityExecutionOut]
-    experiment: ExperimentOut
+    activity_executions: "List[ActivityExecutionOut]"
+    experiment: "ExperimentOut"
 
 
 class OrderChangeIn(BaseModel):
@@ -52,3 +48,10 @@ class OrderChangeOut(BaseModelOut):
     """
     Model of changed order in scenario
     """
+
+
+# Circular import exception prevention
+from activity_execution.activity_execution_model import ActivityExecutionOut
+from experiment.experiment_model import ExperimentOut
+
+ScenarioOut.update_forward_refs()

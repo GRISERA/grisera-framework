@@ -3,12 +3,7 @@ from typing import Optional, List, Union
 from pydantic import BaseModel
 
 from models.base_model_out import BaseModelOut
-from observable_information.observable_information_model import (
-    ObservableInformationOut,
-)
-from participation.participation_model import ParticipationOut
 from property.property_model import PropertyIn
-from registered_channel.registered_channel_model import RegisteredChannelOut
 
 
 class RecordingPropertyIn(BaseModel):
@@ -64,9 +59,9 @@ class RecordingOut(BasicRecordingOut, BaseModelOut):
         this recording
     """
 
-    registered_channel: Optional[RegisteredChannelOut]
-    participation: Optional[ParticipationOut]
-    observable_informations: Optional[List[ObservableInformationOut]]
+    registered_channel: "Optional[RegisteredChannelOut]"
+    participation: "Optional[ParticipationOut]"
+    observable_informations: "Optional[List[ObservableInformationOut]]"
 
 
 class RecordingsOut(BaseModelOut):
@@ -78,3 +73,11 @@ class RecordingsOut(BaseModelOut):
     """
 
     recordings: List[BasicRecordingOut] = []
+
+
+# Circular import exception prevention
+from observable_information.observable_information_model import ObservableInformationOut
+from participation.participation_model import ParticipationOut
+from registered_channel.registered_channel_model import RegisteredChannelOut
+
+RecordingOut.update_forward_refs()

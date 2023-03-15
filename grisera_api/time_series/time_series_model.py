@@ -3,11 +3,7 @@ from typing import Optional, List, Union
 
 from pydantic import BaseModel
 
-from measure.measure_model import MeasureOut
 from models.base_model_out import BaseModelOut
-from observable_information.observable_information_model import (
-    ObservableInformationOut,
-)
 from property.property_model import PropertyIn
 
 
@@ -152,8 +148,9 @@ class TimeSeriesOut(BasicTimeSeriesOut, BaseModelOut):
             this time series
         measure (Optional[MeasureOut]): measure related to this time series
     """
-    observable_informations: Optional[List[ObservableInformationOut]]
-    measure: Optional[MeasureOut]
+
+    observable_informations: "Optional[List[ObservableInformationOut]]"
+    measure: "Optional[MeasureOut]"
 
 
 class TimeSeriesMultidimensionalOut(BaseModelOut):
@@ -176,3 +173,10 @@ class TimeSeriesNodesOut(BaseModelOut):
         time_series_nodes (List[BasicTimeSeriesOut]): Time series nodes from database
     """
     time_series_nodes: List[BasicTimeSeriesOut] = []
+
+
+# Circular import exception prevention
+from measure.measure_model import MeasureOut
+from observable_information.observable_information_model import ObservableInformationOut
+
+TimeSeriesOut.update_forward_refs()

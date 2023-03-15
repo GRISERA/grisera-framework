@@ -3,7 +3,6 @@ from enum import Enum
 
 from pydantic import BaseModel
 
-from activity_execution.activity_execution_model import ActivityExecutionOut
 from models.base_model_out import BaseModelOut
 from property.property_model import PropertyIn
 
@@ -55,7 +54,7 @@ class ActivityOut(BasicActivityOut, BaseModelOut):
     activity_executions (Optional[ActivityExecutionOut]): activity_executions related to this activity
     """
 
-    activity_executions: Optional[List[ActivityExecutionOut]]
+    activity_executions: "Optional[List[ActivityExecutionOut]]"
 
 
 class ActivitiesOut(BaseModelOut):
@@ -67,3 +66,9 @@ class ActivitiesOut(BaseModelOut):
     """
 
     activities: List[BasicActivityOut] = []
+
+
+# Circular import exception prevention
+from activity_execution.activity_execution_model import ActivityExecutionOut
+
+ActivityOut.update_forward_refs()

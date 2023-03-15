@@ -4,8 +4,8 @@ from graph_api_service import GraphApiService
 from activity.activity_model import ActivityIn, ActivityOut, ActivitiesOut, BasicActivityOut
 from activity.activity_service import ActivityService
 from models.not_found_model import NotFoundByIdModel
-from services import Services
 from helpers import create_stub_from_response
+from services import Services
 
 
 class ActivityServiceGraphDB(ActivityService):

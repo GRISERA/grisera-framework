@@ -3,10 +3,6 @@ from typing import Optional, Union, List
 from pydantic import BaseModel
 
 from models.base_model_out import BaseModelOut
-from life_activity.life_activity_model import LifeActivityOut
-from modality.modality_model import ModalityOut
-from recording.recording_model import RecordingOut
-from time_series.time_series_model import TimeSeriesOut
 
 
 class ObservableInformationIn(BaseModel):
@@ -46,10 +42,10 @@ class ObservableInformationOut(BasicObservableInformationOut, BaseModelOut):
     life_activity (Optional[LifeActivityOut]): life activity related to this observable information
     """
 
-    recording: Optional[RecordingOut]
-    timeSeries: Optional[List[TimeSeriesOut]]
-    modality: Optional[ModalityOut]
-    life_activity: Optional[LifeActivityOut]
+    recording: "Optional[RecordingOut]"
+    timeSeries: "Optional[List[TimeSeriesOut]]"
+    modality: "Optional[ModalityOut]"
+    life_activity: "Optional[LifeActivityOut]"
 
 
 class ObservableInformationsOut(BaseModelOut):
@@ -61,3 +57,12 @@ class ObservableInformationsOut(BaseModelOut):
     """
 
     observable_informations: List[BasicObservableInformationOut] = []
+
+
+# Circular import exception prevention
+from life_activity.life_activity_model import LifeActivityOut
+from modality.modality_model import ModalityOut
+from recording.recording_model import RecordingOut
+from time_series.time_series_model import TimeSeriesOut
+
+ObservableInformationOut.update_forward_refs()

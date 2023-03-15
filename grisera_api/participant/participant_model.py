@@ -4,7 +4,6 @@ from datetime import date
 
 from pydantic import BaseModel
 
-from participant_state.participant_state_model import ParticipantStateOut
 from property.property_model import PropertyIn
 from models.base_model_out import BaseModelOut
 
@@ -62,7 +61,7 @@ class ParticipantOut(BasicParticipantOut, BaseModelOut):
         participant_states (Optional[List[ParticipantStateOut]]): Participant states related to this participant.
     """
 
-    participant_states: Optional[List[ParticipantStateOut]]
+    participant_states: "Optional[List[ParticipantStateOut]]"
 
 
 class ParticipantsOut(BaseModelOut):
@@ -74,3 +73,9 @@ class ParticipantsOut(BaseModelOut):
     """
 
     participants: List[BasicParticipantOut] = []
+
+
+# Circular import exception prevention
+from participant_state.participant_state_model import ParticipantStateOut
+
+ParticipantOut.update_forward_refs()
