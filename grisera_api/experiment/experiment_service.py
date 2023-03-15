@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..experiment.experiment_model import ExperimentIn
+from experiment.experiment_model import ExperimentIn
 
 
 class ExperimentService:

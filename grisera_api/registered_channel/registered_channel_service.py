@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..registered_channel.registered_channel_model import RegisteredChannelIn
+from registered_channel.registered_channel_model import RegisteredChannelIn
 
 
 class RegisteredChannelService:

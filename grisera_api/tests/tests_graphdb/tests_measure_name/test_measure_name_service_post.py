@@ -2,7 +2,7 @@ import json
 import unittest
 import unittest.mock as mock
 
-from grisera_api.measure_name.measure_name_service_graphdb import *
+from measure_name.measure_name_service_graphdb import *
 from requests import Response
 
 

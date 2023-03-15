@@ -4,7 +4,6 @@ from unittest import mock
 from graph_api_service import GraphApiService
 from measure.measure_model import BasicMeasureOut
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
 from observable_information.observable_information_model import BasicObservableInformationOut
 from property.property_model import PropertyIn
 from time_series.time_series_model import TimeSeriesOut, TimeSeriesNodesOut, BasicTimeSeriesOut

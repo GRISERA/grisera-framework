@@ -2,12 +2,12 @@ from typing import Union, List
 
 from pydantic import BaseModel
 
-from ..activity_execution.activity_execution_model import (
+from activity_execution.activity_execution_model import (
     ActivityExecutionIn,
     ActivityExecutionOut,
 )
-from ..models.base_model_out import BaseModelOut
-from ..experiment.experiment_model import ExperimentOut
+from models.base_model_out import BaseModelOut
+from experiment.experiment_model import ExperimentOut
 
 
 class ScenarioIn(BaseModel):

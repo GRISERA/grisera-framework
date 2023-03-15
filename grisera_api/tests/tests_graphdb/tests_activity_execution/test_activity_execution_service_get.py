@@ -1,14 +1,14 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.activity import BasicActivityOut
-from grisera_api.experiment.experiment_model import BasicExperimentOut
-from grisera_api.graph_api_service import GraphApiService
-from grisera_api.models.not_found_model import *
-from grisera_api.activity_execution.activity_execution_model import *
-from grisera_api.activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
-from grisera_api.participation.participation_model import BasicParticipationOut
-from grisera_api.property.property_model import *
+from activity import BasicActivityOut
+from experiment.experiment_model import BasicExperimentOut
+from graph_api_service import GraphApiService
+from models.not_found_model import *
+from activity_execution.activity_execution_model import *
+from activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
+from participation.participation_model import BasicParticipationOut
+from property.property_model import *
 
 """TODO: expand unit test for get with depth different from  0"""
 

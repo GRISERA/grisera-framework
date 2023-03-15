@@ -2,8 +2,8 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from grisera_api.measure.measure_router import *
-from grisera_api.measure.measure_service_graphdb import MeasureServiceGraphDB
+from measure.measure_router import *
+from measure.measure_service_graphdb import MeasureServiceGraphDB
 
 
 class TestMeasureRouterDelete(unittest.TestCase):

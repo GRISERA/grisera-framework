@@ -2,8 +2,8 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from grisera_api.participation.participation_router import *
-from grisera_api.participation.participation_service_graphdb import ParticipationServiceGraphDB
+from participation.participation_router import *
+from participation.participation_service_graphdb import ParticipationServiceGraphDB
 
 
 class TestParticipationRouterDelete(unittest.TestCase):

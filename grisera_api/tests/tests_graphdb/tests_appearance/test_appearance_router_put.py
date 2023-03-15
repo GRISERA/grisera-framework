@@ -1,8 +1,8 @@
 import asyncio
 import unittest
 import unittest.mock as mock
-from grisera_api.appearance.appearance_router import *
-from grisera_api.appearance.appearance_service_graphdb import AppearanceServiceGraphDB
+from appearance.appearance_router import *
+from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 
 
 class TestAppearanceRouterPut(unittest.TestCase):

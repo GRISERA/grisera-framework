@@ -1,11 +1,11 @@
 from typing import Union
 
-from ..graph_api_service import GraphApiService
-from ..scenario.scenario_model import ScenarioIn, ScenarioOut, OrderChangeIn, OrderChangeOut
-from ..activity_execution.activity_execution_model import ActivityExecutionOut, PropertyIn, ActivityExecutionIn
-from ..models.not_found_model import NotFoundByIdModel
-from ..scenario.scenario_service import ScenarioService
-from ..services import Services
+from graph_api_service import GraphApiService
+from scenario.scenario_model import ScenarioIn, ScenarioOut, OrderChangeIn, OrderChangeOut
+from activity_execution.activity_execution_model import ActivityExecutionOut, PropertyIn, ActivityExecutionIn
+from models.not_found_model import NotFoundByIdModel
+from scenario.scenario_service import ScenarioService
+from services import Services
 
 
 class ScenarioServiceGraphDB(ScenarioService):

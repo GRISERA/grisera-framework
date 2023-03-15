@@ -1,11 +1,11 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.channel.channel_model import *
-from grisera_api.channel.channel_service_graphdb import ChannelServiceGraphDB
-from grisera_api.graph_api_service import GraphApiService
-from grisera_api.models.not_found_model import *
-from grisera_api.registered_channel.registered_channel_model import BasicRegisteredChannelOut
+from channel.channel_model import *
+from channel.channel_service_graphdb import ChannelServiceGraphDB
+from graph_api_service import GraphApiService
+from models.not_found_model import *
+from registered_channel.registered_channel_model import BasicRegisteredChannelOut
 
 
 class TestChannelServiceGet(unittest.TestCase):

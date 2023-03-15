@@ -1,11 +1,11 @@
 from typing import Union
 
-from ..graph_api_service import GraphApiService
-from ..helpers import create_stub_from_response
-from ..participant.participant_model import ParticipantIn, ParticipantsOut, BasicParticipantOut, ParticipantOut
-from ..models.not_found_model import NotFoundByIdModel
-from ..participant.participant_service import ParticipantService
-from ..services import Services
+from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
+from participant.participant_model import ParticipantIn, ParticipantsOut, BasicParticipantOut, ParticipantOut
+from models.not_found_model import NotFoundByIdModel
+from participant.participant_service import ParticipantService
+from services import Services
 
 
 class ParticipantServiceGraphDB(ParticipantService):

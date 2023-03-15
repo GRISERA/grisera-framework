@@ -1,9 +1,9 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.personality.personality_model import *
-from grisera_api.personality.personality_service_graphdb import PersonalityServiceGraphDB
-from grisera_api.graph_api_service import GraphApiService
+from personality.personality_model import *
+from personality.personality_service_graphdb import PersonalityServiceGraphDB
+from graph_api_service import GraphApiService
 
 
 class TestPersonalityServicePost(unittest.TestCase):

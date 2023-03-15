@@ -1,9 +1,9 @@
 import asyncio
 import unittest
 import unittest.mock as mock
-from grisera_api.life_activity.life_activity_router import *
-from grisera_api.life_activity.life_activity_model import BasicLifeActivityOut
-from grisera_api.life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
+from life_activity.life_activity_router import *
+from life_activity.life_activity_model import BasicLifeActivityOut
+from life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
 
 
 class TestLifeActivityRouterGet(unittest.TestCase):

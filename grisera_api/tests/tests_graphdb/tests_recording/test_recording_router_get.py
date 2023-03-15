@@ -2,9 +2,9 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from grisera_api.recording.recording_model import *
-from grisera_api.recording.recording_router import *
-from grisera_api.recording.recording_service_graphdb import RecordingServiceGraphDB
+from recording.recording_model import *
+from recording.recording_router import *
+from recording.recording_service_graphdb import RecordingServiceGraphDB
 
 
 class TestRecordingRouterGet(unittest.TestCase):

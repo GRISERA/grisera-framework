@@ -3,8 +3,8 @@ from enum import Enum
 
 from pydantic import BaseModel
 
-from ..models.base_model_out import BaseModelOut
-from ..registered_channel.registered_channel_model import RegisteredChannelOut
+from models.base_model_out import BaseModelOut
+from registered_channel.registered_channel_model import RegisteredChannelOut
 
 
 class Type(str, Enum):

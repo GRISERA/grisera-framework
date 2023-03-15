@@ -1,5 +1,5 @@
 from typing import Union
-from ..activity.activity_model import ActivityIn
+from activity.activity_model import ActivityIn
 
 
 class ActivityService:

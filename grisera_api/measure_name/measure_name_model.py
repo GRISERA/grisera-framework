@@ -3,8 +3,8 @@ from enum import Enum
 
 from pydantic import BaseModel
 
-from ..measure.measure_model import MeasureOut
-from ..models.base_model_out import BaseModelOut
+from measure.measure_model import MeasureOut
+from models.base_model_out import BaseModelOut
 
 
 class MeasureName(tuple, Enum):

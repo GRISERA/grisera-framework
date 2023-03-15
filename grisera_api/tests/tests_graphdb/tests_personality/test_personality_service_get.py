@@ -1,12 +1,12 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.participant_state.participant_state_model import BasicParticipantStateOut
-from grisera_api.personality.personality_model import *
-from grisera_api.models.not_found_model import *
+from participant_state.participant_state_model import BasicParticipantStateOut
+from personality.personality_model import *
+from models.not_found_model import *
 
-from grisera_api.personality.personality_service_graphdb import PersonalityServiceGraphDB
-from grisera_api.graph_api_service import GraphApiService
+from personality.personality_service_graphdb import PersonalityServiceGraphDB
+from graph_api_service import GraphApiService
 
 
 class TestPersonalityServiceGet(unittest.TestCase):

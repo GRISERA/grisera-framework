@@ -1,10 +1,10 @@
 import json
 import unittest
 import unittest.mock as mock
-from grisera_api.activity.activity_model import *
+from activity.activity_model import *
 from requests import Response
-from grisera_api.graph_api_service import GraphApiService
-from grisera_api.services import Services
+from graph_api_service import GraphApiService
+from services import Services
 
 
 class TestActivityService(unittest.TestCase):

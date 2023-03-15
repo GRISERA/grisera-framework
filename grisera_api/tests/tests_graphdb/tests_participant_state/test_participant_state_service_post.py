@@ -1,13 +1,13 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.appearance.appearance_model import BasicAppearanceSomatotypeOut, BasicAppearanceOcclusionOut
-from grisera_api.graph_api_service import GraphApiService
-from grisera_api.participant.participant_model import BasicParticipantOut
-from grisera_api.participant_state.participant_state_model import *
-from grisera_api.participant_state.participant_state_service_graphdb import ParticipantStateServiceGraphDB
-from grisera_api.participation.participation_model import BasicParticipationOut
-from grisera_api.personality.personality_model import BasicPersonalityPanasOut, BasicPersonalityBigFiveOut
+from appearance.appearance_model import BasicAppearanceSomatotypeOut, BasicAppearanceOcclusionOut
+from graph_api_service import GraphApiService
+from participant.participant_model import BasicParticipantOut
+from participant_state.participant_state_model import *
+from participant_state.participant_state_service_graphdb import ParticipantStateServiceGraphDB
+from participation.participation_model import BasicParticipationOut
+from personality.personality_model import BasicPersonalityPanasOut, BasicPersonalityBigFiveOut
 
 
 def relationship_function(*args, **kwargs):

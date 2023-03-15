@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..observable_information.observable_information_model import ObservableInformationIn
+from observable_information.observable_information_model import ObservableInformationIn
 
 
 class ObservableInformationService:

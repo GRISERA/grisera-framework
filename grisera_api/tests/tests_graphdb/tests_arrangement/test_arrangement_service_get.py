@@ -1,11 +1,11 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.activity_execution.activity_execution_model import BasicActivityExecutionOut
-from grisera_api.arrangement.arrangement_model import *
-from grisera_api.arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
-from grisera_api.graph_api_service import GraphApiService
-from grisera_api.models.not_found_model import *
+from activity_execution.activity_execution_model import BasicActivityExecutionOut
+from arrangement.arrangement_model import *
+from arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
+from graph_api_service import GraphApiService
+from models.not_found_model import *
 
 
 class TestArrangementServiceGet(unittest.TestCase):

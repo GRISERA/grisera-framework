@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..participant_state.participant_state_model import ParticipantStatePropertyIn, ParticipantStateIn, \
+from participant_state.participant_state_model import ParticipantStatePropertyIn, ParticipantStateIn, \
     ParticipantStateRelationIn
 
 

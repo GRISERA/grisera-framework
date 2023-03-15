@@ -1,9 +1,9 @@
 import asyncio
 import unittest
 import unittest.mock as mock
-from grisera_api.modality.modality_router import *
-from grisera_api.modality.modality_model import BasicModalityOut
-from grisera_api.modality.modality_service_graphdb import ModalityServiceGraphDB
+from modality.modality_router import *
+from modality.modality_model import BasicModalityOut
+from modality.modality_service_graphdb import ModalityServiceGraphDB
 
 
 class TestModalityRouterGet(unittest.TestCase):

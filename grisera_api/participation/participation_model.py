@@ -2,10 +2,10 @@ from typing import Optional, List, Union
 
 from pydantic import BaseModel
 
-from ..models.base_model_out import BaseModelOut
-from ..activity_execution.activity_execution_model import ActivityExecutionOut
-from ..participant_state.participant_state_model import ParticipantStateOut
-from ..recording.recording_model import RecordingOut
+from models.base_model_out import BaseModelOut
+from activity_execution.activity_execution_model import ActivityExecutionOut
+from participant_state.participant_state_model import ParticipantStateOut
+from recording.recording_model import RecordingOut
 
 
 class ParticipationIn(BaseModel):

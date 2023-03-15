@@ -1,12 +1,12 @@
 from typing import Union
 
-from ..graph_api_service import GraphApiService
-from ..helpers import create_stub_from_response
-from ..registered_data.registered_data_model import RegisteredDataIn, RegisteredDataNodesOut, \
+from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
+from registered_data.registered_data_model import RegisteredDataIn, RegisteredDataNodesOut, \
     BasicRegisteredDataOut, RegisteredDataOut
-from ..models.not_found_model import NotFoundByIdModel
-from ..registered_data.registered_data_service import RegisteredDataService
-from ..services import Services
+from models.not_found_model import NotFoundByIdModel
+from registered_data.registered_data_service import RegisteredDataService
+from services import Services
 
 
 class RegisteredDataServiceGraphDB(RegisteredDataService):

@@ -1,12 +1,12 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.graph_api_service import GraphApiService
-from grisera_api.measure.measure_model import *
-from grisera_api.measure.measure_service_graphdb import MeasureServiceGraphDB
-from grisera_api.measure_name.measure_name_model import BasicMeasureNameOut
-from grisera_api.models.not_found_model import *
-from grisera_api.time_series.time_series_model import BasicTimeSeriesOut
+from graph_api_service import GraphApiService
+from measure.measure_model import *
+from measure.measure_service_graphdb import MeasureServiceGraphDB
+from measure_name.measure_name_model import BasicMeasureNameOut
+from models.not_found_model import *
+from time_series.time_series_model import BasicTimeSeriesOut
 
 
 class TestMeasureServiceDelete(unittest.TestCase):

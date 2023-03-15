@@ -1,9 +1,9 @@
 import asyncio
 import unittest
 import unittest.mock as mock
-from grisera_api.experiment.experiment_router import *
-from grisera_api.experiment.experiment_service_graphdb import ExperimentServiceGraphDB
-from grisera_api.property.property_model import PropertyIn
+from experiment.experiment_router import *
+from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
+from property.property_model import PropertyIn
 
 
 class TestExperimentRouterPut(unittest.TestCase):

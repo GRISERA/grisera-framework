@@ -1,12 +1,12 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.modality.modality_model import *
-from grisera_api.models.not_found_model import *
+from modality.modality_model import *
+from models.not_found_model import *
 
-from grisera_api.modality.modality_service_graphdb import ModalityServiceGraphDB
-from grisera_api.graph_api_service import GraphApiService
-from grisera_api.observable_information.observable_information_model import BasicObservableInformationOut
+from modality.modality_service_graphdb import ModalityServiceGraphDB
+from graph_api_service import GraphApiService
+from observable_information.observable_information_model import BasicObservableInformationOut
 
 
 class TestModalityServiceGet(unittest.TestCase):

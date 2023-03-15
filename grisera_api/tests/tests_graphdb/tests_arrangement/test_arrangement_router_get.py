@@ -2,9 +2,9 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from grisera_api.arrangement.arrangement_model import BasicArrangementOut
-from grisera_api.arrangement.arrangement_router import *
-from grisera_api.arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
+from arrangement.arrangement_model import BasicArrangementOut
+from arrangement.arrangement_router import *
+from arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
 
 
 class TestArrangementRouterGet(unittest.TestCase):

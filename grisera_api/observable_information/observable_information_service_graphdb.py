@@ -1,12 +1,12 @@
 from typing import Union
 
-from ..graph_api_service import GraphApiService
-from ..helpers import create_stub_from_response
-from ..observable_information.observable_information_model import ObservableInformationIn, ObservableInformationOut, \
+from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
+from observable_information.observable_information_model import ObservableInformationIn, ObservableInformationOut, \
     BasicObservableInformationOut, ObservableInformationsOut
-from ..observable_information.observable_information_service import ObservableInformationService
-from ..models.not_found_model import NotFoundByIdModel
-from ..services import Services
+from observable_information.observable_information_service import ObservableInformationService
+from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 
 class ObservableInformationServiceGraphDB(ObservableInformationService):

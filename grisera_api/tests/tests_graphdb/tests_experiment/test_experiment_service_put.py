@@ -1,12 +1,12 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.activity_execution.activity_execution_model import BasicActivityExecutionOut
-from grisera_api.experiment.experiment_model import *
-from grisera_api.models.not_found_model import *
+from activity_execution.activity_execution_model import BasicActivityExecutionOut
+from experiment.experiment_model import *
+from models.not_found_model import *
 
-from grisera_api.experiment.experiment_service_graphdb import ExperimentServiceGraphDB
-from grisera_api.graph_api_service import GraphApiService
+from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
+from graph_api_service import GraphApiService
 
 
 class TestExperimentServicePut(unittest.TestCase):

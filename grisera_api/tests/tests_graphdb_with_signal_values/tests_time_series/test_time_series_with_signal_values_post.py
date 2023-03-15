@@ -1,10 +1,10 @@
 import unittest
 from unittest import mock
 
-from grisera_api.graph_api_service import GraphApiService
-from grisera_api.time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, Type, SignalIn, TimestampNodesIn, \
+from graph_api_service import GraphApiService
+from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, Type, SignalIn, TimestampNodesIn, \
     SignalValueNodesIn
-from grisera_api.time_series.time_series_service_graphdb_with_signal_values import \
+from time_series.time_series_service_graphdb_with_signal_values import \
     TimeSeriesServiceGraphDBWithSignalValues
 
 

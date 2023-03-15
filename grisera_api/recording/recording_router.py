@@ -3,16 +3,16 @@ from typing import Union
 from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
-from ..hateoas import get_links
-from ..models.not_found_model import NotFoundByIdModel
-from ..recording.recording_model import (
+from hateoas import get_links
+from models.not_found_model import NotFoundByIdModel
+from recording.recording_model import (
     RecordingPropertyIn,
     RecordingRelationIn,
     RecordingIn,
     RecordingOut,
     RecordingsOut,
 )
-from ..services import Services
+from services import Services
 
 router = InferringRouter()
 

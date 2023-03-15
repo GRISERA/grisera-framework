@@ -1,12 +1,12 @@
 from typing import Union
 
-from ..activity_execution.activity_execution_service import ActivityExecutionService
-from ..graph_api_service import GraphApiService
-from ..activity_execution.activity_execution_model import ActivityExecutionPropertyIn, ActivityExecutionRelationIn, \
+from activity_execution.activity_execution_service import ActivityExecutionService
+from graph_api_service import GraphApiService
+from activity_execution.activity_execution_model import ActivityExecutionPropertyIn, ActivityExecutionRelationIn, \
     ActivityExecutionIn, ActivityExecutionOut, ActivityExecutionsOut, BasicActivityExecutionOut
-from ..models.not_found_model import NotFoundByIdModel
-from ..services import Services
-from ..helpers import create_stub_from_response
+from models.not_found_model import NotFoundByIdModel
+from services import Services
+from helpers import create_stub_from_response
 
 
 class ActivityExecutionServiceGraphDB(ActivityExecutionService):

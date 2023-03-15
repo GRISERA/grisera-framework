@@ -1,12 +1,12 @@
 from typing import Union
 
-from ..appearance.appearance_service import AppearanceService
-from ..graph_api_service import GraphApiService
-from ..appearance.appearance_model import AppearanceOcclusionIn, AppearanceOcclusionOut, BasicAppearanceOcclusionOut, \
+from appearance.appearance_service import AppearanceService
+from graph_api_service import GraphApiService
+from appearance.appearance_model import AppearanceOcclusionIn, AppearanceOcclusionOut, BasicAppearanceOcclusionOut, \
     AppearanceSomatotypeIn, AppearanceSomatotypeOut, BasicAppearanceSomatotypeOut, AppearancesOut
-from ..helpers import create_stub_from_response
-from ..models.not_found_model import NotFoundByIdModel
-from ..services import Services
+from helpers import create_stub_from_response
+from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 
 class AppearanceServiceGraphDB(AppearanceService):

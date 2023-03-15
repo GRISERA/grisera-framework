@@ -2,9 +2,9 @@ from typing import Optional, Union, List
 
 from pydantic import BaseModel
 
-from ..models.base_model_out import BaseModelOut
-from ..measure_name.measure_name_model import MeasureNameOut
-from ..time_series.time_series_model import TimeSeriesOut
+from models.base_model_out import BaseModelOut
+from measure_name.measure_name_model import MeasureNameOut
+from time_series.time_series_model import TimeSeriesOut
 
 
 class MeasurePropertyIn(BaseModel):

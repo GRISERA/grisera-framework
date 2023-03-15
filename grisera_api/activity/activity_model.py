@@ -3,9 +3,9 @@ from enum import Enum
 
 from pydantic import BaseModel
 
-from ..activity_execution.activity_execution_model import ActivityExecutionOut
-from ..models.base_model_out import BaseModelOut
-from ..property.property_model import PropertyIn
+from activity_execution.activity_execution_model import ActivityExecutionOut
+from models.base_model_out import BaseModelOut
+from property.property_model import PropertyIn
 
 
 class Activity(str, Enum):

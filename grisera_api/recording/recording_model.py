@@ -2,13 +2,13 @@ from typing import Optional, List, Union
 
 from pydantic import BaseModel
 
-from ..models.base_model_out import BaseModelOut
-from ..observable_information.observable_information_model import (
+from models.base_model_out import BaseModelOut
+from observable_information.observable_information_model import (
     ObservableInformationOut,
 )
-from ..participation.participation_model import ParticipationOut
-from ..property.property_model import PropertyIn
-from ..registered_channel.registered_channel_model import RegisteredChannelOut
+from participation.participation_model import ParticipationOut
+from property.property_model import PropertyIn
+from registered_channel.registered_channel_model import RegisteredChannelOut
 
 
 class RecordingPropertyIn(BaseModel):

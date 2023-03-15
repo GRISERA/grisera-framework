@@ -1,12 +1,12 @@
 from typing import Union
 
-from ..graph_api_service import GraphApiService
-from ..helpers import create_stub_from_response
-from ..participation.participation_model import ParticipationIn, ParticipationOut, ParticipationsOut, \
+from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
+from participation.participation_model import ParticipationIn, ParticipationOut, ParticipationsOut, \
     BasicParticipationOut
-from ..models.not_found_model import NotFoundByIdModel
-from ..participation.participation_service import ParticipationService
-from ..services import Services
+from models.not_found_model import NotFoundByIdModel
+from participation.participation_service import ParticipationService
+from services import Services
 
 
 class ParticipationServiceGraphDB(ParticipationService):

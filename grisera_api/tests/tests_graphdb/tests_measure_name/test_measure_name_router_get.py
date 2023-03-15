@@ -1,9 +1,9 @@
 import asyncio
 import unittest
 import unittest.mock as mock
-from grisera_api.measure_name.measure_name_router import *
-from grisera_api.measure_name.measure_name_model import BasicMeasureNameOut
-from grisera_api.measure_name.measure_name_service_graphdb import MeasureNameServiceGraphDB
+from measure_name.measure_name_router import *
+from measure_name.measure_name_model import BasicMeasureNameOut
+from measure_name.measure_name_service_graphdb import MeasureNameServiceGraphDB
 
 
 class TestMeasureNameRouterGet(unittest.TestCase):

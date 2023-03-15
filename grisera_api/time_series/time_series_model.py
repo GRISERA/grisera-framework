@@ -3,12 +3,12 @@ from typing import Optional, List, Union
 
 from pydantic import BaseModel
 
-from ..measure.measure_model import MeasureOut
-from ..models.base_model_out import BaseModelOut
-from ..observable_information.observable_information_model import (
+from measure.measure_model import MeasureOut
+from models.base_model_out import BaseModelOut
+from observable_information.observable_information_model import (
     ObservableInformationOut,
 )
-from ..property.property_model import PropertyIn
+from property.property_model import PropertyIn
 
 
 class TransformationType(str, Enum):

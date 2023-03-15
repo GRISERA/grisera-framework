@@ -1,7 +1,7 @@
 from typing import Union
 
-from ..scenario.scenario_model import ScenarioIn, OrderChangeIn
-from ..activity_execution.activity_execution_model import ActivityExecutionIn
+from scenario.scenario_model import ScenarioIn, OrderChangeIn
+from activity_execution.activity_execution_model import ActivityExecutionIn
 
 
 class ScenarioService:

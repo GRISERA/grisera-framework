@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..participant.participant_model import ParticipantIn
+from participant.participant_model import ParticipantIn
 
 
 class ParticipantService:

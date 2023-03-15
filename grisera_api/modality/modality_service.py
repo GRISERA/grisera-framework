@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..modality.modality_model import ModalityIn
+from modality.modality_model import ModalityIn
 
 
 class ModalityService:

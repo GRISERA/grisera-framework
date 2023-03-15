@@ -1,13 +1,11 @@
-from typing import Optional, Union
+from typing import Union, Optional
 
 from starlette.datastructures import QueryParams
 
 from graph_api_service import GraphApiService
 from helpers import create_stub_from_response
 from services import Services
-from measure.measure_service_graphdb import MeasureServiceGraphDB
 from models.not_found_model import NotFoundByIdModel
-from observable_information.observable_information_service_graphdb import ObservableInformationServiceGraphDB
 from time_series.time_series_model import TimeSeriesPropertyIn, BasicTimeSeriesOut, \
     TimeSeriesNodesOut, TimeSeriesOut, TimeSeriesIn, TimeSeriesRelationIn
 from time_series.time_series_service import TimeSeriesService

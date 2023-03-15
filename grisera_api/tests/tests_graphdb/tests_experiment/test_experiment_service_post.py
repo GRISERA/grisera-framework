@@ -1,9 +1,9 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.graph_api_service import GraphApiService
-from grisera_api.experiment.experiment_model import *
-from grisera_api.experiment.experiment_service_graphdb import ExperimentServiceGraphDB
+from graph_api_service import GraphApiService
+from experiment.experiment_model import *
+from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
 
 
 class TestExperimentServicePost(unittest.TestCase):

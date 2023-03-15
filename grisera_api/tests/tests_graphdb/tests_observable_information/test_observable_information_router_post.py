@@ -2,8 +2,8 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from grisera_api.observable_information.observable_information_router import *
-from grisera_api.observable_information.observable_information_service_graphdb import \
+from observable_information.observable_information_router import *
+from observable_information.observable_information_service_graphdb import \
     ObservableInformationServiceGraphDB
 
 

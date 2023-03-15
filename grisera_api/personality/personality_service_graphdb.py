@@ -1,12 +1,12 @@
 from typing import Union
 
-from ..graph_api_service import GraphApiService
-from ..helpers import create_stub_from_response
-from ..personality.personality_model import PersonalityBigFiveIn, PersonalityBigFiveOut, \
+from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
+from personality.personality_model import PersonalityBigFiveIn, PersonalityBigFiveOut, \
     PersonalityPanasIn, PersonalityPanasOut, BasicPersonalityBigFiveOut, BasicPersonalityPanasOut, PersonalitiesOut
-from ..models.not_found_model import NotFoundByIdModel
-from ..personality.personality_service import PersonalityService
-from ..services import Services
+from models.not_found_model import NotFoundByIdModel
+from personality.personality_service import PersonalityService
+from services import Services
 
 
 class PersonalityServiceGraphDB(PersonalityService):

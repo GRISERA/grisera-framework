@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..life_activity.life_activity_model import LifeActivityIn
+from life_activity.life_activity_model import LifeActivityIn
 
 
 class LifeActivityService:

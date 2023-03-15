@@ -1,12 +1,12 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.measure.measure_model import BasicMeasureOut
-from grisera_api.measure_name.measure_name_model import *
-from grisera_api.models.not_found_model import *
+from measure.measure_model import BasicMeasureOut
+from measure_name.measure_name_model import *
+from models.not_found_model import *
 
-from grisera_api.measure_name.measure_name_service_graphdb import MeasureNameServiceGraphDB
-from grisera_api.graph_api_service import GraphApiService
+from measure_name.measure_name_service_graphdb import MeasureNameServiceGraphDB
+from graph_api_service import GraphApiService
 
 
 class TestMeasureNameServiceGet(unittest.TestCase):

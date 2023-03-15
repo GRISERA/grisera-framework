@@ -1,12 +1,12 @@
 from typing import Union
 
-from ..graph_api_service import GraphApiService
-from ..helpers import create_stub_from_response
-from ..registered_channel.registered_channel_service import RegisteredChannelService
-from ..registered_channel.registered_channel_model import BasicRegisteredChannelOut, RegisteredChannelsOut, \
+from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
+from registered_channel.registered_channel_service import RegisteredChannelService
+from registered_channel.registered_channel_model import BasicRegisteredChannelOut, RegisteredChannelsOut, \
     RegisteredChannelOut, RegisteredChannelIn
-from ..models.not_found_model import NotFoundByIdModel
-from ..services import Services
+from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 
 class RegisteredChannelServiceGraphDB(RegisteredChannelService):

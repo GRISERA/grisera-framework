@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..measure.measure_model import MeasurePropertyIn, MeasureIn, MeasureRelationIn
+from measure.measure_model import MeasurePropertyIn, MeasureIn, MeasureRelationIn
 
 
 class MeasureService:

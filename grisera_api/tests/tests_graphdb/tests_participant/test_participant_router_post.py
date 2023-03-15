@@ -2,8 +2,8 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from grisera_api.participant.participant_router import *
-from grisera_api.participant.participant_service_graphdb import ParticipantServiceGraphDB
+from participant.participant_router import *
+from participant.participant_service_graphdb import ParticipantServiceGraphDB
 
 
 class TestParticipantRouterPost(unittest.TestCase):

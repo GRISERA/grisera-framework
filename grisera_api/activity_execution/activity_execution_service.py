@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..activity_execution.activity_execution_model import ActivityExecutionPropertyIn, ActivityExecutionRelationIn, \
+from activity_execution.activity_execution_model import ActivityExecutionPropertyIn, ActivityExecutionRelationIn, \
     ActivityExecutionIn
 
 

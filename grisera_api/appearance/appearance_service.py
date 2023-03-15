@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..appearance.appearance_model import AppearanceOcclusionIn, AppearanceSomatotypeIn
+from appearance.appearance_model import AppearanceOcclusionIn, AppearanceSomatotypeIn
 
 
 class AppearanceService:

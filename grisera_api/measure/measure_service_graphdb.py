@@ -1,12 +1,12 @@
 from typing import Union
 
-from ..graph_api_service import GraphApiService
-from ..helpers import create_stub_from_response
-from ..measure.measure_model import MeasurePropertyIn, BasicMeasureOut, \
+from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
+from measure.measure_model import MeasurePropertyIn, BasicMeasureOut, \
     MeasuresOut, MeasureOut, MeasureIn, MeasureRelationIn
-from ..measure.measure_service import MeasureService
-from ..models.not_found_model import NotFoundByIdModel
-from ..services import Services
+from measure.measure_service import MeasureService
+from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 
 class MeasureServiceGraphDB(MeasureService):

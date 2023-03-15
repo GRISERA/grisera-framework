@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..arrangement.arrangement_model import ArrangementIn
+from arrangement.arrangement_model import ArrangementIn
 
 
 class ArrangementService:

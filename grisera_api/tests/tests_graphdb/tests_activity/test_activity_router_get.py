@@ -2,9 +2,9 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from grisera_api.activity.activity_model import BasicActivityOut
-from grisera_api.activity.activity_service_graphdb import ActivityServiceGraphDB
-from grisera_api.activity.activity_router import *
+from activity.activity_model import BasicActivityOut
+from activity.activity_service_graphdb import ActivityServiceGraphDB
+from activity.activity_router import *
 from fastapi import Response
 
 

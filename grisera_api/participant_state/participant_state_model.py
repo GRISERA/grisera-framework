@@ -3,15 +3,15 @@ from typing import Optional, Union
 
 from pydantic import BaseModel
 
-from ..appearance.appearance_model import (
+from appearance.appearance_model import (
     AppearanceSomatotypeOut,
     AppearanceOcclusionOut,
 )
-from ..participation.participation_model import ParticipationOut
-from ..participant.participant_model import ParticipantOut
-from ..personality.personality_model import PersonalityBigFiveOut, PersonalityPanasOut
-from ..property.property_model import PropertyIn
-from ..models.base_model_out import BaseModelOut
+from participation.participation_model import ParticipationOut
+from participant.participant_model import ParticipantOut
+from personality.personality_model import PersonalityBigFiveOut, PersonalityPanasOut
+from property.property_model import PropertyIn
+from models.base_model_out import BaseModelOut
 
 
 class ParticipantStatePropertyIn(BaseModel):

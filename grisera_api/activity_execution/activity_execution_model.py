@@ -2,12 +2,12 @@ from typing import Optional, List, Union
 
 from pydantic import BaseModel
 
-from ..participation.participation_model import ParticipationOut
-from ..property.property_model import PropertyIn
-from ..activity.activity_model import ActivityOut
-from ..experiment.experiment_model import ExperimentOut
-from ..arrangement.arrangement_model import ArrangementOut
-from ..models.base_model_out import BaseModelOut
+from participation.participation_model import ParticipationOut
+from property.property_model import PropertyIn
+from activity.activity_model import ActivityOut
+from experiment.experiment_model import ExperimentOut
+from arrangement.arrangement_model import ArrangementOut
+from models.base_model_out import BaseModelOut
 
 
 class ActivityExecutionPropertyIn(BaseModel):

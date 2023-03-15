@@ -1,11 +1,11 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.graph_api_service import GraphApiService
-from grisera_api.measure.measure_model import BasicMeasureOut
-from grisera_api.observable_information.observable_information_model import BasicObservableInformationOut
-from grisera_api.time_series.time_series_model import *
-from grisera_api.time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
+from graph_api_service import GraphApiService
+from measure.measure_model import BasicMeasureOut
+from observable_information.observable_information_model import BasicObservableInformationOut
+from time_series.time_series_model import *
+from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 
 
 def relationship_function(*args, **kwargs):

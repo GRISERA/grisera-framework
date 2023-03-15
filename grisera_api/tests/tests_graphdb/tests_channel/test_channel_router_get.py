@@ -2,9 +2,9 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from grisera_api.channel.channel_model import BasicChannelOut
-from grisera_api.channel.channel_router import *
-from grisera_api.channel.channel_service_graphdb import ChannelServiceGraphDB
+from channel.channel_model import BasicChannelOut
+from channel.channel_router import *
+from channel.channel_service_graphdb import ChannelServiceGraphDB
 
 
 class TestChannelRouterGet(unittest.TestCase):

@@ -1,12 +1,12 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.life_activity.life_activity_model import *
-from grisera_api.models.not_found_model import *
+from life_activity.life_activity_model import *
+from models.not_found_model import *
 
-from grisera_api.life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
-from grisera_api.graph_api_service import GraphApiService
-from grisera_api.observable_information.observable_information_model import BasicObservableInformationOut
+from life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
+from graph_api_service import GraphApiService
+from observable_information.observable_information_model import BasicObservableInformationOut
 
 
 class TestLifeActivityServiceGet(unittest.TestCase):

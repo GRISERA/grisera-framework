@@ -1,13 +1,13 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.measure.measure_model import BasicMeasureOut
-from grisera_api.observable_information.observable_information_model import BasicObservableInformationOut
-from grisera_api.time_series.time_series_model import *
-from grisera_api.models.not_found_model import *
+from measure.measure_model import BasicMeasureOut
+from observable_information.observable_information_model import BasicObservableInformationOut
+from time_series.time_series_model import *
+from models.not_found_model import *
 
-from grisera_api.time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
-from grisera_api.graph_api_service import GraphApiService
+from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
+from graph_api_service import GraphApiService
 
 
 class TestTimeSeriesServicePut(unittest.TestCase):

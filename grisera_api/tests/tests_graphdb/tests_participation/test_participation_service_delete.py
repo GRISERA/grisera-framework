@@ -1,13 +1,13 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.activity_execution.activity_execution_model import BasicActivityExecutionOut
-from grisera_api.graph_api_service import GraphApiService
-from grisera_api.models.not_found_model import *
-from grisera_api.participant_state.participant_state_model import BasicParticipantStateOut
-from grisera_api.participation.participation_model import *
-from grisera_api.participation.participation_service_graphdb import ParticipationServiceGraphDB
-from grisera_api.recording.recording_model import BasicRecordingOut
+from activity_execution.activity_execution_model import BasicActivityExecutionOut
+from graph_api_service import GraphApiService
+from models.not_found_model import *
+from participant_state.participant_state_model import BasicParticipantStateOut
+from participation.participation_model import *
+from participation.participation_service_graphdb import ParticipationServiceGraphDB
+from recording.recording_model import BasicRecordingOut
 
 
 class TestParticipationServiceDelete(unittest.TestCase):

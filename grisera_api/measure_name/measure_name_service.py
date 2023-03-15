@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..measure_name.measure_name_model import MeasureNameIn
+from measure_name.measure_name_model import MeasureNameIn
 
 
 class MeasureNameService:

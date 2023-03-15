@@ -1,11 +1,11 @@
 from typing import Union
 
-from ..graph_api_service import GraphApiService
-from ..helpers import create_stub_from_response
-from ..modality.modality_model import ModalityIn, ModalityOut, ModalitiesOut, BasicModalityOut
-from ..modality.modality_service import ModalityService
-from ..models.not_found_model import NotFoundByIdModel
-from ..services import Services
+from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
+from modality.modality_model import ModalityIn, ModalityOut, ModalitiesOut, BasicModalityOut
+from modality.modality_service import ModalityService
+from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 
 class ModalityServiceGraphDB(ModalityService):

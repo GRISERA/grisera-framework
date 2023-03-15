@@ -3,15 +3,15 @@ from typing import Union
 from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
-from ..hateoas import get_links
-from ..models.not_found_model import NotFoundByIdModel
-from ..registered_channel.registered_channel_model import (
+from hateoas import get_links
+from models.not_found_model import NotFoundByIdModel
+from registered_channel.registered_channel_model import (
     RegisteredChannelIn,
     RegisteredChannelsOut,
     RegisteredChannelOut,
 )
 
-from ..services import Services
+from services import Services
 
 router = InferringRouter()
 

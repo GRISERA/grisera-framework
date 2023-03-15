@@ -2,8 +2,8 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from grisera_api.activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
-from grisera_api.activity_execution.activity_execution_router import *
+from activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
+from activity_execution.activity_execution_router import *
 
 
 class TestActivityExecutionRouterPost(unittest.TestCase):

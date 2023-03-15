@@ -1,14 +1,14 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.observable_information.observable_information_model import BasicObservableInformationOut
-from grisera_api.participation.participation_model import BasicParticipationOut
-from grisera_api.recording.recording_model import *
-from grisera_api.models.not_found_model import *
+from observable_information.observable_information_model import BasicObservableInformationOut
+from participation.participation_model import BasicParticipationOut
+from recording.recording_model import *
+from models.not_found_model import *
 
-from grisera_api.recording.recording_service_graphdb import RecordingServiceGraphDB
-from grisera_api.graph_api_service import GraphApiService
-from grisera_api.registered_channel.registered_channel_model import BasicRegisteredChannelOut
+from recording.recording_service_graphdb import RecordingServiceGraphDB
+from graph_api_service import GraphApiService
+from registered_channel.registered_channel_model import BasicRegisteredChannelOut
 
 
 class TestRecordingServicePut(unittest.TestCase):

@@ -2,9 +2,9 @@ import asyncio
 import unittest
 import unittest.mock as mock
 
-from grisera_api.activity_execution.activity_execution_model import ActivityExecutionIn, ActivityExecutionOut
-from grisera_api.scenario.scenario_router import *
-from grisera_api.scenario.scenario_service_graphdb import ScenarioServiceGraphDB
+from activity_execution.activity_execution_model import ActivityExecutionIn, ActivityExecutionOut
+from scenario.scenario_router import *
+from scenario.scenario_service_graphdb import ScenarioServiceGraphDB
 
 
 class TestScenarioRouter(unittest.TestCase):

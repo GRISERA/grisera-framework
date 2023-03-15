@@ -1,8 +1,8 @@
 import asyncio
 import unittest
 import unittest.mock as mock
-from grisera_api.time_series.time_series_router import *
-from grisera_api.time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
+from time_series.time_series_router import *
+from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 
 
 class TestTimeSeriesRouterDelete(unittest.TestCase):

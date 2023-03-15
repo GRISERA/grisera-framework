@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..recording.recording_model import RecordingPropertyIn, RecordingIn
+from recording.recording_model import RecordingPropertyIn, RecordingIn
 
 
 class RecordingService:

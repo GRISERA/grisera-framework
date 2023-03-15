@@ -1,11 +1,11 @@
 from typing import Union
 
-from ..graph_api_service import GraphApiService
-from ..helpers import create_stub_from_response
-from ..life_activity.life_activity_model import LifeActivityIn, LifeActivityOut, LifeActivitiesOut, BasicLifeActivityOut
-from ..life_activity.life_activity_service import LifeActivityService
-from ..models.not_found_model import NotFoundByIdModel
-from ..services import Services
+from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
+from life_activity.life_activity_model import LifeActivityIn, LifeActivityOut, LifeActivitiesOut, BasicLifeActivityOut
+from life_activity.life_activity_service import LifeActivityService
+from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 
 class LifeActivityServiceGraphDB(LifeActivityService):

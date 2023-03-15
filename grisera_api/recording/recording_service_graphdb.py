@@ -1,11 +1,11 @@
 from typing import Union
 
-from ..graph_api_service import GraphApiService
-from ..helpers import create_stub_from_response
-from ..recording.recording_service import RecordingService
-from ..recording.recording_model import RecordingPropertyIn, RecordingIn, BasicRecordingOut, RecordingOut, RecordingsOut
-from ..models.not_found_model import NotFoundByIdModel
-from ..services import Services
+from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
+from recording.recording_service import RecordingService
+from recording.recording_model import RecordingPropertyIn, RecordingIn, BasicRecordingOut, RecordingOut, RecordingsOut
+from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 
 class RecordingServiceGraphDB(RecordingService):

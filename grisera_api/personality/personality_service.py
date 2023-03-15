@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..personality.personality_model import PersonalityBigFiveIn, PersonalityPanasIn
+from personality.personality_model import PersonalityBigFiveIn, PersonalityPanasIn
 
 
 class PersonalityService:

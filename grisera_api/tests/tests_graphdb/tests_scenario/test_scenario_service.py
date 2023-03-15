@@ -1,10 +1,10 @@
 import unittest
 import unittest.mock as mock
 
-from grisera_api.activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
-from grisera_api.graph_api_service import GraphApiService
-from grisera_api.scenario.scenario_model import *
-from grisera_api.scenario.scenario_service_graphdb import ScenarioServiceGraphDB
+from activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
+from graph_api_service import GraphApiService
+from scenario.scenario_model import *
+from scenario.scenario_service_graphdb import ScenarioServiceGraphDB
 
 
 class TestScenarioService(unittest.TestCase):

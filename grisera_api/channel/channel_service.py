@@ -1,6 +1,6 @@
 from typing import Union
 
-from ..channel.channel_model import ChannelIn
+from channel.channel_model import ChannelIn
 
 
 class ChannelService:

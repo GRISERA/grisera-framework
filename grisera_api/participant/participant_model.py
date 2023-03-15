@@ -4,9 +4,9 @@ from datetime import date
 
 from pydantic import BaseModel
 
-from ..participant_state.participant_state_model import ParticipantStateOut
-from ..property.property_model import PropertyIn
-from ..models.base_model_out import BaseModelOut
+from participant_state.participant_state_model import ParticipantStateOut
+from property.property_model import PropertyIn
+from models.base_model_out import BaseModelOut
 
 
 class Sex(str, Enum):

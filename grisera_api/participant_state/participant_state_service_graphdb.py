@@ -1,12 +1,12 @@
 from typing import Union
 
-from ..graph_api_service import GraphApiService
-from ..helpers import create_stub_from_response
-from ..participant_state.participant_state_service import ParticipantStateService
-from ..participant_state.participant_state_model import ParticipantStatePropertyIn, BasicParticipantStateOut, \
+from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
+from participant_state.participant_state_service import ParticipantStateService
+from participant_state.participant_state_model import ParticipantStatePropertyIn, BasicParticipantStateOut, \
     ParticipantStatesOut, ParticipantStateOut, ParticipantStateIn, ParticipantStateRelationIn
-from ..models.not_found_model import NotFoundByIdModel
-from ..services import Services
+from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 
 class ParticipantStateServiceGraphDB(ParticipantStateService):

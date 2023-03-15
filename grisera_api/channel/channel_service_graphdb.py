@@ -1,11 +1,11 @@
 from typing import Union
 
-from ..channel.channel_service import ChannelService
-from ..graph_api_service import GraphApiService
-from ..channel.channel_model import ChannelIn, ChannelOut, ChannelsOut, BasicChannelOut
-from ..helpers import create_stub_from_response
-from ..models.not_found_model import NotFoundByIdModel
-from ..services import Services
+from channel.channel_service import ChannelService
+from graph_api_service import GraphApiService
+from channel.channel_model import ChannelIn, ChannelOut, ChannelsOut, BasicChannelOut
+from helpers import create_stub_from_response
+from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 
 class ChannelServiceGraphDB(ChannelService):

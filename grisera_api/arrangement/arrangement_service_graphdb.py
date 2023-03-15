@@ -1,11 +1,11 @@
 from typing import Union
 
-from ..arrangement.arrangement_service import ArrangementService
-from ..graph_api_service import GraphApiService
-from ..arrangement.arrangement_model import ArrangementIn, ArrangementOut, ArrangementsOut, BasicArrangementOut
-from ..helpers import create_stub_from_response
-from ..models.not_found_model import NotFoundByIdModel
-from ..services import Services
+from arrangement.arrangement_service import ArrangementService
+from graph_api_service import GraphApiService
+from arrangement.arrangement_model import ArrangementIn, ArrangementOut, ArrangementsOut, BasicArrangementOut
+from helpers import create_stub_from_response
+from models.not_found_model import NotFoundByIdModel
+from services import Services
 
 
 class ArrangementServiceGraphDB(ArrangementService):

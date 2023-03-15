@@ -1,10 +1,10 @@
 import asyncio
 import unittest
 import unittest.mock as mock
-from grisera_api.registered_data.registered_data_router import *
-from grisera_api.registered_data.registered_data_model import BasicRegisteredDataOut
-from grisera_api.property.property_model import PropertyIn
-from grisera_api.registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
+from registered_data.registered_data_router import *
+from registered_data.registered_data_model import BasicRegisteredDataOut
+from property.property_model import PropertyIn
+from registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
 
 
 class TestRegisteredDataRouterGet(unittest.TestCase):
