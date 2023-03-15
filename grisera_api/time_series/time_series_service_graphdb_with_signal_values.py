@@ -1,4 +1,4 @@
-from typing import List, Union, Optional
+from typing import List, Optional
 
 from starlette.datastructures import QueryParams
 
@@ -203,15 +203,14 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             return self.graph_api_service.get_node(new_timestamp_id)
         return timestamp
 
-    def create_signal_value(self, signal_value: Union[str, float], previous_signal_value_node, time_series_id: int):
+    def create_signal_value(self, signal_value: SignalValueNodesIn, previous_signal_value_node, time_series_id: int):
         signal_value_node_response = self.graph_api_service.create_node("`Signal Value`")
 
         if signal_value_node_response["errors"] is not None:
             return signal_value_node_response
 
         signal_value_properties_response = self.graph_api_service.create_properties(signal_value_node_response["id"],
-                                                                                    SignalValueNodesIn(
-                                                                                        value=signal_value))
+                                                                                    signal_value)
         if signal_value_properties_response["errors"] is not None:
             return signal_value_properties_response
 
@@ -234,7 +233,8 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         signal_value_node = None
 
         for signal_value in signal_values:
-            current_signal_value_node = self.create_signal_value(signal_value.value, signal_value_node, time_series_id)
+            current_signal_value_node = self.create_signal_value(signal_value.signal_value, signal_value_node,
+                                                                 time_series_id)
 
             if current_signal_value_node["errors"] is not None:
                 return current_signal_value_node

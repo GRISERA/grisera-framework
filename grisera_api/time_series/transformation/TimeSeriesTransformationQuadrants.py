@@ -2,7 +2,8 @@ from typing import List, Optional
 
 from property.property_model import PropertyIn
 from time_series.helpers import get_node_property, get_additional_parameter
-from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, SignalIn, Type, TransformationType
+from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, SignalIn, Type, TransformationType, \
+    SignalValueNodesIn
 from time_series.transformation.TimeSeriesTransformation import TimeSeriesTransformation
 
 
@@ -65,7 +66,7 @@ class TimeSeriesTransformationQuadrants(TimeSeriesTransformation):
                     get_node_property(time_series[1].signal_values[current_signal_value_y_index]["signal_value"],
                                       "value")) >= origin_y else 0
                 quadrant = 1 + [(1, 1), (0, 1), (0, 0), (1, 0)].index((x_positive, y_positive))
-                new_signal_values.append(SignalIn(value=quadrant,
+                new_signal_values.append(SignalIn(signal_value=SignalValueNodesIn(value=quadrant),
                                                   timestamp=get_node_property(
                                                       current_signal_value_x["timestamp"], "timestamp"),
                                                   start_timestamp=get_node_property(
