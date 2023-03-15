@@ -151,7 +151,7 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
         self.assertEqual(
             (
                 TimeSeriesIn(
-                    type=Type.epoch,
+                    type=Type.timestamp,
                     signal_values=[
                         SignalIn(timestamp=0, signal_value=SignalValueNodesIn(value='10')),
                         SignalIn(timestamp=5, signal_value=SignalValueNodesIn(value='10')),
@@ -183,7 +183,7 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
         self.assertEqual(
             (
                 TimeSeriesIn(
-                    type=Type.epoch,
+                    type=Type.timestamp,
                     signal_values=[
                         SignalIn(timestamp=6, signal_value=SignalValueNodesIn(value='20')),
                         SignalIn(timestamp=16, signal_value=SignalValueNodesIn(value='20')),

@@ -2,6 +2,8 @@
 
 Name: `resample_nearest`
 
+This transformation manipulates timestamp values and finds the nearest signal value for each new timestamp.
+
 ## Input parameters
 
 | Name            | Required | Default value                         | Description                                                          |
@@ -13,6 +15,8 @@ Name: `resample_nearest`
 ## Additional remarks
 
 - this transformation allows to transform only one time series at the same time
+- output time series type is always `Timestamp`
+- if two signal values have the same difference, earlier is used
 
 ## Examples
 
@@ -47,19 +51,19 @@ Input parameters:
 - start_timestamp = 10
 - end_timestamp = 20
 
-| Timestamp | Signal value |
-|-----------|--------------|
-| 1         | 10           |
-| 7         | 20           |
-| 14        | 30           |
-| 20        | 40           |
+| Begin timestamp | End timestamp | Signal value |
+|-----------------|---------------|--------------|
+| 1               | 2             | 10           |
+| 7               | 10            | 20           |
+| 14              | 18            | 30           |
+| 20              | 25            | 40           |
 
 Output:
 
 | Timestamp | Signal value |
 |-----------|--------------|
 | 10        | 20           |
-| 12        | 30           |
+| 12        | 20           |
 | 14        | 30           |
 | 16        | 30           |
-| 18        | 40           |
+| 18        | 30           |
