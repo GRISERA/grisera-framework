@@ -1,30 +1,13 @@
-from typing import Optional, Any
+from typing import Optional, Union
 from pydantic import BaseModel
 
 
-class MinimalRoleModelIn(BaseModel):
-    role_name: Optional[str]
-    src_instance_name: Optional[str]
+class RoleModelIn(BaseModel):
+    role: Optional[str]
+    instance_name: Optional[str]
+    value: Union[str, int, None]
 
 
-class ObjectPropertyRoleModelIn(MinimalRoleModelIn):
-    dst_instance_name: Optional[str]
-
-
-class DataTypePropertyRoleModelIn(MinimalRoleModelIn):
-    value: Optional[Any]
-
-
-class MinimalRoleModelOut(BaseModel):
+class RoleModelOut(RoleModelIn):
     links: Optional[str]
-    role_name: Optional[str]
-    src_instance_name: Optional[str]
     errors: Optional[str]
-
-
-class ObjectPropertyRoleModelOut(MinimalRoleModelOut):
-    dst_instance_name: Optional[str]
-
-
-class DataTypePropertyRoleModelOut(MinimalRoleModelOut):
-    value: Optional[Any]
