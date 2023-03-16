@@ -2,9 +2,11 @@ import json
 import unittest
 import unittest.mock as mock
 
+from requests import Response
+
 from activity_execution.activity_execution_model import ActivityExecutionIn
 from graph_api_service import GraphApiService
-from requests import Response
+from time_series.time_series_model import TimeSeriesTransformationRelationshipIn
 
 
 class DatabaseServiceTestCase(unittest.TestCase):
@@ -134,3 +136,15 @@ class DatabaseServiceTestCase(unittest.TestCase):
         result = self.graph_api_service.create_additional_properties(property_dict)
 
         self.assertEqual(result, [{'key': 'test', 'value': 'test'}, {'key': 'key', 'value': 'value'}])
+
+    @mock.patch.object(GraphApiService, 'post')
+    def test_create_relationship_properties(self, post_mock):
+        post_mock.return_value = self.response_content
+        relationship_id = 1
+        relationship_model = TimeSeriesTransformationRelationshipIn(
+            additional_properties=[{'key': 'test', 'value': '1234'}])
+
+        result = self.graph_api_service.create_relationship_properties(relationship_id, relationship_model)
+
+        self.assertEqual(result, self.response_content)
+        post_mock.assert_called_with("/relationships/1/properties", [{'key': 'test', 'value': '1234'}])

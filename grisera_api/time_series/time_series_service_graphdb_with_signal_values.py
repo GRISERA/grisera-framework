@@ -3,9 +3,12 @@ from typing import List, Union, Optional
 from starlette.datastructures import QueryParams
 
 from models.not_found_model import NotFoundByIdModel
+from time_series.helpers import get_node_property
 from time_series.time_series_model import Type, TimeSeriesIn, TimeSeriesOut, SignalIn, SignalValueNodesIn, \
-    TimestampNodesIn, TimeSeriesNodesOut, BasicTimeSeriesOut
+    TimestampNodesIn, TimeSeriesNodesOut, BasicTimeSeriesOut, TimeSeriesTransformationIn, \
+    TimeSeriesTransformationRelationshipIn
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
+from time_series.transformation.TimeSeriesTransformationFactory import TimeSeriesTransformationFactory
 
 
 class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
@@ -31,6 +34,52 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
 
         result.signal_values = self.get_signal_values(time_series_id, time_series.type)
 
+        return result
+
+    def transform_time_series(self, time_series_transformation: TimeSeriesTransformationIn):
+        """
+        Send request to graph api to create new transformed time series
+
+        Args:
+            time_series_transformation (TimeSeriesTransformationIn): Time series transformation parameters
+
+        Returns:
+            Result of request as time series object
+        """
+        source_time_series = []
+        for time_series_id in time_series_transformation.source_time_series_ids:
+            time_series = self.get_time_series(time_series_id)
+            if time_series.errors is not None:
+                return time_series
+            source_time_series.append(time_series)
+        try:
+            new_time_series, new_signal_values_index_mapping = TimeSeriesTransformationFactory().get_transformation(
+                time_series_transformation.name) \
+                .transform(source_time_series, time_series_transformation.additional_properties)
+        except Exception as e:
+            return TimeSeriesNodesOut(errors=str(e))
+        new_time_series.measure_id = time_series_transformation.destination_measure_id
+        new_time_series.observable_information_id = time_series_transformation.destination_observable_information_id
+
+        result = self.save_time_series(new_time_series)
+
+        for index, time_series_id in enumerate(time_series_transformation.source_time_series_ids):
+            relationship = self.graph_api_service.create_relationships(result.id, time_series_id, "transformedFrom")
+            self.graph_api_service.create_relationship_properties(relationship["id"],
+                                                                  TimeSeriesTransformationRelationshipIn(
+                                                                      additional_properties=[
+                                                                          {'key': 'order', 'value': index + 1}]))
+        assert len(new_signal_values_index_mapping) == len(
+            result.signal_values), "transformation signal values mapping does not have correct length"
+        for new_signal_value_index in range(len(new_signal_values_index_mapping)):
+            new_signal_value_id = result.signal_values[new_signal_value_index]["signal_value"]["id"]
+            for index, old_signal_value_id in enumerate(new_signal_values_index_mapping[new_signal_value_index]):
+                relationship = self.graph_api_service.create_relationships(new_signal_value_id, old_signal_value_id,
+                                                                           "basedOn")
+                self.graph_api_service.create_relationship_properties(relationship["id"],
+                                                                      TimeSeriesTransformationRelationshipIn(
+                                                                          additional_properties=[
+                                                                              {'key': 'order', 'value': index + 1}]))
         return result
 
     def get_experiment_id(self, time_series_id: int):
@@ -115,21 +164,14 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 return get_response, relation_id
         return None, None
 
-    def get_node_property(self, node, property_key: str):
-        if node is not None:
-            for node_property in node["properties"]:
-                if node_property["key"] == property_key:
-                    return node_property["value"]
-        return None
-
     def get_or_create_timestamp_node(self, timestamp_value: int, timestamp):
         previous_timestamp_id = None
         previous_timestamp_timestamp_relation_id = None
-        while timestamp is not None and int(self.get_node_property(timestamp, "timestamp")) < timestamp_value:
+        while timestamp is not None and int(get_node_property(timestamp, "timestamp")) < timestamp_value:
             previous_timestamp_id = timestamp["id"]
             timestamp, previous_timestamp_timestamp_relation_id = self.get_neighbour_node(timestamp["id"], "next")
 
-        if timestamp is None or int(self.get_node_property(timestamp, "timestamp")) != timestamp_value:
+        if timestamp is None or int(get_node_property(timestamp, "timestamp")) != timestamp_value:
             new_timestamp_node = self.graph_api_service.create_node("`Timestamp`")
 
             if new_timestamp_node["errors"] is not None:

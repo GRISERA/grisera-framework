@@ -9,7 +9,7 @@ from hateoas import get_links
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 from time_series.time_series_model import TimeSeriesIn, TimeSeriesNodesOut, TimeSeriesOut, \
-    TimeSeriesPropertyIn, TimeSeriesRelationIn
+    TimeSeriesPropertyIn, TimeSeriesRelationIn, TimeSeriesTransformationIn
 from time_series.time_series_service import TimeSeriesService
 
 router = InferringRouter()
@@ -33,6 +33,22 @@ class TimeSeriesRouter:
         """
 
         create_response = self.time_series_service.save_time_series(time_series)
+        if create_response.errors is not None:
+            response.status_code = 422
+
+        # add links from hateoas
+        create_response.links = get_links(router)
+
+        return create_response
+
+    @router.post("/time_series/transformation", tags=["time series"],
+                 response_model=Union[TimeSeriesOut, NotFoundByIdModel])
+    async def transform_time_series(self, time_series_transformation: TimeSeriesTransformationIn, response: Response):
+        """
+        Create new transformed time series in database
+        """
+
+        create_response = self.time_series_service.transform_time_series(time_series_transformation)
         if create_response.errors is not None:
             response.status_code = 422
 
