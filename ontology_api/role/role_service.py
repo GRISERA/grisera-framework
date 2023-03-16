@@ -41,16 +41,14 @@ class RoleService:
         if dst_instance is None:
             onto.destroy()
             return ObjectPropertyRoleModelOut(errors=f"Instance {model_in.dst_instance_name} not found")
-        code = f"""
-if FunctionalProperty in onto_property.is_a:
-    src_instance.{model_in.role_name} = dst_instance
-else:
-    if src_instance.{model_in.role_name} is not None:
-        src_instance.{model_in.role_name}.append(dst_instance)
-    else:
-        src_instance.{model_in.role_name} = [dst_instance]                
-"""
-        exec(code)
+
+        if FunctionalProperty in onto_property.is_a:
+            setattr(src_instance, model_in.role_name, dst_instance)
+        else:
+            if getattr(src_instance, model_in.role_name) is not None:
+                getattr(src_instance, model_in.role_name).append(dst_instance)
+            else:
+                setattr(src_instance, model_in.role_name, [dst_instance])
 
         model_out = self.model_service.update_ontology(model_id, onto)
 
@@ -96,16 +94,13 @@ else:
         else:
             value = model_in.value
 
-        code = f"""        
-if FunctionalProperty in onto_property.is_a:
-    src_instance.{model_in.role_name} = value
-else:
-    if src_instance.{model_in.role_name} is not None:
-        src_instance.{model_in.role_name}.append(value)
-    else:
-        src_instance.{model_in.role_name} = [value]           
-        """
-        exec(code)
+        if FunctionalProperty in onto_property.is_a:
+            setattr(src_instance, model_in.role_name, value)
+        else:
+            if getattr(src_instance, model_in.role_name) is not None:
+                getattr(src_instance, model_in.role_name).append(value)
+            else:
+                setattr(src_instance, model_in.role_name, [value])
 
         model_out = self.model_service.update_ontology(model_id, onto)
 
