@@ -6,7 +6,6 @@ from registered_channel.registered_channel_service import RegisteredChannelServi
 from registered_channel.registered_channel_model import BasicRegisteredChannelOut, RegisteredChannelsOut, \
     RegisteredChannelOut, RegisteredChannelIn
 from models.not_found_model import NotFoundByIdModel
-from services import Services
 
 
 class RegisteredChannelServiceGraphDB(RegisteredChannelService):
@@ -20,11 +19,10 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.channel_service = Services().channel_service()
-        self.registered_data_service = Services().registered_data_service()
-        self.observation_information_service = Services().observable_information_service()
-        self.recording_service = Services().recording_service()
+    def __init__(self, channel_service, registered_data_service, recording_service):
+        self.channel_service = channel_service()
+        self.registered_data_service = registered_data_service()
+        self.recording_service = recording_service()
 
     def save_registered_channel(self, registered_channel: RegisteredChannelIn):
         """

@@ -5,7 +5,6 @@ from scenario.scenario_model import ScenarioIn, ScenarioOut, OrderChangeIn, Orde
 from activity_execution.activity_execution_model import ActivityExecutionOut, PropertyIn, ActivityExecutionIn
 from models.not_found_model import NotFoundByIdModel
 from scenario.scenario_service import ScenarioService
-from services import Services
 
 
 class ScenarioServiceGraphDB(ScenarioService):
@@ -19,9 +18,9 @@ class ScenarioServiceGraphDB(ScenarioService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.activity_execution_service = Services().activity_execution_service()
-        self.experiment_service = Services().experiment_service()
+    def __init__(self, activity_execution_service, experiment_service):
+        self.activity_execution_service = activity_execution_service()
+        self.experiment_service = experiment_service()
 
     def save_scenario(self, scenario: ScenarioIn):
         """

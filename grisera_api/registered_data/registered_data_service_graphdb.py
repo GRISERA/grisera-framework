@@ -6,7 +6,6 @@ from registered_data.registered_data_model import RegisteredDataIn, RegisteredDa
     BasicRegisteredDataOut, RegisteredDataOut
 from models.not_found_model import NotFoundByIdModel
 from registered_data.registered_data_service import RegisteredDataService
-from services import Services
 
 
 class RegisteredDataServiceGraphDB(RegisteredDataService):
@@ -18,8 +17,8 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.registered_channel_service = Services().registered_channel_service()
+    def __init__(self, registered_channel_service):
+        self.registered_channel_service = registered_channel_service()
 
     def save_registered_data(self, registered_data: RegisteredDataIn):
         """

@@ -5,7 +5,6 @@ from activity.activity_model import ActivityIn, ActivityOut, ActivitiesOut, Basi
 from activity.activity_service import ActivityService
 from models.not_found_model import NotFoundByIdModel
 from helpers import create_stub_from_response
-from services import Services
 
 
 class ActivityServiceGraphDB(ActivityService):
@@ -17,8 +16,8 @@ class ActivityServiceGraphDB(ActivityService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.activity_execution_service = Services().activity_execution_service()
+    def __init__(self, activity_execution_service):
+        self.activity_execution_service = activity_execution_service()
 
     def save_activity(self, activity: ActivityIn):
         """

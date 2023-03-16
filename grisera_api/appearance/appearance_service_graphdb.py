@@ -6,7 +6,6 @@ from appearance.appearance_model import AppearanceOcclusionIn, AppearanceOcclusi
     AppearanceSomatotypeIn, AppearanceSomatotypeOut, BasicAppearanceSomatotypeOut, AppearancesOut
 from helpers import create_stub_from_response
 from models.not_found_model import NotFoundByIdModel
-from services import Services
 
 
 class AppearanceServiceGraphDB(AppearanceService):
@@ -18,8 +17,8 @@ class AppearanceServiceGraphDB(AppearanceService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.participant_state_service = Services().participant_state_service()
+    def __init__(self, participant_state_service):
+        self.participant_state_service = participant_state_service()
 
     def save_appearance_occlusion(self, appearance: AppearanceOcclusionIn):
         """

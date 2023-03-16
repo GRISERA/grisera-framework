@@ -5,7 +5,6 @@ from graph_api_service import GraphApiService
 from arrangement.arrangement_model import ArrangementIn, ArrangementOut, ArrangementsOut, BasicArrangementOut
 from helpers import create_stub_from_response
 from models.not_found_model import NotFoundByIdModel
-from services import Services
 
 
 class ArrangementServiceGraphDB(ArrangementService):
@@ -17,8 +16,8 @@ class ArrangementServiceGraphDB(ArrangementService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.activity_execution_service = Services().activity_execution_service()
+    def __init__(self, activity_execution_service):
+        self.activity_execution_service = activity_execution_service()
 
     def save_arrangement(self, arrangement: ArrangementIn):
         """

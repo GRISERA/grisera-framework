@@ -4,10 +4,9 @@ from starlette.datastructures import QueryParams
 
 from graph_api_service import GraphApiService
 from helpers import create_stub_from_response
-from services import Services
-from models.not_found_model import NotFoundByIdModel
 from time_series.time_series_model import TimeSeriesPropertyIn, BasicTimeSeriesOut, \
     TimeSeriesNodesOut, TimeSeriesOut, TimeSeriesIn, TimeSeriesRelationIn
+from models.not_found_model import NotFoundByIdModel
 from time_series.time_series_service import TimeSeriesService
 
 
@@ -22,9 +21,9 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.measure_service = Services().measure_service()
-        self.observable_information_service = Services().observable_information_service()
+    def __init__(self, measure_service, observable_information_service):
+        self.measure_service = measure_service()
+        self.observable_information_service = observable_information_service()
 
     def save_time_series(self, time_series: TimeSeriesIn):
         """

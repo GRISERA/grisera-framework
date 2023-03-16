@@ -6,7 +6,6 @@ from participation.participation_model import ParticipationIn, ParticipationOut,
     BasicParticipationOut
 from models.not_found_model import NotFoundByIdModel
 from participation.participation_service import ParticipationService
-from services import Services
 
 
 class ParticipationServiceGraphDB(ParticipationService):
@@ -20,10 +19,10 @@ class ParticipationServiceGraphDB(ParticipationService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.activity_execution_service = Services().activity_execution_service()
-        self.participant_state_service = Services().participant_state_service()
-        self.recording_service = Services().recording_service()
+    def __init__(self, activity_execution_service, participant_state_service, recording_service):
+        self.activity_execution_service = activity_execution_service()
+        self.participant_state_service = participant_state_service()
+        self.recording_service = recording_service()
 
     def save_participation(self, participation: ParticipationIn):
         """

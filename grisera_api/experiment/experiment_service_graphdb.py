@@ -5,7 +5,6 @@ from graph_api_service import GraphApiService
 from experiment.experiment_model import ExperimentIn, ExperimentsOut, BasicExperimentOut, ExperimentOut
 from helpers import create_stub_from_response
 from models.not_found_model import NotFoundByIdModel
-from services import Services
 
 
 class ExperimentServiceGraphDB(ExperimentService):
@@ -17,8 +16,8 @@ class ExperimentServiceGraphDB(ExperimentService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.activity_execution_service = Services().activity_execution_service()
+    def __init__(self, activity_execution_service):
+        self.activity_execution_service = activity_execution_service()
 
     def save_experiment(self, experiment: ExperimentIn):
         """

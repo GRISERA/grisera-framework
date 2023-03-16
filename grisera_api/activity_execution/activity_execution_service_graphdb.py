@@ -5,7 +5,6 @@ from graph_api_service import GraphApiService
 from activity_execution.activity_execution_model import ActivityExecutionPropertyIn, ActivityExecutionRelationIn, \
     ActivityExecutionIn, ActivityExecutionOut, ActivityExecutionsOut, BasicActivityExecutionOut
 from models.not_found_model import NotFoundByIdModel
-from services import Services
 from helpers import create_stub_from_response
 
 
@@ -20,12 +19,13 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.activity_service = Services().activity_service()
-        self.arrangement_service = Services().arrangement_service()
-        self.scenario_service = Services().scenario_service()
-        self.experiment_service = Services().experiment_service()
-        self.participation_service = Services().participation_service()
+    def __init__(self, activity_service, arrangement_service, scenario_service, experiment_service,
+                 participation_service):
+        self.activity_service = activity_service()
+        self.arrangement_service = arrangement_service()
+        self.scenario_service = scenario_service()
+        self.experiment_service = experiment_service()
+        self.participation_service = participation_service()
 
     def save_activity_execution(self, activity_execution: ActivityExecutionIn):
         """

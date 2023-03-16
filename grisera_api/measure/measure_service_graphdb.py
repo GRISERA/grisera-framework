@@ -6,7 +6,6 @@ from measure.measure_model import MeasurePropertyIn, BasicMeasureOut, \
     MeasuresOut, MeasureOut, MeasureIn, MeasureRelationIn
 from measure.measure_service import MeasureService
 from models.not_found_model import NotFoundByIdModel
-from services import Services
 
 
 class MeasureServiceGraphDB(MeasureService):
@@ -19,9 +18,9 @@ class MeasureServiceGraphDB(MeasureService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.measure_name_service = Services().measure_name_service()
-        self.time_series_service = Services().time_series_service()
+    def __init__(self, measure_name_service, time_series_service):
+        self.measure_name_service = measure_name_service()
+        self.time_series_service = time_series_service()
 
     def save_measure(self, measure: MeasureIn):
         """

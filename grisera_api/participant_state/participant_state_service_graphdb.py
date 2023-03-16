@@ -6,7 +6,6 @@ from participant_state.participant_state_service import ParticipantStateService
 from participant_state.participant_state_model import ParticipantStatePropertyIn, BasicParticipantStateOut, \
     ParticipantStatesOut, ParticipantStateOut, ParticipantStateIn, ParticipantStateRelationIn
 from models.not_found_model import NotFoundByIdModel
-from services import Services
 
 
 class ParticipantStateServiceGraphDB(ParticipantStateService):
@@ -21,11 +20,11 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.participant_service = Services().participant_service()
-        self.appearance_service = Services().appearance_service()
-        self.personality_service = Services().personality_service()
-        self.participation_service = Services().participation_service()
+    def __init__(self, participant_service, appearance_service, personality_service, participation_service):
+        self.participant_service = participant_service()
+        self.appearance_service = appearance_service()
+        self.personality_service = personality_service()
+        self.participation_service = participation_service()
 
     def save_participant_state(self, participant_state: ParticipantStateIn):
         """

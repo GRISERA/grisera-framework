@@ -5,7 +5,6 @@ from helpers import create_stub_from_response
 from modality.modality_model import ModalityIn, ModalityOut, ModalitiesOut, BasicModalityOut
 from modality.modality_service import ModalityService
 from models.not_found_model import NotFoundByIdModel
-from services import Services
 
 
 class ModalityServiceGraphDB(ModalityService):
@@ -17,8 +16,8 @@ class ModalityServiceGraphDB(ModalityService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.observable_information_service = Services().observable_information_service()
+    def __init__(self, observable_information_service):
+        self.observable_information_service = observable_information_service()
 
     def save_modality(self, modality: ModalityIn):
         """

@@ -5,7 +5,6 @@ from helpers import create_stub_from_response
 from life_activity.life_activity_model import LifeActivityIn, LifeActivityOut, LifeActivitiesOut, BasicLifeActivityOut
 from life_activity.life_activity_service import LifeActivityService
 from models.not_found_model import NotFoundByIdModel
-from services import Services
 
 
 class LifeActivityServiceGraphDB(LifeActivityService):
@@ -17,8 +16,8 @@ class LifeActivityServiceGraphDB(LifeActivityService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.observation_information_service = Services().observable_information_service()
+    def __init__(self, observable_information_service):
+        self.observable_information_service = observable_information_service()
 
     def save_life_activity(self, life_activity: LifeActivityIn):
         """
@@ -88,7 +87,7 @@ class LifeActivityServiceGraphDB(LifeActivityService):
             for relation in relations_response["relationships"]:
                 if relation["end_node"] == life_activity_id & relation["name"] == "hasLifeActivity":
                     life_activity['observable_informations'].append(
-                        self.observation_information_service.
+                        self.observable_information_service.
                         get_observable_information(relation["start_node"], depth - 1))
 
             return LifeActivityOut(**life_activity)

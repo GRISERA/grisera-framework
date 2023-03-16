@@ -5,7 +5,6 @@ from helpers import create_stub_from_response
 from measure_name.measure_name_model import MeasureNameIn, MeasureNameOut, MeasureNamesOut, BasicMeasureNameOut
 from measure_name.measure_name_service import MeasureNameService
 from models.not_found_model import NotFoundByIdModel
-from services import Services
 
 
 class MeasureNameServiceGraphDB(MeasureNameService):
@@ -17,8 +16,8 @@ class MeasureNameServiceGraphDB(MeasureNameService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.measure_service = Services().measure_service()
+    def __init__(self, measure_service):
+        self.measure_service = measure_service()
 
     def save_measure_name(self, measure_name: MeasureNameIn):
         """

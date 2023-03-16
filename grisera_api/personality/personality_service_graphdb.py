@@ -6,7 +6,6 @@ from personality.personality_model import PersonalityBigFiveIn, PersonalityBigFi
     PersonalityPanasIn, PersonalityPanasOut, BasicPersonalityBigFiveOut, BasicPersonalityPanasOut, PersonalitiesOut
 from models.not_found_model import NotFoundByIdModel
 from personality.personality_service import PersonalityService
-from services import Services
 
 
 class PersonalityServiceGraphDB(PersonalityService):
@@ -18,8 +17,8 @@ class PersonalityServiceGraphDB(PersonalityService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.participant_state_service = Services().participant_state_service()
+    def __init__(self, participant_state_service):
+        self.participant_state_service = participant_state_service()
 
     def save_personality_big_five(self, personality: PersonalityBigFiveIn):
         """

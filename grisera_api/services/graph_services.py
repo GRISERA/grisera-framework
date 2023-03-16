@@ -43,67 +43,129 @@ from time_series.time_series_service_graphdb_with_signal_values import TimeSerie
 
 
 class GraphServiceFactory(ServiceFactory):
+
     def get_activity_service(self) -> ActivityService:
-        return ActivityServiceGraphDB()
+        return ActivityServiceGraphDB(
+            activity_execution_service=ActivityServiceGraphDB
+        )
 
     def get_activity_execution_service(self) -> ActivityExecutionService:
-        return ActivityExecutionServiceGraphDB()
+        return ActivityExecutionServiceGraphDB(
+            activity_service=ActivityServiceGraphDB,
+            arrangement_service=ArrangementServiceGraphDB,
+            scenario_service=ScenarioServiceGraphDB,
+            experiment_service=ExperimentServiceGraphDB,
+            participation_service=ParticipationServiceGraphDB
+        )
 
     def get_appearance_service(self) -> AppearanceService:
-        return AppearanceServiceGraphDB()
+        return AppearanceServiceGraphDB(
+            participant_state_service=ParticipantStateServiceGraphDB
+        )
 
     def get_arrangement_service(self) -> ArrangementService:
-        return ArrangementServiceGraphDB()
+        return ArrangementServiceGraphDB(
+            activity_execution_service=ActivityExecutionServiceGraphDB
+        )
 
     def get_channel_service(self) -> ChannelService:
-        return ChannelServiceGraphDB()
+        return ChannelServiceGraphDB(
+            registered_channel_service=RegisteredChannelServiceGraphDB)
 
     def get_experiment_service(self) -> ExperimentService:
-        return ExperimentServiceGraphDB()
+        return ExperimentServiceGraphDB(
+            activity_execution_service=ActivityExecutionServiceGraphDB
+        )
 
     def get_life_activity_service(self) -> LifeActivityService:
-        return LifeActivityServiceGraphDB()
+        return LifeActivityServiceGraphDB(
+            observable_information_service=ObservableInformationServiceGraphDB
+        )
 
     def get_measure_service(self) -> MeasureService:
-        return MeasureServiceGraphDB()
+        return MeasureServiceGraphDB(
+            measure_name_service=MeasureNameServiceGraphDB,
+            time_series_service=TimeSeriesServiceGraphDB
+        )
 
     def get_measure_name_service(self) -> MeasureNameService:
-        return MeasureNameServiceGraphDB()
+        return MeasureNameServiceGraphDB(
+            measure_service=MeasureServiceGraphDB
+        )
 
     def get_modality_service(self) -> ModalityService:
-        return ModalityServiceGraphDB()
+        return ModalityServiceGraphDB(
+            observable_information_service=ObservableInformationServiceGraphDB
+        )
 
     def get_observable_information_service(self) -> ObservableInformationService:
-        return ObservableInformationServiceGraphDB()
+        return ObservableInformationServiceGraphDB(
+            modality_service=ModalityServiceGraphDB,
+            life_activity_service=LifeActivityServiceGraphDB,
+            recording_service=RecordingServiceGraphDB,
+            time_series_service=TimeSeriesServiceGraphDB
+        )
 
     def get_participant_service(self) -> ParticipantService:
-        return ParticipantServiceGraphDB()
+        return ParticipantServiceGraphDB(
+            participant_state_service=ParticipantStateServiceGraphDB
+        )
 
     def get_participant_state_service(self) -> ParticipantStateService:
-        return ParticipantStateServiceGraphDB()
+        return ParticipantStateServiceGraphDB(
+            participant_service=ParticipantStateServiceGraphDB,
+            appearance_service=AppearanceServiceGraphDB,
+            personality_service=PersonalityServiceGraphDB,
+            participation_service=ParticipationServiceGraphDB
+        )
 
     def get_participation_service(self) -> ParticipationService:
-        return ParticipationServiceGraphDB()
+        return ParticipationServiceGraphDB(
+            activity_execution_service=ActivityExecutionServiceGraphDB,
+            participant_state_service=ParticipantStateServiceGraphDB,
+            recording_service=RecordingServiceGraphDB
+        )
 
     def get_personality_service(self) -> PersonalityService:
-        return PersonalityServiceGraphDB()
+        return PersonalityServiceGraphDB(
+            participant_state_service=ParticipantStateServiceGraphDB
+        )
 
     def get_recording_service(self) -> RecordingService:
-        return RecordingServiceGraphDB()
+        return RecordingServiceGraphDB(
+            participation_service=ParticipationServiceGraphDB,
+            registered_channel_service=RegisteredChannelServiceGraphDB,
+            observable_information_service=ObservableInformationServiceGraphDB
+        )
 
     def get_registered_channel_service(self) -> RegisteredChannelService:
-        return RegisteredChannelServiceGraphDB()
+        return RegisteredChannelServiceGraphDB(
+            channel_service=ChannelServiceGraphDB,
+            registered_data_service=RegisteredDataServiceGraphDB,
+            recording_service=RecordingServiceGraphDB
+        )
 
     def get_registered_data_service(self) -> RegisteredDataService:
-        return RegisteredDataServiceGraphDB()
+        return RegisteredDataServiceGraphDB(
+            registered_channel_service=RegisteredChannelServiceGraphDB
+        )
 
     def get_scenario_service(self) -> ScenarioService:
-        return ScenarioServiceGraphDB()
+        return ScenarioServiceGraphDB(
+            activity_execution_service=ActivityExecutionServiceGraphDB,
+            experiment_service=ExperimentServiceGraphDB
+        )
 
     def get_time_series_service(self) -> TimeSeriesService:
-        return TimeSeriesServiceGraphDB()
+        return TimeSeriesServiceGraphDB(
+            measure_service=MeasureServiceGraphDB,
+            observable_information_service=ObservableInformationServiceGraphDB
+        )
 
 
 class GraphWithSignalValuesServiceFactory(GraphServiceFactory):
     def get_time_series_service(self) -> TimeSeriesService:
-        return TimeSeriesServiceGraphDBWithSignalValues()
+        return TimeSeriesServiceGraphDBWithSignalValues(
+            measure_service=MeasureServiceGraphDB,
+            observable_information_service=ObservableInformationServiceGraphDB
+        )

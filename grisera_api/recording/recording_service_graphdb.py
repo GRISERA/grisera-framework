@@ -5,7 +5,6 @@ from helpers import create_stub_from_response
 from recording.recording_service import RecordingService
 from recording.recording_model import RecordingPropertyIn, RecordingIn, BasicRecordingOut, RecordingOut, RecordingsOut
 from models.not_found_model import NotFoundByIdModel
-from services import Services
 
 
 class RecordingServiceGraphDB(RecordingService):
@@ -19,10 +18,10 @@ class RecordingServiceGraphDB(RecordingService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self):
-        self.participation_service = Services().participation_service()
-        self.registered_channel_service = Services().registered_channel_service()
-        self.observation_information_service = Services().observable_information_service()
+    def __init__(self, participation_service, registered_channel_service, observable_information_service):
+        self.participation_service = participation_service()
+        self.registered_channel_service = registered_channel_service()
+        self.observation_information_service = observable_information_service()
 
     def save_recording(self, recording: RecordingIn):
         """
