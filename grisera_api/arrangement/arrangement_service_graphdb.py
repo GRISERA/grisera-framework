@@ -18,7 +18,7 @@ class ArrangementServiceGraphDB(ArrangementService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.activity_state_service = Services().activity_state_service()
+        self.activity_execution_service = Services().activity_execution_service()
 
     def save_arrangement(self, arrangement: ArrangementIn):
         """
@@ -100,7 +100,7 @@ class ArrangementServiceGraphDB(ArrangementService):
             for relation in relations_response["relationships"]:
                 if relation["end_node"] == arrangement_id & relation["name"] == "hasArrangement":
                     arrangement['activity_executions'].append(
-                        self.activity_state_service.get_activity_state(relation["start_node"], depth - 1))
+                        self.activity_execution_service.get_activity_execution(relation["start_node"], depth - 1))
 
             return ArrangementOut(**arrangement)
         else:
