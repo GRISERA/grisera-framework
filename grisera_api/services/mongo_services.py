@@ -5,7 +5,7 @@ from activity_execution.activity_execution_service_graphdb import (
 )
 from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 from arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
-from channel.channel_service_graphdb import ChannelServiceGraphDB
+from channel.channel_service_mongodb import ChannelServiceMongoDB
 from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
 from life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
 from measure.measure_service_graphdb import MeasureServiceGraphDB
@@ -21,10 +21,10 @@ from participant_state.participant_state_service_graphdb import (
 from participation.participation_service_graphdb import ParticipationServiceGraphDB
 from personality.personality_service_graphdb import PersonalityServiceGraphDB
 from recording.recording_service_graphdb import RecordingServiceGraphDB
-from registered_channel.registered_channel_service_graphdb import (
-    RegisteredChannelServiceGraphDB,
+from registered_channel.registered_channel_service_mongodb import (
+    RegisteredChannelServiceMongoDB,
 )
-from registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
+from registered_data.registered_data_service_mongodb import RegisteredDataServiceMongoDB
 from scenario.scenario_service_graphdb import ScenarioServiceGraphDB
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 from activity.activity_service import ActivityService
@@ -68,7 +68,9 @@ class MongoServiceFactory(ServiceFactory):
         return ArrangementServiceGraphDB()
 
     def get_channel_service(self) -> ChannelService:
-        return ChannelServiceGraphDB()
+        return ChannelServiceMongoDB(
+            registered_channel_service=RegisteredChannelServiceMongoDB
+        )
 
     def get_experiment_service(self) -> ExperimentService:
         return ExperimentServiceGraphDB()
@@ -104,10 +106,16 @@ class MongoServiceFactory(ServiceFactory):
         return RecordingServiceGraphDB()
 
     def get_registered_channel_service(self) -> RegisteredChannelService:
-        return RegisteredChannelServiceGraphDB()
+        return RegisteredChannelServiceMongoDB(
+            channel_service=ChannelServiceMongoDB,
+            registered_data_service=RegisteredDataServiceMongoDB,
+            recording_service=RecordingServiceGraphDB,
+        )
 
     def get_registered_data_service(self) -> RegisteredDataService:
-        return RegisteredDataServiceGraphDB()
+        return RegisteredDataServiceMongoDB(
+            registered_channel_service=RegisteredChannelServiceMongoDB
+        )
 
     def get_scenario_service(self) -> ScenarioService:
         return ScenarioServiceGraphDB()
