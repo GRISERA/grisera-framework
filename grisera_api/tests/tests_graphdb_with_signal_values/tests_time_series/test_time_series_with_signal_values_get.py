@@ -92,6 +92,7 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_nodes_by_query')
     def test_get_time_series_nodes(self, get_nodes_by_query):
+        database_name = "neo4j"
         get_nodes_by_query.return_value = {
             'rows': [
                 [{'labels': ['Time Series'], 'id': 2,
@@ -108,7 +109,7 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
         time_series_nodes = TimeSeriesNodesOut(time_series_nodes=[time_series_one, time_series_two])
         time_series_nodes_service = TimeSeriesServiceGraphDBWithSignalValues()
 
-        result = time_series_nodes_service.get_time_series_nodes({"participant_date_of_birth": "2023-01-11"})
+        result = time_series_nodes_service.get_time_series_nodes({"participant_date_of_birth": "2023-01-11"}, database_name)
 
         self.assertEqual(time_series_nodes, result)
         get_nodes_by_query.assert_called_once_with({
@@ -130,4 +131,4 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
                 {'begin_node_index': 3, 'end_node_index': 2, 'label': 'hasParticipantState'},
                 {'begin_node_index': 2, 'end_node_index': 1, 'label': 'hasParticipant'}
             ]
-        })
+        }, database_name)

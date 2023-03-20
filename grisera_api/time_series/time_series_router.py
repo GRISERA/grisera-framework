@@ -43,12 +43,12 @@ class TimeSeriesRouter:
 
     @router.post("/time_series/transformation", tags=["time series"],
                  response_model=Union[TimeSeriesOut, NotFoundByIdModel])
-    async def transform_time_series(self, time_series_transformation: TimeSeriesTransformationIn, response: Response):
+    async def transform_time_series(self, time_series_transformation: TimeSeriesTransformationIn, response: Response, database_name: str):
         """
         Create new transformed time series in database
         """
 
-        create_response = self.time_series_service.transform_time_series(time_series_transformation)
+        create_response = self.time_series_service.transform_time_series(time_series_transformation, database_name)
         if create_response.errors is not None:
             response.status_code = 422
 

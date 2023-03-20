@@ -141,7 +141,6 @@ class DatabaseServiceTestCase(unittest.TestCase):
         delete_mock.assert_called_with('/relationships/1', {"database_name": database_name}, database_name)
 
     def test_create_additional_properties(self):
-        database_name = "neo4j"
         property_dict = {'additional_properties': [{'key': 'test', 'value': 'test'},
                                                    {'key': 'key', 'value': 'value'}]}
 
@@ -151,12 +150,13 @@ class DatabaseServiceTestCase(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'post')
     def test_create_relationship_properties(self, post_mock):
+        database_name = "neo4j"
         post_mock.return_value = self.response_content
         relationship_id = 1
         relationship_model = TimeSeriesTransformationRelationshipIn(
             additional_properties=[{'key': 'test', 'value': '1234'}])
 
-        result = self.graph_api_service.create_relationship_properties(relationship_id, relationship_model)
+        result = self.graph_api_service.create_relationship_properties(relationship_id, relationship_model, database_name)
 
         self.assertEqual(result, self.response_content)
-        post_mock.assert_called_with("/relationships/1/properties", [{'key': 'test', 'value': '1234'}])
+        post_mock.assert_called_with("/relationships/1/properties", [{'key': 'test', 'value': '1234'}], database_name)
