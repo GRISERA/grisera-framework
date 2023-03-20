@@ -49,3 +49,15 @@ class OntologyApiService:
         """
         request_body = {"name": instance_label}
         return self.post(f"/models/{model_id}/classes/{class_name}/instances", request_body)
+
+    def add_role(self, model_id, role_label):
+        """
+        Send a request to add a property to Ontology API
+        Args:
+            role_label (str): Label of property
+            model_id (int): ID of the model to which the property is to be added
+
+        Returns: Request result
+        """
+        request_body = {"name": role_label}
+        return self.post(f"/models/{model_id}/roles", request_body)
