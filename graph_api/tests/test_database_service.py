@@ -5,7 +5,7 @@ import unittest.mock as mock
 from requests import Response
 
 from database_service import DatabaseService
-from node.node_model import NodeIn, NodeRowsQueryIn, NodeQueryIn, RelationQueryIn
+from node.node_model import NodeIn, NodeRowsQueryIn, NodeQueryIn, RelationQueryIn, NodeParameterQueryIn
 from property.property_model import PropertyIn
 from relationship.relationship_model import RelationshipIn
 
@@ -115,14 +115,22 @@ class DatabaseServiceTestCase(unittest.TestCase):
     def test_get_nodes_by_query(self, requests_mock):
         requests_mock.post.return_value = self.response
         commit_body = {"statements": [{
-            "statement": "MATCH (n_0)-[:`hasSignal`]->(n_1),(n_1)-[:`next`*0..]->(n_2),(n_3)-[:`startInSec`]->(n_2),(n_4)-[:`endInSec`]->(n_2),(n_0:`Time Series`),(n_1:`Signal Value`),(n_2:`Signal Value`),(n_3:`Timestamp`),(n_4:`Timestamp`) WHERE ID(n_0)=15 RETURN n_2,LABELS(n_2),n_3,LABELS(n_3),n_4,LABELS(n_4)"}]}
+            "statement": "MATCH (n_0)-[:`hasSignal`]->(n_1),(n_1)-[:`next`*0..]->(n_2),(n_3)-[:`startInSec`]->(n_2)," +
+                         "(n_4)-[:`endInSec`]->(n_2),(n_0:`Time Series`),(n_1:`Signal Value`),(n_2:`Signal Value`)," +
+                         "(n_3:`Timestamp`),(n_4:`Timestamp`) " +
+                         "WHERE ID(n_0)=15 AND n_4.propertyA='valueA' AND n_4.propertyB='valueB' " +
+                         "RETURN n_2,LABELS(n_2),n_3,LABELS(n_3),n_4,LABELS(n_4)"
+        }]}
         query = NodeRowsQueryIn(
             nodes=[
                 NodeQueryIn(id=15, label="Time Series"),
                 NodeQueryIn(label="Signal Value"),
                 NodeQueryIn(label="Signal Value", result=True),
                 NodeQueryIn(label="Timestamp", result=True),
-                NodeQueryIn(label="Timestamp", result=True),
+                NodeQueryIn(label="Timestamp", result=True, parameters=[
+                    NodeParameterQueryIn(key="propertyA", operator="equals", value="valueA"),
+                    NodeParameterQueryIn(key="propertyB", operator="equals", value="valueB")
+                ]),
             ],
             relations=[
                 RelationQueryIn(begin_node_index=0, end_node_index=1, label="hasSignal"),

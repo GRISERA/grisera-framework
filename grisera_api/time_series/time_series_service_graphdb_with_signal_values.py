@@ -1,8 +1,14 @@
-from typing import List, Union
+from typing import List, Union, Optional
 
+from starlette.datastructures import QueryParams
+
+from models.not_found_model import NotFoundByIdModel
+from time_series.helpers import get_node_property
 from time_series.time_series_model import Type, TimeSeriesIn, TimeSeriesOut, SignalIn, SignalValueNodesIn, \
-    TimestampNodesIn
+    TimestampNodesIn, TimeSeriesNodesOut, BasicTimeSeriesOut, TimeSeriesTransformationIn, \
+    TimeSeriesTransformationRelationshipIn
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
+from time_series.transformation.TimeSeriesTransformationFactory import TimeSeriesTransformationFactory
 
 
 class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
@@ -28,6 +34,52 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
 
         result.signal_values = self.get_signal_values(time_series_id, time_series.type, database_name)
 
+        return result
+
+    def transform_time_series(self, time_series_transformation: TimeSeriesTransformationIn, database_name):
+        """
+        Send request to graph api to create new transformed time series
+
+        Args:
+            time_series_transformation (TimeSeriesTransformationIn): Time series transformation parameters
+
+        Returns:
+            Result of request as time series object
+        """
+        source_time_series = []
+        for time_series_id in time_series_transformation.source_time_series_ids:
+            time_series = self.get_time_series(time_series_id, database_name)
+            if time_series.errors is not None:
+                return time_series
+            source_time_series.append(time_series)
+        try:
+            new_time_series, new_signal_values_index_mapping = TimeSeriesTransformationFactory().get_transformation(
+                time_series_transformation.name) \
+                .transform(source_time_series, time_series_transformation.additional_properties)
+        except Exception as e:
+            return TimeSeriesNodesOut(errors=str(e))
+        new_time_series.measure_id = time_series_transformation.destination_measure_id
+        new_time_series.observable_information_id = time_series_transformation.destination_observable_information_id
+
+        result = self.save_time_series(new_time_series, database_name)
+
+        for index, time_series_id in enumerate(time_series_transformation.source_time_series_ids):
+            relationship = self.graph_api_service.create_relationships(result.id, time_series_id, "transformedFrom")
+            self.graph_api_service.create_relationship_properties(relationship["id"],
+                                                                  TimeSeriesTransformationRelationshipIn(
+                                                                      additional_properties=[
+                                                                          {'key': 'order', 'value': index + 1}]))
+        assert len(new_signal_values_index_mapping) == len(
+            result.signal_values), "transformation signal values mapping does not have correct length"
+        for new_signal_value_index in range(len(new_signal_values_index_mapping)):
+            new_signal_value_id = result.signal_values[new_signal_value_index]["signal_value"]["id"]
+            for index, old_signal_value_id in enumerate(new_signal_values_index_mapping[new_signal_value_index]):
+                relationship = self.graph_api_service.create_relationships(new_signal_value_id, old_signal_value_id,
+                                                                           "basedOn")
+                self.graph_api_service.create_relationship_properties(relationship["id"],
+                                                                      TimeSeriesTransformationRelationshipIn(
+                                                                          additional_properties=[
+                                                                              {'key': 'order', 'value': index + 1}]))
         return result
 
     def get_experiment_id(self, time_series_id: int, database_name: str):
@@ -112,21 +164,17 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 return get_response, relation_id
         return None, None
 
-    def get_node_property(self, node, property_key: str):
-        if node is not None:
-            for node_property in node["properties"]:
-                if node_property["key"] == property_key:
-                    return node_property["value"]
-        return None
-
     def get_or_create_timestamp_node(self, timestamp_value: int, timestamp, database_name: str):
+=======
+    def get_or_create_timestamp_node(self, timestamp_value: int, timestamp):
+>>>>>>> stage
         previous_timestamp_id = None
         previous_timestamp_timestamp_relation_id = None
-        while timestamp is not None and int(self.get_node_property(timestamp, "timestamp")) < timestamp_value:
+        while timestamp is not None and int(get_node_property(timestamp, "timestamp")) < timestamp_value:
             previous_timestamp_id = timestamp["id"]
             timestamp, previous_timestamp_timestamp_relation_id = self.get_neighbour_node(timestamp["id"], "next", database_name)
 
-        if timestamp is None or int(self.get_node_property(timestamp, "timestamp")) != timestamp_value:
+        if timestamp is None or int(get_node_property(timestamp, "timestamp")) != timestamp_value:
             new_timestamp_node = self.graph_api_service.create_node("`Timestamp`", database_name)
 
             if new_timestamp_node["errors"] is not None:
@@ -180,7 +228,8 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
     def save_signal_values(self, signal_values: List[SignalIn], time_series_id: int, experiment_id: int,
                            timestamp_type: Type, database_name: str):
 
-        timestamp, experiment_timestamp_relation_id = self.get_neighbour_node(experiment_id, "takes", database_name)
+        timestamp, experiment_timestamp_relation_id = self.get_neighbour_node(experiment_id, "takes", database_name) \
+            if experiment_id is not None else (None, None)
         signal_value_node = None
 
         for signal_value in signal_values:
@@ -224,29 +273,51 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             signal_value_node = current_signal_value_node
         return None
 
-    def get_time_series(self, time_series_id: int, database_name: str):
+    def get_time_series(self, time_series_id: int, database_name: str,
+                        signal_min_value: Optional[int] = None,
+                        signal_max_value: Optional[int] = None):
         """
         Send request to graph api to get given time series
         Args:
             time_series_id (int): Id of time series
+            signal_min_value (Optional[int]): Filter signal values by min value
+            signal_max_value (Optional[int]): Filter signal values by max value
         Returns:
             Result of request as time series object
         """
         time_series = super().get_time_series(time_series_id, database_name)
         if time_series.errors is None:
-            time_series.signal_values = self.get_signal_values(time_series_id, time_series.type, database_name)
+            time_series.signal_values = self.get_signal_values(time_series_id, time_series.type, database_name,
+                                                               signal_min_value, signal_max_value)
         return time_series
 
-    def get_signal_values(self, time_series_id: int, time_series_type: str, database_name: str):
+    def get_signal_values(self, time_series_id: int, time_series_type: str, database_name: str,
+                          signal_min_value: Optional[int] = None,
+                          signal_max_value: Optional[int] = None):
         """
         Send requests to graph api to get all signal values
         Args:
             time_series_id (int): id of the time series
             time_series_type (str): type of the time series
+            signal_min_value (Optional[int]): Filter signal values by min value
+            signal_max_value (Optional[int]): Filter signal values by max value
         Returns:
             Array of signal value objects
         """
 
+        parameters = []
+        if signal_min_value is not None:
+            parameters.append({
+                "key": "value",
+                "operator": "greater",
+                "value": signal_min_value
+            })
+        if signal_max_value is not None:
+            parameters.append({
+                "key": "value",
+                "operator": "less",
+                "value": signal_max_value
+            })
         query_timestamp = {
             "nodes": [
                 {
@@ -258,7 +329,8 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 },
                 {
                     "label": "Signal Value",
-                    "result": True
+                    "result": True,
+                    "parameters": parameters
                 },
                 {
                     "label": "Timestamp",
@@ -295,7 +367,8 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 },
                 {
                     "label": "Signal Value",
-                    "result": True
+                    "result": True,
+                    "parameters": parameters
                 },
                 {
                     "label": "Timestamp",
@@ -339,3 +412,198 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             else:
                 signal_values.append({'signal_value': row[0], 'start_timestamp': row[1], 'end_timestamp': row[2]})
         return signal_values
+
+    def get_time_series_nodes(self, params: QueryParams):
+        """
+        Send request to graph api to get time series nodes
+
+        Returns:
+            Result of request as list of time series nodes objects
+        """
+        query = {
+            "nodes": [
+                {
+                    "label": "Time Series",
+                    "result": True
+                },
+            ],
+            "relations": [
+            ]
+        }
+        params_per_node = {}
+        for param_key, param_value in dict(params).items():
+            if "_" in param_key:
+                param_key_prefix, param_key_suffix = param_key.split("_", 1)
+                if param_key_prefix not in params_per_node:
+                    params_per_node[param_key_prefix] = []
+                params_per_node[param_key_prefix].append({
+                    "key": param_key_suffix,
+                    "operator": "equals",
+                    "value": param_value
+                })
+            else:
+                print("Bad query param value format")
+
+        def get_or_append_node_to_query(query, node_indexes, label, id=None, parameters=None):
+            if label in node_indexes:
+                return node_indexes[label]
+            new_node = {"label": label}
+            if id is not None:
+                new_node["id"] = id
+            if parameters is not None:
+                new_node["parameters"] = parameters
+            new_node_index = len(query["nodes"])
+            node_indexes[label] = new_node_index
+            query["nodes"].append(new_node)
+            if label == "Observable Information":
+                query["relations"].append({
+                    "begin_node_index": 0,
+                    "end_node_index": new_node_index,
+                    "label": "hasObservableInformation"
+                })
+            elif label == "Recording":
+                query["relations"].append({
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Observable Information"),
+                    "end_node_index": new_node_index,
+                    "label": "hasRecording"
+                })
+            elif label == "Participation":
+                query["relations"].append({
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Recording"),
+                    "end_node_index": new_node_index,
+                    "label": "hasParticipation"
+                })
+            elif label == "Participant State":
+                query["relations"].append({
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Participation"),
+                    "end_node_index": new_node_index,
+                    "label": "hasParticipantState"
+                })
+            elif label == "Participant":
+                query["relations"].append({
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Participant State"),
+                    "end_node_index": new_node_index,
+                    "label": "hasParticipant"
+                })
+            elif label == "Activity Execution":
+                query["relations"].append({
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Participation"),
+                    "end_node_index": new_node_index,
+                    "label": "hasActivityExecution"
+                })
+            elif label == "Activity":
+                query["relations"].append({
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Activity Execution"),
+                    "end_node_index": new_node_index,
+                    "label": "hasActivity"
+                })
+            elif label == "Experiment":
+                new_activity_execution_index = len(query["nodes"])
+                query["nodes"].append({
+                    "label": "Activity Execution"
+                })
+                query["relations"].append({
+                    "begin_node_index": new_activity_execution_index,
+                    "end_node_index": get_or_append_node_to_query(query, node_indexes, "Activity Execution"),
+                    "label": "nextActivityExecution",
+                    "min_count": 0
+                })
+                query["relations"].append({
+                    "begin_node_index": new_node_index,
+                    "end_node_index": new_activity_execution_index,
+                    "label": "hasScenario"
+                })
+            elif label == "Registered Channel":
+                query["relations"].append({
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Recording"),
+                    "end_node_index": new_node_index,
+                    "label": "hasRegisteredChannel"
+                })
+            elif label == "Channel":
+                query["relations"].append({
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Registered Channel"),
+                    "end_node_index": new_node_index,
+                    "label": "hasChannel"
+                })
+            elif label == "Registered Data":
+                query["relations"].append({
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Channel"),
+                    "end_node_index": new_node_index,
+                    "label": "hasRegisteredData"
+                })
+            else:
+                print("Unknown node label")
+            return new_node_index
+
+        node_indexes = {}
+        for node_label in ["Observable Information", "Recording", "Participation", "Participant State", "Participant",
+                           "Activity Execution", "Activity", "Experiment", "Registered Channel", "Channel",
+                           "Registered Data"]:
+            node_param_name = node_label.lower().replace(" ", "")
+            if node_param_name in params_per_node:
+                node_id = None
+                if "id" in params_per_node[node_param_name]:
+                    node_id = int(params_per_node[node_param_name]["id"])
+                    del params_per_node[node_param_name]["id"]
+                get_or_append_node_to_query(query, node_indexes, node_label, node_id, params_per_node[node_param_name])
+
+        response = self.graph_api_service.get_nodes_by_query(query)
+
+        time_series_nodes = []
+        for time_series_row in response["rows"]:
+            time_series_node = time_series_row[0]
+            properties = {'id': time_series_node['id'], 'additional_properties': []}
+            for property in time_series_node["properties"]:
+                if property["key"] in ["type", "source"]:
+                    properties[property["key"]] = property["value"]
+                else:
+                    properties['additional_properties'].append({'key': property['key'], 'value': property['value']})
+            time_series = BasicTimeSeriesOut(**properties)
+            time_series_nodes.append(time_series)
+
+        return TimeSeriesNodesOut(time_series_nodes=time_series_nodes)
+
+    def delete_time_series(self, time_series_id: int):
+        """
+        Send request to graph api to delete given time series
+
+        Args:
+            time_series_id (int): Id of time series
+
+        Returns:
+            Result of request as time series object
+        """
+        get_response = super().delete_time_series(time_series_id)
+
+        if type(get_response) is NotFoundByIdModel:
+            return get_response
+
+        timestamp_ids_to_analyze = []
+        for signal_value in get_response.signal_values:
+            self.graph_api_service.delete_node(signal_value["signal_value"]["id"])
+            if get_response.type == Type.timestamp.value:
+                timestamp_ids_to_analyze.append(signal_value["timestamp"]["id"])
+            else:
+                timestamp_ids_to_analyze.append(signal_value["start_timestamp"]["id"])
+                timestamp_ids_to_analyze.append(signal_value["end_timestamp"]["id"])
+        for timestamp_id in timestamp_ids_to_analyze:
+            neighbour_signal_a_id, _ = self.get_neighbour_node_id(timestamp_id, "inSec")
+            neighbour_signal_b_id, _ = self.get_neighbour_node_id(timestamp_id, "startInSec")
+            neighbour_signal_c_id, _ = self.get_neighbour_node_id(timestamp_id, "endInSec")
+            if neighbour_signal_a_id is None and neighbour_signal_b_id is None and neighbour_signal_c_id is None:
+                next_timestamp_id, _ = self.get_neighbour_node_id(timestamp_id, "next")
+                previous_timestamp_id, _ = self.get_neighbour_node_id(timestamp_id, "next", False)
+                previous_experiment_id, _ = self.get_neighbour_node_id(timestamp_id, "takes", False)
+
+                self.graph_api_service.delete_node(timestamp_id)
+
+                if next_timestamp_id is not None:
+                    if previous_experiment_id is not None:
+                        self.graph_api_service.create_relationships(start_node=previous_experiment_id,
+                                                                    end_node=next_timestamp_id,
+                                                                    name="takes")
+                    elif previous_timestamp_id is not None:
+                        self.graph_api_service.create_relationships(start_node=previous_timestamp_id,
+                                                                    end_node=next_timestamp_id,
+                                                                    name="next")
+        return get_response

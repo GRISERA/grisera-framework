@@ -1,9 +1,21 @@
 import asyncio
 import unittest
 import unittest.mock as mock
+from typing import Dict
+
+from pydantic import BaseModel
+
 from time_series.time_series_router import *
-from time_series.time_series_model import BasicTimeSeriesOut, TimeSeriesOut
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
+
+
+class TestRequest(BaseModel):
+    """
+    Model of test request
+    Attributes:
+        query_params (Optional[Dict[str, str]]): Query params
+    """
+    query_params: Optional[Dict[str, str]]
 
 
 class TestTimeSeriesRouterGet(unittest.TestCase):
@@ -16,10 +28,10 @@ class TestTimeSeriesRouterGet(unittest.TestCase):
         response = Response()
         time_series_router = TimeSeriesRouter()
 
-        result = asyncio.run(time_series_router.get_time_series(time_series_id, response, database_name))
+        result = asyncio.run(time_series_router.get_time_series(time_series_id, response, database_name, 10, 20))
 
         self.assertEqual(result, TimeSeriesOut(type="Epoch", source="cos", links=get_links(router)))
-        get_time_series_mock.assert_called_once_with(time_series_id, database_name)
+        get_time_series_mock.assert_called_once_with(time_series_id, database_name, 10, 20)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(TimeSeriesServiceGraphDB, 'get_time_series')
@@ -30,11 +42,11 @@ class TestTimeSeriesRouterGet(unittest.TestCase):
         time_series_id = 1
         time_series_router = TimeSeriesRouter()
 
-        result = asyncio.run(time_series_router.get_time_series(time_series_id, response, database_name))
+        result = asyncio.run(time_series_router.get_time_series(time_series_id, response, database_name, 10, 20))
 
         self.assertEqual(result, TimeSeriesOut(type="Epoch", source="cos", errors={'errors': ['test']},
-                                                             links=get_links(router)))
-        get_time_series_mock.assert_called_once_with(time_series_id, database_name)
+                                               links=get_links(router)))
+        get_time_series_mock.assert_called_once_with(time_series_id, database_name, 10, 20)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(TimeSeriesServiceGraphDB, 'get_time_series_nodes')
@@ -46,7 +58,8 @@ class TestTimeSeriesRouterGet(unittest.TestCase):
         response = Response()
         time_series_router = TimeSeriesRouter()
 
-        result = asyncio.run(time_series_router.get_time_series_nodes(response, database_name))
+        result = asyncio.run(
+            time_series_router.get_time_series_nodes(response, database_name, TestRequest(query_params={"abc": "def"})))
 
         self.assertEqual(result, TimeSeriesNodesOut(time_series_nodes=[
             TimeSeriesOut(type="Epoch", source="cos"),

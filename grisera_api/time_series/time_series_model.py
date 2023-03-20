@@ -72,6 +72,34 @@ class TimeSeriesPropertyIn(BaseModel):
     additional_properties: Optional[List[PropertyIn]]
 
 
+class TimeSeriesTransformationIn(BaseModel):
+    """
+    Model of time series transformation to acquire from client
+
+    Attributes:
+        name (str): Name of the transformation
+        source_time_series_ids (List[int]): Ids of source time series
+        destination_observable_information_id (Optional[int]): Id of destination observable information
+        destination_measure_id (Optional[int]): Id of destination measure
+        additional_properties (Optional[List[PropertyIn]]): Additional properties for transformation
+    """
+    name: str
+    source_time_series_ids: List[int]
+    destination_observable_information_id: Optional[int]
+    destination_measure_id: Optional[int]
+    additional_properties: Optional[List[PropertyIn]]
+
+
+class TimeSeriesTransformationRelationshipIn(BaseModel):
+    """
+    Model of time series transformation relationship
+
+    Attributes:
+        additional_properties (Optional[List[PropertyIn]]): Additional properties for transformation
+    """
+    additional_properties: Optional[List[PropertyIn]]
+
+
 class TimeSeriesRelationIn(BaseModel):
     """
     Model of time series relations to acquire from client
