@@ -62,4 +62,5 @@ class OntologyApiService:
         Returns: Request result
         """
         request_body = {"role": role, "instance_name": instance_label, "value": value}
-        return self.delete(f"/models/{model_id}/roles", request_body)
+        return self.post(f"/models/{model_id}/roles", request_body)
+
