@@ -7,7 +7,7 @@ from registered_data.registered_data_model import (
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
 from registered_data.registered_data_service import RegisteredDataService
-from mongo_api_service import mongo_api_service
+from mongo_service import mongo_api_service
 
 
 class RegisteredDataServiceMongoDB(RegisteredDataService):
@@ -28,9 +28,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService):
         Returns:
             Result of request as registered data object
         """
-        registered_data_id = mongo_api_service.create_document(
-            "registered_data", registered_data
-        )
+        registered_data_id = mongo_api_service.create_document(registered_data)
 
         return self.get_registered_data(registered_data_id)
 
@@ -44,9 +42,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService):
         Returns:
             Result of request as list of registered data objects
         """
-        registed_data = mongo_api_service.load_documents(
-            {}, "registered_data", BasicRegisteredDataOut
-        )
+        registed_data = mongo_api_service.load_documents(BasicRegisteredDataOut)
         result = [BasicRegisteredDataOut(**rd) for rd in registed_data]
 
         return RegisteredDataNodesOut(registered_data_nodes=result)
@@ -82,7 +78,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService):
             Result of request as registered data dictionary
         """
         registered_data = mongo_api_service.load_document(
-            registered_data_id, "registered_data", RegisteredDataOut
+            registered_data_id, RegisteredDataOut
         )
 
         if registered_data is NotFoundByIdModel:
@@ -110,7 +106,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService):
                 errors={"errors": "registered data not found"},
             )
 
-        mongo_api_service.delete_document(registered_data_id, "registered_data")
+        mongo_api_service.delete_document(registered_data)
         return registered_data
 
     def update_registered_data(
@@ -131,9 +127,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService):
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        mongo_api_service.update_document(
-            "registered_data", registered_data_id, registered_data
-        )
+        mongo_api_service.update_document(registered_data_id, registered_data)
 
         return self.get_registered_data(registered_data_id)
 

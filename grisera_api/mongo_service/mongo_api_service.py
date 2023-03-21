@@ -2,8 +2,9 @@ from typing import Union
 from pydantic import BaseModel
 from pymongo import MongoClient
 from grisera_api.models.not_found_model import NotFoundByIdModel
+from grisera_api.mongo_service.collection_mapping import get_collection_name
 
-from mongodb_api_config import mongo_api_address, mongo_database_name
+from mongo_service.mongodb_api_config import mongo_api_address, mongo_database_name
 
 
 class MongoApiService:
@@ -21,21 +22,21 @@ class MongoApiService:
         self.client = MongoClient(mongo_api_address)
         self.db = self.client[mongo_database_name]
 
-    def create_document(self, collection_name: str, data_in: BaseModel):
+    def create_document(self, data_in: BaseModel):
         """
         Create new document, with "additional properties" field handling
         """
+        collection_name = get_collection_name(type(data_in))
         data_as_dict = data_in.dict()
         if "additional_properties" in data_as_dict:
             self._add_additional_properties_to_dict(data_as_dict)
         return self.db[collection_name].insert_one(data_as_dict)
 
-    def load_document(
-        self, id: Union[str, int], collection_name: str, model_class: BaseModel
-    ):
+    def load_document(self, id: Union[str, int], model_class):
         """
         Load single document, with "additional properties" field handling
         """
+        collection_name = get_collection_name(model_class)
         result_dict = self.db[collection_name].find_one({self.MONGO_ID_FIELD: id})
         if result_dict is None:
             return NotFoundByIdModel(
@@ -49,10 +50,11 @@ class MongoApiService:
             self._move_additional_properties_to_array(result_dict, expected_fields)
         return result_dict
 
-    def load_documents(self, query: dict, collection_name: str, model_class: BaseModel):
+    def load_documents(self, model_class, query: dict = {}):
         """
         Load many documents, with "additional properties" field handling
         """
+        collection_name = get_collection_name(model_class)
         results = self.db[collection_name].find(query)
 
         [self._update_mongo_output_id(result) for result in result]
@@ -63,18 +65,17 @@ class MongoApiService:
 
         return results
 
-    def update_document(
-        self, collection_name: str, id: Union[str, int], data_to_update: BaseModel
-    ):
+    def update_document(self, id: Union[str, int], data_to_update: BaseModel):
         """
         Update document, with "additional properties" field handling
         """
+        collection_name = get_collection_name(type(data_to_update))
         data_as_dict = data_to_update.dict()
         if "additional_properties" in data_to_update:
             self._add_additional_properties_to_dict(data_as_dict)
-        self.update_document_with_dict(collection_name, id, data_as_dict)
+        self._update_document_with_dict(collection_name, id, data_as_dict)
 
-    def update_document_with_dict(
+    def _update_document_with_dict(
         self, collection_name: str, id: Union[str, int], data_to_update: dict
     ):
         """
@@ -86,10 +87,12 @@ class MongoApiService:
             data_to_update,
         )
 
-    def delete_document(self, id: Union[str, int], collection_name: str):
+    def delete_document(self, object_to_delete: BaseModel):
         """
         Delete document in collection
         """
+        id = object_to_delete.id
+        collection_name = get_collection_name(type(object_to_delete))
         self.db[collection_name].delete_one({self.MONGO_ID_FIELD: id})
         return id
 
