@@ -42,7 +42,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService):
         Returns:
             Result of request as list of registered data objects
         """
-        registed_data = mongo_api_service.load_documents(BasicRegisteredDataOut)
+        registed_data = mongo_api_service.get_documents(BasicRegisteredDataOut)
         result = [BasicRegisteredDataOut(**rd) for rd in registed_data]
 
         return RegisteredDataNodesOut(registered_data_nodes=result)
@@ -77,7 +77,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService):
         Returns:
             Result of request as registered data dictionary
         """
-        registered_data = mongo_api_service.load_document(
+        registered_data = mongo_api_service.get_document(
             registered_data_id, RegisteredDataOut
         )
 

@@ -66,7 +66,7 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
         Returns:
             Result of request as list of registered channels objects
         """
-        registered_channels = mongo_api_service.load_documents(
+        registered_channels = mongo_api_service.get_documents(
             BasicRegisteredChannelOut, query=query
         )
         result = [BasicRegisteredChannelOut(**rc) for rc in registered_channels]
@@ -90,7 +90,7 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
         Returns:
             Result of request as registered channel object
         """
-        registered_channel = mongo_api_service.load_document(
+        registered_channel = mongo_api_service.get_document(
             registered_channel_id, RegisteredChannelOut
         )
 
@@ -179,7 +179,7 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
         Returns:
             Result of request as list of registered channels
         """
-        registered_channels = mongo_api_service.load_documents(
+        registered_channels = mongo_api_service.get_documents(
             RegisteredChannelOut, query=query
         )
 

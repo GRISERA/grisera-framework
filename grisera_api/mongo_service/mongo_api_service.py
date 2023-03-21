@@ -32,12 +32,15 @@ class MongoApiService:
             self._add_additional_properties_to_dict(data_as_dict)
         return self.db[collection_name].insert_one(data_as_dict)
 
-    def load_document(self, id: Union[str, int], model_class):
+    def get_document(self, id: Union[str, int], model_class, fiedls_to_exclude=[]):
         """
         Load single document, with "additional properties" field handling
         """
         collection_name = get_collection_name(model_class)
-        result_dict = self.db[collection_name].find_one({self.MONGO_ID_FIELD: id})
+        field_projection = self._get_field_projection(fiedls_to_exclude)
+        result_dict = self.db[collection_name].find_one(
+            {self.MONGO_ID_FIELD: id}, field_projection
+        )
         if result_dict is None:
             return NotFoundByIdModel(
                 id=id,
@@ -50,12 +53,13 @@ class MongoApiService:
             self._move_additional_properties_to_array(result_dict, expected_fields)
         return result_dict
 
-    def load_documents(self, model_class, query: dict = {}):
+    def get_documents(self, model_class, query: dict = {}, fiedls_to_exclude=[]):
         """
         Load many documents, with "additional properties" field handling
         """
         collection_name = get_collection_name(model_class)
-        results = self.db[collection_name].find(query)
+        field_projection = self._get_field_projection(fiedls_to_exclude)
+        results = self.db[collection_name].find(query, field_projection)
 
         [self._update_mongo_output_id(result) for result in result]
         expected_fields = model_class.__fields__.keys()
@@ -123,6 +127,9 @@ class MongoApiService:
         if self.MONGO_ID_FIELD in mongo_output:
             mongo_output[self.MODEL_ID_FIELD] = mongo_output[self.MONGO_ID_FIELD]
         del mongo_output[self.MONGO_ID_FIELD]
+
+    def _get_field_projection(self, fields_to_exclude):
+        return {field: 0 for field in fields_to_exclude}
 
 
 mongo_api_service = MongoApiService()
