@@ -2,7 +2,7 @@ from typing import Union
 from channel.channel_service import ChannelService
 from channel.channel_model import ChannelIn, ChannelOut, ChannelsOut, BasicChannelOut
 from models.not_found_model import NotFoundByIdModel
-from mongo_api_service import mongo_api_service
+from mongo_service import mongo_api_service
 
 
 class ChannelServiceMongoDB(ChannelService):
@@ -26,7 +26,7 @@ class ChannelServiceMongoDB(ChannelService):
         Returns:
             Result of request as channel object
         """
-        channel_id = mongo_api_service.create_document("channels", channel)
+        channel_id = mongo_api_service.create_document(channel)
 
         return self.get_channel(channel_id)
 
@@ -37,7 +37,7 @@ class ChannelServiceMongoDB(ChannelService):
         Returns:
             Result of request as ChannelsOut object
         """
-        channels = mongo_api_service.load_documents({}, "channels", BasicChannelOut)
+        channels = mongo_api_service.get_documents(BasicChannelOut)
         result = [BasicChannelOut(**c) for c in channels]
         return ChannelsOut(channels=result)
 
@@ -69,7 +69,7 @@ class ChannelServiceMongoDB(ChannelService):
         Returns:
             Result of request as channel dictionary
         """
-        channel = mongo_api_service.load_document(channel_id, "channels", ChannelOut)
+        channel = mongo_api_service.get_document(channel_id, ChannelOut)
 
         if channel is NotFoundByIdModel:
             return channel
