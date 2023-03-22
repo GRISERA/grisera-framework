@@ -18,9 +18,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
     """
 
     def __init__(self, registered_channel_service):
-        self.model_classes = ModelClasses(
-            basic_out_class=BasicRegisteredDataOut, out_class=RegisteredDataOut
-        )
+        self.model_out_class = RegisteredDataOut
         self.registered_channel_service = registered_channel_service
 
     def save_registered_data(self, registered_data: RegisteredDataIn):
@@ -45,23 +43,12 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
         Returns:
             Result of request as list of registered data objects
         """
-        result_dicts = self.get_many_dict()
-        return RegisteredDataNodesOut(registered_data_nodes=result_dicts)
-
-    def get_registered_data(self, registered_data_id: Union[str, int]):
-        """
-        Send request to graph api to get given registered data. This method uses mixin get implementation.
-
-        Args:
-            registered_channel_id (int): Id of registered data
-
-        Returns:
-            Result of request as registered data object
-        """
-        return self.get_single(registered_data_id)
+        result_dict = self.get_multiple()
+        results = [BasicRegisteredDataOut(**result) for result in result_dict]
+        return RegisteredDataNodesOut(registered_data_nodes=results)
 
     def get_registered_data_traverse(
-        self, registered_data_id: Union[str, int], depth: int, source: str
+        self, registered_data_id: Union[str, int], depth: int = 0, source: str = ""
     ):
         """
         Send request to graph api to get given registered data with related models. This method uses mixin get implementation.
@@ -75,7 +62,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
         Returns:
             Result of request as registered data dictionary
         """
-        return self.get_single_traverse(registered_data_id, depth, source)
+        return self.get_single(registered_data_id, depth, source)
 
     def delete_registered_data(self, registered_data_id: Union[str, int]):
         """

@@ -26,9 +26,7 @@ class RegisteredChannelServiceMongoDB(
     """
 
     def __init__(self, channel_service, registered_data_service, recording_service):
-        self.model_classes = ModelClasses(
-            basic_out_class=BasicRegisteredChannelOut, out_class=RegisteredChannelOut
-        )
+        self.model_out_class = RegisteredChannelOut
         self.channel_service = channel_service()
         self.registered_data_service = registered_data_service()
         self.recording_service = recording_service()
@@ -73,22 +71,11 @@ class RegisteredChannelServiceMongoDB(
         Returns:
             Result of request as list of registered channels objects
         """
-        result_dicts = self.get_many_dict(query)
-        return RegisteredChannelsOut(registered_channels=result_dicts)
+        results_dict = self.get_multiple(query)
+        results = [BasicRegisteredChannelOut(**result) for result in results_dict]
+        return RegisteredChannelsOut(registered_channels=results)
 
-    def get_registered_channel(self, registered_channel_id: int):
-        """
-        Send request to mongo api to get given registered channel. This method uses mixin get implementation.
-
-        Args:
-            registered_channel_id (int): Id of registered channel
-
-        Returns:
-            Result of request as registered channel object
-        """
-        return self.get_single(registered_channel_id)
-
-    def get_registered_channel_traverse(
+    def get_registered_channel(
         self, registered_channel_id: int, depth: int = 0, source: str = ""
     ):
         """
@@ -105,19 +92,22 @@ class RegisteredChannelServiceMongoDB(
         Returns:
             Result of request as registered channel object
         """
-        return self.get_single_traverse(registered_channel_id, depth, source)
+        return self.get_single(registered_channel_id, depth, source)
 
-    def delete_registered_channel(self, registered_channel_id: int):
+    def get_registered_channels_traverse(self, query: dict, depth: int, source: str):
         """
-        Send request to mongo api to delete given registered channel. This method uses mixin get implementation.
+        Send request to mongo api to get registered channels with related models. This method uses mixin get implementation.
 
         Args:
-            registered_channel_id (int): Id of registered channel
+            query (dict): Query for mongo request. Gets all registered channels by default.
+            depth (int): this attribute specifies how many models will be traversed to create the response.
+                         for depth=0, only no further models will be travesed.
+            source (str): internal argument for mongo services, used to tell the direction of model fetching.
 
         Returns:
-            Result of request as registered channel object
+            Result of request as list of registered channels
         """
-        return self.delete(registered_channel_id)
+        return self.get_multiple(query, depth, source)
 
     def update_registered_channel_relationships(
         self, registered_channel_id: int, registered_channel: RegisteredChannelIn
@@ -163,20 +153,17 @@ class RegisteredChannelServiceMongoDB(
 
         return self.get_registered_channel(registered_channel_id)
 
-    def get_registered_channels_traverse(self, query: dict, depth: int, source: str):
+    def delete_registered_channel(self, registered_channel_id: int):
         """
-        Send request to mongo api to get registered channels with related models. This method uses mixin get implementation.
+        Send request to mongo api to delete given registered channel. This method uses mixin get implementation.
 
         Args:
-            query (dict): Query for mongo request. Gets all registered channels by default.
-            depth (int): this attribute specifies how many models will be traversed to create the response.
-                         for depth=0, only no further models will be travesed.
-            source (str): internal argument for mongo services, used to tell the direction of model fetching.
+            registered_channel_id (int): Id of registered channel
 
         Returns:
-            Result of request as list of registered channels
+            Result of request as registered channel object
         """
-        return self.get_multiple_traverse(query, depth, source)
+        return self.delete(registered_channel_id)
 
     def _add_related_documents(self, registered_channel: dict, depth: int, source: str):
         if depth > 0:
@@ -199,7 +186,7 @@ class RegisteredChannelServiceMongoDB(
     def _add_related_channel(self, registered_channel: dict, depth: int, source: str):
         has_related_channel = registered_channel["channel_id"] is not None
         if source != "channel" and has_related_channel:
-            registered_channel["channel"] = self.channel_service.get_channel_traverse(
+            registered_channel["channel"] = self.channel_service.get_channel(
                 channel_id=registered_channel["channel_id"],
                 depth=depth - 1,
                 source="registered_channel",

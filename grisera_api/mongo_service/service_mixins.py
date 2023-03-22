@@ -18,7 +18,7 @@ class GenericMongoServiceMixin:
 
     """
     This mixin defines implementation of basic mongo services methods. It requires the sublass to implement:
-        model_classes field - instance of ModelClasses object that hold model classes for this service
+        model_out_class field - out model class of services model
         _add_related_documents method - method for adding related documents to result when traversing models
     """
 
@@ -36,40 +36,15 @@ class GenericMongoServiceMixin:
 
         return self.get_single(created_document_id)
 
-    def get_many_dict(self, query: dict = {}, *args, **kwargs):
-        """
-        Generic method for sending request to mongo api to get multiple documents. This method doesn't
-        return instance of model class.
-        Returns:
-            Result of request as list of dictionaries.
-        """
-        basic_out_class = self.model_classes.basic_out_class
-        results_dict = mongo_api_service.get_documents(
-            basic_out_class, query=query, *args, **kwargs
-        )
-        return [basic_out_class(**result) for result in results_dict]
-
-    def get_single(self, id: Union[str, int], *args, **kwargs):
-        """
-        Generic method for sending request to mongo api to get single document
-        Returns:
-            Result of request as list of recordings objects
-        """
-        out_class = self.model_classes.out_class
-        result_dict = self.get_traverse(id, 0, "", *args, **kwargs)
-        if result_dict is NotFoundByIdModel:
-            return result_dict
-        return out_class(**result_dict)
-
-    def get_multiple_traverse(
-        self, query: dict, depth: int, source: str, *args, **kwargs
+    def get_multiple(
+        self, query: dict = {}, depth: int = 0, source: str = "", *args, **kwargs
     ):
         """
         Generic method for sending request to mongo api to get single document
         Returns:
-            Result of request as list of recordings objects
+            Result of request as list of dictionaries
         """
-        out_class = self.model_classes.out_class
+        out_class = self.model_out_class
         results_dict = mongo_api_service.get_documents(
             out_class, query=query, *args, **kwargs
         )
@@ -79,15 +54,15 @@ class GenericMongoServiceMixin:
 
         return results_dict
 
-    def get_single_traverse(
-        self, id: Union[str, int], depth: int, source: str, *args, **kwargs
+    def get_single(
+        self, id: Union[str, int], depth: int = 0, source: str = "", *args, **kwargs
     ):
         """
         Generic method for sending request to mongo api to get single document
         Returns:
             Result of request as list of recordings objects
         """
-        out_class = self.model_classes.out_class
+        out_class = self.model_out_class
         result_dict = mongo_api_service.get_document(id, out_class, *args, **kwargs)
 
         if result_dict is NotFoundByIdModel:

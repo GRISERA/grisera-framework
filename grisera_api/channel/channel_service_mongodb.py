@@ -1,10 +1,8 @@
 from typing import Union
 from channel.channel_service import ChannelService
 from channel.channel_model import ChannelIn, ChannelOut, ChannelsOut, BasicChannelOut
-from grisera_api.mongo_service.service_mixins import (
-    GenericMongoServiceMixin,
-    ModelClasses,
-)
+from grisera_api.mongo_service.service_mixins import GenericMongoServiceMixin,
+
 
 
 class ChannelServiceMongoDB(ChannelService, GenericMongoServiceMixin):
@@ -16,9 +14,7 @@ class ChannelServiceMongoDB(ChannelService, GenericMongoServiceMixin):
     """
 
     def __init__(self, registered_channel_service):
-        self.model_classes = ModelClasses(
-            basic_out_class=BasicChannelOut, out_class=ChannelOut
-        )
+        self.model_out_class = ChannelOut
         self.registered_channel_service = registered_channel_service
 
     def save_channel(self, channel: ChannelIn):
@@ -40,23 +36,12 @@ class ChannelServiceMongoDB(ChannelService, GenericMongoServiceMixin):
         Returns:
             Result of request as ChannelsOut object
         """
-        result_dicts = self.get_many_dict()
-        return ChannelsOut(channels=result_dicts)
+        results_dict = self.get_multiple()
+        results = [BasicChannelOut(**result) for result in results_dict]
+        return ChannelsOut(channels=results)
 
-    def get_channel(self, channel_id: Union[str, int]):
-        """
-        Send request to mongo api to get given channel. This method uses mixin get implementation.
-
-        Args:
-            channel_id (int): Id of channel
-
-        Returns:
-            Result of request as channel object
-        """
-        return self.get_single(channel_id)
-
-    def get_channel_traverse(
-        self, channel_id: Union[str, int], depth: int, source: str
+    def get_channel(
+        self, channel_id: Union[str, int], depth: int = 0, source: str = ""
     ):
         """
         Send request to mongo api to get given channel with related models. This method uses mixin get implementation.
@@ -70,7 +55,7 @@ class ChannelServiceMongoDB(ChannelService, GenericMongoServiceMixin):
         Returns:
             Result of request as channel dictionary
         """
-        return self.get_single_traverse(channel_id, depth, source)
+        return self.get_single(channel_id, depth, source)
 
     def _add_related_documents(self, channel: dict, depth: int, source: str):
         if source != "recording" and depth > 0:

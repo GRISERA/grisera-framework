@@ -1,3 +1,7 @@
+from grisera_api.mongo_service.service_mixins import (
+    GenericMongoServiceMixin,
+    ModelClasses,
+)
 from graph_api_service import GraphApiService
 from participation.participation_service_graphdb import ParticipationServiceGraphDB
 from recording.recording_service import RecordingService
@@ -17,7 +21,7 @@ from models.relation_information_model import RelationInformation
 from mongo_service import mongo_api_service
 
 
-class RecordingServiceGraphDB(RecordingService):
+class RecordingServiceGraphDB(RecordingService, GenericMongoServiceMixin):
     """
     Object to handle logic of recording requests
 
@@ -33,13 +37,14 @@ class RecordingServiceGraphDB(RecordingService):
         observable_information_service,
         participation_service,
     ):
+        self.model_out_class = RecordingOut
         self.registered_channel_service = registered_channel_service
         self.observable_information_service = observable_information_service
         self.participation_service = participation_service
 
     def save_recording(self, recording: RecordingIn):
         """
-        Send request to graph api to create new recording node
+        Send request to mongo api to create new recording document
 
         Args:
             recording (RecordingIn): Recording to be added
@@ -68,95 +73,45 @@ class RecordingServiceGraphDB(RecordingService):
                 errors={"errors": "given registered channel does not exist"}
             )
 
-        recording_id = mongo_api_service.create_document(recording)
+        return self.create(recording)
 
-        return self.get_recording(recording_id)
-
-    def get_recordings(self):
+    def get_recordings(self, query: dict = {}):
         """
         Send request to graph api to get recordings
         Returns:
             Result of request as list of recordings objects
         """
-        get_response = self.graph_api_service.get_nodes("Recording")
+        results_dict = self.get_multiple(query)
+        results = [BasicRecordingOut(**result) for result in results_dict]
+        return RecordingsOut(registered_channels=results)
 
-        recordings = []
-
-        for recording_node in get_response["nodes"]:
-            properties = {"id": recording_node["id"], "additional_properties": []}
-            for property in recording_node["properties"]:
-                properties["additional_properties"].append(
-                    {"key": property["key"], "value": property["value"]}
-                )
-            recording = BasicRecordingOut(**properties)
-            recordings.append(recording)
-
-        return RecordingsOut(recordings=recordings)
-
-    def get_recording(self, recording_id: int):
+    def get_recording(self, recording_id: int, depth: int = 0, source: str = ""):
         """
-        Send request to graph api to get given recording
+        Send request to mongo api to get given recording. This method uses mixin get implementation.
+
         Args:
-            recording_id (int): Id of recording
+            recording_id (int): Id of registered channel
+            depth (int): this attribute specifies how many models will be traversed to create the response.
+                         for depth=0, only no further models will be travesed.
+            source (str): internal argument for mongo services, used to tell the direction of model fetching.
+                          i.e. if for this service, if source="registered_channel", it means that this method was invoked
+                          from registered channel service, so registered channel model will not be fetched, as it is already
+                          in response.
+
         Returns:
-            Result of request as recording object
+            Result of request as registered channel object
         """
-        get_response = self.graph_api_service.get_node(recording_id)
-
-        if get_response["errors"] is not None:
-            return NotFoundByIdModel(id=recording_id, errors=get_response["errors"])
-        if get_response["labels"][0] != "Recording":
-            return NotFoundByIdModel(id=recording_id, errors="Node not found.")
-
-        recording = {
-            "id": get_response["id"],
-            "additional_properties": [],
-            "relations": [],
-            "reversed_relations": [],
-        }
-
-        for property in get_response["properties"]:
-            recording["additional_properties"].append(
-                {"key": property["key"], "value": property["value"]}
-            )
-
-        relations_response = self.graph_api_service.get_node_relationships(recording_id)
-
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == recording_id:
-                recording["relations"].append(
-                    RelationInformation(
-                        second_node_id=relation["end_node"],
-                        name=relation["name"],
-                        relation_id=relation["id"],
-                    )
-                )
-            else:
-                recording["reversed_relations"].append(
-                    RelationInformation(
-                        second_node_id=relation["start_node"],
-                        name=relation["name"],
-                        relation_id=relation["id"],
-                    )
-                )
-
-        return RecordingOut(**recording)
+        self.get_single(recording_id, depth, source)
 
     def delete_recording(self, recording_id: int):
         """
-        Send request to graph api to delete given recording
+        Send request to mongo api to delete given recording
         Args:
             recording_id (int): Id of recording
         Returns:
             Result of request as recording object
         """
-        get_response = self.get_recording(recording_id)
-
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
-
-        self.graph_api_service.delete_node(recording_id)
-        return get_response
+        return self.delete(recording_id)
 
     def update_recording(self, recording_id: int, recording: RecordingPropertyIn):
         """
@@ -167,22 +122,7 @@ class RecordingServiceGraphDB(RecordingService):
         Returns:
             Result of request as participant state object
         """
-        get_response = self.get_recording(recording_id)
-
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
-
-        self.graph_api_service.delete_node_properties(recording_id)
-        self.graph_api_service.create_properties(recording_id, recording)
-
-        recording_result = {
-            "id": recording_id,
-            "relations": get_response.relations,
-            "reversed_relations": get_response.reversed_relations,
-        }
-        recording_result.update(recording.dict())
-
-        return RecordingOut(**recording_result)
+        return self.update(recording_id, recording)
 
     def update_recording_relationships(self, recording_id: int, recording: RecordingIn):
         """
@@ -193,36 +133,62 @@ class RecordingServiceGraphDB(RecordingService):
         Returns:
             Result of request as recording object
         """
-        get_response = self.get_recording(recording_id)
+        existing_recording = self.get_recording(recording_id)
 
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
+        if type(existing_recording) is NotFoundByIdModel:
+            return existing_recording
 
-        if (
-            recording.participation_id is not None
-            and type(
-                self.participation_service.get_participation(recording.participation_id)
+        related_registered_channel = self.registered_channel_service.get_channel(
+            recording.registered_channel_id
+        )
+        related_registered_channel_exists = (
+            type(related_registered_channel) is not NotFoundByIdModel
+        )
+        if related_registered_channel_exists:
+            mongo_api_service.update_document(
+                recording_id,
+                RecordingIn(registered_channel_id=recording.registered_channel_id),
             )
-            is not NotFoundByIdModel
-        ):
-            self.graph_api_service.create_relationships(
-                start_node=recording_id,
-                end_node=recording.participation_id,
-                name="hasParticipation",
-            )
-        if (
-            recording.registered_channel_id is not None
-            and type(
-                self.registered_channel_service.get_registered_channel(
-                    recording.registered_channel_id
-                )
-            )
-            is not NotFoundByIdModel
-        ):
-            self.graph_api_service.create_relationships(
-                start_node=recording_id,
-                end_node=recording.registered_channel_id,
-                name="hasRegisteredChannel",
+
+        related_participation = self.participation_service.get_participation(
+            recording.participation_id
+        )
+        related_participation_exists = (
+            type(related_participation) is not NotFoundByIdModel
+        )
+        if related_participation_exists:
+            mongo_api_service.update_document(
+                recording_id,
+                RecordingIn(participation_id=recording.participation_id),
             )
 
         return self.get_recording(recording_id)
+
+    def _add_related_documents(self, recording: dict, depth: int, source: str):
+        if depth > 0:
+            self._add_related_registered_channel(recording, depth, source)
+            self._add_related_participation(recording, depth, source)
+            self._add_related_observable_informations(recording, depth, source)
+
+    def _add_related_registered_channel(self, recording: dict, depth: int, source: str):
+        has_related_rc = recording["registered_channel_id"] is not None
+        if source != "registered_channel" and has_related_rc:
+            recording[
+                "registered_channel"
+            ] = self.registered_channel_service.get_registered_channel(
+                recording["registered_channel_id"],
+                depth=depth - 1,
+                source="recording",
+            )
+
+    def _add_related_participation(self, recording: dict, depth: int, source: str):
+        has_participation = recording["participation_id"] is not None
+        if source != "participation" and has_participation:
+            recording["participation"] = self.participation_service.get_participation(
+                channel_id=recording["participation_id"],
+                depth=depth - 1,
+                source="recording",
+            )
+
+    def _add_related_observable_informations(self, recording: dict, depth: int, source: str):
+        # TODO add embeded relation adding
