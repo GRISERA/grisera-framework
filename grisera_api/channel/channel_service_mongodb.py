@@ -1,11 +1,13 @@
 from typing import Union
 from channel.channel_service import ChannelService
 from channel.channel_model import ChannelIn, ChannelOut, ChannelsOut, BasicChannelOut
-from models.not_found_model import NotFoundByIdModel
-from mongo_service import mongo_api_service
+from grisera_api.mongo_service.service_mixins import (
+    GenericMongoServiceMixin,
+    ModelClasses,
+)
 
 
-class ChannelServiceMongoDB(ChannelService):
+class ChannelServiceMongoDB(ChannelService, GenericMongoServiceMixin):
     """
     Object to handle logic of channel requests
 
@@ -14,11 +16,14 @@ class ChannelServiceMongoDB(ChannelService):
     """
 
     def __init__(self, registered_channel_service):
+        self.model_classes = ModelClasses(
+            basic_out_class=BasicChannelOut, out_class=ChannelOut
+        )
         self.registered_channel_service = registered_channel_service
 
     def save_channel(self, channel: ChannelIn):
         """
-        Send request to mongo api to create new channel
+        Send request to mongo api to create new channel. This method uses mixin get implementation.
 
         Args:
             channel (ChannelIn): Channel to be added
@@ -26,24 +31,21 @@ class ChannelServiceMongoDB(ChannelService):
         Returns:
             Result of request as channel object
         """
-        channel_id = mongo_api_service.create_document(channel)
-
-        return self.get_channel(channel_id)
+        return self.create(channel)
 
     def get_channels(self):
         """
-        Send request to mongo api to get all channels
+        Send request to mongo api to get all channels. This method uses mixin get implementation.
 
         Returns:
             Result of request as ChannelsOut object
         """
-        channels = mongo_api_service.get_documents(BasicChannelOut)
-        result = [BasicChannelOut(**c) for c in channels]
-        return ChannelsOut(channels=result)
+        result_dicts = self.get_many_dict()
+        return ChannelsOut(channels=result_dicts)
 
     def get_channel(self, channel_id: Union[str, int]):
         """
-        Send request to mongo api to get given channel
+        Send request to mongo api to get given channel. This method uses mixin get implementation.
 
         Args:
             channel_id (int): Id of channel
@@ -51,14 +53,13 @@ class ChannelServiceMongoDB(ChannelService):
         Returns:
             Result of request as channel object
         """
-        channel = self.get_channel_traverse(channel_id, 0, "")
-        if channel is NotFoundByIdModel:
-            return channel
-        return ChannelOut(*channel)
+        return self.get_single(channel_id)
 
-    def get_channel_traverse(self, channel_id: int, depth: int, source: str):
+    def get_channel_traverse(
+        self, channel_id: Union[str, int], depth: int, source: str
+    ):
         """
-        Send request to mongo api to get given channel with related models
+        Send request to mongo api to get given channel with related models. This method uses mixin get implementation.
 
         Args:
             channel_id (int): Id of channel
@@ -69,16 +70,9 @@ class ChannelServiceMongoDB(ChannelService):
         Returns:
             Result of request as channel dictionary
         """
-        channel = mongo_api_service.get_document(channel_id, ChannelOut)
+        return self.get_single_traverse(channel_id, depth, source)
 
-        if channel is NotFoundByIdModel:
-            return channel
-
-        self._add_related_registered_channels(channel, depth, source)
-
-        return channel
-
-    def _add_related_registered_channels(self, channel: dict, depth: int, source: str):
+    def _add_related_documents(self, channel: dict, depth: int, source: str):
         if source != "recording" and depth > 0:
             channel[
                 "registered_channels"

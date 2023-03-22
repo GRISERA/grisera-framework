@@ -1,3 +1,7 @@
+from grisera_api.mongo_service.service_mixins import (
+    GenericMongoServiceMixin,
+    ModelClasses,
+)
 from mongo_service import mongo_api_service
 from registered_channel.registered_channel_service import RegisteredChannelService
 from registered_channel.registered_channel_model import (
@@ -9,7 +13,9 @@ from registered_channel.registered_channel_model import (
 from models.not_found_model import NotFoundByIdModel
 
 
-class RegisteredChannelServiceMongoDB(RegisteredChannelService):
+class RegisteredChannelServiceMongoDB(
+    RegisteredChannelService, GenericMongoServiceMixin
+):
     """
     Object to handle logic of registered channels requests
 
@@ -20,13 +26,16 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
     """
 
     def __init__(self, channel_service, registered_data_service, recording_service):
+        self.model_classes = ModelClasses(
+            basic_out_class=BasicRegisteredChannelOut, out_class=RegisteredChannelOut
+        )
         self.channel_service = channel_service()
         self.registered_data_service = registered_data_service()
         self.recording_service = recording_service()
 
     def save_registered_channel(self, registered_channel: RegisteredChannelIn):
         """
-        Send request to mongo api to create new registered channel
+        Send request to mongo api to create new registered channel. This method uses mixin get implementation.
 
         Args:
             registered_channel (RegisteredChannelIn): Registered channel to be added
@@ -52,13 +61,11 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
                 errors={"errors": "given registered data does not exist"}
             )
 
-        registered_channel_id = mongo_api_service.create_document(registered_channel)
-
-        return self.get_registered_channel(registered_channel_id)
+        return self.create(registered_channel)
 
     def get_registered_channels(self, query: dict = {}):
         """
-        Send request to mongo api to get registered channels
+        Send request to mongo api to get registered channels. This method uses mixin get implementation.
 
         Args:
             query (dict): Query for mongo request. Gets all registered channels by default.
@@ -66,18 +73,26 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
         Returns:
             Result of request as list of registered channels objects
         """
-        registered_channels = mongo_api_service.get_documents(
-            BasicRegisteredChannelOut, query=query
-        )
-        result = [BasicRegisteredChannelOut(**rc) for rc in registered_channels]
+        result_dicts = self.get_many_dict(query)
+        return RegisteredChannelsOut(registered_channels=result_dicts)
 
-        return RegisteredChannelsOut(registered_channels=result)
+    def get_registered_channel(self, registered_channel_id: int):
+        """
+        Send request to mongo api to get given registered channel. This method uses mixin get implementation.
 
-    def get_registered_channel(
+        Args:
+            registered_channel_id (int): Id of registered channel
+
+        Returns:
+            Result of request as registered channel object
+        """
+        return self.get_single(registered_channel_id)
+
+    def get_registered_channel_traverse(
         self, registered_channel_id: int, depth: int = 0, source: str = ""
     ):
         """
-        Send request to mongo api to get given registered channel
+        Send request to mongo api to get given registered channel. This method uses mixin get implementation.
 
         Args:
             registered_channel_id (int): Id of registered channel
@@ -90,20 +105,11 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
         Returns:
             Result of request as registered channel object
         """
-        registered_channel = mongo_api_service.get_document(
-            registered_channel_id, RegisteredChannelOut
-        )
-
-        if registered_channel is NotFoundByIdModel:
-            return registered_channel
-
-        self._add_related_documents(registered_channel, depth, source)
-
-        return RegisteredChannelOut(**registered_channel)
+        return self.get_single_traverse(registered_channel_id, depth, source)
 
     def delete_registered_channel(self, registered_channel_id: int):
         """
-        Send request to mongo api to delete given registered channel
+        Send request to mongo api to delete given registered channel. This method uses mixin get implementation.
 
         Args:
             registered_channel_id (int): Id of registered channel
@@ -111,16 +117,7 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
         Returns:
             Result of request as registered channel object
         """
-        registered_channel = self.get_registered_channel(registered_channel_id)
-
-        if registered_channel is None:
-            return NotFoundByIdModel(
-                id=registered_channel_id,
-                errors={"errors": "registered channel not found"},
-            )
-
-        mongo_api_service.delete_document(registered_channel)
-        return registered_channel
+        return self.delete(registered_channel_id)
 
     def update_registered_channel_relationships(
         self, registered_channel_id: int, registered_channel: RegisteredChannelIn
@@ -168,7 +165,7 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
 
     def get_registered_channels_traverse(self, query: dict, depth: int, source: str):
         """
-        Send request to mongo api to get registered channels with related models
+        Send request to mongo api to get registered channels with related models. This method uses mixin get implementation.
 
         Args:
             query (dict): Query for mongo request. Gets all registered channels by default.
@@ -179,14 +176,7 @@ class RegisteredChannelServiceMongoDB(RegisteredChannelService):
         Returns:
             Result of request as list of registered channels
         """
-        registered_channels = mongo_api_service.get_documents(
-            RegisteredChannelOut, query=query
-        )
-
-        for rc in registered_channels:
-            self._add_related_documents(rc, depth, source)
-
-        return registered_channels
+        return self.get_multiple_traverse(query, depth, source)
 
     def _add_related_documents(self, registered_channel: dict, depth: int, source: str):
         if depth > 0:
