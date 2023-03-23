@@ -1,6 +1,6 @@
 from datetime import datetime
 from owlready2 import FunctionalProperty, ObjectPropertyClass
-from role.role_model import RoleModelIn, RoleModelOut
+from role.role_model import RoleModelIn, RoleModelOut, RolesDeletedOut
 from model.model_service import ModelService
 
 
@@ -85,3 +85,28 @@ class RoleService:
 
         return RoleModelOut(role=model_in.role, instance_name=model_in.instance_name,
                             value=model_in.value)
+
+    def delete_roles(self, model_id, instance_name) -> RolesDeletedOut:
+        """
+            Delete all relationships of the given individual
+        """
+        onto = self.model_service.load_ontology(model_id)
+
+        if onto is None:
+            return RolesDeletedOut(errors=f"Model with id {model_id} not found")
+
+        instance = onto.search_one(iri=f"*{instance_name}")
+
+        if instance is None:
+            onto.destroy()
+            return RolesDeletedOut(errors=f"Instance {instance_name} not found")
+
+        for r in instance.get_properties():
+            setattr(instance, r.name, None)
+
+        model_out = self.model_service.update_ontology(model_id, onto)
+        
+        if model_out.errors is not None:
+            return RolesDeletedOut(errors=model_out.errors)
+
+        return RolesDeletedOut(model_id=model_id, instance_name=instance_name)

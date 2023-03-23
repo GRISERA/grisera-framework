@@ -31,3 +31,18 @@ class RoleRouter:
         role_out.links = get_links(router)
 
         return role_out
+
+    @router.delete("/models/{model_id}/instances/{instance_name}/roles", tags=["role"], response_model=None)
+    async def delete_roles(self, model_id: int, instance_name: str, response: Response):
+        """
+                Delete all relationships of the given individual
+                Return 404 when model or instance not found
+        """
+        role_out = self.role_service.delete_roles(model_id, instance_name)
+        
+        if role_out.errors is not None:
+            response.status_code = 404
+
+        role_out.links = get_links(router)
+
+        return role_out
