@@ -102,7 +102,8 @@ class RoleService:
             return RolesDeletedOut(errors=f"Instance {instance_name} not found")
 
         for r in instance.get_properties():
-            setattr(instance, r.name, None)
+            if r.name != "label":
+                setattr(instance, r.name, None)
 
         model_out = self.model_service.update_ontology(model_id, onto)
         
