@@ -1,5 +1,5 @@
 from datetime import datetime
-from owlready2 import FunctionalProperty, ObjectPropertyClass
+from owlready2 import FunctionalProperty, ObjectPropertyClass, DataPropertyClass
 from role.role_model import RoleModelIn, RoleModelOut, RolesDeletedOut
 from model.model_service import ModelService
 
@@ -102,7 +102,7 @@ class RoleService:
             return RolesDeletedOut(errors=f"Instance {instance_name} not found")
 
         for r in instance.get_properties():
-            if r.name != "label":
+            if isinstance(r, ObjectPropertyClass) or isinstance(r, DataPropertyClass):
                 setattr(instance, r.name, None)
 
         model_out = self.model_service.update_ontology(model_id, onto)
