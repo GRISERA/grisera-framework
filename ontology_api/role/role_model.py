@@ -8,7 +8,6 @@ class RoleModelIn(BaseModel):
     value: Union[str, int, None]
 
 class RolesDeletedOut(BaseModel):
-    model_id: Optional[int]
     instance_name: Optional[str]
     links: Optional[str]
     errors: Optional[str]

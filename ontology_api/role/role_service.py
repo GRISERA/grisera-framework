@@ -110,4 +110,4 @@ class RoleService:
         if model_out.errors is not None:
             return RolesDeletedOut(errors=model_out.errors)
 
-        return RolesDeletedOut(model_id=model_id, instance_name=instance_name)
+        return RolesDeletedOut(instance_name=instance_name)
