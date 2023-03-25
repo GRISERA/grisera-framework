@@ -20,7 +20,7 @@ from participant_state.participant_state_service_graphdb import (
 )
 from participation.participation_service_graphdb import ParticipationServiceGraphDB
 from personality.personality_service_graphdb import PersonalityServiceGraphDB
-from recording.recording_service_graphdb import RecordingServiceGraphDB
+from recording.recording_service_mongodb import RecordingServiceMongoDB
 from registered_channel.registered_channel_service_mongodb import (
     RegisteredChannelServiceMongoDB,
 )
@@ -55,6 +55,32 @@ from time_series.time_series_service_graphdb_with_signal_values import (
 
 
 class MongoServiceFactory(ServiceFactory):
+    def __init__(self):
+        self.channel_service = ChannelServiceMongoDB()
+        self.recording_service = RecordingServiceMongoDB()
+        self.registered_channel_service = RegisteredChannelServiceMongoDB()
+        self.registered_data_service = RegisteredDataServiceMongoDB()
+
+        self.channel_service.registered_channel_service = (
+            self.registered_channel_service
+        )
+
+        self.recording_service.observable_information_service = None
+        self.recording_service.participation_service = None
+        self.recording_service.registered_channel_service = (
+            self.registered_channel_service
+        )
+
+        self.registered_channel_service.channel_service = self.channel_service
+        self.registered_channel_service.registered_data_service = (
+            self.registered_data_service
+        )
+        self.registered_channel_service.recording_service = self.recording_service
+
+        self.registered_data_service.registered_channel_service = (
+            self.registered_channel_service
+        )
+
     def get_activity_service(self) -> ActivityService:
         return ActivityServiceGraphDB()
 
@@ -68,7 +94,7 @@ class MongoServiceFactory(ServiceFactory):
         return ArrangementServiceGraphDB()
 
     def get_channel_service(self) -> ChannelService:
-        return ChannelServiceMongoDB()
+        return self.channel_service
 
     def get_experiment_service(self) -> ExperimentService:
         return ExperimentServiceGraphDB()
@@ -101,13 +127,13 @@ class MongoServiceFactory(ServiceFactory):
         return PersonalityServiceGraphDB()
 
     def get_recording_service(self) -> RecordingService:
-        return RecordingServiceGraphDB()
+        return self.recording_service
 
     def get_registered_channel_service(self) -> RegisteredChannelService:
-        return RegisteredChannelServiceMongoDB()
+        return self.registered_channel_service
 
     def get_registered_data_service(self) -> RegisteredDataService:
-        return RegisteredDataServiceMongoDB()
+        return self.registered_data_service
 
     def get_scenario_service(self) -> ScenarioService:
         return ScenarioServiceGraphDB()

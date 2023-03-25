@@ -70,8 +70,9 @@ class GenericMongoServiceMixin:
         Returns:
             Result of request as list of recordings objects
         """
+        out_class = self.model_out_class
         result_dict = self.get_single_dict(id, depth, source, *args, **kwargs)
-        return self.out_class(**result_dict)
+        return out_class(**result_dict)
 
     def update(self, id: Union[str, int], updated_object):
         """

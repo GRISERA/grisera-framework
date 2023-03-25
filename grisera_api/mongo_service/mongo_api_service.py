@@ -1,6 +1,7 @@
 from typing import Union
 from pydantic import BaseModel
 from pymongo import MongoClient
+from bson import ObjectId
 
 from models.not_found_model import NotFoundByIdModel
 from mongo_service.collection_mapping import get_collection_name
@@ -30,7 +31,7 @@ class MongoApiService:
         data_as_dict = data_in.dict()
         if "additional_properties" in data_as_dict:
             self._add_additional_properties_to_dict(data_as_dict)
-        return self.db[collection_name].insert_one(data_as_dict)
+        return self.db[collection_name].insert_one(data_as_dict).inserted_id
 
     def get_document(self, id: Union[str, int], model_class, fiedls_to_exclude=[]):
         """
@@ -124,8 +125,9 @@ class MongoApiService:
         del mongo_input[self.MODEL_ID_FIELD]
 
     def _update_mongo_output_id(self, mongo_output: dict):
+        output_id = mongo_output[self.MONGO_ID_FIELD]
         if self.MONGO_ID_FIELD in mongo_output:
-            mongo_output[self.MODEL_ID_FIELD] = mongo_output[self.MONGO_ID_FIELD]
+            mongo_output[self.MODEL_ID_FIELD] = str(mongo_output[self.MONGO_ID_FIELD])
         del mongo_output[self.MONGO_ID_FIELD]
 
     def _get_field_projection(self, fields_to_exclude):

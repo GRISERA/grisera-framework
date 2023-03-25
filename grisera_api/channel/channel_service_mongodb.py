@@ -13,10 +13,8 @@ class ChannelServiceMongoDB(ChannelService, GenericMongoServiceMixin):
     """
 
     def __init__(self):
-        from services import Services
-
         self.model_out_class = ChannelOut
-        self.registered_channel_service = Services.registered_channel_service()
+        self.registered_channel_service = None
 
     def save_channel(self, channel: ChannelIn):
         """
@@ -62,7 +60,7 @@ class ChannelServiceMongoDB(ChannelService, GenericMongoServiceMixin):
         if source != "recording" and depth > 0:
             channel[
                 "registered_channels"
-            ] = self.registered_channel_service.get_registered_channels_traverse(
+            ] = self.registered_channel_service.get_multiple(
                 {"channel_id": channel["id"]},
                 depth=depth - 1,
                 source="channel",

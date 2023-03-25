@@ -16,11 +16,9 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
     Object to handle logic of registered data requests
     """
 
-    def __init__(self, registered_channel_service):
-        from services import Services
-
+    def __init__(self):
         self.model_out_class = RegisteredDataOut
-        self.registered_channel_service = Services.registered_channel_service()
+        self.registered_channel_service = None
 
     def save_registered_data(self, registered_data: RegisteredDataIn):
         """

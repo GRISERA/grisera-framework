@@ -20,7 +20,7 @@ from models.relation_information_model import RelationInformation
 from mongo_service import mongo_api_service
 
 
-class RecordingServiceGraphDB(RecordingService, GenericMongoServiceMixin):
+class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
     """
     Object to handle logic of recording requests
 
@@ -31,12 +31,10 @@ class RecordingServiceGraphDB(RecordingService, GenericMongoServiceMixin):
     """
 
     def __init__(self):
-        from services import Services
-
         self.model_out_class = RecordingOut
-        self.registered_channel_service = Services.registered_channel_service()
-        self.observable_information_service = Services.observable_information_service()
-        self.participation_service = Services.participation_service()
+        self.registered_channel_service = None
+        self.observable_information_service = None
+        self.participation_service = None
 
     def save_recording(self, recording: RecordingIn):
         """
@@ -186,5 +184,8 @@ class RecordingServiceGraphDB(RecordingService, GenericMongoServiceMixin):
                 source="recording",
             )
 
-    def _add_related_observable_informations(self, recording: dict, depth: int, source: str):
+    def _add_related_observable_informations(
+        self, recording: dict, depth: int, source: str
+    ):
         # TODO add embeded relation adding
+        pass

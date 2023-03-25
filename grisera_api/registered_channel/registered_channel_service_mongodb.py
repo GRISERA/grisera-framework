@@ -25,12 +25,10 @@ class RegisteredChannelServiceMongoDB(
     """
 
     def __init__(self):
-        from services import Services
-
         self.model_out_class = RegisteredChannelOut
-        self.channel_service = Services.channel_service()
-        self.registered_data_service = Services.registered_data_service()
-        self.recording_service = Services.recording_service()
+        self.channel_service = None
+        self.registered_data_service = None
+        self.recording_service = None
 
     def save_registered_channel(self, registered_channel: RegisteredChannelIn):
         """
