@@ -1,7 +1,6 @@
 from typing import Union
-from grisera_api.mongo_service.service_mixins import (
+from mongo_service.service_mixins import (
     GenericMongoServiceMixin,
-    ModelClasses,
 )
 from registered_data.registered_data_model import (
     RegisteredDataIn,
@@ -18,8 +17,10 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
     """
 
     def __init__(self, registered_channel_service):
+        from services import Services
+
         self.model_out_class = RegisteredDataOut
-        self.registered_channel_service = registered_channel_service
+        self.registered_channel_service = Services.registered_channel_service()
 
     def save_registered_data(self, registered_data: RegisteredDataIn):
         """

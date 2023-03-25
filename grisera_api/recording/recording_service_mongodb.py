@@ -1,6 +1,5 @@
-from grisera_api.mongo_service.service_mixins import (
+from mongo_service.service_mixins import (
     GenericMongoServiceMixin,
-    ModelClasses,
 )
 from graph_api_service import GraphApiService
 from participation.participation_service_graphdb import ParticipationServiceGraphDB
@@ -31,16 +30,13 @@ class RecordingServiceGraphDB(RecordingService, GenericMongoServiceMixin):
     registered_channel_service(RegisteredChannelService): Service to send registered channel requests
     """
 
-    def __init__(
-        self,
-        registered_channel_service,
-        observable_information_service,
-        participation_service,
-    ):
+    def __init__(self):
+        from services import Services
+
         self.model_out_class = RecordingOut
-        self.registered_channel_service = registered_channel_service
-        self.observable_information_service = observable_information_service
-        self.participation_service = participation_service
+        self.registered_channel_service = Services.registered_channel_service()
+        self.observable_information_service = Services.observable_information_service()
+        self.participation_service = Services.participation_service()
 
     def save_recording(self, recording: RecordingIn):
         """

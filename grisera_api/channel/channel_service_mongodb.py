@@ -1,8 +1,7 @@
 from typing import Union
 from channel.channel_service import ChannelService
 from channel.channel_model import ChannelIn, ChannelOut, ChannelsOut, BasicChannelOut
-from grisera_api.mongo_service.service_mixins import GenericMongoServiceMixin,
-
+from mongo_service.service_mixins import GenericMongoServiceMixin
 
 
 class ChannelServiceMongoDB(ChannelService, GenericMongoServiceMixin):
@@ -13,9 +12,11 @@ class ChannelServiceMongoDB(ChannelService, GenericMongoServiceMixin):
     registered_channel_service (RegisteredChannelService): Service to send registered channel requests
     """
 
-    def __init__(self, registered_channel_service):
+    def __init__(self):
+        from services import Services
+
         self.model_out_class = ChannelOut
-        self.registered_channel_service = registered_channel_service
+        self.registered_channel_service = Services.registered_channel_service()
 
     def save_channel(self, channel: ChannelIn):
         """
@@ -53,7 +54,7 @@ class ChannelServiceMongoDB(ChannelService, GenericMongoServiceMixin):
             source (str): internal argument for mongo services, used to tell the direction of model fetching.
 
         Returns:
-            Result of request as channel dictionary
+            Result of request as channel out class
         """
         return self.get_single(channel_id, depth, source)
 

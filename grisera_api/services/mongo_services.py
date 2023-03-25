@@ -68,9 +68,7 @@ class MongoServiceFactory(ServiceFactory):
         return ArrangementServiceGraphDB()
 
     def get_channel_service(self) -> ChannelService:
-        return ChannelServiceMongoDB(
-            registered_channel_service=RegisteredChannelServiceMongoDB
-        )
+        return ChannelServiceMongoDB()
 
     def get_experiment_service(self) -> ExperimentService:
         return ExperimentServiceGraphDB()
@@ -106,16 +104,10 @@ class MongoServiceFactory(ServiceFactory):
         return RecordingServiceGraphDB()
 
     def get_registered_channel_service(self) -> RegisteredChannelService:
-        return RegisteredChannelServiceMongoDB(
-            channel_service=ChannelServiceMongoDB,
-            registered_data_service=RegisteredDataServiceMongoDB,
-            recording_service=RecordingServiceGraphDB,
-        )
+        return RegisteredChannelServiceMongoDB()
 
     def get_registered_data_service(self) -> RegisteredDataService:
-        return RegisteredDataServiceMongoDB(
-            registered_channel_service=RegisteredChannelServiceMongoDB
-        )
+        return RegisteredDataServiceMongoDB()
 
     def get_scenario_service(self) -> ScenarioService:
         return ScenarioServiceGraphDB()

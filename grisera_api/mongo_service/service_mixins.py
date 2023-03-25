@@ -1,17 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Union
-from grisera_api.models.not_found_model import NotFoundByIdModel
+from models.not_found_model import NotFoundByIdModel
 from mongo_service import mongo_api_service
-
-
-class ModelClasses:
-    """
-    Class for holding model classes of mongo service.
-    """
-
-    def __init__(self, basic_out_class, out_class):
-        self.basic_out_class = basic_out_class
-        self.out_class = out_class
 
 
 class GenericMongoServiceMixin:

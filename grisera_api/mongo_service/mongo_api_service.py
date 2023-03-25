@@ -1,9 +1,9 @@
 from typing import Union
 from pydantic import BaseModel
 from pymongo import MongoClient
-from grisera_api.models.not_found_model import NotFoundByIdModel
-from grisera_api.mongo_service.collection_mapping import get_collection_name
 
+from models.not_found_model import NotFoundByIdModel
+from mongo_service.collection_mapping import get_collection_name
 from mongo_service.mongodb_api_config import mongo_api_address, mongo_database_name
 
 
