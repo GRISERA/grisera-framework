@@ -48,7 +48,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
         results = [BasicRegisteredDataOut(**result) for result in result_dict]
         return RegisteredDataNodesOut(registered_data_nodes=results)
 
-    def get_registered_data_traverse(
+    def get_registered_data(
         self, registered_data_id: Union[str, int], depth: int = 0, source: str = ""
     ):
         """
@@ -96,7 +96,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
         if source != "recording" and depth > 0:
             registered_data[
                 "registered_channels"
-            ] = self.registered_channel_service.get_registered_channels_traverse(
+            ] = self.registered_channel_service.get_multiple(
                 {"registered_data_id": registered_data["id"]},
                 depth=depth - 1,
                 source="registered_data",

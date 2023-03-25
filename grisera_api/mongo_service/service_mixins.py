@@ -44,7 +44,7 @@ class GenericMongoServiceMixin:
 
         return results_dict
 
-    def get_single(
+    def get_single_dict(
         self, id: Union[str, int], depth: int = 0, source: str = "", *args, **kwargs
     ):
         """
@@ -60,7 +60,18 @@ class GenericMongoServiceMixin:
 
         self._add_related_documents(result_dict, depth, source)
 
-        return out_class(**result_dict)
+        return result_dict
+
+    def get_single(
+        self, id: Union[str, int], depth: int = 0, source: str = "", *args, **kwargs
+    ):
+        """
+        Generic method for sending request to mongo api to get single document
+        Returns:
+            Result of request as list of recordings objects
+        """
+        result_dict = self.get_single_dict(id, depth, source, *args, **kwargs)
+        return self.out_class(**result_dict)
 
     def update(self, id: Union[str, int], updated_object):
         """

@@ -95,21 +95,6 @@ class RegisteredChannelServiceMongoDB(
         """
         return self.get_single(registered_channel_id, depth, source)
 
-    def get_registered_channels_traverse(self, query: dict, depth: int, source: str):
-        """
-        Send request to mongo api to get registered channels with related models. This method uses mixin get implementation.
-
-        Args:
-            query (dict): Query for mongo request. Gets all registered channels by default.
-            depth (int): this attribute specifies how many models will be traversed to create the response.
-                         for depth=0, only no further models will be travesed.
-            source (str): internal argument for mongo services, used to tell the direction of model fetching.
-
-        Returns:
-            Result of request as list of registered channels
-        """
-        return self.get_multiple(query, depth, source)
-
     def update_registered_channel_relationships(
         self, registered_channel_id: int, registered_channel: RegisteredChannelIn
     ):
@@ -176,9 +161,7 @@ class RegisteredChannelServiceMongoDB(
         self, registered_channel: dict, depth: int, source: str
     ):
         if source != "recording":
-            registered_channel[
-                "recorgings"
-            ] = self.recording_service.get_recordings_traverse(
+            registered_channel["recorgings"] = self.recording_service.get_multiple(
                 {"registered_channel": registered_channel["id"]},
                 depth=depth - 1,
                 source="registered_channel",
@@ -187,7 +170,7 @@ class RegisteredChannelServiceMongoDB(
     def _add_related_channel(self, registered_channel: dict, depth: int, source: str):
         has_related_channel = registered_channel["channel_id"] is not None
         if source != "channel" and has_related_channel:
-            registered_channel["channel"] = self.channel_service.get_channel(
+            registered_channel["channel"] = self.channel_service.get_single_dict(
                 channel_id=registered_channel["channel_id"],
                 depth=depth - 1,
                 source="registered_channel",
@@ -200,7 +183,7 @@ class RegisteredChannelServiceMongoDB(
         if source != "registered_data" and has_related_rd:
             registered_channel[
                 "registered_data"
-            ] = self.channel_service.get_registered_data(
+            ] = self.channel_service.get_single_dict(
                 registered_data_id=registered_channel["registered_data_id"],
                 depth=depth - 1,
                 source="registered_channel",

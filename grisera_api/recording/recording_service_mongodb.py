@@ -171,7 +171,7 @@ class RecordingServiceGraphDB(RecordingService, GenericMongoServiceMixin):
         if source != "registered_channel" and has_related_rc:
             recording[
                 "registered_channel"
-            ] = self.registered_channel_service.get_registered_channel(
+            ] = self.registered_channel_service.get_single_dict(
                 recording["registered_channel_id"],
                 depth=depth - 1,
                 source="recording",
@@ -180,7 +180,7 @@ class RecordingServiceGraphDB(RecordingService, GenericMongoServiceMixin):
     def _add_related_participation(self, recording: dict, depth: int, source: str):
         has_participation = recording["participation_id"] is not None
         if source != "participation" and has_participation:
-            recording["participation"] = self.participation_service.get_participation(
+            recording["participation"] = self.participation_service.get_single_dict(
                 channel_id=recording["participation_id"],
                 depth=depth - 1,
                 source="recording",
