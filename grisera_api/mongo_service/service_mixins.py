@@ -55,7 +55,7 @@ class GenericMongoServiceMixin:
         out_class = self.model_out_class
         result_dict = mongo_api_service.get_document(id, out_class, *args, **kwargs)
 
-        if result_dict is NotFoundByIdModel:
+        if type(result_dict) is NotFoundByIdModel:
             return result_dict
 
         self._add_related_documents(result_dict, depth, source)
@@ -71,8 +71,10 @@ class GenericMongoServiceMixin:
             Result of request as list of recordings objects
         """
         out_class = self.model_out_class
-        result_dict = self.get_single_dict(id, depth, source, *args, **kwargs)
-        return out_class(**result_dict)
+        result = self.get_single_dict(id, depth, source, *args, **kwargs)
+        if type(result) is NotFoundByIdModel:
+            return result
+        return out_class(**result)
 
     def update(self, id: Union[str, int], updated_object):
         """

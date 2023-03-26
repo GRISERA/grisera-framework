@@ -54,7 +54,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
             return RecordingOut(errors={"errors": "given participation does not exist"})
 
         related_registered_channel = (
-            self.registered_channel_service.get_registered_data(
+            self.registered_channel_service.get_registered_channel(
                 recording.registered_channel_id
             )
         )

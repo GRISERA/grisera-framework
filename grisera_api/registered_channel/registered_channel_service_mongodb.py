@@ -53,7 +53,7 @@ class RegisteredChannelServiceMongoDB(
             registered_channel.registered_data_id
         )
         rd_exists = related_rd is not NotFoundByIdModel
-        if registered_channel.channel_id is not None and not rd_exists:
+        if registered_channel.registered_data_id is not None and not rd_exists:
             return RegisteredChannelOut(
                 errors={"errors": "given registered data does not exist"}
             )
@@ -159,8 +159,8 @@ class RegisteredChannelServiceMongoDB(
         self, registered_channel: dict, depth: int, source: str
     ):
         if source != "recording":
-            registered_channel["recorgings"] = self.recording_service.get_multiple(
-                {"registered_channel": registered_channel["id"]},
+            registered_channel["recordings"] = self.recording_service.get_multiple(
+                {"registered_channel_id": registered_channel["id"]},
                 depth=depth - 1,
                 source="registered_channel",
             )
@@ -182,7 +182,7 @@ class RegisteredChannelServiceMongoDB(
             registered_channel[
                 "registered_data"
             ] = self.channel_service.get_single_dict(
-                registered_data_id=registered_channel["registered_data_id"],
+                registered_channel["registered_data_id"],
                 depth=depth - 1,
                 source="registered_channel",
             )

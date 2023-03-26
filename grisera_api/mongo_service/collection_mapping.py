@@ -22,7 +22,7 @@ from participant_state.participant_state_model import (
     ParticipantStatePropertyIn,
     ParticipantStateRelationIn,
 )
-from participation.participation_model import ParticipationIn
+from participation.participation_model import ParticipationIn, BasicParticipationOut
 from personality.personality_model import (
     PersonalityBigFiveIn,
     PersonalityPanasIn,
@@ -31,7 +31,10 @@ from recording.recording_model import (
     RecordingPropertyIn,
     RecordingRelationIn,
 )
-from registered_channel.registered_channel_model import RegisteredChannelIn
+from registered_channel.registered_channel_model import (
+    RegisteredChannelIn,
+    BasicRegisteredChannelOut,
+)
 from registered_data.registered_data_model import RegisteredDataIn
 from scenario.scenario_model import ScenarioIn
 from time_series.time_series_model import (
@@ -58,11 +61,13 @@ SUPERCLASSES_TO_COLLECTION_NAMES = {
     ParticipantIn: "participants",
     ParticipantStatePropertyIn: "participant_states",
     ParticipantStateRelationIn: "participant_states",
+    BasicParticipationOut: "participations",
     ParticipationIn: "participations",
     PersonalityBigFiveIn: "personalities",
     PersonalityPanasIn: "personalities",
     RecordingPropertyIn: "recordings",
     RecordingRelationIn: "recordings",
+    BasicRegisteredChannelOut: "registered_channels",
     RegisteredChannelIn: "registered_channels",
     RegisteredDataIn: "registered_data",
     ScenarioIn: "scenarios",

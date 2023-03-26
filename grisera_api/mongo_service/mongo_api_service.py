@@ -31,7 +31,9 @@ class MongoApiService:
         data_as_dict = data_in.dict()
         if "additional_properties" in data_as_dict:
             self._add_additional_properties_to_dict(data_as_dict)
-        return self.db[collection_name].insert_one(data_as_dict).inserted_id
+        self._fix_query_ids(data_as_dict)
+        created_id = self.db[collection_name].insert_one(data_as_dict).inserted_id
+        return str(created_id)
 
     def get_document(self, id: Union[str, int], model_class, fiedls_to_exclude=[]):
         """
@@ -40,8 +42,9 @@ class MongoApiService:
         collection_name = get_collection_name(model_class)
         field_projection = self._get_field_projection(fiedls_to_exclude)
         result_dict = self.db[collection_name].find_one(
-            {self.MONGO_ID_FIELD: id}, field_projection
+            {self.MONGO_ID_FIELD: ObjectId(id)}, field_projection
         )
+
         if result_dict is None:
             return NotFoundByIdModel(
                 id=id,
@@ -60,9 +63,10 @@ class MongoApiService:
         """
         collection_name = get_collection_name(model_class)
         field_projection = self._get_field_projection(fiedls_to_exclude)
-        results = self.db[collection_name].find(query, field_projection)
+        self._fix_query_ids(query)
+        results = list(self.db[collection_name].find(query, field_projection))
 
-        [self._update_mongo_output_id(result) for result in result]
+        [self._update_mongo_output_id(result) for result in results]
         expected_fields = model_class.__fields__.keys()
         if "additional_properties" in expected_fields:
             for result in results:
@@ -103,6 +107,8 @@ class MongoApiService:
 
     @staticmethod
     def _add_additional_properties_to_dict(data_dict: dict):
+        if data_dict["additional_properties"] is None:
+            return
         for additional_property in data_dict["additional_properties"]:
             data_dict[additional_property["key"]] = data_dict[
                 additional_property["value"]
@@ -121,17 +127,29 @@ class MongoApiService:
 
     def _update_mongo_input_id(self, mongo_input: dict):
         if self.MODEL_ID_FIELD in mongo_input:
-            mongo_input[self.MONGO_ID_FIELD] = mongo_input[self.MODEL_ID_FIELD]
+            mongo_input[self.MONGO_ID_FIELD] = ObjectId(
+                mongo_input[self.MODEL_ID_FIELD]
+            )
         del mongo_input[self.MODEL_ID_FIELD]
 
     def _update_mongo_output_id(self, mongo_output: dict):
-        output_id = mongo_output[self.MONGO_ID_FIELD]
         if self.MONGO_ID_FIELD in mongo_output:
             mongo_output[self.MODEL_ID_FIELD] = str(mongo_output[self.MONGO_ID_FIELD])
         del mongo_output[self.MONGO_ID_FIELD]
+        self._fix_output_ids(mongo_output)
 
     def _get_field_projection(self, fields_to_exclude):
         return {field: 0 for field in fields_to_exclude}
+
+    def _fix_query_ids(self, query):
+        for field in query:
+            if field[-3:] == "_id":
+                query[field] = ObjectId(query[field])
+
+    def _fix_output_ids(self, result):
+        for field in result:
+            if field[-3:] == "_id":
+                result[field] = str(result[field])
 
 
 mongo_api_service = MongoApiService()
