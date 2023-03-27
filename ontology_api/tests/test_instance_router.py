@@ -101,3 +101,55 @@ class InstanceServiceTestCase(unittest.TestCase):
         onto.destroy()
         result = asyncio.run(instance_router.get_instance(model_id, class_str, instance_label, response))
         self.assertEqual(result.errors, f"Instance with label {instance_label} not found in Model {model_id}")
+
+    def test_delete_instance_model_does_not_exist(self):
+        instance_router = InstanceRouter()
+        response = Response()
+        class_str = "Experiment"
+        instance_label = "test"
+        model_id = -100000
+        result = asyncio.run(instance_router.delete_instance(model_id, class_str, instance_label, response))
+        self.assertEqual(result.errors, f"Model with id {model_id} not found")
+
+    def test_delete_instance_without_error(self):
+        instance_router = InstanceRouter()
+        response = Response()
+        model_id = 1
+        class_str = "Experiment"
+        instance_label = "t"
+        instance_id = "test_id"
+        onto = get_ontology("https://road.affectivese.org/documentation/owlAC.owl").load()
+        onto_class = onto[class_str]
+        instance = onto_class(instance_id)
+        instance.label = [locstr(instance_label, lang="en")]
+        onto.save(file="database" + os.path.sep + f"{model_id}.owl", format="rdfxml")
+        onto.destroy()
+        result = asyncio.run(instance_router.delete_instance(model_id, class_str, instance_label, response))
+        self.assertEqual(result.instance_id, instance_id)
+        self.assertEqual(response.status_code, 200)
+        os.remove("database" + os.path.sep + f"{model_id}.owl")
+
+    def test_delete_instance_class_does_not_exist(self):
+        instance_router = InstanceRouter()
+        response = Response()
+        model_id = 1
+        class_str = "Utopia"
+        instance_label = "test"
+        onto = get_ontology("https://road.affectivese.org/documentation/owlAC.owl").load()
+        onto.save(file="database" + os.path.sep + f"{model_id}.owl", format="rdfxml")
+        onto.destroy()
+        result = asyncio.run(instance_router.delete_instance(model_id, class_str, instance_label, response))
+        self.assertEqual(result.errors, f"Class named {class_str} not found in Model {model_id}")
+        os.remove("database" + os.path.sep + f"{model_id}.owl")
+
+    def test_delete_instance_label_does_not_exist(self):
+        instance_router = InstanceRouter()
+        response = Response()
+        model_id = 1
+        class_str = "Experiment"
+        instance_label = "t"
+        onto = get_ontology("https://road.affectivese.org/documentation/owlAC.owl").load()
+        onto.save(file="database" + os.path.sep + f"{model_id}.owl", format="rdfxml")
+        onto.destroy()
+        result = asyncio.run(instance_router.delete_instance(model_id, class_str, instance_label, response))
+        self.assertEqual(result.errors, f"Instance with label {instance_label} not found in Model {model_id}")
