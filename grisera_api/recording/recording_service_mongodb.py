@@ -187,5 +187,12 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
     def _add_related_observable_informations(
         self, recording: dict, depth: int, source: str
     ):
-        # TODO add embeded relation adding
-        pass
+        """
+        Oservable information is embeded within recording model
+        """
+        has_observable_informations = recording["obervable_informations"] is not None
+        if source != "obervable_information" and has_observable_informations:
+            for oi in recording["obervable_informations"]:
+                self.observable_information_service._add_related_documents(
+                    oi, depth - 1, "recording"
+                )

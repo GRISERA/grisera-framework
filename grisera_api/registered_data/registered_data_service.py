@@ -1,6 +1,10 @@
 from graph_api_service import GraphApiService
-from registered_data.registered_data_model import RegisteredDataIn, RegisteredDataNodesOut, \
-    BasicRegisteredDataOut, RegisteredDataOut
+from registered_data.registered_data_model import (
+    RegisteredDataIn,
+    RegisteredDataNodesOut,
+    BasicRegisteredDataOut,
+    RegisteredDataOut,
+)
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
 
@@ -32,7 +36,7 @@ class RegisteredDataService:
         """
         raise Exception("get_registered_data_nodes not implemented yet")
 
-    def get_registered_data(self, registered_data_id: int):
+    def get_registered_data(self, registered_data_id: Union[int, str]):
         """
         Send request to graph api to get given registered data
 
@@ -44,7 +48,7 @@ class RegisteredDataService:
         """
         raise Exception("get_registered_data not implemented yet")
 
-    def delete_registered_data(self, registered_data_id: int):
+    def delete_registered_data(self, registered_data_id: Union[int, str]):
         """
         Send request to graph api to delete given registered data
 
@@ -56,7 +60,9 @@ class RegisteredDataService:
         """
         raise Exception("delete_registered_data not implemented yet")
 
-    def update_registered_data(self, registered_data_id: int, registered_data: RegisteredDataIn):
+    def update_registered_data(
+        self, registered_data_id: Union[int, str], registered_data: RegisteredDataIn
+    ):
         """
         Send request to graph api to update given registered data
 
