@@ -29,18 +29,17 @@ class GraphApiService:
         Returns:
             Result of request
         """
+        print("###### REQUEST BODY: ", request_body)
 
         url_part += self.add_database_name_to_url(database_name)
-        # print("###### URL_PART: ", url_part)
+
+        print("###### URL PART: ", url_part)
+
         response = requests.post(url=self.graph_api_url + url_part,
                                  json=request_body).json()
-        # print("###### RESPONSE: ", response)
-        # try:
-        #     response_data = response.json()
-        # except json.JSONDecodeError as json_error:
-        #     print(f"JSON decoding error occurred: {json_error}")
-        #     # Handle the JSONDecodeError
-        #     response_data = {}
+
+        print("###### RESPONSE: ", response)
+
 
         return response
 
@@ -65,6 +64,7 @@ class GraphApiService:
         Send request get to Graph API
 
         Args:
+            database_name:
             url_part (str): Part to add at the end of url
             params (dict): Parameters of request
 
@@ -85,11 +85,20 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        # print("LABEL: ", label)
-        # request_body = {"labels": [label], "database_name": database_name}
         request_body = {"labels": [label], "database_name": [database_name]}
-        # print("LABEL DISCTIONARY", request_body)
         return self.post("/nodes", request_body, database_name)
+
+    def create_database(self, database_name_to_create: str):
+        """
+        Send to the Graph API request to create a node
+
+        Args:
+            label (str): Label for node
+        Returns:
+            Result of request
+        """
+        request_body = {"database_name": database_name_to_create}
+        return self.post("/dataset", request_body, "neo4j")
 
     def get_nodes(self, label: str, database_name: str):
         """
@@ -102,6 +111,18 @@ class GraphApiService:
         """
         request_params = {"label": label, "database_name": database_name}
         return self.get("/nodes", request_params, database_name)
+
+    def get_databases(self):
+        """
+        Send to the Graph API request to create a node
+
+        Args:
+            label (str): Label for node
+        Returns:
+            Result of request
+        """
+        request_params = {}
+        return self.get("/datasets", request_params, "neo4j")
 
     def get_node(self, id: int, database_name: str):
         """

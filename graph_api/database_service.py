@@ -45,7 +45,6 @@ class DatabaseService:
             "statements": [{"statement": statement}]
         }
         response = self.post(commit_body, database_name)
-        print("response in post_statement: ", response)
         return response
 
     def post(self, commit_body, database_name):
@@ -59,13 +58,15 @@ class DatabaseService:
         Returns:
             Result of request      
         """
+        print("###### COMMIT BODY: ", commit_body)
 
         self.database_url = self.replace_db_name(self.database_url, database_name)
 
         response = requests.post(url=self.database_url,
                                  json=commit_body,
                                  auth=self.database_auth).json()
-        print("response in post: ", response)
+
+        print("###### GRAPH API RESPONSE: ", response)
 
         return response
 
@@ -84,8 +85,6 @@ class DatabaseService:
     def check_if_database_exists(self, database_name):
         check_node_statement = "SHOW databases"
         response = self.post_statement(check_node_statement, database_name)
-        print("###check names ### check_if_database_exists - response(): ", response['results'][0]['data'][0]['row'][0])
-        print("###check names ### FOR:")
         for db in response['results'][0]['data']:
             db_name = db['row'][0]
             if database_name is db_name:
@@ -120,20 +119,10 @@ class DatabaseService:
             Result of request      
         """
 
-        # response = self.show_databases_with_name(database_name).json()
-        # print("response 'show' in create_node:", response)
-
         create_statement = "CREATE (n:{labels}) RETURN n".format(
                   labels=":".join(list(node.labels)))
 
         return self.post_statement(create_statement, database_name)
-
-        # if self.check_if_database_exists(database_name):
-        #     create_statement = "CREATE (n:{labels}) RETURN n".format(
-        #         labels=":".join(list(node.labels)))
-        #     return self.post_statement(create_statement, database_name)
-        #
-        # return "The database with name '" + database_name + "' does not exist! Give proper database name!"
 
     def get_node(self, node_id, database_name):
         """

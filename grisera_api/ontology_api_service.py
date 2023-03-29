@@ -20,6 +20,7 @@ class OntologyApiService:
 
         Returns: Request result
         """
+        print("###### ONTOLOGY POST: ", url_part," ", request_body)
         response = requests.post(url=self.ontology_api_url + url_part,
                                  json=request_body).json()
         return response

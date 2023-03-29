@@ -166,6 +166,6 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
             self.graph_api_service.create_relationships(start_node=observable_information_id,
                                                         end_node=observable_information.recording_id,
                                                         name="hasRecording",
-                                                        database_name=database_name)    
+                                                        database_name=database_name)
 
         return self.get_observable_information(observable_information_id, database_name)

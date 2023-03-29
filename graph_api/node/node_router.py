@@ -28,7 +28,6 @@ class NodeRouter:
         """
         Create node with optional labels
         """
-        print("create_node Method!")
         create_response = self.node_service.save_node(node, database_name)
         if create_response.errors is not None:
             response.status_code = 422
