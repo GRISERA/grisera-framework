@@ -1,3 +1,10 @@
+from bson import ObjectId
+from grisera_api.observable_information.observable_information_model import (
+    BasicObservableInformationOut,
+)
+from observable_information.observable_information_model import (
+    ObservableInformationIn,
+)
 from mongo_service.service_mixins import (
     GenericMongoServiceMixin,
 )
@@ -157,6 +164,28 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
             )
 
         return self.get_recording(recording_id)
+
+    def add_observable_information(
+        self, observable_information: ObservableInformationIn
+    ):
+        """
+        Add observable information to recording. Obervable information is embeded in related recording.
+        Args:
+            observable_information (ObservableInformationIn): observable information to add
+        Returns:
+            Added observable information as BasicObservableInformationOut object
+        """
+        observable_information_dict = observable_information.dict()
+        observable_information_dict["id"] = ObjectId()
+
+        recording_id = self.get_single_dict(observable_information.recording_id)
+        recording = self.get_single_dict(recording_id)
+        observable_informations = recording.get("obervable_informations", [])
+        observable_informations.push(observable_information_dict)
+        recording["obervable_informations"] = observable_informations
+
+        self.update(recording_id, recording)
+        return BasicObservableInformationOut(**observable_information_dict)
 
     def _add_related_documents(self, recording: dict, depth: int, source: str):
         if depth > 0:

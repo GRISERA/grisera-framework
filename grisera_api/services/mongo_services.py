@@ -1,3 +1,6 @@
+from observable_information.observable_information_service_mongodb import (
+    ObservableInformationServiceMongoDB,
+)
 from services.service_factory import ServiceFactory
 from activity.activity_service_graphdb import ActivityServiceGraphDB
 from activity_execution.activity_execution_service_graphdb import (
@@ -60,12 +63,15 @@ class MongoServiceFactory(ServiceFactory):
         self.recording_service = RecordingServiceMongoDB()
         self.registered_channel_service = RegisteredChannelServiceMongoDB()
         self.registered_data_service = RegisteredDataServiceMongoDB()
+        self.observable_information_service = ObservableInformationServiceMongoDB()
 
         self.channel_service.registered_channel_service = (
             self.registered_channel_service
         )
 
-        self.recording_service.observable_information_service = None
+        self.recording_service.observable_information_service = (
+            self.observable_information_service
+        )
         self.recording_service.participation_service = None
         self.recording_service.registered_channel_service = (
             self.registered_channel_service
@@ -80,6 +86,11 @@ class MongoServiceFactory(ServiceFactory):
         self.registered_data_service.registered_channel_service = (
             self.registered_channel_service
         )
+
+        self.observable_information_service.recording_service = self.recording_service
+        self.observable_information_service.life_activity_service = None
+        self.observable_information_service.modality_service = None
+        self.observable_information_service.time_series_service = None
 
     def get_activity_service(self) -> ActivityService:
         return ActivityServiceGraphDB()
@@ -112,7 +123,7 @@ class MongoServiceFactory(ServiceFactory):
         return ModalityServiceGraphDB()
 
     def get_observable_information_service(self) -> ObservableInformationService:
-        return ObservableInformationServiceGraphDB()
+        return self.observable_information_service
 
     def get_participant_service(self) -> ParticipantService:
         return ParticipantServiceGraphDB()
