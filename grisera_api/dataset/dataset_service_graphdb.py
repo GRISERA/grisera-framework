@@ -25,10 +25,10 @@ class DatasetServiceGraphDB(DatasetService):
             Result of request as relationship object
         """
 
-        node_response = self.graph_api_service.create_database(database_name_to_create)
+        response = self.graph_api_service.create_database(database_name_to_create)
 
-        if node_response["errors"] is not None:
-            return DatasetsOut(name=database_name_to_create, errors=node_response["errors"])
+        if response["errors"] is not None:
+            return DatasetsOut(name=database_name_to_create, errors=response["errors"])
 
         return DatasetOut(name=database_name_to_create)
 
@@ -44,14 +44,11 @@ class DatasetServiceGraphDB(DatasetService):
         """
         get_response = self.graph_api_service.get_node("Dataset", database_name)
 
-        print("################GET_DATASET RESPONSE: ", get_response)
-
         if get_response["errors"] is not None:
             return DatasetOut(errors=get_response["errors"])
 
         result = DatasetOut()
 
-        print("################DATASETS: ", result)
         # TODO: cos jest zle autentycznie
         return result  # tu moze trzeba bedzie zrobic result.datasets
 

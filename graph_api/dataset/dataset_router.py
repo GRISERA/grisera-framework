@@ -21,12 +21,14 @@ class DatasetRouter:
 
     dataset_service = DatasetService()
 
-    @router.post("/dataset", tags=["datasets"], response_model=DatasetOut)
-    async def create_dataset(self, response: Response, database_name_to_create: str):
+    @router.post("/dataset", tags=["database_name_to_create"], response_model=DatasetOut)
+    async def create_dataset(self, dataset: DatasetIn, response: Response):
         """
         Create directed and named dataset
         """
-        create_response = self.dataset_service.create_dataset(database_name_to_create)
+
+        create_response = self.dataset_service.create_dataset(dataset.name)
+
         if create_response.errors is not None:
             response.status_code = 422
 

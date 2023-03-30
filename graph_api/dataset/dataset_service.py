@@ -16,20 +16,18 @@ class DatasetService:
 
     def create_dataset(self, database_name_to_create: str):
         """
-        Send request to database by its API to create new relationship
-
-        Args:
-            relationship (-): Relationship to be added to database
+        Send request to database by its API to create new dataset
 
         Returns:
-            Result of request as relationship object
+            Result of request as dataset object
         """
 
         response = self.db.create_database_with_name(database_name_to_create)
+
         if len(response["errors"]) > 0:
             result = DatasetOut(errors=response["errors"])
         else:
-            result = DatasetOut(name=database_name_to_create)
+            result = DatasetOut(name=str(database_name_to_create))
 
         return result
 

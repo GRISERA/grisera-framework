@@ -29,17 +29,11 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        print("###### REQUEST BODY: ", request_body)
 
         url_part += self.add_database_name_to_url(database_name)
 
-        print("###### URL PART: ", url_part)
-
         response = requests.post(url=self.graph_api_url + url_part,
                                  json=request_body).json()
-
-        print("###### RESPONSE: ", response)
-
 
         return response
 
@@ -97,7 +91,7 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_body = {"database_name": database_name_to_create}
+        request_body = {"name": database_name_to_create}
         return self.post("/dataset", request_body, "neo4j")
 
     def get_nodes(self, label: str, database_name: str):

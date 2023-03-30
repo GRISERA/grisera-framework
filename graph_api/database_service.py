@@ -66,16 +66,16 @@ class DatabaseService:
                                  json=commit_body,
                                  auth=self.database_auth).json()
 
-        print("###### GRAPH API RESPONSE: ", response)
+        print("||||| GRAPH API: RESPONSE: ", response)
 
         return response
 
     def create_database_with_name(self, database_to_create):
         create_statement = "create database " + database_to_create
-        # create_statement = 'CREATE (n:Database {name:"' + database_to_create + '"}) RETURN n;'
 
         # It don't have to be 'neo4j', any existing database is needed
         database_name = "neo4j"
+
         return self.post_statement(create_statement, database_name)
 
     def show_databases_with_name(self, database_name):
