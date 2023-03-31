@@ -115,6 +115,8 @@ class InstanceServiceTestCase(unittest.TestCase):
         instance.label = [locstr(instance_label, lang="en")]
         onto.save(file="database" + os.path.sep + f"{model_id}.owl", format="rdfxml")
         onto.destroy()
+
         result = instance_service.delete_instance(model_id, class_str, instance_label)
+
         self.assertEqual(result.instance_id, instance_id)
         os.remove("database" + os.path.sep + f"{model_id}.owl")

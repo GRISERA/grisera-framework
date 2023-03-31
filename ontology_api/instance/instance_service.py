@@ -65,12 +65,16 @@ class InstanceService:
         if owl_class is None:
             onto.destroy()
             return InstanceModelOut(errors="Class named " + str(class_name) + " not found in Model " + str(model_id))
-        for i in owl_class.instances():
-            if len(i.label) > 0 and i.label[0] == instance_label:
-                instance_id = i.name
-                destroy_entity(i)
-                onto.destroy()
-                return FullInstanceModelOut(instance_id=instance_id, label=instance_label)
-        onto.destroy()
-        return InstanceModelOut(
-            errors="Instance with label " + str(instance_label) + " not found in Model " + str(model_id))
+
+        instance = onto.search_one(is_a=owl_class,label=instance_label)
+        if instance is None:
+            onto.destroy()
+            return InstanceModelOut(
+                errors="Instance with label " + str(instance_label) + " not found in Model " + str(model_id))
+        else:
+            instance_id = instance.name
+            destroy_entity(instance)
+            self.model_service.update_ontology(model_id, onto)
+            return FullInstanceModelOut(instance_id=instance_id, label=instance_label)
+
+
