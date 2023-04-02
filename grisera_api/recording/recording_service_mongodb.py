@@ -1,5 +1,6 @@
+from typing import Union
 from bson import ObjectId
-from grisera_api.observable_information.observable_information_model import (
+from observable_information.observable_information_model import (
     BasicObservableInformationOut,
 )
 from observable_information.observable_information_model import (
@@ -8,22 +9,15 @@ from observable_information.observable_information_model import (
 from mongo_service.service_mixins import (
     GenericMongoServiceMixin,
 )
-from graph_api_service import GraphApiService
-from participation.participation_service_graphdb import ParticipationServiceGraphDB
 from recording.recording_service import RecordingService
-from registered_channel.registered_channel_service_graphdb import (
-    RegisteredChannelServiceGraphDB,
-)
 from recording.recording_model import (
     RecordingPropertyIn,
-    RecordingRelationIn,
     RecordingIn,
     BasicRecordingOut,
     RecordingOut,
     RecordingsOut,
 )
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
 from mongo_service import mongo_api_service
 
 
@@ -178,14 +172,40 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         observable_information_dict = observable_information.dict()
         observable_information_dict["id"] = ObjectId()
 
-        recording_id = self.get_single_dict(observable_information.recording_id)
+        recording_id = observable_information.recording_id
         recording = self.get_single_dict(recording_id)
-        observable_informations = recording.get("obervable_informations", [])
+        observable_informations = recording.get("observable_informations", [])
         observable_informations.push(observable_information_dict)
-        recording["obervable_informations"] = observable_informations
+        recording["observable_informations"] = observable_informations
 
         self.update(recording_id, recording)
         return BasicObservableInformationOut(**observable_information_dict)
+
+    def remove_observable_information(self, observable_information_id: Union[str, int]):
+        """
+        Remove observable information from recording. Obervable information is embeded in related recording.
+        Args:
+            observable_information (ObservableInformationIn): observable information to add
+        Returns:
+            Removed observable information
+        """
+        observable_information = (
+            self.observable_information_service.get_observable_information(
+                observable_information_id
+            )
+        )
+        recording_id = observable_information.recording_id
+        recording = self.get_single_dict(recording_id)
+        observable_informations = recording["observable_informations"]
+        to_remove_index = None
+        for i, oi in enumerate(observable_informations):
+            if ObjectId(oi["id"]) == ObjectId(observable_information_id):
+                to_remove_index = i
+                break
+        if to_remove_index is not None:
+            del observable_informations[to_remove_index]
+        self.update(recording_id, recording)
+        return observable_information
 
     def _add_related_documents(self, recording: dict, depth: int, source: str):
         if depth > 0:
@@ -219,9 +239,9 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         """
         Oservable information is embeded within recording model
         """
-        has_observable_informations = recording["obervable_informations"] is not None
+        has_observable_informations = recording["observable_informations"] is not None
         if source != "obervable_information" and has_observable_informations:
-            for oi in recording["obervable_informations"]:
+            for oi in recording["observable_informations"]:
                 self.observable_information_service._add_related_documents(
                     oi, depth - 1, "recording"
                 )

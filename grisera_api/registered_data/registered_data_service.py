@@ -1,12 +1,6 @@
+from typing import Union
 from graph_api_service import GraphApiService
-from registered_data.registered_data_model import (
-    RegisteredDataIn,
-    RegisteredDataNodesOut,
-    BasicRegisteredDataOut,
-    RegisteredDataOut,
-)
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from registered_data.registered_data_model import RegisteredDataIn
 
 
 class RegisteredDataService:

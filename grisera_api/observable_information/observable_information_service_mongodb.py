@@ -1,3 +1,5 @@
+from typing import Union
+from bson import ObjectId
 from mongo_service.service_mixins import GenericMongoServiceMixin
 from observable_information.observable_information_model import (
     ObservableInformationIn,
@@ -84,26 +86,91 @@ class ObservableInformationServiceMongoDB(
 
         return self.recording_service.add_observable_information(observable_information)
 
+    def get_multiple(
+        self, query: dict = {}, depth: int = 0, source: str = "", *args, **kwargs
+    ):
+        """
+        Generic method for sending request to mongo api to get single document
+        Returns:
+            Result of request as list of dictionaries
+        """
+        recording_query = {}
+        for field in query:
+            new_field_name = "observable_informations." + field
+            recording_query[new_field_name] = query[field]
+        recording_result = self.recording_service.get_multiple(
+            recording_query,
+            depth=depth - 1,
+            source="observable_information",
+            projection=self._get_recording_projection(query),
+        )
+
+        result = []
+        for recording_result in recording_result:
+            for observable_information in recording_result["observable_informations"]:
+                self._add_related_documents(
+                    observable_information,
+                    depth - 1,
+                    "observable_information",
+                    recording_result,
+                )
+            del recording_result["observable_informations"]
+            result += recording_result["observable_informations"]
+
+        return result
+
     def get_observable_informations(self):
         """
         Send request to graph api to get observable information
         Returns:
             Result of request as list of observable information objects
         """
-        get_response = self.graph_api_service.get_nodes("`Observable Information`")
+        observable_information_dicts = self.get_multiple()
+        results = [
+            BasicObservableInformationOut(**result)
+            for result in observable_information_dicts
+        ]
+        return ObservableInformationsOut(observable_informations=results)
 
-        observable_informations = []
-
-        for observable_information_node in get_response["nodes"]:
-            properties = {"id": observable_information_node["id"]}
-            observable_information = BasicObservableInformationOut(**properties)
-            observable_informations.append(observable_information)
-
-        return ObservableInformationsOut(
-            observable_informations=observable_informations
+    def get_single_dict(
+        self, id: Union[str, int], depth: int = 0, source: str = "", *args, **kwargs
+    ):
+        observable_information_objectid = ObjectId(observable_information_objectid)
+        recording_result = self.recording_service.get_multiple(
+            {"observable_informations.id": observable_information_objectid},
+            depth=depth - 1,
+            source="observable_information",
+            projection=self._get_recording_projection(
+                {"id": observable_information_objectid}
+            ),
         )
+        if (
+            len(recording_result) == 0
+            or len(recording_result[0]["observable_informations"]) == 0
+        ):
+            return NotFoundByIdModel(
+                id=id,
+                errors={"errors": "observable information not found"},
+            )
+        related_recording = recording_result[0]
+        observable_information_dict = related_recording["observable_informations"][0]
+        del related_recording["observable_informations"]
+        self._add_related_documents(
+            observable_information_dict, depth, source, related_recording
+        )
+        return observable_information_dict
 
-    def get_observable_information(self, observable_information_id: int):
+    def get_single(
+        self, id: Union[str, int], depth: int = 0, source: str = "", *args, **kwargs
+    ):
+        result = self.get_single_dict(id, depth, source, *args, **kwargs)
+        if type(result) is NotFoundByIdModel:
+            return result
+        return ObservableInformationOut(**result)
+
+    def get_observable_information(
+        self, observable_information_id: int, depth: int = 0, source: str = ""
+    ):
         """
         Send request to graph api to get given observable information
         Args:
@@ -111,62 +178,20 @@ class ObservableInformationServiceMongoDB(
         Returns:
             Result of request as observable information object
         """
-        get_response = self.graph_api_service.get_node(observable_information_id)
-
-        if get_response["errors"] is not None:
-            return NotFoundByIdModel(
-                id=observable_information_id, errors=get_response["errors"]
-            )
-        if get_response["labels"][0] != "Observable Information":
-            return NotFoundByIdModel(
-                id=observable_information_id, errors="Node not found."
-            )
-
-        observable_information = {
-            "id": get_response["id"],
-            "relations": [],
-            "reversed_relations": [],
-        }
-
-        relations_response = self.graph_api_service.get_node_relationships(
-            observable_information_id
-        )
-
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == observable_information_id:
-                observable_information["relations"].append(
-                    RelationInformation(
-                        second_node_id=relation["end_node"],
-                        name=relation["name"],
-                        relation_id=relation["id"],
-                    )
-                )
-            else:
-                observable_information["reversed_relations"].append(
-                    RelationInformation(
-                        second_node_id=relation["start_node"],
-                        name=relation["name"],
-                        relation_id=relation["id"],
-                    )
-                )
-
-        return ObservableInformationOut(**observable_information)
+        return self.get_single(observable_information_id, depth, source)
 
     def delete_observable_information(self, observable_information_id: int):
         """
-        Send request to graph api to delete given observable information
+        Send request to graph api to delete given observable information. Removal is performed by recording service, as observable information
+        is embeded within recording
         Args:
             observable_information_id (int): Id of observable information
         Returns:
             Result of request as observable information object
         """
-        get_response = self.get_observable_information(observable_information_id)
-
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
-
-        self.graph_api_service.delete_node(observable_information_id)
-        return get_response
+        return self.recording_service.remove_observable_information(
+            observable_information_id
+        )
 
     def update_observable_information_relationships(
         self,
@@ -181,52 +206,64 @@ class ObservableInformationServiceMongoDB(
         Returns:
             Result of request as observable information object
         """
-        get_response = self.get_observable_information(observable_information_id)
-
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
-
-        if (
-            observable_information.modality_id is not None
-            and type(
-                self.modality_service.get_modality(observable_information.modality_id)
-            )
-            is not NotFoundByIdModel
-        ):
-            self.graph_api_service.create_relationships(
-                start_node=observable_information_id,
-                end_node=observable_information.modality_id,
-                name="hasModality",
-            )
-
-        if (
-            observable_information.life_activity_id is not None
-            and type(
-                self.life_activity_service.get_life_activity(
-                    observable_information.life_activity_id
-                )
-            )
-            is not NotFoundByIdModel
-        ):
-            self.graph_api_service.create_relationships(
-                start_node=observable_information_id,
-                end_node=observable_information.life_activity_id,
-                name="hasLifeActivity",
-            )
-
-        if (
-            observable_information.recording_id is not None
-            and type(
-                self.recording_service.get_recording(
-                    observable_information.recording_id
-                )
-            )
-            is not NotFoundByIdModel
-        ):
-            self.graph_api_service.create_relationships(
-                start_node=observable_information_id,
-                end_node=observable_information.recording_id,
-                name="hasRecording",
-            )
+        # TODO
 
         return self.get_observable_information(observable_information_id)
+
+    def _add_related_documents(
+        self,
+        observable_information: dict,
+        depth: int,
+        source: str,
+        recording: dict,
+    ):
+        """Recording is taken from previous query"""
+        if depth > 0:
+            self._add_related_time_series(observable_information, depth, source)
+            self._add_related_modalities(observable_information, depth, source)
+            self._add_related_life_activities(observable_information, depth, source)
+            self._add_recording(observable_information, depth, source, recording)
+
+    def _add_recording(
+        self, observable_information: dict, depth: int, source: str, recording: dict
+    ):
+        """Recording has already added related documents"""
+        if source != "recording":
+            observable_information["recording"] = recording
+
+    def _add_related_modalities(
+        self, observable_information: dict, depth: int, source: str
+    ):
+        if source != "modality":
+            observable_information["modalities"] = self.modality_service.get_multiple(
+                {"observable_information_id": observable_information["id"]},
+                depth=depth - 1,
+                source="observable_information",
+            )
+
+    def _add_related_life_activities(
+        self, observable_information: dict, depth: int, source: str
+    ):
+        if source != "life_activity":
+            observable_information[
+                "life_activities"
+            ] = self.life_activity_service.get_multiple(
+                {"observable_information_id": observable_information["id"]},
+                depth=depth - 1,
+                source="observable_information",
+            )
+
+    def _add_related_time_series(
+        self, observable_information: dict, depth: int, source: str
+    ):
+        pass
+        # TODO
+
+    @staticmethod
+    def _get_recording_projection(query):
+        return {
+            "observable_informations": {"$elemMatch": query},
+            "additional_properties": 1,
+            "participation_id": 1,
+            "registered_channel_id": 1,
+        }
