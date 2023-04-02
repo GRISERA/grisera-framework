@@ -25,24 +25,21 @@ class MongoApiService:
 
     def create_document(self, data_in: BaseModel):
         """
-        Create new document, with "additional properties" field handling
+        Create new document
         """
         collection_name = get_collection_name(type(data_in))
         data_as_dict = data_in.dict()
-        if "additional_properties" in data_as_dict:
-            self._add_additional_properties_to_dict(data_as_dict)
         self._fix_query_ids(data_as_dict)
         created_id = self.db[collection_name].insert_one(data_as_dict).inserted_id
         return str(created_id)
 
-    def get_document(self, id: Union[str, int], model_class, fiedls_to_exclude=[]):
+    def get_document(self, id: Union[str, int], model_class, *args, **kwargs):
         """
-        Load single document, with "additional properties" field handling
+        Load single document
         """
         collection_name = get_collection_name(model_class)
-        field_projection = self._get_field_projection(fiedls_to_exclude)
         result_dict = self.db[collection_name].find_one(
-            {self.MONGO_ID_FIELD: ObjectId(id)}, field_projection
+            {self.MONGO_ID_FIELD: ObjectId(id)}, *args, **kwargs
         )
 
         if result_dict is None:
@@ -52,55 +49,46 @@ class MongoApiService:
             )
 
         self._update_mongo_output_id(result_dict)
-        expected_fields = model_class.__fields__.keys()
-        if "additional_properties" in expected_fields:
-            self._move_additional_properties_to_array(result_dict, expected_fields)
         return result_dict
 
-    def get_documents(self, model_class, query: dict = {}, fiedls_to_exclude=[]):
+    def get_documents(self, model_class, query: dict = {}, *args, **kwargs):
         """
-        Load many documents, with "additional properties" field handling
+        Load many documents
         """
         collection_name = get_collection_name(model_class)
-        field_projection = self._get_field_projection(fiedls_to_exclude)
         self._fix_query_ids(query)
-        results = list(self.db[collection_name].find(query, field_projection))
+        results = list(self.db[collection_name].find(query, *args, **kwargs))
 
         [self._update_mongo_output_id(result) for result in results]
-        expected_fields = model_class.__fields__.keys()
-        if "additional_properties" in expected_fields:
-            for result in results:
-                self._move_additional_properties_to_array(result, expected_fields)
 
         return results
 
     def update_document(self, id: Union[str, int], data_to_update: BaseModel):
         """
-        Update document, with "additional properties" field handling
+        Update document
         """
         collection_name = get_collection_name(type(data_to_update))
         data_as_dict = data_to_update.dict()
-        if "additional_properties" in data_to_update:
-            self._add_additional_properties_to_dict(data_as_dict)
         self._update_document_with_dict(collection_name, id, data_as_dict)
 
     def _update_document_with_dict(
-        self, collection_name: str, id: Union[str, int], data_to_update: dict
+        self, collection_name: str, id: Union[str, int], new_document: dict
     ):
         """
-        Update document with data as dict
+        Update document with new document as dict
         """
-        self._update_mongo_input_id(data_to_update)
-        self.db[collection_name].update_one(
+        self._update_mongo_input_id(new_document)
+        id = ObjectId(id)
+        self.db[collection_name].replace_one(
             {self.MONGO_ID_FIELD: id},
-            data_to_update,
+            new_document,
         )
 
     def delete_document(self, object_to_delete: BaseModel):
         """
         Delete document in collection
         """
-        id = object_to_delete.id
+        id = ObjectId(object_to_delete.id)
         collection_name = get_collection_name(type(object_to_delete))
         self.db[collection_name].delete_one({self.MONGO_ID_FIELD: id})
         return id
@@ -115,22 +103,13 @@ class MongoApiService:
             ]
         del data_dict["additional_properties"]
 
-    @staticmethod
-    def _move_additional_properties_to_array(result_dict: dict, expected_fields):
-        additional_properties = []
-        for key, value in {**result_dict}.items():
-            if key in expected_fields:
-                continue
-            additional_properties.append({"key": key, "value": value})
-            del result_dict[key]
-        result_dict["additional_properties"] = additional_properties
-
     def _update_mongo_input_id(self, mongo_input: dict):
         if self.MODEL_ID_FIELD in mongo_input:
             mongo_input[self.MONGO_ID_FIELD] = ObjectId(
                 mongo_input[self.MODEL_ID_FIELD]
             )
         del mongo_input[self.MODEL_ID_FIELD]
+        self._fix_query_ids(mongo_input)
 
     def _update_mongo_output_id(self, mongo_output: dict):
         if self.MONGO_ID_FIELD in mongo_output:
@@ -138,18 +117,33 @@ class MongoApiService:
         del mongo_output[self.MONGO_ID_FIELD]
         self._fix_output_ids(mongo_output)
 
-    def _get_field_projection(self, fields_to_exclude):
-        return {field: 0 for field in fields_to_exclude}
-
     def _fix_query_ids(self, query):
-        for field in query:
-            if field[-3:] == "_id":
+        for field, value in query.items():
+            if type(value) is dict:
+                self._fix_query_ids(value)
+            elif self._field_is_id(field):
                 query[field] = ObjectId(query[field])
 
     def _fix_output_ids(self, result):
-        for field in result:
-            if field[-3:] == "_id":
+        """
+        Perform deep iteration over query result and parser all ObjectId's fields to str
+        """
+        if type(value) is not dict:
+            return
+        for field, value in result.items():
+            if type(value) is dict:
+                self._fix_output_ids(value)
+            elif type(value) is list:
+                for list_elem in value:
+                    self._fix_output_ids(list_elem)
+            elif self._field_is_id(field):
                 result[field] = str(result[field])
+
+    @staticmethod
+    def _field_is_id(field):
+        if type(field) is not str:
+            return False
+        return field == "id" or (len(field) >= 3 and field[-3:] in ("_id", ".id"))
 
 
 mongo_api_service = MongoApiService()
