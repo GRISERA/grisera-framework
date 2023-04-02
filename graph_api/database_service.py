@@ -82,12 +82,13 @@ class DatabaseService:
         statement = "show databases"
         return self.post_statement(statement, database_name)
 
-    def check_if_database_exists(self, database_name):
-        check_node_statement = "SHOW databases"
-        response = self.post_statement(check_node_statement, database_name)
+    def check_if_database_exists(self, database_name_looked_for):
+        show_databases_statement = "SHOW databases"
+        database_name = "ne04j"  # database to ask the server
+        response = self.post_statement(show_databases_statement, database_name)
         for db in response['results'][0]['data']:
             db_name = db['row'][0]
-            if database_name is db_name:
+            if database_name_looked_for is db_name:
                 return True
         return False
 

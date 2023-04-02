@@ -31,6 +31,24 @@ class DatasetService:
 
         return result
 
+    def get_dataset_by_name(self, database_name_looked_for):
+        """
+        Send request to database by its API to acquire all nodes with given label
+
+        Args:
+            database_name (string): Name of the database
+
+        Returns:
+            List of acquired nodes in NodesOut model
+        """
+        found = self.db.check_if_database_exists(database_name_looked_for)
+        print("$$$$$$$ IF FOUND: {}".format(found))
+
+        if not found:
+            return DatasetOut(errors="Dataset not found")
+
+        return DatasetOut(name=database_name_looked_for)
+
     def get_datasets(self, database_name):
         """
         Send request to database by its API to acquire all nodes with given label

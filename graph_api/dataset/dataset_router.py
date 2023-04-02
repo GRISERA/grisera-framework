@@ -37,6 +37,21 @@ class DatasetRouter:
 
         return create_response
 
+    @router.get("/datasets/{database_name_looked_for}", tags=["response"], response_model=DatasetOut)
+    async def get_dataset(self, database_name_looked_for: str, response: Response):
+        """
+        Create directed and named dataset
+        """
+        #It don't have to be 'neo4j', any existing database will pass
+        database_name = "neo4j"
+        dataset = self.dataset_service.get_dataset_by_name(database_name_looked_for)
+        if dataset.errors is not None:
+            response.status_code = 422
+
+        dataset.links = get_links(router)
+
+        return dataset
+
     @router.get("/datasets", tags=["datasets"], response_model=DatasetsOut)
     async def get_datasets(self, response: Response):
         """

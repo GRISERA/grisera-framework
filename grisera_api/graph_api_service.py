@@ -127,8 +127,18 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_params = {"database_name": database_name}
+        request_params = {"name": database_name}
         return self.get("/nodes/" + str(id), request_params, database_name)
+
+    def get_database(self, database_name_looked_for: str):
+        """
+        Send to the Graph API request to get dataset with given name
+
+        Returns:
+            Result of request
+        """
+        request_params = {"database_name": database_name_looked_for}
+        return self.get("/datasets/" + str(database_name_looked_for), request_params, "neo4j")
 
     def get_node_relationships(self, node_id: int, database_name: str):
         """

@@ -32,7 +32,7 @@ class DatasetServiceGraphDB(DatasetService):
 
         return DatasetOut(name=database_name_to_create)
 
-    def get_dataset(self, database_name):
+    def get_dataset(self, database_name_looked_for):
         """
         Send request to database by its API to acquire all nodes with given label
 
@@ -42,12 +42,12 @@ class DatasetServiceGraphDB(DatasetService):
         Returns:
             List of acquired nodes in NodesOut model
         """
-        get_response = self.graph_api_service.get_node("Dataset", database_name)
+        get_response = self.graph_api_service.get_database(database_name_looked_for)
 
         if get_response["errors"] is not None:
             return DatasetOut(errors=get_response["errors"])
 
-        result = DatasetOut()
+        result = DatasetOut(name=database_name_looked_for)
 
         # TODO: cos jest zle autentycznie
         return result  # tu moze trzeba bedzie zrobic result.datasets
