@@ -66,3 +66,17 @@ class DatasetRouter:
         datasets.links = get_links(router)
 
         return datasets
+
+    @router.delete("/datasets/{database_name_looked_for}", tags=["datasets"], response_model=DatasetOut)
+    async def delete_node(self, response: Response, database_name_looked_for: str):
+        """
+        Delete dataset by name
+        """
+        delete_response = self.dataset_service.delete_dataset(database_name_looked_for)
+        if delete_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        delete_response.links = get_links(router)
+
+        return delete_response

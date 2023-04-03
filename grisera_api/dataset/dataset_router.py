@@ -75,7 +75,7 @@ class DatasetRouter:
         """
         Delete dataset from database
         """
-        get_response = self.dataset_service_service.delete_dataset(database_name)
+        get_response = self.dataset_service.delete_dataset(database_name)
         if get_response.errors is not None:
             response.status_code = 404
 

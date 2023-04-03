@@ -31,7 +31,7 @@ class DatasetService:
 
         return result
 
-    def get_dataset_by_name(self, database_name_looked_for):
+    def get_dataset_by_name(self, database_name_looked_for: str):
         """
         Send request to database by its API to acquire all nodes with given label
 
@@ -48,7 +48,7 @@ class DatasetService:
 
         return DatasetOut(name=database_name_looked_for)
 
-    def get_datasets(self, database_name):
+    def get_datasets(self, database_name: str):
         """
         Send request to database by its API to acquire all nodes with given label
 
@@ -61,10 +61,27 @@ class DatasetService:
         response = self.db.show_databases_with_name(database_name)
         if len(response["errors"]) > 0:
             return DatasetsOut(errors=response["errors"])
-        
+
         result = DatasetsOut(datasets=[])
 
         for dataset in response["results"][0]["data"]:
             result.datasets.append(BasicDatasetOut(name=dataset['row'][0]))
+
+        return result
+
+    def delete_dataset(self, database_name_looked_for: str):
+        """
+        Send request to database by its API to delete node with given id
+
+        Args:
+            node_id (int): Id of node
+            database_name (string): Name of the database
+        Returns:
+            Deleted node
+        """
+        dataset = self.get_dataset_by_name(database_name_looked_for)
+        response = self.db.delete_dataset(database_name_looked_for)
+        result = DatasetOut(errors=response["errors"]) if len(response["errors"]) > 0 else \
+            DatasetOut(name=database_name_looked_for)
 
         return result

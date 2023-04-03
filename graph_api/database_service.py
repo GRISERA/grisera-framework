@@ -88,6 +88,12 @@ class DatabaseService:
                 return True
         return False
 
+    def delete_dataset(self, database_name_looked_for):
+        """
+        """
+        delete_statement = "drop database {}".format(database_name_looked_for)
+        return self.post_statement(delete_statement, database_name_looked_for)
+
     def node_exists(self, node_id, database_name):
         """
         Check whether node with given id exists

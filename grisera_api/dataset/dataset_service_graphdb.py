@@ -74,7 +74,7 @@ class DatasetServiceGraphDB(DatasetService):
 
         return DatasetsOut(datasets=result.datasets)
 
-    def delete_dataset(self, database_name: str):
+    def delete_dataset(self, database_name_looked_for: str):
         """
         Send request to graph api to delete given dataset
 
@@ -84,10 +84,10 @@ class DatasetServiceGraphDB(DatasetService):
         Returns:
             Result of request as dataset object
         """
-        get_response = self.get_dataset(database_name)
-
+        get_response = self.get_dataset(database_name_looked_for)
+        print("|||| GRISERA API - delete_dataset: get_response: {}".format(get_response))
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node(database_name)
+        self.graph_api_service.delete_dataset(database_name_looked_for)
         return get_response

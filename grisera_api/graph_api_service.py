@@ -162,6 +162,18 @@ class GraphApiService:
         """
         return self.post("/nodes_query", query, database_name)
 
+    def delete_dataset(self, database_name_looked_for: str):
+        """
+        Send to the Graph API request to delete node
+
+        Args:
+            node_id (int): Id of node
+        Returns:
+            Result of request
+        """
+        request_params = {"database_name": database_name_looked_for}
+        return self.delete(f"/datasets/{database_name_looked_for}", request_params, "neo4j")
+
     def delete_node(self, node_id: int, database_name: str):
         """
         Send to the Graph API request to delete node
