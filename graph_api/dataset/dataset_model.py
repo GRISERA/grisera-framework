@@ -40,7 +40,6 @@ class DatasetOut(DatasetIn):
     links: Optional[list] = None
 
 
-
 class DatasetsOut(BaseModel):
     """
     Model of list of nodes
@@ -53,4 +52,3 @@ class DatasetsOut(BaseModel):
     datasets: Optional[List[BasicDatasetOut]] = None
     errors: Optional[Any] = None
     links: Optional[List] = None
-

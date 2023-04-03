@@ -42,7 +42,6 @@ class DatasetService:
             List of acquired nodes in NodesOut model
         """
         found = self.db.check_if_database_exists(database_name_looked_for)
-        print("$$$$$$$ IF FOUND: {}".format(found))
 
         if not found:
             return DatasetOut(errors="Dataset not found")
