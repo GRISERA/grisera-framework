@@ -49,7 +49,7 @@ class ExperimentService:
         Send request to graph api to delete given experiment
 
         Args:
-        experiment_id (int): Id of experiment
+        experiment_id (Union[int,str]): Id of experiment
 
         Returns:
             Result of request as experiment object
