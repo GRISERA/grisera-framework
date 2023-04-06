@@ -3,6 +3,7 @@ from experiment.experiment_model import ExperimentIn, ExperimentsOut, BasicExper
 from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
 
+from typing import Union
 
 class ExperimentService:
     """
@@ -43,7 +44,7 @@ class ExperimentService:
         """
         raise Exception("get_experiment not implemented yet")
 
-    def delete_experiment(self, experiment_id: int):
+    def delete_experiment(self, experiment_id: Union[int, str]):
         """
         Send request to graph api to delete given experiment
 
