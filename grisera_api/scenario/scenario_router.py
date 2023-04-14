@@ -24,11 +24,11 @@ class ScenarioRouter:
         self.scenario_service = Services().scenario_service()
 
     @router.post("/scenarios", tags=["scenarios"], response_model=ScenarioOut)
-    async def create_scenario(self, scenario: ScenarioIn, response: Response, database_name: str):
+    async def create_scenario(self, scenario: ScenarioIn, response: Response, dataset_name: str):
         """
         Create scenario in database
         """
-        create_response = self.scenario_service.save_scenario(scenario, database_name)
+        create_response = self.scenario_service.save_scenario(scenario, dataset_name)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -39,11 +39,11 @@ class ScenarioRouter:
 
     @router.post("/scenarios/{previous_id}", tags=["scenarios"], response_model=ActivityExecutionOut)
     async def add_activity_execution(self, previous_id: int, activity_execution: ActivityExecutionIn,
-                                     response: Response, database_name: str):
+                                     response: Response, dataset_name: str):
         """
         Add new activity execution to scenario
         """
-        create_response = self.scenario_service.add_activity_execution(previous_id, activity_execution, database_name)
+        create_response = self.scenario_service.add_activity_execution(previous_id, activity_execution, dataset_name)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -53,11 +53,11 @@ class ScenarioRouter:
         return create_response
 
     @router.put("/scenarios", tags=["scenarios"], response_model=OrderChangeOut)
-    async def change_order(self, order_change: OrderChangeIn, response: Response, database_name: str):
+    async def change_order(self, order_change: OrderChangeIn, response: Response, dataset_name: str):
         """
         Change order of one activity execution in scenario
         """
-        put_response = self.scenario_service.change_order(order_change, database_name)
+        put_response = self.scenario_service.change_order(order_change, dataset_name)
         if put_response.errors is not None:
             response.status_code = 422
 
@@ -67,11 +67,11 @@ class ScenarioRouter:
         return put_response
 
     @router.delete("/scenarios/{activity_execution_id}", tags=["scenarios"], response_model=ActivityExecutionOut)
-    async def delete_activity_execution(self, activity_execution_id: int, response: Response, database_name: str):
+    async def delete_activity_execution(self, activity_execution_id: int, response: Response, dataset_name: str):
         """
         Delete activity execution from scenario
         """
-        delete_response = self.scenario_service.delete_activity_execution(activity_execution_id, database_name)
+        delete_response = self.scenario_service.delete_activity_execution(activity_execution_id, dataset_name)
         if delete_response.errors is not None:
             response.status_code = 404
 
@@ -81,11 +81,11 @@ class ScenarioRouter:
         return delete_response
 
     @router.get("/scenarios/{node_id}", tags=["scenarios"], response_model=Union[ScenarioOut, NotFoundByIdModel])
-    async def get_scenario(self, node_id: int, response: Response, database_name: str):
+    async def get_scenario(self, node_id: int, response: Response, dataset_name: str):
         """
         Get scenario from database
         """
-        get_response = self.scenario_service.get_scenario(node_id, database_name)
+        get_response = self.scenario_service.get_scenario(node_id, dataset_name)
         if get_response.errors is not None:
             response.status_code = 404
 

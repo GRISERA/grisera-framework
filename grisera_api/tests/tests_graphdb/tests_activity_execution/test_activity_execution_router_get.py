@@ -11,43 +11,43 @@ class TestActivityExecutionRouterGet(unittest.TestCase):
 
     @mock.patch.object(ActivityExecutionServiceGraphDB, 'get_activity_execution')
     def test_get_activity_execution_without_error(self, get_activity_execution_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         activity_execution_id = 1
         get_activity_execution_mock.return_value = ActivityExecutionOut(id=activity_execution_id)
         response = Response()
         activity_execution_router = ActivityExecutionRouter()
 
-        result = asyncio.run(activity_execution_router.get_activity_execution(activity_execution_id, response, database_name))
+        result = asyncio.run(activity_execution_router.get_activity_execution(activity_execution_id, response, dataset_name))
 
         self.assertEqual(result, ActivityExecutionOut(id=activity_execution_id, links=get_links(router)))
-        get_activity_execution_mock.assert_called_once_with(activity_execution_id, database_name)
+        get_activity_execution_mock.assert_called_once_with(activity_execution_id, dataset_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(ActivityExecutionServiceGraphDB, 'get_activity_execution')
     def test_get_activity_execution_with_error(self, get_activity_execution_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         get_activity_execution_mock.return_value = ActivityExecutionOut(errors={'errors': ['test']})
         response = Response()
         activity_execution_id = 1
         activity_execution_router = ActivityExecutionRouter()
 
-        result = asyncio.run(activity_execution_router.get_activity_execution(activity_execution_id, response, database_name))
+        result = asyncio.run(activity_execution_router.get_activity_execution(activity_execution_id, response, dataset_name))
 
         self.assertEqual(result, ActivityExecutionOut(errors={'errors': ['test']},
                                                       links=get_links(router)))
-        get_activity_execution_mock.assert_called_once_with(activity_execution_id, database_name)
+        get_activity_execution_mock.assert_called_once_with(activity_execution_id, dataset_name)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(ActivityExecutionServiceGraphDB, 'get_activity_executions')
     def test_get_activity_executions_without_error(self, get_activity_executions_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         get_activity_executions_mock.return_value = ActivityExecutionsOut(activity_executions=[
             BasicActivityExecutionOut(id=1),
             BasicActivityExecutionOut(id=2)])
         response = Response()
         activity_execution_router = ActivityExecutionRouter()
 
-        result = asyncio.run(activity_execution_router.get_activity_executions(response, database_name))
+        result = asyncio.run(activity_execution_router.get_activity_executions(response, dataset_name))
 
         self.assertEqual(result, ActivityExecutionsOut(activity_executions=[
             BasicActivityExecutionOut(id=1),

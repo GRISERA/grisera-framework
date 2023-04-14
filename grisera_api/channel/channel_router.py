@@ -25,11 +25,11 @@ class ChannelRouter:
 
     @router.get("/channels/{channel_id}", tags=["channels"],
                 response_model=Union[ChannelOut, NotFoundByIdModel])
-    async def get_channel(self, channel_id: int, response: Response, database_name: str):
+    async def get_channel(self, channel_id: int, response: Response, dataset_name: str):
         """
         Get channel from database
         """
-        get_response = self.channel_service.get_channel(channel_id, database_name)
+        get_response = self.channel_service.get_channel(channel_id, dataset_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -39,12 +39,12 @@ class ChannelRouter:
         return get_response
 
     @router.get("/channels", tags=["channels"], response_model=ChannelsOut)
-    async def get_channels(self, response: Response, database_name: str):
+    async def get_channels(self, response: Response, dataset_name: str):
         """
         Get channels from database
         """
 
-        get_response = self.channel_service.get_channels(database_name)
+        get_response = self.channel_service.get_channels(dataset_name)
 
         # add links from hateoas
         get_response.links = get_links(router)

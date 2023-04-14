@@ -10,7 +10,7 @@ class TestRecordingRouterPut(unittest.TestCase):
 
     @mock.patch.object(RecordingServiceGraphDB, 'update_recording_relationships')
     def test_update_recording_relationships_without_error(self, update_recording_relationships_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         update_recording_relationships_mock.return_value = RecordingOut(id=id_node)
         response = Response()
@@ -19,15 +19,15 @@ class TestRecordingRouterPut(unittest.TestCase):
         recording_router = RecordingRouter()
 
         result = asyncio.run(recording_router.
-                             update_recording_relationships(id_node, recording_in, response, database_name))
+                             update_recording_relationships(id_node, recording_in, response, dataset_name))
 
         self.assertEqual(result, recording_out)
-        update_recording_relationships_mock.assert_called_once_with(id_node, recording_in, database_name)
+        update_recording_relationships_mock.assert_called_once_with(id_node, recording_in, dataset_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(RecordingServiceGraphDB, 'update_recording_relationships')
     def test_update_recording_relationships_with_error(self, update_recording_relationships_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         update_recording_relationships_mock.return_value = RecordingOut(id=id_node, errors="error")
         response = Response()
@@ -36,8 +36,8 @@ class TestRecordingRouterPut(unittest.TestCase):
         recording_router = RecordingRouter()
 
         result = asyncio.run(recording_router.
-                             update_recording_relationships(id_node, recording_in, response, database_name))
+                             update_recording_relationships(id_node, recording_in, response, dataset_name))
 
         self.assertEqual(result, recording_out)
-        update_recording_relationships_mock.assert_called_once_with(id_node, recording_in, database_name)
+        update_recording_relationships_mock.assert_called_once_with(id_node, recording_in, dataset_name)
         self.assertEqual(response.status_code, 404)

@@ -18,7 +18,7 @@ class MeasureServiceGraphDB(MeasureService):
     graph_api_service = GraphApiService()
     measure_name_service = MeasureNameServiceGraphDB()
 
-    def save_measure(self, measure: MeasureIn, database_name: str):
+    def save_measure(self, measure: MeasureIn, dataset_name: str):
         """
         Send request to graph api to create new measure
 
@@ -28,7 +28,7 @@ class MeasureServiceGraphDB(MeasureService):
         Returns:
             Result of request as measure object
         """
-        node_response = self.graph_api_service.create_node("`Measure`", database_name)
+        node_response = self.graph_api_service.create_node("`Measure`", dataset_name)
 
         if node_response["errors"] is not None:
             return MeasureOut(**measure.dict(), errors=node_response["errors"])
@@ -36,26 +36,26 @@ class MeasureServiceGraphDB(MeasureService):
         measure_id = node_response["id"]
 
         if measure.measure_name_id is not None and \
-                type(self.measure_name_service.get_measure_name(measure.measure_name_id, database_name)) is not NotFoundByIdModel:
+                type(self.measure_name_service.get_measure_name(measure.measure_name_id, dataset_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=measure_id,
                                                         end_node=measure.measure_name_id,
                                                         name="hasMeasureName",
-                                                        database_name=database_name
+                                                        dataset_name=dataset_name
                                                         )
 
         measure.measure_name_id = None
-        self.graph_api_service.create_properties(measure_id, measure, database_name)
+        self.graph_api_service.create_properties(measure_id, measure, dataset_name)
 
-        return self.get_measure(measure_id, database_name)
+        return self.get_measure(measure_id, dataset_name)
 
-    def get_measures(self, database_name: str):
+    def get_measures(self, dataset_name: str):
         """
         Send request to graph api to get measures
 
         Returns:
             Result of request as list of measures objects
         """
-        get_response = self.graph_api_service.get_nodes("`Measure`", database_name)
+        get_response = self.graph_api_service.get_nodes("`Measure`", dataset_name)
 
         measures = []
 
@@ -70,7 +70,7 @@ class MeasureServiceGraphDB(MeasureService):
 
         return MeasuresOut(measures=measures)
 
-    def get_measure(self, measure_id: int, database_name: str):
+    def get_measure(self, measure_id: int, dataset_name: str):
         """
         Send request to graph api to get given measure
 
@@ -80,7 +80,7 @@ class MeasureServiceGraphDB(MeasureService):
         Returns:
             Result of request as measure object
         """
-        get_response = self.graph_api_service.get_node(measure_id, database_name)
+        get_response = self.graph_api_service.get_node(measure_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=measure_id, errors=get_response["errors"])
@@ -93,7 +93,7 @@ class MeasureServiceGraphDB(MeasureService):
             if property["key"] in ["datatype", "range", "unit"]:
                 measure[property["key"]] = property["value"]
 
-        relations_response = self.graph_api_service.get_node_relationships(measure_id, database_name)
+        relations_response = self.graph_api_service.get_node_relationships(measure_id, dataset_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == measure_id:
@@ -107,7 +107,7 @@ class MeasureServiceGraphDB(MeasureService):
 
         return MeasureOut(**measure)
 
-    def delete_measure(self, measure_id: int, database_name: str):
+    def delete_measure(self, measure_id: int, dataset_name: str):
         """
         Send request to graph api to delete given measure
 
@@ -117,15 +117,15 @@ class MeasureServiceGraphDB(MeasureService):
         Returns:
             Result of request as measure object
         """
-        get_response = self.get_measure(measure_id, database_name)
+        get_response = self.get_measure(measure_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node(measure_id, database_name)
+        self.graph_api_service.delete_node(measure_id, dataset_name)
         return get_response
 
-    def update_measure(self, measure_id: int, measure: MeasurePropertyIn, database_name: str):
+    def update_measure(self, measure_id: int, measure: MeasurePropertyIn, dataset_name: str):
         """
         Send request to graph api to update given measure
 
@@ -136,13 +136,13 @@ class MeasureServiceGraphDB(MeasureService):
         Returns:
             Result of request as measure object
         """
-        get_response = self.get_measure(measure_id, database_name)
+        get_response = self.get_measure(measure_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node_properties(measure_id, database_name)
-        self.graph_api_service.create_properties(measure_id, measure, database_name)
+        self.graph_api_service.delete_node_properties(measure_id, dataset_name)
+        self.graph_api_service.create_properties(measure_id, measure, dataset_name)
 
         measure_result = {"id": measure_id, "relations": get_response.relations,
                           "reversed_relations": get_response.reversed_relations}
@@ -151,7 +151,7 @@ class MeasureServiceGraphDB(MeasureService):
         return MeasureOut(**measure_result)
 
     def update_measure_relationships(self, measure_id: int,
-                                     measure: MeasureRelationIn, database_name: str):
+                                     measure: MeasureRelationIn, dataset_name: str):
         """
         Send request to graph api to update given measure
 
@@ -162,16 +162,16 @@ class MeasureServiceGraphDB(MeasureService):
         Returns:
             Result of request as measure object
         """
-        get_response = self.get_measure(measure_id, database_name)
+        get_response = self.get_measure(measure_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
         if measure.measure_name_id is not None and \
                 type(self.measure_name_service.get_measure_name(
-                    measure.measure_name_id, database_name)) is not NotFoundByIdModel:
+                    measure.measure_name_id, dataset_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=measure_id,
                                                         end_node=measure.measure_name_id,
                                                         name="hasMeasureName",
-                                                        database_name=database_name)
-        return self.get_measure(measure_id, database_name)
+                                                        dataset_name=dataset_name)
+        return self.get_measure(measure_id, dataset_name)

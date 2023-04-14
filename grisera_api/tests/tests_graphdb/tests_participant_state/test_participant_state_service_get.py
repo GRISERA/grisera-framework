@@ -13,7 +13,7 @@ class TestParticipantStateServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_get_participant_state_without_error(self, get_node_relationships_mock, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Participant State'],
                                       'properties': [{'key': 'age', 'value': 5},
@@ -35,42 +35,42 @@ class TestParticipantStateServiceGet(unittest.TestCase):
                                                                                         relation_id=0)])
         participant_state_service = ParticipantStateServiceGraphDB()
 
-        result = participant_state_service.get_participant_state(id_node, database_name)
+        result = participant_state_service.get_participant_state(id_node, dataset_name)
 
         self.assertEqual(result, participant_state)
-        get_node_mock.assert_called_once_with(id_node, database_name)
-        get_node_relationships_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
+        get_node_relationships_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_participant_state_without_participant_label(self, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         participant_state_service = ParticipantStateServiceGraphDB()
 
-        result = participant_state_service.get_participant_state(id_node, database_name)
+        result = participant_state_service.get_participant_state(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_participant_state_with_error(self, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         participant_state_service = ParticipantStateServiceGraphDB()
 
-        result = participant_state_service.get_participant_state(id_node, database_name)
+        result = participant_state_service.get_participant_state(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_participant_states(self, get_nodes_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Participant State'],
                                                   'properties': [{'key': 'age', 'value': 5},
                                                                  {'key': 'test', 'value': 'test'}]},
@@ -84,19 +84,19 @@ class TestParticipantStateServiceGet(unittest.TestCase):
         participant_states = ParticipantStatesOut(participant_states=[participant_state_one, participant_state_two])
         participant_states_service = ParticipantStateServiceGraphDB()
 
-        result = participant_states_service.get_participant_states(database_name)
+        result = participant_states_service.get_participant_states(dataset_name)
 
         self.assertEqual(result, participant_states)
-        get_nodes_mock.assert_called_once_with("`Participant State`", database_name)
+        get_nodes_mock.assert_called_once_with("`Participant State`", dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_participant_states_empty(self, get_nodes_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         get_nodes_mock.return_value = {'nodes': []}
         participant_states = ParticipantStatesOut(participant_state=[])
         participant_states_service = ParticipantStateServiceGraphDB()
 
-        result = participant_states_service.get_participant_states(database_name)
+        result = participant_states_service.get_participant_states(dataset_name)
 
         self.assertEqual(result, participant_states)
-        get_nodes_mock.assert_called_once_with("`Participant State`", database_name)
+        get_nodes_mock.assert_called_once_with("`Participant State`", dataset_name)

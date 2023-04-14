@@ -13,7 +13,7 @@ class TestAppearanceServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_get_appearance_occlusion_without_error(self, get_node_relationships_mock, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Appearance'],
                                       'properties': [{'key': 'glasses', 'value': True},
@@ -36,16 +36,16 @@ class TestAppearanceServiceGet(unittest.TestCase):
                                                                     relation_id=0)])
         appearance_service = AppearanceServiceGraphDB()
 
-        result = appearance_service.get_appearance(id_node, database_name)
+        result = appearance_service.get_appearance(id_node, dataset_name)
 
         self.assertEqual(result, appearance)
-        get_node_mock.assert_called_once_with(id_node, database_name)
-        get_node_relationships_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
+        get_node_relationships_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_get_appearance_somatotype_without_error(self, get_node_relationships_mock, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Appearance'],
                                       'properties': [{'key': 'ectomorph', 'value': 1.5},
@@ -68,42 +68,42 @@ class TestAppearanceServiceGet(unittest.TestCase):
                                                                      relation_id=0)])
         appearance_service = AppearanceServiceGraphDB()
 
-        result = appearance_service.get_appearance(id_node, database_name)
+        result = appearance_service.get_appearance(id_node, dataset_name)
 
         self.assertEqual(result, appearance)
-        get_node_mock.assert_called_once_with(id_node, database_name)
-        get_node_relationships_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
+        get_node_relationships_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_appearance_without_appearance_label(self, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         appearance_service = AppearanceServiceGraphDB()
 
-        result = appearance_service.get_appearance(id_node, database_name)
+        result = appearance_service.get_appearance(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_appearance_with_error(self, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         appearance_service = AppearanceServiceGraphDB()
 
-        result = appearance_service.get_appearance(id_node, database_name)
+        result = appearance_service.get_appearance(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_appearances(self, get_nodes_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Appearance'],
                                                   'properties': [{'key': 'glasses', 'value': True},
                                                                  {'key': 'beard', 'value': "Heavy"},
@@ -118,19 +118,19 @@ class TestAppearanceServiceGet(unittest.TestCase):
         appearances = AppearancesOut(appearances=[appearance_occlusion, appearance_somatotype])
         appearance_service = AppearanceServiceGraphDB()
 
-        result = appearance_service.get_appearances(database_name)
+        result = appearance_service.get_appearances(dataset_name)
 
         self.assertEqual(result, appearances)
-        get_nodes_mock.assert_called_once_with("Appearance", database_name)
+        get_nodes_mock.assert_called_once_with("Appearance", dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_appearances_empty(self, get_nodes_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         get_nodes_mock.return_value = {'nodes': []}
         appearances = AppearancesOut(appearances=[])
         appearance_service = AppearanceServiceGraphDB()
 
-        result = appearance_service.get_appearances(database_name)
+        result = appearance_service.get_appearances(dataset_name)
 
         self.assertEqual(result, appearances)
-        get_nodes_mock.assert_called_once_with("Appearance", database_name)
+        get_nodes_mock.assert_called_once_with("Appearance", dataset_name)

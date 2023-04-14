@@ -14,7 +14,7 @@ class ArrangementServiceGraphDB(ArrangementService):
     """
     graph_api_service = GraphApiService()
 
-    def save_arrangement(self, arrangement: ArrangementIn, database_name: str):
+    def save_arrangement(self, arrangement: ArrangementIn, dataset_name: str):
         """
         Send request to graph api to create new arrangement
 
@@ -25,7 +25,7 @@ class ArrangementServiceGraphDB(ArrangementService):
             Result of request as arrangement object
         """
 
-        node_response = self.graph_api_service.create_node("Arrangement", database_name)
+        node_response = self.graph_api_service.create_node("Arrangement", dataset_name)
 
         if node_response["errors"] is not None:
             return ArrangementOut(arrangement_type=arrangement.arrangement_type,
@@ -33,7 +33,7 @@ class ArrangementServiceGraphDB(ArrangementService):
 
         arrangement_id = node_response["id"]
 
-        properties_response = self.graph_api_service.create_properties(arrangement_id, arrangement, database_name)
+        properties_response = self.graph_api_service.create_properties(arrangement_id, arrangement, dataset_name)
         if properties_response["errors"] is not None:
             return ArrangementOut(arrangement_type=arrangement.arrangement_type,
                                   arrangement_distance=arrangement.arrangement_distance,
@@ -42,14 +42,14 @@ class ArrangementServiceGraphDB(ArrangementService):
         return ArrangementOut(arrangement_type=arrangement.arrangement_type,
                               arrangement_distance=arrangement.arrangement_distance, id=arrangement_id)
 
-    def get_arrangements(self, database_name: str):
+    def get_arrangements(self, dataset_name: str):
         """
         Send request to graph api to get all arrangements
 
         Returns:
             Result of request as list of arrangement objects
         """
-        get_response = self.graph_api_service.get_nodes("Arrangement", database_name)
+        get_response = self.graph_api_service.get_nodes("Arrangement", dataset_name)
         if get_response["errors"] is not None:
             return ArrangementsOut(errors=get_response["errors"])
 
@@ -66,7 +66,7 @@ class ArrangementServiceGraphDB(ArrangementService):
 
         return ArrangementsOut(arrangements=arrangements)
 
-    def get_arrangement(self, arrangement_id: int, database_name: str):
+    def get_arrangement(self, arrangement_id: int, dataset_name: str):
         """
         Send request to graph api to get given arrangement
 
@@ -76,7 +76,7 @@ class ArrangementServiceGraphDB(ArrangementService):
         Returns:
             Result of request as arrangement object
         """
-        get_response = self.graph_api_service.get_node(arrangement_id, database_name)
+        get_response = self.graph_api_service.get_node(arrangement_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=arrangement_id, errors=get_response["errors"])
@@ -87,7 +87,7 @@ class ArrangementServiceGraphDB(ArrangementService):
         for property in get_response["properties"]:
             arrangement[property["key"]] = property["value"]
 
-        relations_response = self.graph_api_service.get_node_relationships(arrangement_id, database_name)
+        relations_response = self.graph_api_service.get_node_relationships(arrangement_id, dataset_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == arrangement_id:

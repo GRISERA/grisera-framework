@@ -12,7 +12,7 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'create_relationships')
     @mock.patch.object(GraphApiService, 'create_relationship_properties')
     def test_transform_time_series_without_errors(self, create_relationship_properties_mock, create_relationships_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         transformation = TimeSeriesTransformationIn(
             name="quadrants",
             source_time_series_ids=[60, 61],
@@ -50,7 +50,7 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
             ]
         )
 
-        def get_time_series_side_effect(time_series_id: int, database_name: str):
+        def get_time_series_side_effect(time_series_id: int, dataset_name: str):
             if time_series_id == 60:
                 return TimeSeriesOut(
                     id=time_series_id,
@@ -98,10 +98,10 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
             else:
                 return None
 
-        def save_time_series_side_effect(time_series: TimeSeriesIn, database_name: str):
+        def save_time_series_side_effect(time_series: TimeSeriesIn, dataset_name: str):
             return result_timeseries
 
-        def create_relationships_side_effect(id_from: int, id_to: int, name: str, database_name: str):
+        def create_relationships_side_effect(id_from: int, id_to: int, name: str, dataset_name: str):
             return {"id": 100 * id_from + id_to}
 
         create_relationships_mock.side_effect = create_relationships_side_effect
@@ -109,28 +109,28 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
         time_series_service = TimeSeriesServiceGraphDBWithSignalValues()
         time_series_service.get_time_series = get_time_series_side_effect
         time_series_service.save_time_series = save_time_series_side_effect
-        result = time_series_service.transform_time_series(transformation, database_name)
+        result = time_series_service.transform_time_series(transformation, dataset_name)
 
         self.assertEqual(result_timeseries, result)
         self.assertEqual([
-            mock.call(50, 60, 'transformedFrom', database_name),
-            mock.call(50, 61, 'transformedFrom', database_name),
-            mock.call(22, 2, 'basedOn', database_name),
-            mock.call(22, 12, 'basedOn', database_name),
-            mock.call(24, 4, 'basedOn', database_name),
-            mock.call(24, 14, 'basedOn', database_name)
+            mock.call(50, 60, 'transformedFrom', dataset_name),
+            mock.call(50, 61, 'transformedFrom', dataset_name),
+            mock.call(22, 2, 'basedOn', dataset_name),
+            mock.call(22, 12, 'basedOn', dataset_name),
+            mock.call(24, 4, 'basedOn', dataset_name),
+            mock.call(24, 14, 'basedOn', dataset_name)
         ], create_relationships_mock.call_args_list)
         self.assertEqual([
             mock.call(5060, TimeSeriesTransformationRelationshipIn(
-                additional_properties=[PropertyIn(key='order', value='1')]), database_name),
+                additional_properties=[PropertyIn(key='order', value='1')]), dataset_name),
             mock.call(5061, TimeSeriesTransformationRelationshipIn(
-                additional_properties=[PropertyIn(key='order', value='2')]), database_name),
+                additional_properties=[PropertyIn(key='order', value='2')]), dataset_name),
             mock.call(2202, TimeSeriesTransformationRelationshipIn(
-                additional_properties=[PropertyIn(key='order', value='1')]), database_name),
+                additional_properties=[PropertyIn(key='order', value='1')]), dataset_name),
             mock.call(2212, TimeSeriesTransformationRelationshipIn(
-                additional_properties=[PropertyIn(key='order', value='2')]), database_name),
+                additional_properties=[PropertyIn(key='order', value='2')]), dataset_name),
             mock.call(2404, TimeSeriesTransformationRelationshipIn(
-                additional_properties=[PropertyIn(key='order', value='1')]), database_name),
+                additional_properties=[PropertyIn(key='order', value='1')]), dataset_name),
             mock.call(2414, TimeSeriesTransformationRelationshipIn(
-                additional_properties=[PropertyIn(key='order', value='2')]), database_name)
+                additional_properties=[PropertyIn(key='order', value='2')]), dataset_name)
         ], create_relationship_properties_mock.call_args_list)

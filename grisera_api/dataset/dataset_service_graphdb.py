@@ -14,7 +14,7 @@ class DatasetServiceGraphDB(DatasetService):
     """
     graph_api_service = GraphApiService()
 
-    def save_dataset(self, database_name_to_create: str):
+    def save_dataset(self, dataset_name_to_create: str):
         """
         Send request to database by its API to create new relationship
 
@@ -25,12 +25,12 @@ class DatasetServiceGraphDB(DatasetService):
             Result of request as relationship object
         """
 
-        response = self.graph_api_service.create_database(database_name_to_create)
+        response = self.graph_api_service.create_database(dataset_name_to_create)
 
         if response["errors"] is not None:
-            return DatasetsOut(name=database_name_to_create, errors=response["errors"])
+            return DatasetsOut(name=dataset_name_to_create, errors=response["errors"])
 
-        return DatasetOut(name=database_name_to_create)
+        return DatasetOut(name=dataset_name_to_create)
 
     def get_dataset(self, database_name_looked_for):
         """
@@ -52,7 +52,7 @@ class DatasetServiceGraphDB(DatasetService):
         # TODO: cos jest zle autentycznie
         return result  # tu moze trzeba bedzie zrobic result.datasets
 
-    def get_datasets(self, database_name):
+    def get_datasets(self, dataset_name):
         """
         Send request to database by its API to acquire all nodes with given label
 

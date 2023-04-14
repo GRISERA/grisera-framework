@@ -21,7 +21,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
     activity_service = ActivityServiceGraphDB()
     arrangement_service = ArrangementServiceGraphDB()
 
-    def save_activity_execution(self, activity_execution: ActivityExecutionIn, database_name: str):
+    def save_activity_execution(self, activity_execution: ActivityExecutionIn, dataset_name: str):
         """
         Send request to graph api to create new activity execution
 
@@ -31,7 +31,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         Returns:
             Result of request as activity execution object
         """
-        node_response = self.graph_api_service.create_node("`Activity Execution`", database_name)
+        node_response = self.graph_api_service.create_node("`Activity Execution`", dataset_name)
 
         if node_response["errors"] is not None:
             return ActivityExecutionOut(**activity_execution.dict(), errors=node_response["errors"])
@@ -39,34 +39,34 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         activity_execution_id = node_response["id"]
 
         if activity_execution.activity_id is not None and \
-                type(self.activity_service.get_activity(activity_execution.activity_id, database_name)) is not NotFoundByIdModel:
+                type(self.activity_service.get_activity(activity_execution.activity_id, dataset_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=activity_execution_id,
                                                         end_node=activity_execution.activity_id,
                                                         name="hasActivity",
-                                                        database_name=database_name)
+                                                        dataset_name=dataset_name)
 
         if activity_execution.arrangement_id is not None and \
-                type(self.arrangement_service.get_arrangement(activity_execution.arrangement_id,database_name)) \
+                type(self.arrangement_service.get_arrangement(activity_execution.arrangement_id,dataset_name)) \
                 is not NotFoundByIdModel:
 
             self.graph_api_service.create_relationships(start_node=activity_execution_id,
                                                         end_node=activity_execution.arrangement_id,
                                                         name="hasArrangement",
-                                                        database_name=database_name)
+                                                        dataset_name=dataset_name)
 
         activity_execution.activity_id = activity_execution.arrangement_id = None
-        self.graph_api_service.create_properties(activity_execution_id, activity_execution, database_name)
+        self.graph_api_service.create_properties(activity_execution_id, activity_execution, dataset_name)
 
-        return self.get_activity_execution(activity_execution_id, database_name)
+        return self.get_activity_execution(activity_execution_id, dataset_name)
 
-    def get_activity_executions(self, database_name: str):
+    def get_activity_executions(self, dataset_name: str):
         """
         Send request to graph api to get activity executions
 
         Returns:
             Result of request as list of activity executions objects
         """
-        get_response = self.graph_api_service.get_nodes("`Activity Execution`", database_name)
+        get_response = self.graph_api_service.get_nodes("`Activity Execution`", dataset_name)
 
         activity_executions = []
         for activity_execution_node in get_response["nodes"]:
@@ -78,7 +78,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
 
         return ActivityExecutionsOut(activity_executions=activity_executions)
 
-    def get_activity_execution(self, activity_execution_id: int, database_name: str):
+    def get_activity_execution(self, activity_execution_id: int, dataset_name: str):
         """
         Send request to graph api to get given activity execution
 
@@ -88,7 +88,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         Returns:
             Result of request as activity execution object
         """
-        get_response = self.graph_api_service.get_node(activity_execution_id, database_name)
+        get_response = self.graph_api_service.get_node(activity_execution_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=activity_execution_id, errors=get_response["errors"])
@@ -100,7 +100,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         for property in get_response["properties"]:
             activity_execution['additional_properties'].append({'key': property['key'], 'value': property['value']})
 
-        relations_response = self.graph_api_service.get_node_relationships(activity_execution_id, database_name)
+        relations_response = self.graph_api_service.get_node_relationships(activity_execution_id, dataset_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == activity_execution_id:
@@ -115,7 +115,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
 
         return ActivityExecutionOut(**activity_execution)
 
-    def delete_activity_execution(self, activity_execution_id: int, database_name: str):
+    def delete_activity_execution(self, activity_execution_id: int, dataset_name: str):
         """
         Send request to graph api to delete given activity execution
         Args:
@@ -123,15 +123,15 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         Returns:
             Result of request as activity execution object
         """
-        get_response = self.get_activity_execution(activity_execution_id, database_name)
+        get_response = self.get_activity_execution(activity_execution_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node(activity_execution_id, database_name)
+        self.graph_api_service.delete_node(activity_execution_id, dataset_name)
         return get_response
 
-    def update_activity_execution(self, activity_execution_id: int, activity_execution: ActivityExecutionPropertyIn, database_name: str):
+    def update_activity_execution(self, activity_execution_id: int, activity_execution: ActivityExecutionPropertyIn, dataset_name: str):
         """
         Send request to graph api to update given participant state
         Args:
@@ -140,13 +140,13 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         Returns:
             Result of request as participant state object
         """
-        get_response = self.get_activity_execution(activity_execution_id, database_name)
+        get_response = self.get_activity_execution(activity_execution_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node_properties(activity_execution_id,database_name)
-        self.graph_api_service.create_properties(activity_execution_id, activity_execution,database_name)
+        self.graph_api_service.delete_node_properties(activity_execution_id,dataset_name)
+        self.graph_api_service.create_properties(activity_execution_id, activity_execution,dataset_name)
 
         activity_execution_result = {"id": activity_execution_id, "relations": get_response.relations,
                                      "reversed_relations": get_response.reversed_relations}
@@ -155,7 +155,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         return ActivityExecutionOut(**activity_execution_result)
 
     def update_activity_execution_relationships(self, activity_execution_id: int,
-                                                activity_execution: ActivityExecutionRelationIn, database_name: str):
+                                                activity_execution: ActivityExecutionRelationIn, dataset_name: str):
         """
         Send request to graph api to update given activity execution relationships
         Args:
@@ -164,7 +164,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         Returns:
             Result of request as activity execution object
         """
-        get_response = self.get_activity_execution(activity_execution_id, database_name)
+        get_response = self.get_activity_execution(activity_execution_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
@@ -174,13 +174,13 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
             self.graph_api_service.create_relationships(start_node=activity_execution_id,
                                                         end_node=activity_execution.activity_id,
                                                         name="hasActivity",
-                                                        database_name=database_name)
+                                                        dataset_name=dataset_name)
         if activity_execution.arrangement_id is not None and \
                 type(self.arrangement_service.get_arrangement(activity_execution.arrangement_id)) \
                 is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=activity_execution_id,
                                                         end_node=activity_execution.arrangement_id,
                                                         name="hasArrangement",
-                                                        database_name=database_name)
+                                                        dataset_name=dataset_name)
 
-        return self.get_activity_execution(activity_execution_id,database_name)
+        return self.get_activity_execution(activity_execution_id,dataset_name)

@@ -21,7 +21,7 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
     channel_service = ChannelServiceGraphDB()
     registered_data_service = RegisteredDataServiceGraphDB()
 
-    def save_registered_channel(self, registered_channel: RegisteredChannelIn, database_name: str):
+    def save_registered_channel(self, registered_channel: RegisteredChannelIn, dataset_name: str):
         """
         Send request to graph api to create new registered channel
 
@@ -31,36 +31,36 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
         Returns:
             Result of request as registered channel object
         """
-        node_response = self.graph_api_service.create_node("`Registered Channel`", database_name)
+        node_response = self.graph_api_service.create_node("`Registered Channel`", dataset_name)
 
         if node_response["errors"] is not None:
             return RegisteredChannelOut(errors=node_response["errors"])
         registered_channel_id = node_response["id"]
 
         if registered_channel.channel_id is not None and \
-                type(self.channel_service.get_channel(registered_channel.channel_id, database_name)) is not NotFoundByIdModel:
+                type(self.channel_service.get_channel(registered_channel.channel_id, dataset_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=registered_channel_id,
                                                         end_node=registered_channel.channel_id,
                                                         name="hasChannel",
-                                                        database_name=database_name)
+                                                        dataset_name=dataset_name)
         if registered_channel.registered_data_id is not None and \
-                type(self.registered_data_service.get_registered_data(registered_channel.registered_data_id, database_name)) \
+                type(self.registered_data_service.get_registered_data(registered_channel.registered_data_id, dataset_name)) \
                 is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=registered_channel_id,
                                                         end_node=registered_channel.registered_data_id,
                                                         name="hasRegisteredData",
-                                                        database_name=database_name)
+                                                        dataset_name=dataset_name)
 
-        return self.get_registered_channel(registered_channel_id, database_name)
+        return self.get_registered_channel(registered_channel_id, dataset_name)
 
-    def get_registered_channels(self, database_name: str):
+    def get_registered_channels(self, dataset_name: str):
         """
         Send request to graph api to get registered channels
 
         Returns:
             Result of request as list of registered channels objects
         """
-        get_response = self.graph_api_service.get_nodes("`Registered Channel`", database_name)
+        get_response = self.graph_api_service.get_nodes("`Registered Channel`", dataset_name)
 
         registered_channels = []
 
@@ -74,7 +74,7 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
 
         return RegisteredChannelsOut(registered_channels=registered_channels)
 
-    def get_registered_channel(self, registered_channel_id: int, database_name: str):
+    def get_registered_channel(self, registered_channel_id: int, dataset_name: str):
         """
         Send request to graph api to get given registered channel
 
@@ -84,7 +84,7 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
         Returns:
             Result of request as registered channel object
         """
-        get_response = self.graph_api_service.get_node(registered_channel_id, database_name)
+        get_response = self.graph_api_service.get_node(registered_channel_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=registered_channel_id, errors=get_response["errors"])
@@ -97,7 +97,7 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
             if property["key"] == "age":
                 registered_channel[property["key"]] = property["value"]
 
-        relations_response = self.graph_api_service.get_node_relationships(registered_channel_id, database_name)
+        relations_response = self.graph_api_service.get_node_relationships(registered_channel_id, dataset_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == registered_channel_id:
@@ -112,7 +112,7 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
 
         return RegisteredChannelOut(**registered_channel)
 
-    def delete_registered_channel(self, registered_channel_id: int, database_name: str):
+    def delete_registered_channel(self, registered_channel_id: int, dataset_name: str):
         """
         Send request to graph api to delete given registered channel
 
@@ -122,16 +122,16 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
         Returns:
             Result of request as registered channel object
         """
-        get_response = self.get_registered_channel(registered_channel_id, database_name)
+        get_response = self.get_registered_channel(registered_channel_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node(registered_channel_id, database_name)
+        self.graph_api_service.delete_node(registered_channel_id, dataset_name)
         return get_response
 
     def update_registered_channel_relationships(self, registered_channel_id: int,
-                                                registered_channel: RegisteredChannelIn, database_name: str):
+                                                registered_channel: RegisteredChannelIn, dataset_name: str):
         """
         Send request to graph api to update given registered channel
 
@@ -142,23 +142,23 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
         Returns:
             Result of request as registered channel object
         """
-        get_response = self.get_registered_channel(registered_channel_id, database_name)
+        get_response = self.get_registered_channel(registered_channel_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
         if registered_channel.channel_id is not None and \
-                type(self.channel_service.get_channel(registered_channel.channel_id, database_name)) is not NotFoundByIdModel:
+                type(self.channel_service.get_channel(registered_channel.channel_id, dataset_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=registered_channel_id,
                                                         end_node=registered_channel.channel_id,
                                                         name="hasChannel",
-                                                        database_name=database_name)
+                                                        dataset_name=dataset_name)
         if registered_channel.registered_data_id is not None and \
-                type(self.registered_data_service.get_registered_data(registered_channel.registered_data_id, database_name)) \
+                type(self.registered_data_service.get_registered_data(registered_channel.registered_data_id, dataset_name)) \
                 is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=registered_channel_id,
                                                         end_node=registered_channel.registered_data_id,
                                                         name="hasRegisteredData",
-                                                        database_name=database_name)
+                                                        dataset_name=dataset_name)
 
-        return self.get_registered_channel(registered_channel_id, database_name)
+        return self.get_registered_channel(registered_channel_id, dataset_name)

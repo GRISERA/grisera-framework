@@ -16,7 +16,7 @@ class TestParticipationServicePost(unittest.TestCase):
     def test_save_participation_without_errors(self, get_node_relationships_mock, get_node_mock,
                                                     create_relationships_mock, create_properties_mock,
                                                     create_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Participation'],
                                       'properties': None,
@@ -40,26 +40,26 @@ class TestParticipationServicePost(unittest.TestCase):
                                              reversed_relations=[RelationInformation(second_node_id=15,
                                                                                      name="testReversedRelation",
                                                                                      relation_id=0)], id=id_node)
-        calls = [mock.call(2, database_name), mock.call(3, database_name), mock.call(1, database_name)]
+        calls = [mock.call(2, dataset_name), mock.call(3, dataset_name), mock.call(1, dataset_name)]
         participation_service = ParticipationServiceGraphDB()
 
-        result = participation_service.save_participation(participation_in, database_name)
+        result = participation_service.save_participation(participation_in, dataset_name)
 
         self.assertEqual(result, participation_out)
-        create_node_mock.assert_called_once_with('Participation', database_name)
+        create_node_mock.assert_called_once_with('Participation', dataset_name)
         # create_properties_mock.assert_not_called()
         create_relationships_mock.assert_not_called()
         get_node_mock.assert_has_calls(calls)
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_participation_with_node_error(self, create_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         participation = ParticipationIn(activity_execution_id=2, participant_state_id=3)
         participation_service = ParticipationServiceGraphDB()
 
-        result = participation_service.save_participation(participation, database_name)
+        result = participation_service.save_participation(participation, dataset_name)
 
         self.assertEqual(result, ParticipationOut(errors=['error']))
-        create_node_mock.assert_called_once_with('Participation', database_name)
+        create_node_mock.assert_called_once_with('Participation', dataset_name)

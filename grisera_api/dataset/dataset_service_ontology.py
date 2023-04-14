@@ -12,23 +12,23 @@ class DatasetServiceOntology(DatasetService):
     """
     ontology_api_service = OntologyApiService()
 
-    def save_dataset(self, database_name_to_create: str):
+    def save_dataset(self, dataset_name_to_create: str):
         """
         Send request to ontology api to add new dataset
 
         Args:
-            database_name_to_create (str): dataset name to be created
+            dataset_name_to_create (str): dataset name to be created
 
         Returns:
             Result of request as dataset object
         """
         raise Exception("Reference to an unimplemented method.")
 
-    def get_dataset(self, database_name):
+    def get_dataset(self, dataset_name):
         raise Exception("Reference to an unimplemented method.")
 
-    def get_datasets(self, database_name):
+    def get_datasets(self, dataset_name):
         raise Exception("Reference to an unimplemented method.")
 
-    def delete_dataset(self, database_name: str):
+    def delete_dataset(self, dataset_name: str):
         raise Exception("Reference to an unimplemented method.")

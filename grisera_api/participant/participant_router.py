@@ -24,7 +24,7 @@ class ParticipantRouter:
         self.participant_service = Services().participant_service()
 
     @router.post("/participants", tags=["participants"], response_model=ParticipantOut)
-    async def create_participant(self, participant: ParticipantIn, response: Response, database_name: str):
+    async def create_participant(self, participant: ParticipantIn, response: Response, dataset_name: str):
         """
         Create participant in database
         """
@@ -32,7 +32,7 @@ class ParticipantRouter:
         if participant.date_of_birth is not None:
             participant.date_of_birth = participant.date_of_birth.__str__()
 
-        create_response = self.participant_service.save_participant(participant, database_name)
+        create_response = self.participant_service.save_participant(participant, dataset_name)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -42,12 +42,12 @@ class ParticipantRouter:
         return create_response
 
     @router.get("/participants", tags=["participants"], response_model=ParticipantsOut)
-    async def get_participants(self, response: Response, database_name: str):
+    async def get_participants(self, response: Response, dataset_name: str):
         """
         Get participants from database
         """
 
-        get_response = self.participant_service.get_participants(database_name)
+        get_response = self.participant_service.get_participants(dataset_name)
 
         # add links from hateoas
         get_response.links = get_links(router)
@@ -56,12 +56,12 @@ class ParticipantRouter:
 
     @router.get("/participants/{participant_id}", tags=["participants"],
                 response_model=Union[ParticipantOut, NotFoundByIdModel])
-    async def get_participant(self, participant_id: int, response: Response, database_name: str):
+    async def get_participant(self, participant_id: int, response: Response, dataset_name: str):
         """
         Get participant from database
         """
 
-        get_response = self.participant_service.get_participant(participant_id, database_name)
+        get_response = self.participant_service.get_participant(participant_id, dataset_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -72,11 +72,11 @@ class ParticipantRouter:
 
     @router.delete("/participants/{participant_id}", tags=["participants"],
                    response_model=Union[ParticipantOut, NotFoundByIdModel])
-    async def delete_participant(self, participant_id: int, response: Response, database_name: str):
+    async def delete_participant(self, participant_id: int, response: Response, dataset_name: str):
         """
         Delete participant from database
         """
-        get_response = self.participant_service.delete_participant(participant_id, database_name)
+        get_response = self.participant_service.delete_participant(participant_id, dataset_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -87,11 +87,11 @@ class ParticipantRouter:
 
     @router.put("/participants/{participant_id}", tags=["participants"],
                 response_model=Union[ParticipantOut, NotFoundByIdModel])
-    async def update_participant(self, participant_id: int, participant: ParticipantIn, response: Response, database_name: str):
+    async def update_participant(self, participant_id: int, participant: ParticipantIn, response: Response, dataset_name: str):
         """
         Update participant model in database
         """
-        update_response = self.participant_service.update_participant(participant_id, participant, database_name)
+        update_response = self.participant_service.update_participant(participant_id, participant, dataset_name)
         if update_response.errors is not None:
             response.status_code = 404
 

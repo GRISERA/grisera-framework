@@ -13,7 +13,7 @@ class DatasetService:
     """
     graph_api_service = GraphApiService()
 
-    def save_dataset(self, database_name_to_create: str):
+    def save_dataset(self, dataset_name_to_create: str):
         """
         Send request to database by its API to create new relationship
 
@@ -26,7 +26,7 @@ class DatasetService:
 
         raise Exception("save_database not implemented yet")
 
-    def get_datasets(self, database_name):
+    def get_datasets(self, dataset_name):
         """
         Send request to database by its API to acquire all nodes with given label
 
@@ -38,7 +38,7 @@ class DatasetService:
         """
         raise Exception("get_datasets not implemented yet")
     
-    def get_dataset(self, database_name: str):
+    def get_dataset(self, dataset_name: str):
         """
         Send request to graph api to get given experiment
 
@@ -50,7 +50,7 @@ class DatasetService:
         """
         raise Exception("get_dataset not implemented yet")
     
-    def delete_dataset(self, database_name: str):
+    def delete_dataset(self, dataset_name: str):
         """
         Send request to graph api to delete given experiment
 

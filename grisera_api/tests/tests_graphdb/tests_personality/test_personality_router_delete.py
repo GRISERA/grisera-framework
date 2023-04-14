@@ -9,7 +9,7 @@ class TestPersonalityRouterDelete(unittest.TestCase):
 
     @mock.patch.object(PersonalityServiceGraphDB, 'delete_personality')
     def test_delete_personality_without_error(self, delete_personality_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         personality_id = 1
         delete_personality_mock.return_value = PersonalityBigFiveOut(agreeableness=2.5, conscientiousness=2.5,
                                                                      extroversion=2.5, neuroticism=2.5, openess=2.5,
@@ -17,17 +17,17 @@ class TestPersonalityRouterDelete(unittest.TestCase):
         response = Response()
         personality_router = PersonalityRouter()
 
-        result = asyncio.run(personality_router.delete_personality(personality_id, response, database_name))
+        result = asyncio.run(personality_router.delete_personality(personality_id, response, dataset_name))
 
         self.assertEqual(result, PersonalityBigFiveOut(agreeableness=2.5, conscientiousness=2.5,
                                                        extroversion=2.5, neuroticism=2.5, openess=2.5,
                                                        id=personality_id, links=get_links(router)))
-        delete_personality_mock.assert_called_once_with(personality_id, database_name)
+        delete_personality_mock.assert_called_once_with(personality_id, dataset_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(PersonalityServiceGraphDB, 'delete_personality')
     def test_delete_personality_with_error(self, delete_personality_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         delete_personality_mock.return_value = PersonalityBigFiveOut(agreeableness=2.5, conscientiousness=2.5,
                                                                      extroversion=2.5, neuroticism=2.5, openess=2.5,
                                                                      errors={'errors': ['test']})
@@ -35,10 +35,10 @@ class TestPersonalityRouterDelete(unittest.TestCase):
         personality_id = 1
         personality_router = PersonalityRouter()
 
-        result = asyncio.run(personality_router.delete_personality(personality_id, response, database_name))
+        result = asyncio.run(personality_router.delete_personality(personality_id, response, dataset_name))
 
         self.assertEqual(result, PersonalityBigFiveOut(agreeableness=2.5, conscientiousness=2.5,
                                                        extroversion=2.5, neuroticism=2.5, openess=2.5,
                                                        errors={'errors': ['test']}, links=get_links(router)))
-        delete_personality_mock.assert_called_once_with(personality_id, database_name)
+        delete_personality_mock.assert_called_once_with(personality_id, dataset_name)
         self.assertEqual(response.status_code, 404)

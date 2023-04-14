@@ -11,7 +11,7 @@ class TestArrangementServicePost(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'create_node')
     @mock.patch.object(GraphApiService, 'create_properties')
     def test_save_arrangement_without_error(self, create_properties_mock, create_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'properties': [{'key': 'arrangement_type',
@@ -22,40 +22,40 @@ class TestArrangementServicePost(unittest.TestCase):
         arrangement = ArrangementIn(arrangement_type='personal two persons', arrangement_distance='intimate zone')
         arrangement_service = ArrangementServiceGraphDB()
 
-        result = arrangement_service.save_arrangement(arrangement, database_name)
+        result = arrangement_service.save_arrangement(arrangement, dataset_name)
 
         self.assertEqual(result, ArrangementOut(id=id_node, arrangement_type='personal two persons', arrangement_distance='intimate zone'))
-        create_node_mock.assert_called_once_with('Arrangement', database_name)
-        create_properties_mock.assert_called_once_with(id_node, arrangement, database_name)
+        create_node_mock.assert_called_once_with('Arrangement', dataset_name)
+        create_properties_mock.assert_called_once_with(id_node, arrangement, dataset_name)
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_arrangement_with_node_error(self, create_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         arrangement = ArrangementIn(arrangement_type='personal two persons', arrangement_distance='intimate zone')
         arrangement_service = ArrangementServiceGraphDB()
 
-        result = arrangement_service.save_arrangement(arrangement, database_name)
+        result = arrangement_service.save_arrangement(arrangement, dataset_name)
 
         self.assertEqual(result, ArrangementOut(arrangement_type='personal two persons', arrangement_distance='intimate zone', errors=['error']))
-        create_node_mock.assert_called_once_with('Arrangement', database_name)
+        create_node_mock.assert_called_once_with('Arrangement', dataset_name)
 
     @mock.patch.object(GraphApiService, 'create_node')
     @mock.patch.object(GraphApiService, 'create_properties')
     def test_save_arrangement_with_properties_error(self, create_properties_mock, create_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         arrangement = ArrangementIn(arrangement_type='personal two persons', arrangement_distance='intimate zone')
         arrangement_service = ArrangementServiceGraphDB()
 
-        result = arrangement_service.save_arrangement(arrangement, database_name)
+        result = arrangement_service.save_arrangement(arrangement, dataset_name)
 
         self.assertEqual(result, ArrangementOut(arrangement_type='personal two persons', arrangement_distance='intimate zone', errors=['error']))
-        create_node_mock.assert_called_once_with('Arrangement', database_name)
-        create_properties_mock.assert_called_once_with(id_node, arrangement, database_name)
+        create_node_mock.assert_called_once_with('Arrangement', dataset_name)
+        create_properties_mock.assert_called_once_with(id_node, arrangement, dataset_name)
 
     # @mock.patch.object(GraphApiService, 'get_nodes')
     # def test_get_arrangements_without_error(self, get_nodes_mock):

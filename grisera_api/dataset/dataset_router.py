@@ -25,11 +25,11 @@ class DatasetRouter:
         self.dataset_service = Services().dataset_service()
 
     @router.post("/dataset", tags=["datasets"], response_model=DatasetOut)
-    async def create_dataset(self, response: Response, database_name_to_create: str):
+    async def create_dataset(self, response: Response, dataset_name_to_create: str):
         """
         Create directed and named dataset
         """
-        create_response = self.dataset_service.save_dataset(database_name_to_create)
+        create_response = self.dataset_service.save_dataset(dataset_name_to_create)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -40,12 +40,12 @@ class DatasetRouter:
 
     @router.get("/datasets/{database_name}", tags=["datasets"],
                 response_model=Union[DatasetsOut, NotFoundByIdModel])
-    async def get_dataset(self, response: Response, database_name: str):
+    async def get_dataset(self, response: Response, dataset_name: str):
         """
         Get dataset from database
         """
 
-        get_response = self.dataset_service.get_dataset(database_name)
+        get_response = self.dataset_service.get_dataset(dataset_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -60,8 +60,8 @@ class DatasetRouter:
         Create directed and named dataset
         """
         #It don't have to be 'neo4j', any existing database will pass
-        database_name = "neo4j"
-        datasets = self.dataset_service.get_datasets(database_name)
+        dataset_name = "neo4j"
+        datasets = self.dataset_service.get_datasets(dataset_name)
         if datasets.errors is not None:
             response.status_code = 422
 
@@ -71,11 +71,11 @@ class DatasetRouter:
 
     @router.delete("/datasets/{database_name}", tags=["datasets"],
                    response_model=Union[DatasetsOut, NotFoundByIdModel])
-    async def delete_dataset(self, response: Response, database_name: str):
+    async def delete_dataset(self, response: Response, dataset_name: str):
         """
         Delete dataset from database
         """
-        get_response = self.dataset_service.delete_dataset(database_name)
+        get_response = self.dataset_service.delete_dataset(dataset_name)
         if get_response.errors is not None:
             response.status_code = 404
 

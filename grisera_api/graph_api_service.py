@@ -14,11 +14,11 @@ class GraphApiService:
     """
     graph_api_url = graph_api_address
 
-    def add_database_name_to_url(self, database_name):
-        url = "?database_name=" + database_name
+    def add_database_name_to_url(self, dataset_name):
+        url = "?database_name=" + dataset_name
         return url
 
-    def post(self, url_part, request_body, database_name: str):
+    def post(self, url_part, request_body, dataset_name: str):
         """
         Send request post to Graph API
 
@@ -30,14 +30,14 @@ class GraphApiService:
             Result of request
         """
 
-        url_part += self.add_database_name_to_url(database_name)
+        url_part += self.add_database_name_to_url(dataset_name)
 
         response = requests.post(url=self.graph_api_url + url_part,
                                  json=request_body).json()
 
         return response
 
-    def get(self, url_part, params, database_name: str):
+    def get(self, url_part, params, dataset_name: str):
         """
         Send request get to Graph API
 
@@ -48,29 +48,29 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        url_part += self.add_database_name_to_url(database_name)
+        url_part += self.add_database_name_to_url(dataset_name)
         response = requests.get(url=self.graph_api_url + url_part,
                                 params=params).json()
         return response
 
-    def delete(self, url_part, params, database_name: str):
+    def delete(self, url_part, params, dataset_name: str):
         """
         Send request get to Graph API
 
         Args:
-            database_name:
+            dataset_name:
             url_part (str): Part to add at the end of url
             params (dict): Parameters of request
 
         Returns:
             Result of request
         """
-        url_part += self.add_database_name_to_url(database_name)
+        url_part += self.add_database_name_to_url(dataset_name)
         response = requests.delete(url=self.graph_api_url + url_part,
                                    params=params).json()
         return response
 
-    def create_node(self, label: str, database_name: str):
+    def create_node(self, label: str, dataset_name: str):
         """
         Send to the Graph API request to create a node
 
@@ -79,10 +79,10 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_body = {"labels": [label], "database_name": [database_name]}
-        return self.post("/nodes", request_body, database_name)
+        request_body = {"labels": [label], "database_name": [dataset_name]}
+        return self.post("/nodes", request_body, dataset_name)
 
-    def create_database(self, database_name_to_create: str):
+    def create_database(self, dataset_name_to_create: str):
         """
         Send to the Graph API request to create a node
 
@@ -91,10 +91,10 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_body = {"name": database_name_to_create}
+        request_body = {"name": dataset_name_to_create}
         return self.post("/dataset", request_body, "neo4j")
 
-    def get_nodes(self, label: str, database_name: str):
+    def get_nodes(self, label: str, dataset_name: str):
         """
         Send to the Graph API request to get nodes with given label
 
@@ -103,8 +103,8 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_params = {"label": label, "database_name": database_name}
-        return self.get("/nodes", request_params, database_name)
+        request_params = {"label": label, "database_name": dataset_name}
+        return self.get("/nodes", request_params, dataset_name)
 
     def get_databases(self):
         """
@@ -118,7 +118,7 @@ class GraphApiService:
         request_params = {}
         return self.get("/datasets", request_params, "neo4j")
 
-    def get_node(self, id: int, database_name: str):
+    def get_node(self, id: int, dataset_name: str):
         """
         Send to the Graph API request to get node with given id
 
@@ -127,20 +127,20 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_params = {"name": database_name}
-        return self.get("/nodes/" + str(id), request_params, database_name)
+        request_params = {"name": dataset_name}
+        return self.get("/nodes/" + str(id), request_params, dataset_name)
 
-    def get_database(self, database_name_looked_for: str):
+    def get_database(self, dataset_name_looked_for: str):
         """
         Send to the Graph API request to get dataset with given name
 
         Returns:
             Result of request
         """
-        request_params = {"database_name": database_name_looked_for}
-        return self.get("/datasets/" + str(database_name_looked_for), request_params, "neo4j")
+        request_params = {"database_name": dataset_name_looked_for}
+        return self.get("/datasets/" + str(dataset_name_looked_for), request_params, "neo4j")
 
-    def get_node_relationships(self, node_id: int, database_name: str):
+    def get_node_relationships(self, node_id: int, dataset_name: str):
         """
         Send to the Graph API request to get node's relationship
 
@@ -149,10 +149,10 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_params = {"database_name": database_name}
-        return self.get(f"/nodes/{node_id}/relationships", request_params, database_name)
+        request_params = {"database_name": dataset_name}
+        return self.get(f"/nodes/{node_id}/relationships", request_params, dataset_name)
 
-    def get_nodes_by_query(self, query, database_name: str):
+    def get_nodes_by_query(self, query, dataset_name: str):
         """
         Send to the Graph API request to get nodes with given label
         Args:
@@ -160,9 +160,9 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        return self.post("/nodes_query", query, database_name)
+        return self.post("/nodes_query", query, dataset_name)
 
-    def delete_dataset(self, database_name_looked_for: str):
+    def delete_dataset(self, dataset_name_looked_for: str):
         """
         Send to the Graph API request to delete node
 
@@ -171,10 +171,10 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_params = {"database_name": database_name_looked_for}
-        return self.delete(f"/datasets/{database_name_looked_for}", request_params, "neo4j")
+        request_params = {"database_name": dataset_name_looked_for}
+        return self.delete(f"/datasets/{dataset_name_looked_for}", request_params, "neo4j")
 
-    def delete_node(self, node_id: int, database_name: str):
+    def delete_node(self, node_id: int, dataset_name: str):
         """
         Send to the Graph API request to delete node
 
@@ -183,10 +183,10 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_params = {"database_name": database_name}
-        return self.delete(f"/nodes/{node_id}", request_params, database_name)
+        request_params = {"database_name": dataset_name}
+        return self.delete(f"/nodes/{node_id}", request_params, dataset_name)
 
-    def delete_node_properties(self, node_id: int, database_name: str):
+    def delete_node_properties(self, node_id: int, dataset_name: str):
         """
         Send to the Graph API request to delete node properties
 
@@ -195,10 +195,10 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_params = {"database_name": database_name}
-        return self.delete(f"/nodes/{node_id}/properties", request_params, database_name)
+        request_params = {"database_name": dataset_name}
+        return self.delete(f"/nodes/{node_id}/properties", request_params, dataset_name)
 
-    def create_properties(self, node_id: int, node_model: BaseModel, database_name: str):
+    def create_properties(self, node_id: int, node_model: BaseModel, dataset_name: str):
         """
         Send to the Graph API request to create properties for given node
 
@@ -215,11 +215,11 @@ class GraphApiService:
             if key == 'additional_properties' and value is not None:
                 request_body.extend(self.create_additional_properties(property_dict=node_dict))
             elif value is not None and not isinstance(value, list) and not isinstance(value, dict):
-                request_body.append({"key": key, "value": value, "database_name": database_name})
+                request_body.append({"key": key, "value": value, "database_name": dataset_name})
 
-        return self.post("/nodes/{}/properties".format(node_id), request_body, database_name)
+        return self.post("/nodes/{}/properties".format(node_id), request_body, dataset_name)
 
-    def create_relationships(self, start_node: int, end_node: int, name: str, database_name: str):
+    def create_relationships(self, start_node: int, end_node: int, name: str, dataset_name: str):
         """
         Send to the Graph API request to create a relationship
 
@@ -231,10 +231,10 @@ class GraphApiService:
         Returns:
             Result of request
        """
-        request_body = {"start_node": start_node, "end_node": end_node, "name": name, "database_name": [database_name]}
-        return self.post("/relationships", request_body, database_name)
+        request_body = {"start_node": start_node, "end_node": end_node, "name": name, "database_name": [dataset_name]}
+        return self.post("/relationships", request_body, dataset_name)
 
-    def delete_relationship(self, relationship_id: int, database_name: str):
+    def delete_relationship(self, relationship_id: int, dataset_name: str):
         """
         Send to the Graph API request to delete relationship
 
@@ -243,10 +243,10 @@ class GraphApiService:
         Returns:
             Result of request
         """
-        request_params = {"database_name": database_name}
-        return self.delete(f"/relationships/{relationship_id}", request_params, database_name)
+        request_params = {"database_name": dataset_name}
+        return self.delete(f"/relationships/{relationship_id}", request_params, dataset_name)
 
-    def create_relationship_properties(self, relationship_id: int, relationship_model: BaseModel, database_name: str):
+    def create_relationship_properties(self, relationship_id: int, relationship_model: BaseModel, dataset_name: str):
         """
         Send to the Graph API request to create properties for given relationship
 
@@ -265,7 +265,7 @@ class GraphApiService:
             elif value is not None and not isinstance(value, list) and not isinstance(value, dict):
                 request_body.append({"key": key, "value": value})
 
-        return self.post("/relationships/{}/properties".format(relationship_id), request_body, database_name)
+        return self.post("/relationships/{}/properties".format(relationship_id), request_body, dataset_name)
 
     def create_additional_properties(self, property_dict: dict):
         """

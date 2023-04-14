@@ -25,11 +25,11 @@ class ArrangementRouter:
 
     @router.get("/arrangements/{arrangement_id}", tags=["arrangements"],
                 response_model=Union[ArrangementOut, NotFoundByIdModel])
-    async def get_arrangement(self, arrangement_id: int, response: Response, database_name: str):
+    async def get_arrangement(self, arrangement_id: int, response: Response, dataset_name: str):
         """
         Get arrangement from database
         """
-        get_response = self.arrangement_service.get_arrangement(arrangement_id, database_name)
+        get_response = self.arrangement_service.get_arrangement(arrangement_id, dataset_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -39,12 +39,12 @@ class ArrangementRouter:
         return get_response
 
     @router.get("/arrangements", tags=["arrangements"], response_model=ArrangementsOut)
-    async def get_arrangements(self, response: Response, database_name: str):
+    async def get_arrangements(self, response: Response, dataset_name: str):
         """
         Get arrangements from database
         """
 
-        get_response = self.arrangement_service.get_arrangements(database_name)
+        get_response = self.arrangement_service.get_arrangements(dataset_name)
 
         # add links from hateoas
         get_response.links = get_links(router)

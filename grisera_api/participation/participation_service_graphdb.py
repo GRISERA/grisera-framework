@@ -21,7 +21,7 @@ class ParticipationServiceGraphDB(ParticipationService):
     activity_execution_service = ActivityExecutionServiceGraphDB()
     participant_state_service = ParticipantStateServiceGraphDB()
 
-    def save_participation(self, participation: ParticipationIn, database_name: str):
+    def save_participation(self, participation: ParticipationIn, dataset_name: str):
         """
         Send request to graph api to create new participation
 
@@ -31,7 +31,7 @@ class ParticipationServiceGraphDB(ParticipationService):
         Returns:
             Result of request as participation object
         """
-        node_response = self.graph_api_service.create_node("Participation", database_name)
+        node_response = self.graph_api_service.create_node("Participation", dataset_name)
 
         if node_response["errors"] is not None:
             return ParticipationOut(errors=node_response["errors"])
@@ -39,26 +39,26 @@ class ParticipationServiceGraphDB(ParticipationService):
         participation_id = node_response["id"]
 
         if participation.activity_execution_id is not None and \
-                type(self.activity_execution_service.get_activity_execution(participation.activity_execution_id, database_name)) \
+                type(self.activity_execution_service.get_activity_execution(participation.activity_execution_id, dataset_name)) \
                 is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(participation_id, participation.activity_execution_id,
-                                                        "hasActivityExecution", database_name)
+                                                        "hasActivityExecution", dataset_name)
 
         if participation.participant_state_id is not None and \
-                type(self.participant_state_service.get_participant_state(participation.participant_state_id, database_name)) \
+                type(self.participant_state_service.get_participant_state(participation.participant_state_id, dataset_name)) \
                 is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(participation_id, participation.participant_state_id,
-                                                        "hasParticipantState", database_name)
+                                                        "hasParticipantState", dataset_name)
 
-        return self.get_participation(participation_id, database_name)
+        return self.get_participation(participation_id, dataset_name)
 
-    def get_participations(self, database_name: str):
+    def get_participations(self, dataset_name: str):
         """
         Send request to graph api to get participations
         Returns:
             Result of request as list of participation objects
         """
-        get_response = self.graph_api_service.get_nodes("Participation", database_name)
+        get_response = self.graph_api_service.get_nodes("Participation", dataset_name)
 
         participations = []
 
@@ -69,7 +69,7 @@ class ParticipationServiceGraphDB(ParticipationService):
 
         return ParticipationsOut(participations=participations)
 
-    def get_participation(self, participation_id: int, database_name: str):
+    def get_participation(self, participation_id: int, dataset_name: str):
         """
         Send request to graph api to get given participation
         Args:
@@ -77,7 +77,7 @@ class ParticipationServiceGraphDB(ParticipationService):
         Returns:
             Result of request as participation object
         """
-        get_response = self.graph_api_service.get_node(participation_id, database_name)
+        get_response = self.graph_api_service.get_node(participation_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=participation_id, errors=get_response["errors"])
@@ -87,7 +87,7 @@ class ParticipationServiceGraphDB(ParticipationService):
         participation = {'id': get_response['id'], 'relations': [],
                          'reversed_relations': []}
 
-        relations_response = self.graph_api_service.get_node_relationships(participation_id, database_name)
+        relations_response = self.graph_api_service.get_node_relationships(participation_id, dataset_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == participation_id:
@@ -102,7 +102,7 @@ class ParticipationServiceGraphDB(ParticipationService):
 
         return ParticipationOut(**participation)
 
-    def delete_participation(self, participation_id: int, database_name: str):
+    def delete_participation(self, participation_id: int, dataset_name: str):
         """
         Send request to graph api to delete given participation
         Args:
@@ -110,16 +110,16 @@ class ParticipationServiceGraphDB(ParticipationService):
         Returns:
             Result of request as participation object
         """
-        get_response = self.get_participation(participation_id, database_name)
+        get_response = self.get_participation(participation_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node(participation_id, database_name)
+        self.graph_api_service.delete_node(participation_id, dataset_name)
         return get_response
 
     def update_participation_relationships(self, participation_id: int,
-                                           participation: ParticipationIn, database_name: str):
+                                           participation: ParticipationIn, dataset_name: str):
         """
         Send request to graph api to update given participation relationships
         Args:
@@ -128,21 +128,21 @@ class ParticipationServiceGraphDB(ParticipationService):
         Returns:
             Result of request as participation object
         """
-        get_response = self.get_participation(participation_id, database_name)
+        get_response = self.get_participation(participation_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
         if participation.activity_execution_id is not None and \
-                type(self.activity_execution_service.get_activity_execution(participation.activity_execution_id, database_name)) \
+                type(self.activity_execution_service.get_activity_execution(participation.activity_execution_id, dataset_name)) \
                 is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(participation_id, participation.activity_execution_id,
-                                                        "hasActivityExecution", database_name)
+                                                        "hasActivityExecution", dataset_name)
 
         if participation.participant_state_id is not None and \
-                type(self.participant_state_service.get_participant_state(participation.participant_state_id, database_name)) \
+                type(self.participant_state_service.get_participant_state(participation.participant_state_id, dataset_name)) \
                 is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(participation_id, participation.participant_state_id,
-                                                        "hasParticipantState", database_name)
+                                                        "hasParticipantState", dataset_name)
 
-        return self.get_participation(participation_id, database_name)
+        return self.get_participation(participation_id, dataset_name)
