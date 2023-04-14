@@ -22,6 +22,12 @@ class DatasetService:
             Result of request as dataset object
         """
 
+        # check if the database exists first
+        found = self.db.check_if_database_exists(database_name_to_create)
+        if found:
+            return DatasetOut(errors="Dataset with this name already exists.")
+
+        # if the name is available, create the database
         response = self.db.create_database_with_name(database_name_to_create)
 
         if len(response["errors"]) > 0:

@@ -21,7 +21,7 @@ class DatasetRouter:
 
     dataset_service = DatasetService()
 
-    @router.post("/dataset", tags=["database_name_to_create"], response_model=DatasetOut)
+    @router.post("/datasets", tags=["database_name_to_create"], response_model=DatasetOut)
     async def create_dataset(self, dataset: DatasetIn, response: Response):
         """
         Create directed and named dataset
