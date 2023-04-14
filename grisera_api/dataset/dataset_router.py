@@ -24,7 +24,7 @@ class DatasetRouter:
     def __init__(self):
         self.dataset_service = Services().dataset_service()
 
-    @router.post("/dataset", tags=["datasets"], response_model=DatasetOut)
+    @router.post("/datasets", tags=["datasets"], response_model=DatasetOut)
     async def create_dataset(self, response: Response, dataset_name_to_create: str):
         """
         Create directed and named dataset
@@ -39,10 +39,10 @@ class DatasetRouter:
         return create_response
 
     @router.get("/datasets/{database_name}", tags=["datasets"],
-                response_model=Union[DatasetsOut, NotFoundByIdModel])
+                response_model=Union[DatasetOut, NotFoundByIdModel])
     async def get_dataset(self, response: Response, dataset_name: str):
         """
-        Get dataset from database
+        Get dataset from database by name
         """
 
         get_response = self.dataset_service.get_dataset(dataset_name)
@@ -70,7 +70,7 @@ class DatasetRouter:
         return datasets
 
     @router.delete("/datasets/{database_name}", tags=["datasets"],
-                   response_model=Union[DatasetsOut, NotFoundByIdModel])
+                   response_model=Union[DatasetOut, NotFoundByIdModel])
     async def delete_dataset(self, response: Response, dataset_name: str):
         """
         Delete dataset from database
