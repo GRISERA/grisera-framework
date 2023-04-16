@@ -2,8 +2,6 @@ from dataset.dataset_service import DatasetService
 from graph_api_service import GraphApiService
 from dataset.dataset_model import DatasetOut, DatasetIn, DatasetsOut, BasicDatasetOut
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
-
 
 class DatasetServiceGraphDB(DatasetService):
     """
@@ -49,8 +47,7 @@ class DatasetServiceGraphDB(DatasetService):
 
         result = DatasetOut(name=database_name_looked_for)
 
-        # TODO: cos jest zle autentycznie
-        return result  # tu moze trzeba bedzie zrobic result.datasets
+        return result
 
     def get_datasets(self, dataset_name):
         """
