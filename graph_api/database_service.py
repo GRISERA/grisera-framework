@@ -52,7 +52,7 @@ class DatabaseService:
         Send request to database by its API
 
         Args:
-            statement (string): Statement to be sent
+            commit_body (string): Statement to be sent
             database_name (string): Name of the database
 
         Returns:
@@ -65,34 +65,6 @@ class DatabaseService:
                                  auth=self.database_auth).json()
 
         return response
-
-    def create_database_with_name(self, database_to_create):
-        create_statement = "create database " + database_to_create
-
-        # It don't have to be 'neo4j', any existing database is needed
-        database_name = "neo4j"
-
-        return self.post_statement(create_statement, database_name)
-
-    def show_databases_with_name(self, database_name):
-        statement = "show databases"
-        return self.post_statement(statement, database_name)
-
-    def check_if_database_exists(self, database_name_looked_for):
-        show_databases_statement = "SHOW databases"
-        database_name = "neo4j"  # database to ask the server
-        response = self.post_statement(show_databases_statement, database_name)
-        for db in response['results'][0]['data']:
-            db_name = db['row'][0]
-            if database_name_looked_for == db_name:
-                return True
-        return False
-
-    def delete_dataset(self, database_name_looked_for):
-        """
-        """
-        delete_statement = "drop database {}".format(database_name_looked_for)
-        return self.post_statement(delete_statement, database_name_looked_for)
 
     def node_exists(self, node_id, database_name):
         """
@@ -123,7 +95,7 @@ class DatabaseService:
         """
 
         create_statement = "CREATE (n:{labels}) RETURN n".format(
-                  labels=":".join(list(node.labels)))
+            labels=":".join(list(node.labels)))
 
         return self.post_statement(create_statement, database_name)
 
@@ -410,3 +382,92 @@ class DatabaseService:
         new_url = self.replace_string_between_two_substring(current_url, '/db/', '/tx', database_name)
         # new_url = "http://host.docker.internal:7474/db/DATABASE_NAME/tx/commit"
         return new_url
+
+    def create_dataset(self, name_hash):
+        """
+        Send request to the database to create dataset
+
+        Args:
+            name_hash (string): Name of the dataset
+
+        Returns:
+            Result of request
+        """
+        create_database_statement = "create database " + name_hash
+        # It doesn't have to be 'neo4j', any existing database is needed
+        database_name = "neo4j"
+        return self.post_statement(create_database_statement, database_name)
+
+    def create_alias_for_dataset(self, alias_name, alias_value, dataset_name):
+        """
+        Create a node in dataset which hold additional information about the dataset in the key->value format
+
+        Args:
+            alias_name (str): Name of the key
+            alias_value (str): Name of the value
+            dataset_name (str): name of the requestes dataset
+
+        Returns:
+            Result of request
+        """
+        create_alias_statement_name = 'CREATE (n:Alias {' + alias_name + ': "' + alias_value + '"}) return n'
+        return self.post_statement(create_alias_statement_name, dataset_name)
+
+    def get_aliases_from_database(self, dataset_name):
+        """
+        Acquire from dataset nodes which hold additional information about the dataset in the key->value format
+
+        Args:
+            dataset_name (str): name of the requestes dataset
+
+        Returns:
+            Result of request
+        """
+        statement = "MATCH (n:Alias) RETURN n"
+        return self.post_statement(statement, dataset_name)
+
+    def get_datasets(self, dataset_name):
+        """
+        Send to the database request to get datasets
+
+        Args:
+            dataset_name (string): Name of the database
+
+        Returns:
+            Result of request
+        """
+        statement = "show databases"
+        return self.post_statement(statement, dataset_name)
+
+    def dataset_exists(self, dataset_name):
+        """
+        Check whether dataset with given name exists
+
+        Args:
+            dataset_name (string): dataset name to be checked
+
+        Returns:
+            True if exists, otherwise false
+        """
+        show_databases_statement = "show databases"
+        database_name = "neo4j"  # database to ask the server
+        response = self.post_statement(show_databases_statement, database_name)
+
+        for db in response['results'][0]['data']:
+            db_name_in_system = db['row'][0]
+            if dataset_name == db_name_in_system:
+                return True
+        return False
+
+    def delete_dataset(self, dataset_name):
+        """
+        Send to the database request to delete dataset with given name
+
+        Args:
+            dataset_name (): name of the dataset to delete
+
+        Returns:
+            Result of request
+        """
+        delete_statement = "drop database {}".format(dataset_name)
+        return self.post_statement(delete_statement, dataset_name)

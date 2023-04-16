@@ -2,7 +2,6 @@ from dataset.dataset_service import DatasetService
 from graph_api_service import GraphApiService
 from dataset.dataset_model import DatasetOut, DatasetIn, DatasetsOut, BasicDatasetOut
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
 
 
 class DatasetServiceGraphDB(DatasetService):
@@ -14,55 +13,52 @@ class DatasetServiceGraphDB(DatasetService):
     """
     graph_api_service = GraphApiService()
 
-    def save_dataset(self, dataset_name_to_create: str):
+    def save_dataset(self, dataset_name: str):
         """
-        Send request to database by its API to create new relationship
+        Send request to database by its API to create new dataset
 
         Args:
-            relationship (-): Relationship to be added to database
+            dataset_name (str): Name of the dataset to be created
 
         Returns:
-            Result of request as relationship object
+            Result of request as dataset object
         """
+        dataset_name = dataset_name.lower()  # convert the dataset name to lowercase
 
-        response = self.graph_api_service.create_database(dataset_name_to_create)
+        response = self.graph_api_service.create_dataset(dataset_name)
 
         if response["errors"] is not None:
-            return DatasetsOut(name=dataset_name_to_create, errors=response["errors"])
+            return DatasetsOut(name_hash=dataset_name, errors=response["errors"])
 
-        return DatasetOut(name=dataset_name_to_create)
+        return DatasetOut(name_hash=response["name_hash"], name_by_user=response["name_by_user"])
 
-    def get_dataset(self, database_name_looked_for):
+    def get_dataset(self, dataset_name):
         """
-        Send request to database by its API to acquire all nodes with given label
+        Send request to database by its API to acquire dataset with particular name
 
         Args:
-            database_name (string): Name of the database
+            dataset_name (string): Name of the searched dataset
 
         Returns:
-            List of acquired nodes in NodesOut model
+            Acquired dataset in DatasetOut model
         """
-        get_response = self.graph_api_service.get_database(database_name_looked_for)
+        get_response = self.graph_api_service.get_dataset(dataset_name)
 
         if get_response["errors"] is not None:
             return DatasetOut(errors=get_response["errors"])
 
-        result = DatasetOut(name=database_name_looked_for)
+        result = DatasetOut(name_hash=get_response["name_hash"], name_by_user=get_response["name_by_user"])
 
-        # TODO: cos jest zle autentycznie
-        return result  # tu moze trzeba bedzie zrobic result.datasets
+        return result
 
-    def get_datasets(self, dataset_name):
+    def get_datasets(self):
         """
         Send request to database by its API to acquire all nodes with given label
-
-        Args:
-            database_name (string): Name of the database
 
         Returns:
             List of acquired nodes in NodesOut model
         """
-        get_response = self.graph_api_service.get_databases()
+        get_response = self.graph_api_service.get_datasets()
 
         if get_response["errors"] is not None:
             return DatasetsOut(errors=get_response["errors"])
@@ -70,7 +66,7 @@ class DatasetServiceGraphDB(DatasetService):
         result = DatasetsOut(datasets=[])
 
         for dataset in get_response["datasets"]:
-            result.datasets.append(BasicDatasetOut(name=dataset['name']))
+            result.datasets.append(BasicDatasetOut(name_hash=dataset['name_hash']))
 
         return DatasetsOut(datasets=result.datasets)
 
@@ -84,10 +80,10 @@ class DatasetServiceGraphDB(DatasetService):
         Returns:
             Result of request as dataset object
         """
-        get_response = self.get_dataset(database_name_looked_for)
-        print("|||| GRISERA API - delete_dataset: get_response: {}".format(get_response))
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
+        delete_response = self.get_dataset(database_name_looked_for)
+
+        if type(delete_response) is NotFoundByIdModel:
+            return delete_response
 
         self.graph_api_service.delete_dataset(database_name_looked_for)
-        return get_response
+        return delete_response

@@ -1,5 +1,4 @@
 import requests
-import json
 from pydantic import BaseModel
 
 from graph_api_config import graph_api_address
@@ -236,54 +235,59 @@ class GraphApiService:
 
         Args:
             dataset_name (str): Name of the database (dataset)
+
         Returns:
             Part of url with query parameter
         """
         url = "?database_name=" + dataset_name
         return url
 
-    def get_database(self, dataset_name_looked_for: str):
+    def create_dataset(self, dataset_name: str):
         """
-        Send to the Graph API request to get dataset with given name
+        Send request to the Graph API to create new dataset
+
+        Args:
+            dataset_name (str):  Name of the dataset to be created
 
         Returns:
             Result of request
         """
-        request_params = {"database_name": dataset_name_looked_for}
-        return self.get("/datasets/" + str(dataset_name_looked_for), request_params, "neo4j")
+        request_body = {"name_by_user": dataset_name}
+        return self.post("/datasets", request_body, "neo4j")
 
-    def get_databases(self):
+    def get_dataset(self, dataset_name: str):
         """
-        Send to the Graph API request to create a node
+        Send request to the Graph API to get dataset with given name
 
         Args:
-            label (str): Label for node
+            dataset_name (str):  Name of the dataset to be acquired
+
+        Returns:
+            Result of request
+        """
+        # request_params = {"database_name": dataset_name_looked_for}
+        request_params = {}
+        return self.get("/datasets/" + dataset_name, request_params, "neo4j")
+
+    def get_datasets(self):
+        """
+        Send request to the Graph API to get all datasets
+
         Returns:
             Result of request
         """
         request_params = {}
         return self.get("/datasets", request_params, "neo4j")
 
-    def create_database(self, dataset_name_to_create: str):
+    def delete_dataset(self, dataset_name: str):
         """
-        Send to the Graph API request to create a node
+        Send request to the Graph API to delete dataset with given name
 
         Args:
-            label (str): Label for node
+            dataset_name (str):  Name of the dataset to be deleted
+
         Returns:
             Result of request
         """
-        request_body = {"name": dataset_name_to_create}
-        return self.post("/datasets", request_body, "neo4j")
-
-    def delete_dataset(self, dataset_name_looked_for: str):
-        """
-        Send to the Graph API request to delete node
-
-        Args:
-            node_id (int): Id of node
-        Returns:
-            Result of request
-        """
-        request_params = {"database_name": dataset_name_looked_for}
-        return self.delete(f"/datasets/{dataset_name_looked_for}", request_params, "neo4j")
+        request_params = {}
+        return self.delete(f"/datasets/{dataset_name}", request_params, "neo4j")
