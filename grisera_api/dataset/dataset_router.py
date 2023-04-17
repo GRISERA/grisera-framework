@@ -33,11 +33,11 @@ class DatasetRouter:
         self.life_activity_service = Services().life_activity_service()
 
     @router.post("/datasets", tags=["datasets"], response_model=DatasetOut)
-    async def create_dataset(self, response: Response, dataset_name_to_create: str):
+    async def create_dataset(self, response: Response, dataset_name_from_user: str):
         """
         Create dataset with given name
         """
-        create_dataset_response = self.dataset_service.save_dataset(dataset_name_to_create)
+        create_dataset_response = self.dataset_service.save_dataset(dataset_name_from_user)
         if create_dataset_response.errors is not None:
             response.status_code = 422
 
@@ -49,15 +49,15 @@ class DatasetRouter:
 
         # create channels nodes for the dataset
         for channel_type in channel_types:
-            create_channel_response = self.channel_service.save_channel(ChannelIn(type=channel_type.value), dataset_name_to_create)
+            create_channel_response = self.channel_service.save_channel(ChannelIn(type=channel_type.value), create_dataset_response.name_hash)
 
         # create modalities nodes for the dataset
         for modality_type in modality_types:
-            create_modality_response = self.modality_service.save_modality(ModalityIn(modality=modality_type.value), dataset_name_to_create)
+            create_modality_response = self.modality_service.save_modality(ModalityIn(modality=modality_type.value), create_dataset_response.name_hash)
 
         # create life activities nodes for the dataset
         for life_activity_type in life_activity_types:
-            create_life_activity_response = self.life_activity_service.save_life_activity(LifeActivityIn(life_activity=life_activity_type.value), dataset_name_to_create)
+            create_life_activity_response = self.life_activity_service.save_life_activity(LifeActivityIn(life_activity=life_activity_type.value), create_dataset_response.name_hash)
 
         return create_dataset_response
 
