@@ -1,16 +1,7 @@
-from enum import Enum
 from typing import List, Optional
 
 from property.property_model import PropertyIn
 from time_series.time_series_model import TimeSeriesOut
-
-
-class TransformationType(str, Enum):
-    """
-    The type of transformation
-    """
-    RESAMPLE_NEAREST = "resample_nearest"
-    QUADRANTS = "quadrants"
 
 
 class TimeSeriesTransformation:

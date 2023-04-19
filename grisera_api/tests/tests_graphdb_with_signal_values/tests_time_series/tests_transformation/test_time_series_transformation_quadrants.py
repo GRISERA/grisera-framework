@@ -1,7 +1,7 @@
 import unittest
 
 from property.property_model import PropertyIn
-from time_series.time_series_model import TimeSeriesOut, Type, TimeSeriesIn, SignalIn
+from time_series.time_series_model import TimeSeriesOut, Type, TimeSeriesIn, SignalIn, SignalValueNodesIn
 from time_series.transformation.TimeSeriesTransformationQuadrants import TimeSeriesTransformationQuadrants
 
 
@@ -139,10 +139,10 @@ class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
                 TimeSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
-                        SignalIn(timestamp='0', value='1'),
-                        SignalIn(timestamp='2', value='4'),
-                        SignalIn(timestamp='3', value='2'),
-                        SignalIn(timestamp='4', value='3')
+                        SignalIn(timestamp='0', signal_value=SignalValueNodesIn(value='1')),
+                        SignalIn(timestamp='2', signal_value=SignalValueNodesIn(value='4')),
+                        SignalIn(timestamp='3', signal_value=SignalValueNodesIn(value='2')),
+                        SignalIn(timestamp='4', signal_value=SignalValueNodesIn(value='3'))
                     ],
                     additional_properties=[
                         PropertyIn(key='transformation_name', value='quadrants')
@@ -166,10 +166,10 @@ class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
                 TimeSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
-                        SignalIn(timestamp='0', value='1'),
-                        SignalIn(timestamp='2', value='4'),
-                        SignalIn(timestamp='3', value='4'),
-                        SignalIn(timestamp='4', value='3')
+                        SignalIn(timestamp='0', signal_value=SignalValueNodesIn(value='1')),
+                        SignalIn(timestamp='2', signal_value=SignalValueNodesIn(value='4')),
+                        SignalIn(timestamp='3', signal_value=SignalValueNodesIn(value='4')),
+                        SignalIn(timestamp='4', signal_value=SignalValueNodesIn(value='3'))
                     ],
                     additional_properties=[
                         PropertyIn(key="origin_x", value="-6"),
@@ -192,8 +192,8 @@ class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
                 TimeSeriesIn(
                     type=Type.epoch,
                     signal_values=[
-                        SignalIn(start_timestamp='1', end_timestamp='4', value='1'),
-                        SignalIn(start_timestamp='5', end_timestamp='10', value='4')
+                        SignalIn(start_timestamp='1', end_timestamp='4', signal_value=SignalValueNodesIn(value='1')),
+                        SignalIn(start_timestamp='5', end_timestamp='10', signal_value=SignalValueNodesIn(value='4'))
                     ],
                     additional_properties=[
                         PropertyIn(key='transformation_name', value='quadrants')
@@ -217,8 +217,8 @@ class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
                 TimeSeriesIn(
                     type=Type.epoch,
                     signal_values=[
-                        SignalIn(start_timestamp='1', end_timestamp='4', value='2'),
-                        SignalIn(start_timestamp='5', end_timestamp='10', value='1')
+                        SignalIn(start_timestamp='1', end_timestamp='4', signal_value=SignalValueNodesIn(value='2')),
+                        SignalIn(start_timestamp='5', end_timestamp='10', signal_value=SignalValueNodesIn(value='1'))
                     ],
                     additional_properties=[
                         PropertyIn(key="origin_x", value="7"),
