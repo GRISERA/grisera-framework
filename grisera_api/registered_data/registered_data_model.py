@@ -1,8 +1,10 @@
 from typing import List
-from pydantic import BaseModel
 from typing import Optional, Any
-from property.property_model import PropertyIn
+
+from pydantic import BaseModel
+
 from models.relation_information_model import RelationInformation
+from property.property_model import PropertyIn
 
 
 class RegisteredDataIn(BaseModel):
@@ -10,10 +12,10 @@ class RegisteredDataIn(BaseModel):
     Model of registered data to acquire from client
 
     Attributes:
-    source (str): URI address where recorded data is located
+    source (Optional[str]): URI address where recorded data is located
 
     """
-    source: str
+    source: Optional[str]
     additional_properties: Optional[List[PropertyIn]]
 
 

@@ -1,10 +1,12 @@
-from typing import List
-from pydantic import BaseModel
-from typing import Optional, Any
-from enum import Enum
-from property.property_model import PropertyIn
-from models.relation_information_model import RelationInformation
 from datetime import date
+from enum import Enum
+from typing import List
+from typing import Optional, Any
+
+from pydantic import BaseModel
+
+from models.relation_information_model import RelationInformation
+from property.property_model import PropertyIn
 
 
 class Sex(str, Enum):
@@ -26,13 +28,13 @@ class ParticipantIn(BaseModel):
     Model of participant to acquire from client
 
     Attributes:
-        name (str): Name of the participant
+        name (Optional[str]): Name of the participant
         date_of_birth (Optional[date]): Date of birth of participant
         sex (Optional[Sex]): Sex of participant
         disorder (Optional[str]): Type of disorder
         additional_properties (Optional[List[PropertyIn]]): Additional properties for participant
     """
-    name: str
+    name: Optional[str]
     date_of_birth: Optional[date]
     sex: Optional[Sex]
     disorder: Optional[str]

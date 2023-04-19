@@ -1,8 +1,10 @@
 from typing import List
-from pydantic import BaseModel
 from typing import Optional, Any
-from property.property_model import PropertyIn
+
+from pydantic import BaseModel
+
 from models.relation_information_model import RelationInformation
+from property.property_model import PropertyIn
 
 
 class ExperimentIn(BaseModel):
@@ -10,10 +12,10 @@ class ExperimentIn(BaseModel):
     Model of experiment to acquire from client
 
     Attributes:
-    experiment_name (str): Name of experiment
+    experiment_name (Optional[str]): Name of experiment
     additional_properties (Optional[List[PropertyIn]]): Additional properties for experiment
     """
-    experiment_name: str
+    experiment_name: Optional[str]
     additional_properties: Optional[List[PropertyIn]]
 
 

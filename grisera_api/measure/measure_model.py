@@ -1,5 +1,7 @@
-from pydantic import BaseModel
 from typing import Optional, Any, List
+
+from pydantic import BaseModel
+
 from models.relation_information_model import RelationInformation
 
 
@@ -10,11 +12,11 @@ class MeasurePropertyIn(BaseModel):
     Attributes:
     datatype (str): Type of data
     range (str): Range of measure
-    unit (str): Datatype property which allows for defining unit of measure
+    unit (Optional[str]): Datatype property which allows for defining unit of measure
     """
     datatype: str
     range: str
-    unit: str
+    unit: Optional[str]
 
 
 class MeasureRelationIn(BaseModel):
