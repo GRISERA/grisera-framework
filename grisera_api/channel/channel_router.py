@@ -3,9 +3,10 @@ from typing import Union
 from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
-from hateoas import get_links
-from channel.channel_model import ChannelIn, ChannelOut, BasicChannelOut, ChannelsOut
+
+from channel.channel_model import ChannelIn, ChannelOut, ChannelsOut
 from channel.channel_service import ChannelService
+from hateoas import get_links
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 
@@ -20,8 +21,24 @@ class ChannelRouter:
     Attributes:
         channel_service (ChannelService): Service instance for channel
     """
+
     def __init__(self):
         self.channel_service = Services().channel_service()
+
+    @router.post("/channels", tags=["channels"], response_model=ChannelOut)
+    async def create_channel(self, channel: ChannelIn, response: Response):
+        """
+        Create channel in database
+        """
+
+        create_response = self.channel_service.save_channel(channel)
+        if create_response.errors is not None:
+            response.status_code = 422
+
+        # add links from hateoas
+        create_response.links = get_links(router)
+
+        return create_response
 
     @router.get("/channels/{channel_id}", tags=["channels"],
                 response_model=Union[ChannelOut, NotFoundByIdModel])
