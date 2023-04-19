@@ -8,7 +8,7 @@ from models.not_found_model import NotFoundByIdModel
 from models.relation_information_model import RelationInformation
 from observable_information.observable_information_service_graphdb import ObservableInformationServiceGraphDB
 from time_series.time_series_model import TimeSeriesPropertyIn, BasicTimeSeriesOut, \
-    TimeSeriesNodesOut, TimeSeriesOut, TimeSeriesIn, TimeSeriesRelationIn
+    TimeSeriesNodesOut, TimeSeriesOut, TimeSeriesIn, TimeSeriesRelationIn, Type
 from time_series.time_series_service import TimeSeriesService
 
 
@@ -83,15 +83,15 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         return TimeSeriesNodesOut(time_series_nodes=time_series_nodes)
 
     def get_time_series(self, time_series_id: int,
-                        signal_min_value: Optional[int] = None,
-                        signal_max_value: Optional[int] = None):
+                        signal_min_value: Optional[float] = None,
+                        signal_max_value: Optional[float] = None):
         """
         Send request to graph api to get given time series
 
         Args:
             time_series_id (int): Id of time series
-            signal_min_value (Optional[int]): Filter signal values by min value
-            signal_max_value (Optional[int]): Filter signal values by max value
+            signal_min_value (Optional[float]): Filter signal values by min value
+            signal_max_value (Optional[float]): Filter signal values by max value
 
         Returns:
             Result of request as time series object
@@ -104,7 +104,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
             return NotFoundByIdModel(id=time_series_id, errors="Node not found.")
 
         time_series = {'id': get_response['id'], 'additional_properties': [], 'relations': [],
-                             'reversed_relations': []}
+                       'reversed_relations': [], 'type': Type.timestamp}
         for property in get_response["properties"]:
             if property["key"] in ["type", "source"]:
                 time_series[property["key"]] = property["value"]

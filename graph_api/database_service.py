@@ -158,7 +158,7 @@ class DatabaseService:
                         if operator == "=":
                             where_list.append(f"{node_label}.{parameter.key}{operator}'{parameter.value}'")
                         else:
-                            where_list.append(f"toInteger({node_label}.{parameter.key}){operator}{parameter.value}")
+                            where_list.append(f"toFloat({node_label}.{parameter.key}){operator}{parameter.value}")
             if node.label is not None:
                 statement += f":`{node.label}`"
             statement += ")"
