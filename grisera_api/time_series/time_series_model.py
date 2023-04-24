@@ -128,15 +128,17 @@ class TimeSeriesIn(TimeSeriesPropertyIn, TimeSeriesRelationIn):
     """
 
 
-class BasicTimeSeriesOut(TimeSeriesPropertyIn):
+class BasicTimeSeriesOut(TimeSeriesPropertyIn, BaseModelOut):
     """
     Basic model of time series
 
     Attributes:
     id (Optional[Union[int, str]]): Id of time series returned from api
+    signal_values (list): list of signals
     """
 
     id: Optional[Union[int, str]]
+    signal_values: list = []
 
 
 class TimeSeriesOut(BasicTimeSeriesOut, BaseModelOut):

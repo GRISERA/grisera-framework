@@ -40,7 +40,7 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
              "name": "hasMeasure", "id": 0,
              "properties": None}]}
         additional_properties = [PropertyIn(key='test', value='test2')]
-        time_series = TimeSeriesOut(id=1, type="Timestamp", source="cos",
+        time_series = BasicTimeSeriesOut(id=1, type="Timestamp", source="cos",
                                     signal_values=[
                                         {
                                             'signal_value': {'labels': ['Signal Value'], 'id': 2,
@@ -72,7 +72,7 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
 
         self.assertEqual(time_series, result)
         get_node_mock.assert_called_once_with(id_node)
-        get_node_relationships_mock.assert_called_once_with(id_node)
+        get_node_relationships_mock.assert_not_called()
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_time_series_with_error(self, get_node_mock):
