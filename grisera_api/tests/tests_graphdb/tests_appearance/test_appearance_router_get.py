@@ -21,7 +21,7 @@ class TestAppearanceRouterGet(unittest.TestCase):
 
         self.assertEqual(result, AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy",
                                                         id=appearance_id, links=get_links(router)))
-        get_appearance_mock.assert_called_once_with(appearance_id)
+        get_appearance_mock.assert_called_once_with(appearance_id, 0)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(AppearanceServiceGraphDB, 'get_appearance')
@@ -37,7 +37,7 @@ class TestAppearanceRouterGet(unittest.TestCase):
         self.assertEqual(result, AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy",
                                                         errors={'errors': ['test']},
                                                         links=get_links(router)))
-        get_appearance_mock.assert_called_once_with(appearance_id)
+        get_appearance_mock.assert_called_once_with(appearance_id, 0)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(AppearanceServiceGraphDB, 'get_appearances')

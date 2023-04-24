@@ -16,32 +16,17 @@ class TestRecordingServicePut(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'create_properties')
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'delete_node_properties')
-    @mock.patch.object(GraphApiService, 'get_node_relationships')
-    def test_update_recording_without_error(self, get_node_relationships_mock, delete_node_properties_mock,
+    def test_update_recording_without_error(self, delete_node_properties_mock,
                                             get_node_mock, create_properties_mock):
         id_node = 1
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
-        get_node_relationships_mock.return_value = {"relationships": [
-            {"start_node": id_node, "end_node": 19,
-             "name": "hasRegisteredChannel", "id": 0,
-             "properties": None},
-            {"start_node": id_node, "end_node": 15,
-             "name": "hasParticipation", "id": 0,
-             "properties": None},
-            {"start_node": 16, "end_node": id_node,
-             "name": "hasRecording", "id": 0,
-             "properties": None}
-        ]}
         get_node_mock.return_value = {'id': id_node, 'labels': ['Recording'],
                                       'properties': [{'key': 'identifier', 'value': 5}],
                                       "errors": None, 'links': None}
         additional_properties = [PropertyIn(key='identifier', value=5)]
         recording_in = RecordingPropertyIn(id=id_node, additional_properties=additional_properties)
-        recording_out = RecordingOut(additional_properties=[], id=id_node,
-                                     registered_channel=BasicRegisteredChannelOut(**{id: 19}),
-                                     participation=BasicParticipationOut(**{id: 15}),
-                                     observable_informations=[BasicObservableInformationOut(**{id: 16})])
+        recording_out = BasicRecordingOut(additional_properties=additional_properties, id=id_node)
         calls = [mock.call(1)]
         recording_service = RecordingServiceGraphDB()
 
@@ -50,7 +35,6 @@ class TestRecordingServicePut(unittest.TestCase):
         self.assertEqual(result, recording_out)
         get_node_mock.assert_has_calls(calls)
         create_properties_mock.assert_called_once_with(id_node, recording_in)
-        get_node_relationships_mock.assert_called_once_with(id_node)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_recording_without_participant_label(self, get_node_mock):

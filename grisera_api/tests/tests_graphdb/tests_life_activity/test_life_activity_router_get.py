@@ -18,7 +18,7 @@ class TestLifeActivityRouterGet(unittest.TestCase):
         result = asyncio.run(life_activity_router.get_life_activity(life_activity_id, response))
 
         self.assertEqual(result, LifeActivityOut(life_activity='url', id=life_activity_id, links=get_links(router)))
-        get_life_activity_mock.assert_called_once_with(life_activity_id)
+        get_life_activity_mock.assert_called_once_with(life_activity_id, 0)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(LifeActivityServiceGraphDB, 'get_life_activity')
@@ -32,7 +32,7 @@ class TestLifeActivityRouterGet(unittest.TestCase):
 
         self.assertEqual(result, LifeActivityOut(life_activity='url', errors={'errors': ['test']},
                                                  links=get_links(router)))
-        get_life_activity_mock.assert_called_once_with(life_activity_id)
+        get_life_activity_mock.assert_called_once_with(life_activity_id, 0)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(LifeActivityServiceGraphDB, 'get_life_activities')

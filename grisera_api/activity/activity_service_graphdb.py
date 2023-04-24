@@ -16,8 +16,8 @@ class ActivityServiceGraphDB(ActivityService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, activity_execution_service):
-        self.activity_execution_service = activity_execution_service()
+    def __init__(self):
+        self.activity_execution_service = None
 
     def save_activity(self, activity: ActivityIn):
         """
@@ -74,14 +74,14 @@ class ActivityServiceGraphDB(ActivityService):
         if get_response["labels"][0] != "Activity":
             return NotFoundByIdModel(id=activity_id, errors="Node not found.")
 
-        activity = create_stub_from_response(get_response)
+        activity = create_stub_from_response(get_response, properties=['activity'])
 
         if depth != 0:
             activity['activity_executions'] = []
             relations_response = self.graph_api_service.get_node_relationships(activity_id)
 
             for relation in relations_response["relationships"]:
-                if relation["end_node"] == activity_id & relation["name"] == "hasActivity":
+                if relation["end_node"] == str(activity_id) and relation["name"] == "hasActivity":
                     activity['activity_executions']. \
                         append(
                         self.activity_execution_service.get_activity_execution(relation["start_node"], depth - 1))

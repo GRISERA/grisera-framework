@@ -22,14 +22,14 @@ class TestArrangementRouterGet(unittest.TestCase):
         self.assertEqual(result, ArrangementOut(arrangement_type='personal two persons',
                                                 arrangement_distance='intimate zone', id=arrangement_id,
                                                 links=get_links(router)))
-        get_arrangement_mock.assert_called_once_with(arrangement_id)
+        get_arrangement_mock.assert_called_once_with(arrangement_id, 0)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(ArrangementServiceGraphDB, 'get_arrangement')
     def test_get_arrangement_with_error(self, get_arrangement_mock):
         get_arrangement_mock.return_value = ArrangementOut(arrangement_type='personal two persons',
-                                                           arrangement_distance='intimate zone',
-                                                           errors={'errors': ['test']})
+                                                                arrangement_distance='intimate zone',
+                                                                errors={'errors': ['test']})
         response = Response()
         arrangement_id = 1
         arrangement_router = ArrangementRouter()
@@ -39,7 +39,7 @@ class TestArrangementRouterGet(unittest.TestCase):
         self.assertEqual(result, ArrangementOut(arrangement_type='personal two persons',
                                                 arrangement_distance='intimate zone', errors={'errors': ['test']},
                                                 links=get_links(router)))
-        get_arrangement_mock.assert_called_once_with(arrangement_id)
+        get_arrangement_mock.assert_called_once_with(arrangement_id, 0)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(ArrangementServiceGraphDB, 'get_arrangements')

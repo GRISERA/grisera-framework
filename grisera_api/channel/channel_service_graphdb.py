@@ -16,8 +16,8 @@ class ChannelServiceGraphDB(ChannelService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, registered_channel_service):
-        self.registered_channel_service = registered_channel_service()
+    def __init__(self):
+        self.registered_channel_service = None
 
     def save_channel(self, channel: ChannelIn):
         """
@@ -74,7 +74,7 @@ class ChannelServiceGraphDB(ChannelService):
         if get_response["labels"][0] != "Channel":
             return NotFoundByIdModel(id=channel_id, errors="Node not found.")
 
-        channel = create_stub_from_response(get_response)
+        channel = create_stub_from_response(get_response, properties = ['type'])
 
         if depth != 0:
             channel["registered_channels"] = []

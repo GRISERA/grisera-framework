@@ -62,7 +62,7 @@ class RecordingRouter:
         response_model=Union[RecordingOut, NotFoundByIdModel],
     )
     async def get_recording(
-        self, recording_id: Union[int, str], depth: int, response: Response
+        self, recording_id: Union[int, str], response: Response, depth: int=0
     ):
         """
         Get recordings from database. Depth attribute specifies how many models will be traversed to create the

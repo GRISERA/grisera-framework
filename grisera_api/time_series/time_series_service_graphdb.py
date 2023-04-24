@@ -21,9 +21,9 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, measure_service, observable_information_service):
-        self.measure_service = measure_service()
-        self.observable_information_service = observable_information_service()
+    def __init__(self):
+        self.measure_service = None
+        self.observable_information_service = None
 
     def save_time_series(self, time_series: TimeSeriesIn):
         """
@@ -35,7 +35,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         Returns:
             Result of request as time series object
         """
-        node_response = self.graph_api_service.create_node("`Time Series`")
+        node_response = self.graph_api_service.create_node("Time Series")
 
         if node_response["errors"] is not None:
             return TimeSeriesOut(**time_series.dict(), errors=node_response["errors"])
@@ -104,7 +104,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         if get_response["labels"][0] != "Time Series":
             return NotFoundByIdModel(id=time_series_id, errors="Node not found.")
 
-        time_series = create_stub_from_response(get_response)
+        time_series = create_stub_from_response(get_response, properties=['type', 'source'])
 
         if depth != 0:
             time_series["observable_informations"] = []
@@ -163,11 +163,13 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         self.graph_api_service.delete_node_properties(time_series_id)
         self.graph_api_service.create_properties(time_series_id, time_series)
 
-        time_series_result = {"id": time_series_id, "measure": get_response.measure,
-                              "observable_informations": get_response.observable_informations}
+        time_series_result = {"id": time_series_id, "type": get_response.type,
+                              'signal_values': get_response.signal_values,
+                              'source': get_response.source,
+                              'additional_properties': get_response.additional_properties}
         time_series_result.update(time_series.dict())
 
-        return TimeSeriesOut(**time_series_result)
+        return BasicTimeSeriesOut(**time_series_result)
 
     def update_time_series_relationships(self, time_series_id: Union[int, str],
                                          time_series: TimeSeriesRelationIn):

@@ -29,7 +29,7 @@ class ChannelRouter:
         response_model=Union[ChannelOut, NotFoundByIdModel],
     )
     async def get_channel(
-        self, channel_id: Union[int, str], depth: int, response: Response
+        self, channel_id: Union[int, str], response: Response, depth: int = 0,
     ):
         """
         Get channel from database. Depth attribute specifies how many models will be traversed to create the response.

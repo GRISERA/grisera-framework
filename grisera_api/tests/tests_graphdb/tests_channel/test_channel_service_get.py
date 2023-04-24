@@ -11,25 +11,40 @@ from registered_channel.registered_channel_model import BasicRegisteredChannelOu
 class TestChannelServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_node')
-    @mock.patch.object(GraphApiService, 'get_node_relationships')
-    def test_get_channel_without_error(self, get_node_relationships_mock, get_node_mock):
+    def test_get_channel_without_error(self, get_node_mock):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Channel'],
                                       'properties': [{'key': 'type', 'value': 'test'},
                                                      {'key': 'test', 'value': 'test'}],
                                       "errors": None, 'links': None}
-        get_node_relationships_mock.return_value = {"relationships": [
-            {"start_node": 19, "end_node": id_node,
-             "name": "hasChannel", "id": 0,
-             "properties": None}]}
-        channel = ChannelOut(type="test", id=id_node, registered_channels=[BasicRegisteredChannelOut(**{id: 19})])
+        channel = BasicChannelOut(type="test", id=id_node)
         channel_service = ChannelServiceGraphDB()
 
         result = channel_service.get_channel(id_node)
 
         self.assertEqual(result, channel)
         get_node_mock.assert_called_once_with(id_node)
-        get_node_relationships_mock.assert_called_once_with(id_node)
+
+        # @mock.patch.object(GraphApiService, 'get_node')
+        # @mock.patch.object(GraphApiService, 'get_node_relationships')
+        # def test_get_channel_without_error(self, get_node_relationships_mock, get_node_mock):
+        #     id_node = 1
+        #     get_node_mock.return_value = {'id': id_node, 'labels': ['Channel'],
+        #                                   'properties': [{'key': 'type', 'value': 'test'},
+        #                                                  {'key': 'test', 'value': 'test'}],
+        #                                   "errors": None, 'links': None}
+        #     get_node_relationships_mock.return_value = {"relationships": [
+        #         {"start_node": 19, "end_node": id_node,
+        #          "name": "hasChannel", "id": 0,
+        #          "properties": None}]}
+        #     channel = ChannelOut(type="test", id=id_node, registered_channels=[BasicRegisteredChannelOut(**{id: 19})])
+        #     channel_service = ChannelServiceGraphDB()
+        #
+        #     result = channel_service.get_channel(id_node)
+        #
+        #     self.assertEqual(result, channel)
+        #     get_node_mock.assert_called_once_with(id_node)
+        #     get_node_relationships_mock.assert_called_once_with(id_node)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_channel_without_participant_label(self, get_node_mock):

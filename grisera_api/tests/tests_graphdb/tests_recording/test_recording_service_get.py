@@ -14,34 +14,18 @@ from registered_channel.registered_channel_model import BasicRegisteredChannelOu
 class TestRecordingServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_node')
-    @mock.patch.object(GraphApiService, 'get_node_relationships')
-    def test_get_recording_without_error(self, get_node_relationships_mock, get_node_mock):
+    def test_get_recording_without_error(self, get_node_mock):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Recording'],
                                       'properties': [],
                                       "errors": None, 'links': None}
-        get_node_relationships_mock.return_value = {"relationships": [
-            {"start_node": id_node, "end_node": 19,
-             "name": "hasRegisteredChannel", "id": 0,
-             "properties": None},
-            {"start_node": id_node, "end_node": 15,
-             "name": "hasParticipation", "id": 0,
-             "properties": None},
-            {"start_node": 16, "end_node": id_node,
-             "name": "hasRecording", "id": 0,
-             "properties": None}
-        ]}
-        recording = RecordingOut(additional_properties=[], id=id_node,
-                                 registered_channel=BasicRegisteredChannelOut(**{id: 19}),
-                                 participation=BasicParticipationOut(**{id: 15}),
-                                 observable_informations=[BasicObservableInformationOut(**{id: 16})])
+        recording = BasicRecordingOut(additional_properties=[], id=id_node)
         recording_service = RecordingServiceGraphDB()
 
         result = recording_service.get_recording(id_node)
 
         self.assertEqual(result, recording)
         get_node_mock.assert_called_once_with(id_node)
-        get_node_relationships_mock.assert_called_once_with(id_node)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_recording_without_label(self, get_node_mock):

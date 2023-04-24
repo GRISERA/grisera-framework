@@ -17,8 +17,8 @@ class AppearanceServiceGraphDB(AppearanceService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, participant_state_service):
-        self.participant_state_service = participant_state_service()
+    def __init__(self):
+        self.participant_state_service = None
 
     def save_appearance_occlusion(self, appearance: AppearanceOcclusionIn):
         """
@@ -97,7 +97,7 @@ class AppearanceServiceGraphDB(AppearanceService):
         if get_response["labels"][0] != "Appearance":
             return NotFoundByIdModel(id=appearance_id, errors="Node not found.")
 
-        appearance = create_stub_from_response(get_response)
+        appearance = create_stub_from_response(get_response, properties=['ectomorph', 'endomorph', 'mesomorph', 'glasses', 'moustache', 'beard'] )
 
         if depth != 0:
             appearance["participant_states"] = []

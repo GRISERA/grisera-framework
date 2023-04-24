@@ -16,8 +16,8 @@ class ParticipantServiceGraphDB(ParticipantService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, participant_state_service):
-        self.participant_state_service = participant_state_service()
+    def __init__(self):
+        self.participant_state_service = None
 
     def save_participant(self, participant: ParticipantIn):
         """
@@ -82,7 +82,7 @@ class ParticipantServiceGraphDB(ParticipantService):
         if get_response["labels"][0] != "Participant":
             return NotFoundByIdModel(id=participant_id, errors="Node not found.")
 
-        participant = create_stub_from_response(get_response)
+        participant = create_stub_from_response(get_response, properties=['name', 'date_of_birth', 'sex', 'disorder'])
 
         if depth != 0:
             participant["participant_states"] = []
@@ -138,7 +138,7 @@ class ParticipantServiceGraphDB(ParticipantService):
         self.graph_api_service.delete_node_properties(participant_id)
         self.graph_api_service.create_properties(participant_id, participant)
 
-        participant_result = {"id": participant_id, 'participant_states': get_response.participant_states}
+        participant_result = {"id": participant_id}
         participant_result.update(participant.dict())
 
-        return ParticipantOut(**participant_result)
+        return BasicParticipantOut(**participant_result)

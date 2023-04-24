@@ -19,10 +19,10 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, channel_service, registered_data_service, recording_service):
-        self.channel_service = channel_service()
-        self.registered_data_service = registered_data_service()
-        self.recording_service = recording_service()
+    def __init__(self):
+        self.channel_service = None
+        self.registered_data_service = None
+        self.recording_service = None
 
     def save_registered_channel(self, registered_channel: RegisteredChannelIn):
         """
@@ -34,7 +34,7 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
         Returns:
             Result of request as registered channel object
         """
-        node_response = self.graph_api_service.create_node("`Registered Channel`")
+        node_response = self.graph_api_service.create_node("Registered Channel")
 
         if node_response["errors"] is not None:
             return RegisteredChannelOut(errors=node_response["errors"])
@@ -149,6 +149,7 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
         Returns:
             Result of request as registered channel object
         """
+        get_response: RegisteredChannelOut
         get_response = self.get_registered_channel(registered_channel_id)
 
         if type(get_response) is NotFoundByIdModel:

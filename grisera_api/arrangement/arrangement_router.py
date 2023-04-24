@@ -32,7 +32,7 @@ class ArrangementRouter:
         response_model=Union[ArrangementOut, NotFoundByIdModel],
     )
     async def get_arrangement(
-        self, arrangement_id: Union[int, str], depth: int, response: Response
+        self, arrangement_id: Union[int, str], response: Response, depth: int = 0
     ):
         """
         Get arrangement from database. Depth attribute specifies how many models will be traversed to create the

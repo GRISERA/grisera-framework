@@ -42,7 +42,7 @@ class ExperimentRouter:
         response_model=Union[ExperimentOut, NotFoundByIdModel],
     )
     async def get_experiment(
-        self, experiment_id: Union[int, str], depth: int, response: Response
+        self, experiment_id: Union[int, str], response: Response, depth: int = 0
     ):
         """
         Get experiment from database. Depth attribute specifies how many models will be traversed to create the

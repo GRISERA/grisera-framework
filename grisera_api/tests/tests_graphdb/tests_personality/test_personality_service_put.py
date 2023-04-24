@@ -32,9 +32,8 @@ class TestPersonalityServicePut(unittest.TestCase):
              "properties": None}]}
         personality_in = PersonalityBigFiveIn(agreeableness=0.5, conscientiousness=0.5, extroversion=0.5,
                                               neuroticism=0.5, openess=0.5)
-        personality_out = PersonalityBigFiveOut(agreeableness=0.5, conscientiousness=0.5, extroversion=0.5,
-                                                neuroticism=0.5, openess=0.5, id=id_node,
-                                                participant_states=[BasicParticipantStateOut(**{id: 19})])
+        personality_out = BasicPersonalityBigFiveOut(agreeableness=0.5, conscientiousness=0.5, extroversion=0.5,
+                                                     neuroticism=0.5, openess=0.5, id=id_node)
         personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.update_personality_big_five(id_node, personality_in)
@@ -59,8 +58,7 @@ class TestPersonalityServicePut(unittest.TestCase):
              "name": "hasPersonality", "id": 0,
              "properties": None}]}
         personality_in = PersonalityPanasIn(negative_affect=0.5, positive_affect=0.5)
-        personality_out = PersonalityPanasOut(negative_affect=0.5, positive_affect=0.5, id=id_node,
-                                              participant_states=[BasicParticipantStateOut(**{id: 19})])
+        personality_out = BasicPersonalityPanasOut(negative_affect=0.5, positive_affect=0.5, id=id_node)
         personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.update_personality_panas(id_node, personality_in)
@@ -150,8 +148,8 @@ class TestPersonalityServicePut(unittest.TestCase):
         personality_in = PersonalityBigFiveIn(agreeableness=2.5, conscientiousness=2.5, extroversion=2.5,
                                               neuroticism=2.5,
                                               openess=2.5)
-        personality_out = PersonalityBigFiveOut(agreeableness=2.5, conscientiousness=2.5, extroversion=2.5,
-                                                neuroticism=2.5, openess=2.5, errors="Value not between 0 and 1")
+        personality_out = BasicPersonalityBigFiveOut(agreeableness=2.5, conscientiousness=2.5, extroversion=2.5,
+                                                     neuroticism=2.5, openess=2.5, errors="Value not between 0 and 1")
         personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.update_personality_big_five(id_node, personality_in)

@@ -62,7 +62,7 @@ class MeasureRouter:
         response_model=Union[MeasureOut, NotFoundByIdModel],
     )
     async def get_measure(
-        self, measure_id: Union[int, str], depth: int, response: Response
+        self, measure_id: Union[int, str], response: Response, depth: int = 0
     ):
         """
         Get measure from database. Depth attribute specifies how many models will be traversed to create the response.

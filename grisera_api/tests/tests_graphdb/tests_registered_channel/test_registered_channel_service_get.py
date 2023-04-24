@@ -13,34 +13,48 @@ from registered_data.registered_data_model import BasicRegisteredDataOut
 class TestRegisteredChannelServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_node')
-    @mock.patch.object(GraphApiService, 'get_node_relationships')
-    def test_get_registered_channel_without_error(self, get_node_relationships_mock, get_node_mock):
+    def test_get_registered_channel_without_error(self, get_node_mock):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Channel'],
                                       'properties': [],
                                       "errors": None, 'links': None}
-        get_node_relationships_mock.return_value = {"relationships": [
-            {"start_node": 19, "end_node": id_node,
-             "name": "hasRegisteredChannel", "id": 0,
-             "properties": None},
-            {"start_node": id_node, "end_node": 15,
-             "name": "hasChannel", "id": 0,
-             "properties": None},
-            {"start_node": id_node, "end_node": 16,
-             "name": "hasRegisteredData", "id": 0,
-             "properties": None},
-        ]}
-        registered_channel = RegisteredChannelOut(age=5, id=id_node, additional_properties=[],
-                                                  recordings=[BasicRecordingOut(**{id: 19})],
-                                                  channel=BasicChannelOut(**{id: 15}),
-                                                  registeredData=BasicRegisteredDataOut(**{id: 16}))
+        registered_channel = BasicRegisteredChannelOut(age=5, id=id_node, additional_properties=[])
         registered_channel_service = RegisteredChannelServiceGraphDB()
 
         result = registered_channel_service.get_registered_channel(id_node)
 
         self.assertEqual(result, registered_channel)
         get_node_mock.assert_called_once_with(id_node)
-        get_node_relationships_mock.assert_called_once_with(id_node)
+
+    # @mock.patch.object(GraphApiService, 'get_node')
+    # @mock.patch.object(GraphApiService, 'get_node_relationships')
+    # def test_get_registered_channel_without_error(self, get_node_relationships_mock, get_node_mock):
+    #     id_node = 1
+    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Channel'],
+    #                                   'properties': [],
+    #                                   "errors": None, 'links': None}
+    #     get_node_relationships_mock.return_value = {"relationships": [
+    #         {"start_node": 19, "end_node": id_node,
+    #          "name": "hasRegisteredChannel", "id": 0,
+    #          "properties": None},
+    #         {"start_node": id_node, "end_node": 15,
+    #          "name": "hasChannel", "id": 0,
+    #          "properties": None},
+    #         {"start_node": id_node, "end_node": 16,
+    #          "name": "hasRegisteredData", "id": 0,
+    #          "properties": None},
+    #     ]}
+    #     registered_channel = RegisteredChannelOut(age=5, id=id_node, additional_properties=[],
+    #                                               recordings=[BasicRecordingOut(**{id: 19})],
+    #                                               channel=BasicChannelOut(**{id: 15}),
+    #                                               registeredData=BasicRegisteredDataOut(**{id: 16}))
+    #     registered_channel_service = RegisteredChannelServiceGraphDB()
+    #
+    #     result = registered_channel_service.get_registered_channel(id_node)
+    #
+    #     self.assertEqual(result, registered_channel)
+    #     get_node_mock.assert_called_once_with(id_node)
+    #     get_node_relationships_mock.assert_called_once_with(id_node)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_registered_channel_without_label(self, get_node_mock):

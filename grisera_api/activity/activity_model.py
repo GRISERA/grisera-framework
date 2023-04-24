@@ -15,6 +15,7 @@ class Activity(str, Enum):
     individual (str): Individual activity
     two_people (str): Two people activity
     group (str): Group activity
+
     """
 
     individual = "individual"
@@ -22,17 +23,24 @@ class Activity(str, Enum):
     group = "group"
 
 
-class ActivityIn(BaseModel):
+class ActivityPropertyIn(BaseModel):
     """
-    Model of activity
+        Model of activity execution to acquire from client
 
-    Attributes:
-    activity (str): Type of activity
-    additional_properties (Optional[List[PropertyIn]]): Additional properties for activity
-    """
+        Attributes:
+        activity (str): Type of activity
+        additional_properties (Optional[List[PropertyIn]]): Additional properties for activity
+        """
 
     activity: str
     additional_properties: Optional[List[PropertyIn]]
+
+
+class ActivityIn(ActivityPropertyIn):
+    """
+    Model of activity
+
+    """
 
 
 class BasicActivityOut(ActivityIn):

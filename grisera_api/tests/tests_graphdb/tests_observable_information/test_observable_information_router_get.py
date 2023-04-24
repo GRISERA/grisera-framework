@@ -21,7 +21,7 @@ class TestObservableInformationRouterGet(unittest.TestCase):
                                                                                       response))
 
         self.assertEqual(result, ObservableInformationOut(id=observable_information_id, links=get_links(router)))
-        get_observable_information_mock.assert_called_once_with(observable_information_id)
+        get_observable_information_mock.assert_called_once_with(observable_information_id, 0)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(ObservableInformationServiceGraphDB, 'get_observable_information')
@@ -36,7 +36,7 @@ class TestObservableInformationRouterGet(unittest.TestCase):
 
         self.assertEqual(result, ObservableInformationOut(errors={'errors': ['test']},
                                                           links=get_links(router)))
-        get_observable_information_mock.assert_called_once_with(observable_information_id)
+        get_observable_information_mock.assert_called_once_with(observable_information_id, 0)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(ObservableInformationServiceGraphDB, 'get_observable_informations')

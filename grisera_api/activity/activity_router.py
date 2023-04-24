@@ -30,12 +30,12 @@ class ActivityRouter:
         response_model=Union[ActivityOut, NotFoundByIdModel],
     )
     async def get_activity(
-        self, activity_id: Union[int, str], depth: int, response: Response
+        self, activity_id: Union[int, str], response: Response, depth: int = 0,
     ):
         """
         Get activity from database. Depth attribute specifies how many models will be traversed to create the response.
         """
-        get_response = self.activity_service.get_activity(activity_id, depth)
+        get_response = self.activity_service.get_activity(activity_id)
         if get_response.errors is not None:
             response.status_code = 404
 

@@ -32,7 +32,7 @@ class LifeActivityRouter:
         response_model=Union[LifeActivityOut, NotFoundByIdModel],
     )
     async def get_life_activity(
-        self, life_activity_id: Union[int, str], depth: int, response: Response
+        self, life_activity_id: Union[int, str], response: Response, depth: int = 0
     ):
         """
         Get life activity from database. Depth attribute specifies how many models will be traversed to create the

@@ -16,8 +16,8 @@ class ExperimentServiceGraphDB(ExperimentService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, activity_execution_service):
-        self.activity_execution_service = activity_execution_service()
+    def __init__(self):
+        self.activity_execution_service = None
 
     def save_experiment(self, experiment: ExperimentIn):
         """
@@ -83,7 +83,7 @@ class ExperimentServiceGraphDB(ExperimentService):
         if get_response["labels"][0] != "Experiment":
             return NotFoundByIdModel(id=experiment_id, errors="Node not found.")
 
-        experiment = create_stub_from_response(get_response)
+        experiment = create_stub_from_response(get_response, properties = ['experiment_name'])
 
         if depth != 0:
             experiment["activity_executions"] = []
@@ -136,7 +136,7 @@ class ExperimentServiceGraphDB(ExperimentService):
         self.graph_api_service.delete_node_properties(experiment_id)
         self.graph_api_service.create_properties(experiment_id, experiment)
 
-        experiment_result = {'id': experiment_id, 'activity_executions': get_response.activity_executions}
+        experiment_result = {'id': experiment_id}
         experiment_result.update(experiment.dict())
 
-        return ExperimentOut(**experiment_result)
+        return BasicExperimentOut(**experiment_result)

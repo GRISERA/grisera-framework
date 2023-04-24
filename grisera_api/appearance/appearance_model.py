@@ -47,7 +47,7 @@ class AppearanceOcclusionOut(BasicAppearanceOcclusionOut, BaseModelOut):
             personality
     """
 
-    participant_states: "Optional[List[ParticipantStateOut]]" = None
+    participant_states: "Optional[List[ParticipantStateOut]]"
 
 
 class AppearanceSomatotypeIn(BaseModel):

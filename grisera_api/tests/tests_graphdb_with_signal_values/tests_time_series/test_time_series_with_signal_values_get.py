@@ -64,8 +64,8 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
                                         }
                                     ],
                                     additional_properties=additional_properties,
-                                    observable_informations=[BasicObservableInformationOut(**{id: 19})],
-                                    measure=BasicMeasureOut(**{id: 15}))
+                                    observable_informations=[BasicObservableInformationOut(**{'id': 19})],
+                                    measure=BasicMeasureOut(id=15, datatype='float', range='<0,1>', unit='cm'))
         time_series_service = TimeSeriesServiceGraphDBWithSignalValues()
 
         result = time_series_service.get_time_series(id_node)

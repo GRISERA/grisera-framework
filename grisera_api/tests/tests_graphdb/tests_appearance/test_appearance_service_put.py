@@ -27,10 +27,8 @@ class TestAppearanceServicePut(unittest.TestCase):
             {"start_node": 19, "end_node": id_node,
              "name": "hasAppearance", "id": 0,
              "properties": None}]}
-        appearance_in = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="None")
-        appearance_out = AppearanceOcclusionOut(id=id_node, glasses=True, beard="Heavy", moustache="Heavy",
-                                            participant_states=[
-                                                BasicParticipantStateOut(**{id: 19})])
+        appearance_in = AppearanceOcclusionIn(glasses=True, beard="Heavy", moustache="Heavy")
+        appearance_out = AppearanceOcclusionOut(id=id_node, glasses=True, beard="Heavy", moustache="Heavy")
         appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.update_appearance_occlusion(id_node, appearance_in)
@@ -41,32 +39,17 @@ class TestAppearanceServicePut(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'create_properties')
     @mock.patch.object(GraphApiService, 'get_node')
-    @mock.patch.object(GraphApiService, 'get_node_relationships')
-    def test_update_appearance_somatotype_without_error(self, get_node_relationships_mock, get_node_mock,
+    def test_update_appearance_somatotype_without_error(self, get_node_mock,
                                                         create_properties_mock):
         id_node = 1
         create_properties_mock.return_value = {}
         get_node_mock.return_value = {'id': id_node, 'labels': ['Appearance'],
                                       'properties': [{'key': 'ectomorph', 'value': 1.5},
                                                      {'key': 'endomorph', 'value': 1.5},
-                                                     {'key': 'mesomorph', 'value': 1.5}],
+                                                     {'key': 'mesomorph', 'value': 1.6}],
                                       'errors': None, 'links': None}
-        get_node_relationships_mock.return_value = {"relationships": [
-                                                    {"start_node": id_node, "end_node": 19,
-                                                     "name": "testRelation", "id": 0,
-                                                     "properties": None},
-                                                    {"start_node": 15, "end_node": id_node,
-                                                     "name": "testReversedRelation", "id": 0,
-                                                     "properties": None}]}
         appearance_in = AppearanceSomatotypeIn(ectomorph=1.5, endomorph=1.5, mesomorph=1.5)
-        appearance_out = AppearanceSomatotypeOut(id=id_node, ectomorph=1.5, endomorph=1.5, mesomorph=1.5,
-                                                 relations=[
-                                                     RelationInformation(second_node_id=19, name="testRelation",
-                                                                         relation_id=0)],
-                                                 reversed_relations=[
-                                                     RelationInformation(second_node_id=15, name="testReversedRelation",
-                                                                         relation_id=0)]
-                                                 )
+        appearance_out = AppearanceSomatotypeOut(id=id_node, ectomorph=1.5, endomorph=1.5, mesomorph=1.5)
         appearance_service = AppearanceServiceGraphDB()
 
         result = appearance_service.update_appearance_somatotype(id_node, appearance_in)

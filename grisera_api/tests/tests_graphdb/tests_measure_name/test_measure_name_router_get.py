@@ -20,7 +20,7 @@ class TestMeasureNameRouterGet(unittest.TestCase):
 
         self.assertEqual(result, MeasureNameOut(name="Familiarity", type="Additional emotions measure",
                                                 id=measure_name_id, links=get_links(router)))
-        get_measure_name_mock.assert_called_once_with(measure_name_id)
+        get_measure_name_mock.assert_called_once_with(measure_name_id, 0)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(MeasureNameServiceGraphDB, 'get_measure_name')
@@ -35,7 +35,7 @@ class TestMeasureNameRouterGet(unittest.TestCase):
 
         self.assertEqual(result, MeasureNameOut(name="Familiarity", type="Additional emotions measure",
                                                 errors={'errors': ['test']},  links=get_links(router)))
-        get_measure_name_mock.assert_called_once_with(measure_name_id)
+        get_measure_name_mock.assert_called_once_with(measure_name_id, 0)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(MeasureNameServiceGraphDB, 'get_measure_names')

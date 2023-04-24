@@ -53,7 +53,7 @@ class RegisteredDataRouter:
         response_model=Union[RegisteredDataOut, NotFoundByIdModel],
     )
     async def get_registered_data(
-        self, registered_data_id: Union[int, str], depth: int, response: Response
+        self, registered_data_id: Union[int, str], response: Response, depth: int = 0
     ):
         """
         Get registered data from database. Depth attribute specifies how many models will be traversed to create the

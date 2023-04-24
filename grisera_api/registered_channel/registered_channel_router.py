@@ -73,7 +73,7 @@ class RegisteredChannelRouter:
         response_model=Union[RegisteredChannelOut, NotFoundByIdModel],
     )
     async def get_registered_channel(
-        self, registered_channel_id: Union[int, str], depth: int, response: Response
+        self, registered_channel_id: Union[int, str], response: Response, depth: int = 0,
     ):
         """
         Get registered channels from database. Depth attribute specifies how many models will be traversed to create the

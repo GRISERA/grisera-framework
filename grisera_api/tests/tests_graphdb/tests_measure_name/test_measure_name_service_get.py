@@ -12,26 +12,41 @@ from graph_api_service import GraphApiService
 class TestMeasureNameServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_node')
-    @mock.patch.object(GraphApiService, 'get_node_relationships')
-    def test_get_measure_name_without_error(self, get_node_relationships_mock, get_node_mock):
+    def test_get_measure_name_without_error(self, get_node_mock):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Measure Name'],
                                       'properties': [{'key': 'name', 'value': 'Familiarity'},
                                                      {'key': 'type', 'value': 'Additional emotions measure'}],
                                       "errors": None, 'links': None}
-        get_node_relationships_mock.return_value = {"relationships": [
-            {"start_node": id_node, "end_node": 19,
-             "name": "hasMeasureName", "id": 0,
-             "properties": None}]}
-        measure_name = MeasureNameOut(name="Familiarity", type="Additional emotions measure", id=id_node,
-                                      measures=[BasicMeasureOut(**{id: 19})])
+        measure_name = BasicMeasureNameOut(name="Familiarity", type="Additional emotions measure", id=id_node)
         measure_name_service = MeasureNameServiceGraphDB()
 
         result = measure_name_service.get_measure_name(id_node)
 
         self.assertEqual(result, measure_name)
         get_node_mock.assert_called_once_with(id_node)
-        get_node_relationships_mock.assert_called_once_with(id_node)
+
+    # @mock.patch.object(GraphApiService, 'get_node')
+    # @mock.patch.object(GraphApiService, 'get_node_relationships')
+    # def test_get_measure_name_without_error(self, get_node_relationships_mock, get_node_mock):
+    #     id_node = 1
+    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Measure Name'],
+    #                                   'properties': [{'key': 'name', 'value': 'Familiarity'},
+    #                                                  {'key': 'type', 'value': 'Additional emotions measure'}],
+    #                                   "errors": None, 'links': None}
+    #     get_node_relationships_mock.return_value = {"relationships": [
+    #         {"start_node": id_node, "end_node": 19,
+    #          "name": "hasMeasureName", "id": 0,
+    #          "properties": None}]}
+    #     measure_name = MeasureNameOut(name="Familiarity", type="Additional emotions measure", id=id_node,
+    #                                   measures=[BasicMeasureOut(**{id: 19})])
+    #     measure_name_service = MeasureNameServiceGraphDB()
+    #
+    #     result = measure_name_service.get_measure_name(id_node)
+    #
+    #     self.assertEqual(result, measure_name)
+    #     get_node_mock.assert_called_once_with(id_node)
+    #     get_node_relationships_mock.assert_called_once_with(id_node)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_measure_name_without_participant_label(self, get_node_mock):

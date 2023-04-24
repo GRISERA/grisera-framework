@@ -32,7 +32,7 @@ class MeasureNameRouter:
         response_model=Union[MeasureNameOut, NotFoundByIdModel],
     )
     async def get_measure_name(
-        self, measure_name_id: Union[int, str], depth: int, response: Response
+        self, measure_name_id: Union[int, str], response: Response, depth: int = 0
     ):
         """
         Get measure name from database. Depth attribute specifies how many models will be traversed to create the

@@ -1,5 +1,6 @@
 from typing import Union
 
+from experiment.experiment_model import ExperimentOut
 from graph_api_service import GraphApiService
 from scenario.scenario_model import ScenarioIn, ScenarioOut, OrderChangeIn, OrderChangeOut
 from activity_execution.activity_execution_model import ActivityExecutionOut, PropertyIn, ActivityExecutionIn
@@ -18,9 +19,9 @@ class ScenarioServiceGraphDB(ScenarioService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, activity_execution_service, experiment_service):
-        self.activity_execution_service = activity_execution_service()
-        self.experiment_service = experiment_service()
+    def __init__(self):
+        self.activity_execution_service = None
+        self.experiment_service = None
 
     def save_scenario(self, scenario: ScenarioIn):
         """
@@ -41,7 +42,9 @@ class ScenarioServiceGraphDB(ScenarioService):
                                                      'nextActivityExecution')
          for index in range(1, len(activity_executions))]
 
-        return ScenarioOut(experiment_id=scenario.experiment_id, activity_executions=activity_executions)
+        exp = self.experiment_service.get_experiment(id=scenario.experiment_id)
+
+        return ScenarioOut(experiment=exp, activity_executions=activity_executions)
 
     def add_activity_execution(self, previous_id: Union[int, str], activity_execution: ActivityExecutionIn):
         """

@@ -92,7 +92,7 @@ class AppearanceRouter:
         ],
     )
     async def get_appearance(
-        self, appearance_id: Union[int, str], depth: int, response: Response
+        self, appearance_id: Union[int, str], response: Response, depth: int = 0
     ):
         """
         Get appearance from database. Depth attribute specifies how many models will be traversed to create the response

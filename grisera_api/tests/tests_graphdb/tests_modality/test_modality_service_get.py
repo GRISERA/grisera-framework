@@ -12,26 +12,41 @@ from observable_information.observable_information_model import BasicObservableI
 class TestModalityServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_node')
-    @mock.patch.object(GraphApiService, 'get_node_relationships')
-    def test_get_modality_without_error(self, get_node_relationships_mock, get_node_mock):
+    def test_get_modality_without_error(self, get_node_mock):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Modality'],
                                       'properties': [{'key': 'modality', 'value': 'test'},
                                                      {'key': 'test', 'value': 'test'}],
                                       "errors": None, 'links': None}
-        get_node_relationships_mock.return_value = {"relationships": [
-                                                    {"start_node": 19, "end_node": id_node,
-                                                     "name": "hasModality", "id": 0,
-                                                     "properties": None}]}
-        modality = ModalityOut(modality="test", id=id_node,
-                               observable_informations=[BasicObservableInformationOut(**{id: 19})])
+        modality = BasicModalityOut(modality="test", id=id_node)
         modality_service = ModalityServiceGraphDB()
 
         result = modality_service.get_modality(id_node)
 
         self.assertEqual(result, modality)
         get_node_mock.assert_called_once_with(id_node)
-        get_node_relationships_mock.assert_called_once_with(id_node)
+
+    # @mock.patch.object(GraphApiService, 'get_node')
+    # @mock.patch.object(GraphApiService, 'get_node_relationships')
+    # def test_get_modality_without_error(self, get_node_relationships_mock, get_node_mock):
+    #     id_node = 1
+    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Modality'],
+    #                                   'properties': [{'key': 'modality', 'value': 'test'},
+    #                                                  {'key': 'test', 'value': 'test'}],
+    #                                   "errors": None, 'links': None}
+    #     get_node_relationships_mock.return_value = {"relationships": [
+    #         {"start_node": 19, "end_node": id_node,
+    #          "name": "hasModality", "id": 0,
+    #          "properties": None}]}
+    #     modality = ModalityOut(modality="test", id=id_node,
+    #                            observable_informations=[BasicObservableInformationOut(**{id: 19})])
+    #     modality_service = ModalityServiceGraphDB()
+    #
+    #     result = modality_service.get_modality(id_node)
+    #
+    #     self.assertEqual(result, modality)
+    #     get_node_mock.assert_called_once_with(id_node)
+    #     get_node_relationships_mock.assert_called_once_with(id_node)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_modality_without_participant_label(self, get_node_mock):

@@ -32,10 +32,7 @@ class TestRecordingServiceDelete(unittest.TestCase):
              "name": "hasRecording", "id": 0,
              "properties": None}
         ]}
-        recording = RecordingOut(additional_properties=[], id=id_node,
-                                 registered_channel=BasicRegisteredChannelOut(**{id: 19}),
-                                 participation=BasicParticipationOut(**{id: 15}),
-                                 observable_informations=[BasicObservableInformationOut(**{id: 16})])
+        recording = BasicRecordingOut(additional_properties=[], id=id_node)
         recording_service = RecordingServiceGraphDB()
 
         result = recording_service.delete_recording(id_node)

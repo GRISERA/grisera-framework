@@ -16,8 +16,8 @@ class LifeActivityServiceGraphDB(LifeActivityService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, observable_information_service):
-        self.observable_information_service = observable_information_service()
+    def __init__(self):
+        self.observable_information_service = None
 
     def save_life_activity(self, life_activity: LifeActivityIn):
         """
@@ -77,7 +77,7 @@ class LifeActivityServiceGraphDB(LifeActivityService):
         if get_response["labels"][0] != "Life Activity":
             return NotFoundByIdModel(id=life_activity_id, errors="Node not found.")
 
-        life_activity = create_stub_from_response(get_response)
+        life_activity = create_stub_from_response(get_response, properties=['life_activity'])
 
         if depth != 0:
             life_activity["observable_informations"] = []

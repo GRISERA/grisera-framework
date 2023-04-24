@@ -82,7 +82,7 @@ class PersonalityRouter:
         ],
     )
     async def get_personality(
-        self, personality_id: Union[int, str], depth: int, response: Response
+        self, personality_id: Union[int, str], response: Response, depth: int=0
     ):
         """
         Get personality from database. Depth attribute specifies how many models will be traversed to create the

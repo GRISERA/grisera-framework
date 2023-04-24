@@ -16,8 +16,8 @@ class ArrangementServiceGraphDB(ArrangementService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, activity_execution_service):
-        self.activity_execution_service = activity_execution_service()
+    def __init__(self):
+        self.activity_execution_service = None
 
     def save_arrangement(self, arrangement: ArrangementIn):
         """
@@ -89,7 +89,7 @@ class ArrangementServiceGraphDB(ArrangementService):
         if get_response["labels"][0] != "Arrangement":
             return NotFoundByIdModel(id=arrangement_id, errors="Node not found.")
 
-        arrangement = create_stub_from_response(get_response)
+        arrangement = create_stub_from_response(get_response, properties = ['arrangement_type', 'arrangement_distance'])
 
         if depth != 0:
             arrangement["activity_executions"] = []

@@ -16,8 +16,8 @@ class MeasureNameServiceGraphDB(MeasureNameService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, measure_service):
-        self.measure_service = measure_service()
+    def __init__(self):
+        self.measure_service = None
 
     def save_measure_name(self, measure_name: MeasureNameIn):
         """
@@ -78,7 +78,7 @@ class MeasureNameServiceGraphDB(MeasureNameService):
         if get_response["labels"][0] != "Measure Name":
             return NotFoundByIdModel(id=measure_name_id, errors="Node not found.")
 
-        measure_name = create_stub_from_response(get_response)
+        measure_name = create_stub_from_response(get_response, properties=['name', 'type'])
 
         if depth != 0:
             measure_name["measures"] = []

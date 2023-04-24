@@ -20,11 +20,11 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, participant_service, appearance_service, personality_service, participation_service):
-        self.participant_service = participant_service()
-        self.appearance_service = appearance_service()
-        self.personality_service = personality_service()
-        self.participation_service = participation_service()
+    def __init__(self):
+        self.participant_service = None
+        self.appearance_service = None
+        self.personality_service = None
+        self.participation_service = None
 
     def save_participant_state(self, participant_state: ParticipantStateIn):
         """
@@ -109,7 +109,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         if get_response["labels"][0] != "Participant State":
             return NotFoundByIdModel(id=participant_state_id, errors="Node not found.")
 
-        participant_state = create_stub_from_response(get_response)
+        participant_state = create_stub_from_response(get_response, properties=['age'])
 
         if depth != 0:
             participant_state["participant"] = None
@@ -177,13 +177,10 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         self.graph_api_service.delete_node_properties(participant_state_id)
         self.graph_api_service.create_properties(participant_state_id, participant_state)
 
-        participant_state_result = {"id": participant_state_id, "participant": get_response.participant,
-                                    "personalities": get_response.personalities,
-                                    "appearances": get_response.appearances,
-                                    "participations": get_response.participations}
+        participant_state_result = {"id": participant_state_id}
         participant_state_result.update(participant_state.dict())
 
-        return ParticipantStateOut(**participant_state_result)
+        return BasicParticipantStateOut(**participant_state_result)
 
     def update_participant_state_relationships(self, participant_state_id: Union[int, str],
                                                participant_state: ParticipantStateRelationIn):

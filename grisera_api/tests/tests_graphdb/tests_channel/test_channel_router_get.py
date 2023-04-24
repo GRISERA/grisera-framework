@@ -19,7 +19,7 @@ class TestChannelRouterGet(unittest.TestCase):
         result = asyncio.run(channel_router.get_channel(channel_id, response))
 
         self.assertEqual(result, ChannelOut(type='url', id=channel_id, links=get_links(router)))
-        get_channel_mock.assert_called_once_with(channel_id)
+        get_channel_mock.assert_called_once_with(channel_id, 0)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(ChannelServiceGraphDB, 'get_channel')
@@ -32,7 +32,7 @@ class TestChannelRouterGet(unittest.TestCase):
         result = asyncio.run(channel_router.get_channel(channel_id, response))
 
         self.assertEqual(result, ChannelOut(type='url', errors={'errors': ['test']}, links=get_links(router)))
-        get_channel_mock.assert_called_once_with(channel_id)
+        get_channel_mock.assert_called_once_with(channel_id, 0)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(ChannelServiceGraphDB, 'get_channels')

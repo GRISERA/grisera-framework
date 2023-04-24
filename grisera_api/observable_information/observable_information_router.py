@@ -77,7 +77,7 @@ class ObservableInformationRouter:
         response_model=Union[ObservableInformationOut, NotFoundByIdModel],
     )
     async def get_observable_information(
-        self, observable_information_id: Union[int, str], depth: int, response: Response
+        self, observable_information_id: Union[int, str], response: Response, depth: int = 0
     ):
         """
         Get observable information from database. Depth attribute specifies how many models will be traversed to create

@@ -33,7 +33,7 @@ class ModalityRouter:
         response_model=Union[ModalityOut, NotFoundByIdModel],
     )
     async def get_modality(
-        self, modality_id: Union[int, str], depth: int, response: Response
+        self, modality_id: Union[int, str], response: Response, depth: int=0
     ):
         """
         Get modality from database. Depth attribute specifies how many models will be traversed to create the response.

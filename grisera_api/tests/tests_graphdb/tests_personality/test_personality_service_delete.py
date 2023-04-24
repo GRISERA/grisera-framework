@@ -13,8 +13,7 @@ class TestPersonalityServiceDelete(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'delete_node')
     @mock.patch.object(GraphApiService, 'get_node')
-    @mock.patch.object(GraphApiService, 'get_node_relationships')
-    def test_delete_personality_big_five_without_error(self, get_node_relationships_mock, get_node_mock,
+    def test_delete_personality_big_five_without_error(self, get_node_mock,
                                                        delete_node_mock):
         id_node = 1
         delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Personality'],
@@ -25,13 +24,9 @@ class TestPersonalityServiceDelete(unittest.TestCase):
                                                                           {'key': 'neuroticism', 'value': 2.5},
                                                                           {'key': 'openess', 'value': 2.5}],
                                                                       'errors': None, 'links': None}
-        get_node_relationships_mock.return_value = {"relationships": [
-            {"start_node": 19, "end_node": id_node,
-             "name": "hasPersonality", "id": 0,
-             "properties": None}]}
-        personality = PersonalityBigFiveOut(agreeableness=2.5, conscientiousness=2.5, extroversion=2.5, neuroticism=2.5,
-                                            openess=2.5, id=id_node,
-                                            participant_states=[BasicParticipantStateOut(**{id: 19})])
+        personality = BasicPersonalityBigFiveOut(agreeableness=2.5, conscientiousness=2.5, extroversion=2.5,
+                                                 neuroticism=2.5,
+                                                 openess=2.5, id=id_node)
         personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.delete_personality(id_node)
@@ -54,8 +49,7 @@ class TestPersonalityServiceDelete(unittest.TestCase):
             {"start_node": 19, "end_node": id_node,
              "name": "hasPersonality", "id": 0,
              "properties": None}]}
-        personality = PersonalityPanasOut(negative_affect=0.5, positive_affect=0.5, id=id_node,
-                                          participant_states=[BasicParticipantStateOut(**{id: 19})])
+        personality = BasicPersonalityPanasOut(negative_affect=0.5, positive_affect=0.5, id=id_node)
         personality_service = PersonalityServiceGraphDB()
 
         result = personality_service.delete_personality(id_node)

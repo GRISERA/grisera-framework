@@ -21,11 +21,11 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
 
     graph_api_service = GraphApiService()
 
-    def __init__(self, modality_service, life_activity_service, recording_service, time_series_service):
-        self.modality_service = modality_service()
-        self.life_activity_service = life_activity_service()
-        self.recording_service = recording_service()
-        self.time_series_service = time_series_service()
+    def __init__(self):
+        self.modality_service = None
+        self.life_activity_service = None
+        self.recording_service = None
+        self.time_series_service = None
 
     def save_observable_information(self, observable_information: ObservableInformationIn):
         """
@@ -37,7 +37,7 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
         Returns:
             Result of request as observable information object
         """
-        node_response = self.graph_api_service.create_node("`Observable Information`")
+        node_response = self.graph_api_service.create_node("Observable Information")
 
         if node_response["errors"] is not None:
             return ObservableInformationOut(errors=node_response["errors"])

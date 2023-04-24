@@ -13,31 +13,48 @@ from graph_api_service import GraphApiService
 class TestTimeSeriesServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_node')
-    @mock.patch.object(GraphApiService, 'get_node_relationships')
-    def test_get_time_series_without_error(self, get_node_relationships_mock, get_node_mock):
+    def test_get_time_series_without_error(self, get_node_mock):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Time Series'],
                                       'properties': [{'key': 'type', 'value': "Epoch"},
                                                      {'key': 'source', 'value': "cos"},
                                                      {'key': 'test', 'value': 'test2'}],
                                       "errors": None, 'links': None}
-        get_node_relationships_mock.return_value = {"relationships": [
-            {"start_node": id_node, "end_node": 19,
-             "name": "hasObservableInformation", "id": 0,
-             "properties": None},
-            {"start_node": id_node, "end_node": 15,
-             "name": "hasMeasure", "id": 0,
-             "properties": None}]}
-        time_series = TimeSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[],
-                                    observable_informations=[BasicObservableInformationOut(**{id: 19})],
-                                    measure=BasicMeasureOut(**{id: 15}))
+        time_series = BasicTimeSeriesOut(id=1, type="Epoch", source="cos",
+                                         additional_properties=[{'key': 'test', 'value': 'test2'}])
         time_series_service = TimeSeriesServiceGraphDB()
 
         result = time_series_service.get_time_series(id_node)
 
         self.assertEqual(result, time_series)
         get_node_mock.assert_called_once_with(id_node)
-        get_node_relationships_mock.assert_called_once_with(id_node)
+
+    # @mock.patch.object(GraphApiService, 'get_node')
+    # @mock.patch.object(GraphApiService, 'get_node_relationships')
+    # def test_get_time_series_without_error(self, get_node_relationships_mock, get_node_mock):
+    #     id_node = 1
+    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Time Series'],
+    #                                   'properties': [{'key': 'type', 'value': "Epoch"},
+    #                                                  {'key': 'source', 'value': "cos"},
+    #                                                  {'key': 'test', 'value': 'test2'}],
+    #                                   "errors": None, 'links': None}
+    #     get_node_relationships_mock.return_value = {"relationships": [
+    #         {"start_node": id_node, "end_node": 19,
+    #          "name": "hasObservableInformation", "id": 0,
+    #          "properties": None},
+    #         {"start_node": id_node, "end_node": 15,
+    #          "name": "hasMeasure", "id": 0,
+    #          "properties": None}]}
+    #     time_series = TimeSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[],
+    #                                 observable_informations=[BasicObservableInformationOut(**{id: 19})],
+    #                                 measure=BasicMeasureOut(**{id: 15}))
+    #     time_series_service = TimeSeriesServiceGraphDB()
+    #
+    #     result = time_series_service.get_time_series(id_node)
+    #
+    #     self.assertEqual(result, time_series)
+    #     get_node_mock.assert_called_once_with(id_node)
+    #     get_node_relationships_mock.assert_called_once_with(id_node)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_time_series_without_label(self, get_node_mock):

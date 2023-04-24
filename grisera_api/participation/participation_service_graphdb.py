@@ -19,10 +19,10 @@ class ParticipationServiceGraphDB(ParticipationService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, activity_execution_service, participant_state_service, recording_service):
-        self.activity_execution_service = activity_execution_service()
-        self.participant_state_service = participant_state_service()
-        self.recording_service = recording_service()
+    def __init__(self):
+        self.activity_execution_service = None
+        self.participant_state_service = None
+        self.recording_service = None
 
     def save_participation(self, participation: ParticipationIn):
         """
@@ -44,14 +44,16 @@ class ParticipationServiceGraphDB(ParticipationService):
         if participation.activity_execution_id is not None and \
                 type(self.activity_execution_service.get_activity_execution(participation.activity_execution_id)) \
                 is not NotFoundByIdModel:
-            self.graph_api_service.create_relationships(participation_id, participation.activity_execution_id,
-                                                        "hasActivityExecution")
+            self.graph_api_service.create_relationships(start_node=participation_id,
+                                                        end_node=participation.activity_execution_id,
+                                                        name="hasActivityExecution")
 
         if participation.participant_state_id is not None and \
                 type(self.participant_state_service.get_participant_state(participation.participant_state_id)) \
                 is not NotFoundByIdModel:
-            self.graph_api_service.create_relationships(participation_id, participation.participant_state_id,
-                                                        "hasParticipantState")
+            self.graph_api_service.create_relationships(start_node=participation_id,
+                                                        end_node=participation.participant_state_id,
+                                                        name="hasParticipantState")
 
         return self.get_participation(participation_id)
 
@@ -99,7 +101,7 @@ class ParticipationServiceGraphDB(ParticipationService):
 
             for relation in relations_response["relationships"]:
                 if relation["start_node"] == participation_id & relation["name"] == "hasParticipantState":
-                    participation["participant_state"] = self.participant_state_service.\
+                    participation["participant_state"] = self.participant_state_service. \
                         get_participant_state(relation["end_node"], depth - 1)
                 else:
                     if relation["start_node"] == participation_id & relation["name"] == "hasActivityExecution":
@@ -149,13 +151,15 @@ class ParticipationServiceGraphDB(ParticipationService):
         if participation.activity_execution_id is not None and \
                 type(self.activity_execution_service.get_activity_execution(participation.activity_execution_id)) \
                 is not NotFoundByIdModel:
-            self.graph_api_service.create_relationships(participation_id, participation.activity_execution_id,
-                                                        "hasActivityExecution")
+            self.graph_api_service.create_relationships(start_node=participation_id,
+                                                        end_node=participation.activity_execution_id,
+                                                        name="hasActivityExecution")
 
         if participation.participant_state_id is not None and \
                 type(self.participant_state_service.get_participant_state(participation.participant_state_id)) \
                 is not NotFoundByIdModel:
-            self.graph_api_service.create_relationships(participation_id, participation.participant_state_id,
-                                                        "hasParticipantState")
+            self.graph_api_service.create_relationships(start_node=participation_id,
+                                                        end_node=participation.participant_state_id,
+                                                        name="hasParticipantState")
 
         return self.get_participation(participation_id)

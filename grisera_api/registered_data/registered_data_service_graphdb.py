@@ -17,8 +17,8 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, registered_channel_service):
-        self.registered_channel_service = registered_channel_service()
+    def __init__(self):
+        self.registered_channel_service = None
 
     def save_registered_data(self, registered_data: RegisteredDataIn):
         """
@@ -30,7 +30,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         Returns:
             Result of request as registered data object
         """
-        node_response = self.graph_api_service.create_node("`Registered Data`")
+        node_response = self.graph_api_service.create_node("Registered Data")
 
         if node_response["errors"] is not None:
             return RegisteredDataOut(**registered_data.dict(), errors=node_response["errors"])
@@ -49,7 +49,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         Returns:
             Result of request as list of registered_data_nodes objects
         """
-        get_response = self.graph_api_service.get_nodes("`Registered Data`")
+        get_response = self.graph_api_service.get_nodes("Registered Data")
 
         registered_data_nodes = []
 
@@ -83,7 +83,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         if get_response["labels"][0] != "Registered Data":
             return NotFoundByIdModel(id=registered_data_id, errors="Node not found.")
 
-        registered_data = create_stub_from_response(get_response)
+        registered_data = create_stub_from_response(get_response, properties=['source'])
 
         if depth != 0:
             registered_data["registered_channels"] = []
@@ -137,7 +137,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         self.graph_api_service.delete_node_properties(registered_data_id)
         self.graph_api_service.create_properties(registered_data_id, registered_data)
 
-        registered_data_result = {'id': registered_data_id, 'registered_channels': get_response.registered_channels}
+        registered_data_result = {'id': registered_data_id}
         registered_data_result.update(registered_data.dict())
 
-        return RegisteredDataOut(**registered_data_result)
+        return BasicRegisteredDataOut(**registered_data_result)

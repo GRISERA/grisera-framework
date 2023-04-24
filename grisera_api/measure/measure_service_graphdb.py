@@ -18,9 +18,9 @@ class MeasureServiceGraphDB(MeasureService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, measure_name_service, time_series_service):
-        self.measure_name_service = measure_name_service()
-        self.time_series_service = time_series_service()
+    def __init__(self):
+        self.measure_name_service = None
+        self.time_series_service = None
 
     def save_measure(self, measure: MeasureIn):
         """
@@ -32,7 +32,7 @@ class MeasureServiceGraphDB(MeasureService):
         Returns:
             Result of request as measure object
         """
-        node_response = self.graph_api_service.create_node("`Measure`")
+        node_response = self.graph_api_service.create_node("Measure")
 
         if node_response["errors"] is not None:
             return MeasureOut(**measure.dict(), errors=node_response["errors"])
@@ -91,7 +91,7 @@ class MeasureServiceGraphDB(MeasureService):
         if get_response["labels"][0] != "Measure":
             return NotFoundByIdModel(id=measure_id, errors="Node not found.")
 
-        measure = create_stub_from_response(get_response)
+        measure = create_stub_from_response(get_response, properties = ['datatype', 'range', 'unit'])
 
         if depth != 0:
             measure["time_series"] = []
@@ -147,11 +147,10 @@ class MeasureServiceGraphDB(MeasureService):
         self.graph_api_service.delete_node_properties(measure_id)
         self.graph_api_service.create_properties(measure_id, measure)
 
-        measure_result = {"id": measure_id, "time_series": get_response.time_series,
-                          "measure_name": get_response.measure_name}
+        measure_result = {"id": measure_id}
         measure_result.update(measure.dict())
 
-        return MeasureOut(**measure_result)
+        return BasicMeasureOut(**measure_result)
 
     def update_measure_relationships(self, measure_id: Union[int, str],
                                      measure: MeasureRelationIn):

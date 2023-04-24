@@ -17,8 +17,8 @@ class PersonalityServiceGraphDB(PersonalityService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, participant_state_service):
-        self.participant_state_service = participant_state_service()
+    def __init__(self):
+        self.participant_state_service = None
 
     def save_personality_big_five(self, personality: PersonalityBigFiveIn):
         """
@@ -78,7 +78,9 @@ class PersonalityServiceGraphDB(PersonalityService):
         if get_response["labels"][0] != "Personality":
             return NotFoundByIdModel(id=personality_id, errors="Node not found.")
 
-        personality = create_stub_from_response(get_response)
+        personality = create_stub_from_response(get_response, properties=['agreeableness', 'conscientiousness',
+                                                                          'extroversion', 'neuroticism',
+                                                                          'openess', 'negative_affect', 'positive_affect'])
 
         if depth != 0:
             personality["participant_states"] = None
@@ -147,7 +149,7 @@ class PersonalityServiceGraphDB(PersonalityService):
         if not 0 <= personality.agreeableness <= 1 or not 0 <= personality.conscientiousness <= 1 or \
            not 0 <= personality.extroversion <= 1 or not 0 <= personality.neuroticism <= 1 or \
            not 0 <= personality.openess <= 1:
-            return PersonalityBigFiveOut(**personality.dict(), errors="Value not between 0 and 1")
+            return BasicPersonalityBigFiveOut(**personality.dict(), errors="Value not between 0 and 1")
 
         get_response = self.get_personality(personality_id)
         if type(get_response) is NotFoundByIdModel:
@@ -158,7 +160,7 @@ class PersonalityServiceGraphDB(PersonalityService):
         self.graph_api_service.create_properties(personality_id, personality)
         personality_response = get_response.dict()
         personality_response.update(personality)
-        return PersonalityBigFiveOut(**personality_response)
+        return BasicPersonalityBigFiveOut(**personality_response)
 
     def update_personality_panas(self, personality_id: Union[int, str], personality: PersonalityPanasIn):
         """
@@ -172,7 +174,7 @@ class PersonalityServiceGraphDB(PersonalityService):
             Result of request as personality object
         """
         if not 0 <= personality.negative_affect <= 1 or not 0 <= personality.positive_affect <= 1:
-            return PersonalityPanasOut(**personality.dict(), errors="Value not between 0 and 1")
+            return BasicPersonalityPanasOut(**personality.dict(), errors="Value not between 0 and 1")
 
         get_response = self.get_personality(personality_id)
         if type(get_response) is NotFoundByIdModel:
@@ -184,4 +186,4 @@ class PersonalityServiceGraphDB(PersonalityService):
 
         personality_response = get_response.dict()
         personality_response.update(personality)
-        return PersonalityPanasOut(**personality_response)
+        return BasicPersonalityPanasOut(**personality_response)

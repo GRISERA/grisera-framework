@@ -16,8 +16,8 @@ class ModalityServiceGraphDB(ModalityService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, observable_information_service):
-        self.observable_information_service = observable_information_service()
+    def __init__(self):
+        self.observable_information_service = None
 
     def save_modality(self, modality: ModalityIn):
         """
@@ -75,7 +75,7 @@ class ModalityServiceGraphDB(ModalityService):
         if get_response["labels"][0] != "Modality":
             return NotFoundByIdModel(id=modality_id, errors="Node not found.")
 
-        modality = create_stub_from_response(get_response)
+        modality = create_stub_from_response(get_response, properties = ['modality'])
 
         if depth != 0:
             modality["observable_informations"] = []

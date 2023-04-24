@@ -18,10 +18,10 @@ class RecordingServiceGraphDB(RecordingService):
     """
     graph_api_service = GraphApiService()
 
-    def __init__(self, participation_service, registered_channel_service, observable_information_service):
-        self.participation_service = participation_service()
-        self.registered_channel_service = registered_channel_service()
-        self.observation_information_service = observable_information_service()
+    def __init__(self):
+        self.participation_service = None
+        self.registered_channel_service = None
+        self.observable_information_service = None
 
     def save_recording(self, recording: RecordingIn):
         """
@@ -152,12 +152,10 @@ class RecordingServiceGraphDB(RecordingService):
         self.graph_api_service.delete_node_properties(recording_id)
         self.graph_api_service.create_properties(recording_id, recording)
 
-        recording_result = {"id": recording_id, "registered_channel": get_response.registered_channel,
-                            "participation": get_response.participation,
-                            "observable_information": get_response.observable_informations}
+        recording_result = {"id": recording_id, "additional_properties": recording.additional_properties}
         recording_result.update(recording.dict())
 
-        return RecordingOut(**recording_result)
+        return BasicRecordingOut(**recording_result)
 
     def update_recording_relationships(self, recording_id: Union[int, str],
                                        recording: RecordingIn):

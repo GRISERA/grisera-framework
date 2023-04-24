@@ -19,7 +19,7 @@ class TestMeasureRouterGet(unittest.TestCase):
         result = asyncio.run(measure_router.get_measure(measure_id, response))
 
         self.assertEqual(result, MeasureOut(datatype="Test", range="Unknown", unit="cm", links=get_links(router)))
-        get_measure_mock.assert_called_once_with(measure_id)
+        get_measure_mock.assert_called_once_with(measure_id, 0)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(MeasureServiceGraphDB, 'get_measure')
@@ -34,7 +34,7 @@ class TestMeasureRouterGet(unittest.TestCase):
 
         self.assertEqual(result, MeasureOut(datatype="Test", range="Unknown", unit="cm", errors={'errors': ['test']},
                                             links=get_links(router)))
-        get_measure_mock.assert_called_once_with(measure_id)
+        get_measure_mock.assert_called_once_with(measure_id, 0)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(MeasureServiceGraphDB, 'get_measures')

@@ -12,14 +12,13 @@ class ScenarioIn(BaseModel):
 
     Attributes:
     activity_executions (List[ActivityExecutionIn]): list of activity executions in scenario
-    experiment_id (Union[int, str]): Id of experiment
     """
 
     experiment_id: Union[int, str]
     activity_executions: List[ActivityExecutionIn]
 
 
-class ScenarioOut(ScenarioIn, BaseModelOut):
+class ScenarioOut(BaseModelOut):
     """
     Model of scenario to send to client as a result of request
 
