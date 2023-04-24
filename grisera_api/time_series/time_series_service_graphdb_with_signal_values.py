@@ -176,7 +176,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             timestamp, previous_timestamp_timestamp_relation_id = self.get_neighbour_node(timestamp["id"], "next")
 
         if timestamp is None or int(get_node_property(timestamp, "timestamp")) != timestamp_value:
-            new_timestamp_node = self.graph_api_service.create_node("`Timestamp`")
+            new_timestamp_node = self.graph_api_service.create_node("Timestamp")
 
             if new_timestamp_node["errors"] is not None:
                 return new_timestamp_node
@@ -204,7 +204,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         return timestamp
 
     def create_signal_value(self, signal_value: SignalValueNodesIn, previous_signal_value_node, time_series_id: int):
-        signal_value_node_response = self.graph_api_service.create_node("`Signal Value`")
+        signal_value_node_response = self.graph_api_service.create_node("Signal Value")
 
         if signal_value_node_response["errors"] is not None:
             return signal_value_node_response
