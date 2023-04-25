@@ -77,7 +77,8 @@ class TimeSeriesRouter:
 
     @router.get("/time_series", tags=["time series"], response_model=TimeSeriesNodesOut)
 
-    async def get_time_series_nodes(self, response: Response, request: Request,
+    async def get_time_series_nodes(self, response: Response, dataset_name: str,
+                                    request: Request,
                                     entityname_property_name: Optional[str] = None,
                                     experiment_id: Optional[int] = None,
                                     participant_id: Optional[int] = None,
