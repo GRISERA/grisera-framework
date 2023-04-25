@@ -120,11 +120,12 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
             mock.call(24, 4, 'basedOn', dataset_name),
             mock.call(24, 14, 'basedOn', dataset_name)
         ], create_relationships_mock.call_args_list)
+
         self.assertEqual([
             mock.call(5060, TimeSeriesTransformationRelationshipIn(
-                additional_properties=[PropertyIn(key='order', value='1')]), dataset_name),
+                additional_properties=[PropertyIn(key='order', value='1')])),
             mock.call(5061, TimeSeriesTransformationRelationshipIn(
-                additional_properties=[PropertyIn(key='order', value='2')]), dataset_name),
+                additional_properties=[PropertyIn(key='order', value='2')])),
             mock.call(2202, TimeSeriesTransformationRelationshipIn(
                 additional_properties=[PropertyIn(key='order', value='1')]), dataset_name),
             mock.call(2212, TimeSeriesTransformationRelationshipIn(

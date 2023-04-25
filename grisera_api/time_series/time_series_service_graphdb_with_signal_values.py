@@ -168,7 +168,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         return None, None
 
 
-    def get_or_create_timestamp_node(self, timestamp_value: int, timestamp):
+    def get_or_create_timestamp_node(self, timestamp_value: int, timestamp, dataset_name: str):
         if timestamp_value is None:
             return {"errors": "Timestamp value is None. Please check time series type."}
         previous_timestamp_id = None
@@ -293,7 +293,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         """
         time_series = super().get_time_series(time_series_id, dataset_name)
         if time_series.errors is None:
-            time_series.signal_values = self.get_signal_values(time_series_id, time_series.type, dataset_name,
+            time_series.signal_values = self.get_signal_values(time_series_id, time_series.type,
                                                                signal_min_value, signal_max_value)
         return time_series
 
@@ -433,7 +433,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             ]
         }
         response = self.graph_api_service.get_nodes_by_query(
-            query_timestamp if time_series_type == Type.timestamp.value else query_epoch, dataset_name)
+            query_timestamp if time_series_type == Type.timestamp.value else query_epoch)
         signal_values = []
         for row in response["rows"]:
             if time_series_type == Type.timestamp:
