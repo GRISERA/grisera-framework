@@ -49,9 +49,6 @@ from registered_channel.registered_channel_service import RegisteredChannelServi
 from registered_data.registered_data_service import RegisteredDataService
 from scenario.scenario_service import ScenarioService
 from time_series.time_series_service import TimeSeriesService
-from time_series.time_series_service_graphdb_with_signal_values import (
-    TimeSeriesServiceGraphDBWithSignalValues,
-)
 
 
 class MongoServiceFactory(ServiceFactory):

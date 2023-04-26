@@ -35,7 +35,7 @@ class ActivityRouter:
         """
         Get activity from database. Depth attribute specifies how many models will be traversed to create the response.
         """
-        get_response = self.activity_service.get_activity(activity_id)
+        get_response = self.activity_service.get_activity(activity_id, depth)
         if get_response.errors is not None:
             response.status_code = 404
 

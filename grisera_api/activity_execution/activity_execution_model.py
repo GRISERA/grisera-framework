@@ -22,8 +22,8 @@ class ActivityExecutionRelationIn(BaseModel):
     Model of activity execution relations to acquire from client
 
     Attributes:
-    activity_id (int): identity of activity
-    arrangement_id (int) : identity number of arrangement
+    activity_id (int | str): identity of activity
+    arrangement_id (int | str) : identity number of arrangement
     """
 
     activity_id: Optional[Union[int, str]]
@@ -56,6 +56,7 @@ class ActivityExecutionOut(BasicActivityExecutionOut, BaseModelOut):
     activity (Optional[ActivityOut]): activity related to this activity execution
     participations (Optional[List[ParticipationOut]]): participations related to this activity execution
     experiments (Optional[List[ExperimentOut]]): experiments related to this activity execution
+    arrangements (Optional[List[ArrangementOut]]): arrangements related to this activity execution
     """
 
     activity: "Optional[ActivityOut]"

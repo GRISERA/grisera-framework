@@ -59,7 +59,7 @@ class ActivityOut(BasicActivityOut, BaseModelOut):
     Model of activity to send to client as a result of request
 
     Attributes:
-    activity_executions (Optional[ActivityExecutionOut]): activity_executions related to this activity
+    activity_executions (Optional[List[ActivityExecutionOut]]): activity_executions related to this activity
     """
 
     activity_executions: "Optional[List[ActivityExecutionOut]]"

@@ -20,7 +20,7 @@ class TestActivityRouterGet(unittest.TestCase):
         result = asyncio.run(activity_router.get_activity(activity_id, response))
 
         self.assertEqual(result, ActivityOut(activity='two-people', id=activity_id, links=get_links(router)))
-        get_activity_mock.assert_called_once_with(activity_id)
+        get_activity_mock.assert_called_once_with(activity_id, 0)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(ActivityServiceGraphDB, 'get_activity')
@@ -34,7 +34,7 @@ class TestActivityRouterGet(unittest.TestCase):
 
         self.assertEqual(result,
                          ActivityOut(activity='two-people', errors={'errors': ['test']}, links=get_links(router)))
-        get_activity_mock.assert_called_once_with(activity_id)
+        get_activity_mock.assert_called_once_with(activity_id, 0)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(ActivityServiceGraphDB, 'get_activities')

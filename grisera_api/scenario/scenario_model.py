@@ -24,6 +24,7 @@ class ScenarioOut(BaseModelOut):
 
     Attributes:
         activity_executions (List[ActivityExecutionOut]): List of activity executions in scenario
+        experiment (ExperimentOut): Experiment, the scenario belongs to
     """
 
     activity_executions: "List[ActivityExecutionOut]"

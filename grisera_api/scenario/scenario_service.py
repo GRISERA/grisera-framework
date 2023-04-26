@@ -76,7 +76,7 @@ class ScenarioService:
         """
         raise Exception("what_order not implemented yet")
 
-    def swap_order_in_relationships_array(self, relationships, element_id):
+    def swap_order_in_relationships_array(self, relationships, element_id: Union[int, str]):
         """
             Swaps order of relationships list, so they are saved in order starting from experiment
             Args:
