@@ -64,7 +64,7 @@ class LifeActivityServiceGraphDB(LifeActivityService):
         Send request to graph api to get given life activity
 
         Args:
-            life_activity_id (int): identity of life activity
+            life_activity_id (int | str): identity of life activity
             depth: (int): specifies how many related entities will be traversed to create the response
 
         Returns:

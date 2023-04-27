@@ -62,6 +62,7 @@ class ChannelServiceGraphDB(ChannelService):
 
         Args:
         channel_id (int | str): identity of channel
+        depth: (int): specifies how many related entities will be traversed to create the response
 
         Returns:
             Result of request as channel object

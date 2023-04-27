@@ -52,7 +52,7 @@ class TestActivityExecutionServicePost(unittest.TestCase):
         self.assertEqual(result, activity_execution_out)
         create_node_mock.assert_called_once_with('Activity Execution')
         create_relationships_mock.assert_has_calls([
-            mock.call(start_node=id_node, end_node=activity_id, name='Activity'),
+            mock.call(start_node=id_node, end_node=activity_id, name='hasActivity'),
             mock.call(start_node=id_node, end_node=arrangement_id, name='hasArrangement')
         ])
         create_properties_mock.assert_has_calls([mock.call(id_node, activity_execution_in)])

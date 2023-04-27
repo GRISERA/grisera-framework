@@ -47,7 +47,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
                 type(self.activity_service.get_activity(activity_execution.activity_id)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=activity_execution_id,
                                                         end_node=activity_execution.activity_id,
-                                                        name="Activity")
+                                                        name="hasActivity")
 
         if activity_execution.arrangement_id is not None and \
                 type(self.arrangement_service.get_arrangement(activity_execution.arrangement_id)) \
@@ -86,7 +86,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
 
         Args:
             depth (int): specifies how many related entities will be traversed to create the response
-            activity_execution_id (int): identity of activity execution
+            activity_execution_id (int | str): identity of activity execution
 
         Returns:
             Result of request as activity execution object

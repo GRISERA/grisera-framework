@@ -55,7 +55,7 @@ class ObservableInformationService:
         """
         Send request to graph api to update given observable information
         Args:
-            observable_information_id (int): identity of observable information
+            observable_information_id (int | str): identity of observable information
             observable_information (ObservableInformationIn): Relationships to update
         Returns:
             Result of request as observable information object

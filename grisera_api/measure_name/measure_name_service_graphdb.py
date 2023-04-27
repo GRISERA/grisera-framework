@@ -66,7 +66,7 @@ class MeasureNameServiceGraphDB(MeasureNameService):
 
         Args:
             depth: (int): specifies how many related entities will be traversed to create the response
-            measure_name_id (int): identity of measure name
+            measure_name_id (int | str): identity of measure name
 
         Returns:
             Result of request as measure name object

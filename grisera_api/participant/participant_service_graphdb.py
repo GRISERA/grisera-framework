@@ -121,7 +121,7 @@ class ParticipantServiceGraphDB(ParticipantService):
         Send request to graph api to update given participant
 
         Args:
-            participant_id (int): Id of participant
+            participant_id (int | str): Id of participant
             participant (ParticipantIn): Properties to update
 
         Returns:

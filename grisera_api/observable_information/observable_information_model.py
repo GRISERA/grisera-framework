@@ -53,7 +53,7 @@ class ObservableInformationsOut(BaseModelOut):
     Model of information observed during experiment to send to client as a result of request
 
     Attributes:
-    observable_informations (List[BasicLifeActivityOut]): Observable informations from database
+    observable_informations (List[BasicObservableInformationOut]): Observable informations from database
     """
 
     observable_informations: List[BasicObservableInformationOut] = []

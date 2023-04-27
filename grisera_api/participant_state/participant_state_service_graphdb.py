@@ -144,7 +144,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         Send request to graph api to delete given participant state
 
         Args:
-            participant_state_id (int): Id of participant state
+            participant_state_id (int | str): Id of participant state
 
         Returns:
             Result of request as participant state object

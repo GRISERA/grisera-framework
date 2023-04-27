@@ -36,7 +36,7 @@ class ModalityService:
 
         Args:
             depth: (int): specifies how many related entities will be traversed to create the response
-            modality_id (int): identity of modality
+            modality_id (int | str): identity of modality
 
         Returns:
             Result of request as modality object

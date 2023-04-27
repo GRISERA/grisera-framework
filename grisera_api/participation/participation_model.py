@@ -10,8 +10,8 @@ class ParticipationIn(BaseModel):
     Participation model in database
 
     Attributes:
-    activity_execution_id (Optional[int]): Activity execution of participation
-    participant_state_id (Optional[int]): Participant state of participation
+    activity_execution_id (Optional[int | str]): Activity execution of participation
+    participant_state_id (Optional[int | str]): Participant state of participation
     """
 
     activity_execution_id: Optional[Union[int, str]]

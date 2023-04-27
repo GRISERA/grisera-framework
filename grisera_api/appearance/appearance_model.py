@@ -96,8 +96,6 @@ class AppearancesOut(BaseModelOut):
 
     Attributes:
         appearances (List[Union[BasicAppearanceSomatotypeOut, BasicAppearanceOcclusionOut]]): Appearances from database
-        errors (Optional[Any]): Optional errors appeared during query executions
-        links (Optional[list]): List of links available from api
     """
 
     appearances: List[

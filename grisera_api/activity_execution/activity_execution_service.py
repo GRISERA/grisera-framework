@@ -38,7 +38,7 @@ class ActivityExecutionService:
 
         Args:
             depth (int): specifies how many related entities will be traversed to create the response
-            activity_execution_id (int): identity of activity execution
+            activity_execution_id (int | str): identity of activity execution
 
         Returns:
             Result of request as activity execution object
