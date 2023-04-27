@@ -7,6 +7,11 @@ from activity_execution.activity_execution_model import ActivityExecutionPropert
 from models.not_found_model import NotFoundByIdModel
 from helpers import create_stub_from_response
 
+from activity.activity_service import ActivityService
+from arrangement.arrangement_service import ArrangementService
+from scenario.scenario_service import ScenarioService
+from experiment.experiment_service import ExperimentService
+from participation.participation_service import ParticipationService
 
 class ActivityExecutionServiceGraphDB(ActivityExecutionService):
     """
@@ -14,17 +19,15 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
 
     Attributes:
     graph_api_service (GraphApiService): Service used to communicate with Graph API
-    activity_service (ActivityService): Service used to communicate with Activity
-    arrangement_service (ArrangementService): Service used to communicate with Arrangement
     """
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.activity_service = None
-        self.arrangement_service = None
-        self.scenario_service = None
-        self.experiment_service = None
-        self.participation_service = None
+        self.activity_service: ActivityService = None
+        self.arrangement_service: ArrangementService = None
+        self.scenario_service: ScenarioService = None
+        self.experiment_service: ExperimentService = None
+        self.participation_service: ParticipationService = None
 
     def save_activity_execution(self, activity_execution: ActivityExecutionIn):
         """
@@ -59,7 +62,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         activity_execution.activity_id = activity_execution.arrangement_id = None
         self.graph_api_service.create_properties(activity_execution_id, activity_execution)
 
-        return self.get_activity_execution(activity_execution_id, 0)
+        return self.get_activity_execution(activity_execution_id)
 
     def get_activity_executions(self):
         """
@@ -138,7 +141,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         Returns:
             Result of request as activity execution object
         """
-        get_response = self.get_activity_execution(activity_execution_id, 0)
+        get_response = self.get_activity_execution(activity_execution_id)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
@@ -179,7 +182,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         Returns:
             Result of request as activity execution object
         """
-        get_response = self.get_activity_execution(activity_execution_id, 0)
+        get_response = self.get_activity_execution(activity_execution_id)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
