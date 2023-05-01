@@ -112,7 +112,7 @@ class RoleService:
 
         return RolesDeletedOut(instance_name=instance_name)
 
-    def get_reversed_role(self, model_id, instance_name) -> RolesModelOut:
+    def get_reversed_roles(self, model_id, instance_name) -> RolesModelOut:
         """
             Return a list of reverse roles for given instance and in the given model
         """
@@ -135,9 +135,33 @@ class RoleService:
                 if obj.label[0] == instance_name:
                     roles.append(RoleModelIn(role=prop.name, instance_name=subj.label[0], value=obj.label[0]))
 
-        model_out = self.model_service.update_ontology(model_id, onto)
+        onto.destroy()
 
-        if model_out.errors is not None:
-            return RolesModelOut(errors=model_out.errors)
+        return RolesModelOut(roles=roles)
+
+    def get_roles(self, model_id, instance_name) -> RolesModelOut:
+        """
+            Return a list of roles for given instance and in the given model
+        """
+        onto = self.model_service.load_ontology(model_id)
+
+        if onto is None:
+            return RolesModelOut(errors=f"Model with id {model_id} not found")
+
+        instance = onto.search_one(iri=f"*{instance_name}")
+
+        if instance is None:
+            onto.destroy()
+            return RolesModelOut(errors=f"Instance {instance_name} not found")
+
+        roles = []
+
+        for prop in onto.object_properties():
+
+            for subj, obj in prop.get_relations():
+                if subj.label[0] == instance_name:
+                    roles.append(RoleModelIn(role=prop.name, instance_name=subj.label[0], value=obj.label[0]))
+
+        onto.destroy()
 
         return RolesModelOut(roles=roles)
