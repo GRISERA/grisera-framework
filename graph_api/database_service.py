@@ -410,6 +410,11 @@ class DatabaseService:
         Returns:
             Result of request
         """
+        if alias_name is None or alias_value is None or dataset_name is None:
+            alias_name = "alias_name"
+            alias_value = "alias_value"
+            dataset_name = "neo4j"
+
         create_alias_statement_name = 'CREATE (n:Alias {' + alias_name + ': "' + alias_value + '"}) return n'
         return self.post_statement(create_alias_statement_name, dataset_name)
 

@@ -29,19 +29,19 @@ class DatasetRouter:
         if create_database_response.errors is not None:
             response.status_code = 422
 
-        # add links from hateoas
-        create_database_response.links = get_links(router)
-
         time.sleep(1)  # wait for the db to be created
 
-        create_alias_response = self.dataset_service.create_alias_for_database_with_name(
+        create_database_alias_response = self.dataset_service.create_alias_for_database_with_name(
             create_database_response.name_hash,
             create_database_response.name_by_user)
 
-        if create_alias_response.errors is not None:
+        if create_database_alias_response.errors is not None:
             response.status_code = 422
 
-        return create_alias_response
+        create_database_alias_response.links = get_links(router)
+        create_database_alias_response.errors = create_database_response.errors
+
+        return create_database_alias_response
 
     @router.get("/datasets/{dataset_name}", tags=["response"], response_model=DatasetOut)
     async def get_dataset(self, dataset_name: str, response: Response):

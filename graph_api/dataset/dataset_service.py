@@ -84,11 +84,13 @@ class DatasetService:
 
         if not found:
             return DatasetOut(errors="Dataset not found")
+        if len(found["errors"]) > 0:
+            return DatasetOut(errors=found["errors"])
 
         # get the alias from the DB
         get_aliases_response = self.db.get_aliases_from_database(name_hash)
 
-        name_by_user = get_aliases_response["results"][0]["data"][1]["row"][0]["name_by_user"]
+        name_by_user = get_aliases_response["results"][0]["data"][3]["row"][0]["name_by_user"]
         return DatasetOut(name_hash=name_hash, name_by_user=name_by_user)
 
     def get_datasets(self):
