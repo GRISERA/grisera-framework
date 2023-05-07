@@ -41,7 +41,7 @@ class MeasureNameRouter:
     @router.get("/measure_names", tags=["measure names"], response_model=MeasureNamesOut)
     async def get_measure_names(self, response: Response, dataset_name: str):
         """
-        Get measure names from database
+        Get measure names from dataset
         """
 
         get_response = self.measure_name_service.get_measure_names(dataset_name)
@@ -51,11 +51,11 @@ class MeasureNameRouter:
 
         return get_response
     @router.post("/measure_names", tags=["measure names"], response_model=MeasureNamesOut)
-    async def create_measure_name(self, measure_name: MeasureNameIn, response: Response, database_name: str):
+    async def create_measure_name(self, measure_name: MeasureNameIn, response: Response, dataset_name: str):
         """
-        Create measure_name in database
+        Create measure_name in dataset
         """
-        create_response = self.measure_name_service.save_measure_name(measure_name, database_name)
+        create_response = self.measure_name_service.save_measure_name(measure_name, dataset_name)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -66,11 +66,11 @@ class MeasureNameRouter:
 
     @router.delete("/measure_names/{measure_name_id}", tags=["measure names"],
                    response_model=Union[MeasureNameOut, NotFoundByIdModel])
-    async def delete_measure_name(self, measure_name_id: int, response: Response, database_name: str):
+    async def delete_measure_name(self, measure_name_id: int, response: Response, dataset_name: str):
         """
-        Delete measure_name from database
+        Delete measure_name from dataset
         """
-        get_response = self.measure_name_service.delete_measure_name(measure_name_id, database_name)
+        get_response = self.measure_name_service.delete_measure_name(measure_name_id, dataset_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -81,11 +81,11 @@ class MeasureNameRouter:
 
     @router.put("/measure_names/{measure_name_id}", tags=["measure names"],
                 response_model=Union[MeasureNameOut, NotFoundByIdModel])
-    async def update_measure_name(self, measure_name_id: int, measure_name: MeasureNameIn, response: Response, database_name: str):
+    async def update_measure_name(self, measure_name_id: int, measure_name: MeasureNameIn, response: Response, dataset_name: str):
         """
-        Update measure_name model in database
+        Update measure_name model in dataset
         """
-        update_response = self.measure_name_service.update_measure_name(measure_name_id, measure_name, database_name)
+        update_response = self.measure_name_service.update_measure_name(measure_name_id, measure_name, dataset_name)
         if update_response.errors is not None:
             response.status_code = 404
 

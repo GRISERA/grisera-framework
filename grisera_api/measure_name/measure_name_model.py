@@ -50,7 +50,7 @@ class MeasureNameIn(BaseModel):
 
 class BasicMeasureNameOut(MeasureNameIn):
     """
-    Model of measure name in database
+    Model of measure name in dataset
 
     Attributes:
     id (Optional[int]): Id of measure name returned from graph api
@@ -79,7 +79,7 @@ class MeasureNamesOut(BaseModel):
     Model of measure names to send to client as a result of request
 
     Attributes:
-    measure_names (List[BasicMeasureNameOut]): Measure names from database
+    measure_names (List[BasicMeasureNameOut]): Measure names from dataset
     errors (Optional[Any]): Optional errors appeared during query executions
     links (Optional[list]): List of links available from api
     """

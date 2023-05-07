@@ -33,7 +33,7 @@ class ActivityIn(BaseModel):
 
 class BasicActivityOut(ActivityIn):
     """
-    Model of activity in database
+    Model of activity in dataset
 
     Attributes:
     id (Optional[int]): Id of activity returned from graph api
@@ -62,7 +62,7 @@ class ActivitiesOut(BaseModel):
     Model of activities to send to client as a result of request
 
     Attributes:
-    activity_types (List[BasicActivityOut]): Activity types from database
+    activity_types (List[BasicActivityOut]): Activity types from dataset
     errors (Optional[Any]): Optional errors appeared during query executions
     links (Optional[list]): List of links available from api
     """

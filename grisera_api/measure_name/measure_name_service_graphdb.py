@@ -20,7 +20,7 @@ class MeasureNameServiceGraphDB(MeasureNameService):
 
         Args:
             measure_name (MeasureNameIn): Measure name to be added
-            database_name (str): name of database
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as measure name object
@@ -42,7 +42,7 @@ class MeasureNameServiceGraphDB(MeasureNameService):
         Send request to graph api to get all measure names
 
         Args:
-            database_name (str): name of database
+            dataset_name (str): name of dataset
 
 
         Returns:
@@ -66,7 +66,7 @@ class MeasureNameServiceGraphDB(MeasureNameService):
 
         Args:
         measure_name_id (int): Id of measure name
-        database_name (str): name of database
+        dataset_name (str): name of dataset
 
         Returns:
             Result of request as measure name object
@@ -96,39 +96,39 @@ class MeasureNameServiceGraphDB(MeasureNameService):
 
         return MeasureNameOut(**measure_name)
 
-    def delete_measure_name(self, measure_name_id: int, database_name: str):
+    def delete_measure_name(self, measure_name_id: int, dataset_name: str):
         """
         Send request to graph api to get given measure_name
         Args:
             measure_name_id (int): Id of measure_name
-            database_name (str): name of database
+            dataset_name (str): name of dataset
         Returns:
             Result of request as measure_name object
         """
-        get_response = self.get_measure_name(measure_name_id, database_name)
+        get_response = self.get_measure_name(measure_name_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node(measure_name_id, database_name)
+        self.graph_api_service.delete_node(measure_name_id, dataset_name)
         return get_response
 
-    def update_measure_name(self, measure_name_id: int, measure_name: MeasureNameIn, database_name: str):
+    def update_measure_name(self, measure_name_id: int, measure_name: MeasureNameIn, dataset_name: str):
         """
         Send request to graph api to update given measure_name
         Args:
             measure_name_id (int): Id of measure_name
             measure_name (MeasureNameIn): Measure_name to be updated
-            database_name (str): name of database
+            dataset_name (str): name of dataset
         Returns:
             Result of request as measure_name object
         """
-        get_response = self.get_measure_name(measure_name_id, database_name)
+        get_response = self.get_measure_name(measure_name_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
-        self.graph_api_service.delete_node_properties(measure_name_id, database_name)
-        self.graph_api_service.create_properties(measure_name_id, measure_name, database_name)
+        self.graph_api_service.delete_node_properties(measure_name_id, dataset_name)
+        self.graph_api_service.create_properties(measure_name_id, measure_name, dataset_name)
 
         measure_name_result = {'id': measure_name_id, 'relations': get_response.relations,
                              'reversed_relations': get_response.reversed_relations}

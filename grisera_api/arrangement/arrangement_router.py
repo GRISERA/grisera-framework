@@ -27,7 +27,7 @@ class ArrangementRouter:
                 response_model=Union[ArrangementOut, NotFoundByIdModel])
     async def get_arrangement(self, arrangement_id: int, response: Response, dataset_name: str):
         """
-        Get arrangement from database
+        Get arrangement from dataset
         """
         get_response = self.arrangement_service.get_arrangement(arrangement_id, dataset_name)
         if get_response.errors is not None:
@@ -41,7 +41,7 @@ class ArrangementRouter:
     @router.get("/arrangements", tags=["arrangements"], response_model=ArrangementsOut)
     async def get_arrangements(self, response: Response, dataset_name: str):
         """
-        Get arrangements from database
+        Get arrangements from dataset
         """
 
         get_response = self.arrangement_service.get_arrangements(dataset_name)
@@ -52,11 +52,11 @@ class ArrangementRouter:
         return get_response
 
     @router.post("/arrangements", tags=["arrangements"], response_model=ArrangementsOut)
-    async def create_activity(self, arrangement: ArrangementIn, response: Response, database_name: str):
+    async def create_activity(self, arrangement: ArrangementIn, response: Response, dataset_name: str):
         """
-        Create arrangement in database
+        Create arrangement in dataset
         """
-        create_response = self.arrangement_service.save_arrangement(arrangement, database_name)
+        create_response = self.arrangement_service.save_arrangement(arrangement, dataset_name)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -67,11 +67,11 @@ class ArrangementRouter:
 
     @router.delete("/arrangements/{arrangement_id}", tags=["arrangements"],
                    response_model=Union[ArrangementOut, NotFoundByIdModel])
-    async def delete_arrangement(self, arrangement_id: int, response: Response, database_name: str):
+    async def delete_arrangement(self, arrangement_id: int, response: Response, dataset_name: str):
         """
-        Delete arrangement from database
+        Delete arrangement from dataset
         """
-        get_response = self.arrangement_service.delete_arrangement(arrangement_id, database_name)
+        get_response = self.arrangement_service.delete_arrangement(arrangement_id, dataset_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -82,11 +82,11 @@ class ArrangementRouter:
 
     @router.put("/arrangements/{arrangement_id}", tags=["arrangements"],
                 response_model=Union[ArrangementOut, NotFoundByIdModel])
-    async def update_activity(self, arrangement_id: int, arrangement: ArrangementIn, response: Response, database_name: str):
+    async def update_activity(self, arrangement_id: int, arrangement: ArrangementIn, response: Response, dataset_name: str):
         """
-        Update arrangement model in database
+        Update arrangement model in dataset
         """
-        update_response = self.arrangement_service.update_arrangement(arrangement_id, arrangement, database_name)
+        update_response = self.arrangement_service.update_arrangement(arrangement_id, arrangement, dataset_name)
         if update_response.errors is not None:
             response.status_code = 404
 

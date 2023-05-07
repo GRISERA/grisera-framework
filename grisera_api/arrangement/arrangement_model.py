@@ -35,7 +35,7 @@ class ArrangementIn(BaseModel):
 
 class BasicArrangementOut(ArrangementIn):
     """
-    Model of arrangement in database
+    Model of arrangement in dataset
 
     Attributes:
     id (Optional[int]): Id of arrangement returned from graph api
@@ -64,7 +64,7 @@ class ArrangementsOut(BaseModel):
     Model of arrangements to send to client as a result of request
 
     Attributes:
-    arrangement_types (List[BasicArrangementOut]): Arrangement types from database
+    arrangement_types (List[BasicArrangementOut]): Arrangement types from dataset
     errors (Optional[Any]): Optional errors appeared during query executions
     links (Optional[list]): List of links available from api
     """

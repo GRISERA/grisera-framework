@@ -25,11 +25,11 @@ class ActivityRouter:
         self.activity_service = Services().activity_service()
 
     @router.post("/activities", tags=["activities"], response_model=ActivityOut)
-    async def create_activity(self, activity: ActivityIn, response: Response, database_name: str):
+    async def create_activity(self, activity: ActivityIn, response: Response, dataset_name: str):
         """
-        Create activity in database
+        Create activity in dataset
         """
-        create_response = self.activity_service.save_activity(activity, database_name)
+        create_response = self.activity_service.save_activity(activity, dataset_name)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -37,12 +37,12 @@ class ActivityRouter:
         create_response.links = get_links(router)
 
         return create_response
-    
+
     @router.get("/activities/{activity_id}", tags=["activities"],
                 response_model=Union[ActivityOut, NotFoundByIdModel])
     async def get_activity(self, activity_id: int, response: Response, dataset_name: str):
         """
-        Get activity from database
+        Get activity from dataset
         """
         get_response = self.activity_service.get_activity(activity_id, dataset_name)
         if get_response.errors is not None:
@@ -56,7 +56,7 @@ class ActivityRouter:
     @router.get("/activities", tags=["activities"], response_model=ActivitiesOut)
     async def get_activities(self, response: Response, dataset_name: str):
         """
-        Get activities from database
+        Get activities from dataset
         """
 
         get_response = self.activity_service.get_activities(dataset_name)
@@ -68,11 +68,11 @@ class ActivityRouter:
 
     @router.delete("/activities/{activity_id}", tags=["activities"],
                    response_model=Union[ActivityOut, NotFoundByIdModel])
-    async def delete_activity(self, activity_id: int, response: Response, database_name: str):
+    async def delete_activity(self, activity_id: int, response: Response, dataset_name: str):
         """
-        Delete activity from database
+        Delete activity from dataset
         """
-        get_response = self.activity_service.delete_activity(activity_id, database_name)
+        get_response = self.activity_service.delete_activity(activity_id, dataset_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -83,11 +83,11 @@ class ActivityRouter:
 
     @router.put("/activities/{activity_id}", tags=["activities"],
                 response_model=Union[ActivityOut, NotFoundByIdModel])
-    async def update_activity(self, activity_id: int, activity: ActivityIn, response: Response, database_name: str):
+    async def update_activity(self, activity_id: int, activity: ActivityIn, response: Response, dataset_name: str):
         """
-        Update activity model in database
+        Update activity model in dataset
         """
-        update_response = self.activity_service.update_activity(activity_id, activity, database_name)
+        update_response = self.activity_service.update_activity(activity_id, activity, dataset_name)
         if update_response.errors is not None:
             response.status_code = 404
 
