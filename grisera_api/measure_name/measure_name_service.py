@@ -43,3 +43,24 @@ class MeasureNameService:
             Result of request as measure name object
         """
         raise Exception("get_measure_name not implemented yet")
+
+    def delete_measure_name(self, measure_name_id: int):
+        """
+        Send request to graph api to get given measure_name
+        Args:
+            measure_name_id (int): Id of measure_name
+        Returns:
+            Result of request as measure_name object
+        """
+        raise Exception("Reference to an abstract class.")
+
+    def update_measure_name(self, measure_name_id: int, measure_name: MeasureNameIn):
+        """
+        Send request to graph api to update given measure_name
+        Args:
+            measure_name_id (int): Id of measure_name
+            measure_name (MeasureNameIn): Measure_name to be updated
+        Returns:
+            Result of request as measure_name object
+        """
+        raise Exception("Reference to an abstract class.")

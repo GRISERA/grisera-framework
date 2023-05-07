@@ -37,3 +37,24 @@ class ActivityService:
             Result of request as activity object
         """
         raise Exception("Reference to an abstract class.")
+
+    def delete_activity(self, activity_id: int):
+        """
+        Send request to graph api to get given activity
+        Args:
+            activity_id (int): Id of activity
+        Returns:
+            Result of request as activity object
+        """
+        raise Exception("Reference to an abstract class.")
+
+    def update_activity(self, activity_id: int, activity: ActivityIn):
+        """
+        Send request to graph api to update given activity
+        Args:
+            activity_id (int): Id of activity
+            activity (ActivityIn): Activity to be updated
+        Returns:
+            Result of request as activity object
+        """
+        raise Exception("Reference to an abstract class.")

@@ -20,6 +20,7 @@ class ActivityServiceGraphDB(ActivityService):
 
         Args:
             activity (ActivityIn): Activity to be added
+            database_name (str): name of database
 
         Returns:
             Result of request as activity object
@@ -42,6 +43,8 @@ class ActivityServiceGraphDB(ActivityService):
         """
         Send request to graph api to get all activities
 
+        Args:
+            database_name (str): name of database
         Returns:
             Result of request as list of activity objects
         """
@@ -58,6 +61,7 @@ class ActivityServiceGraphDB(ActivityService):
         Send request to graph api to get given activity
         Args:
             activity_id (int): Id of activity
+            database_name (str): name of database
         Returns:
             Result of request as activity object
         """
@@ -84,3 +88,44 @@ class ActivityServiceGraphDB(ActivityService):
                                                                           relation_id=relation["id"]))
 
         return ActivityOut(**activity)
+
+    def delete_activity(self, activity_id: int, database_name: str):
+        """
+        Send request to graph api to get given activity
+        Args:
+            activity_id (int): Id of activity
+            database_name (str): name of database
+        Returns:
+            Result of request as activity object
+        """
+        get_response = self.get_activity(activity_id, database_name)
+
+        if type(get_response) is NotFoundByIdModel:
+            return get_response
+
+        self.graph_api_service.delete_node(activity_id, database_name)
+        return get_response
+
+    def update_activity(self, activity_id: int, activity: ActivityIn, database_name: str):
+        """
+        Send request to graph api to update given activity
+        Args:
+            activity_id (int): Id of activity
+            activity (ActivityIn): Activity to be updated
+            database_name (str): name of database
+
+        Returns:
+            Result of request as activity object
+        """
+        get_response = self.get_activity(activity_id, database_name)
+
+        if type(get_response) is NotFoundByIdModel:
+            return get_response
+        self.graph_api_service.delete_node_properties(activity_id, database_name)
+        self.graph_api_service.create_properties(activity_id, activity, database_name)
+
+        activity_result = {'id': activity_id, 'relations': get_response.relations,
+                             'reversed_relations': get_response.reversed_relations}
+        activity_result.update(get_response.dict())
+
+        return ActivityOut(**activity_result)

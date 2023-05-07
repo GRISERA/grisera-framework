@@ -50,3 +50,47 @@ class ArrangementRouter:
         get_response.links = get_links(router)
 
         return get_response
+
+    @router.post("/arrangements", tags=["arrangements"], response_model=ArrangementsOut)
+    async def create_activity(self, arrangement: ArrangementIn, response: Response, database_name: str):
+        """
+        Create arrangement in database
+        """
+        create_response = self.arrangement_service.save_arrangement(arrangement, database_name)
+        if create_response.errors is not None:
+            response.status_code = 422
+
+        # add links from hateoas
+        create_response.links = get_links(router)
+
+        return create_response
+
+    @router.delete("/arrangements/{arrangement_id}", tags=["arrangements"],
+                   response_model=Union[ArrangementOut, NotFoundByIdModel])
+    async def delete_arrangement(self, arrangement_id: int, response: Response, database_name: str):
+        """
+        Delete arrangement from database
+        """
+        get_response = self.arrangement_service.delete_arrangement(arrangement_id, database_name)
+        if get_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        get_response.links = get_links(router)
+
+        return get_response
+
+    @router.put("/arrangements/{arrangement_id}", tags=["arrangements"],
+                response_model=Union[ArrangementOut, NotFoundByIdModel])
+    async def update_activity(self, arrangement_id: int, arrangement: ArrangementIn, response: Response, database_name: str):
+        """
+        Update arrangement model in database
+        """
+        update_response = self.arrangement_service.update_arrangement(arrangement_id, arrangement, database_name)
+        if update_response.errors is not None:
+            response.status_code = 404
+
+        # add links from hateoas
+        update_response.links = get_links(router)
+
+        return update_response
