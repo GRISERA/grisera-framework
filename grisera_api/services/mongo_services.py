@@ -1,3 +1,6 @@
+from observable_information.observable_information_service_mongodb import (
+    ObservableInformationServiceMongoDB,
+)
 from services.service_factory import ServiceFactory
 from activity.activity_service_graphdb import ActivityServiceGraphDB
 from activity_execution.activity_execution_service_graphdb import (
@@ -5,6 +8,7 @@ from activity_execution.activity_execution_service_graphdb import (
 )
 from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 from arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
+from channel.channel_service_mongodb import ChannelServiceMongoDB
 from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
 from life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
 from measure.measure_service_graphdb import MeasureServiceGraphDB
@@ -16,6 +20,11 @@ from participant_state.participant_state_service_graphdb import (
 )
 from participation.participation_service_graphdb import ParticipationServiceGraphDB
 from personality.personality_service_graphdb import PersonalityServiceGraphDB
+from recording.recording_service_mongodb import RecordingServiceMongoDB
+from registered_channel.registered_channel_service_mongodb import (
+    RegisteredChannelServiceMongoDB,
+)
+from registered_data.registered_data_service_mongodb import RegisteredDataServiceMongoDB
 from scenario.scenario_service_graphdb import ScenarioServiceGraphDB
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 from activity.activity_service import ActivityService
@@ -43,6 +52,40 @@ from time_series.time_series_service import TimeSeriesService
 
 
 class MongoServiceFactory(ServiceFactory):
+    def __init__(self):
+        self.channel_service = ChannelServiceMongoDB()
+        self.recording_service = RecordingServiceMongoDB()
+        self.registered_channel_service = RegisteredChannelServiceMongoDB()
+        self.registered_data_service = RegisteredDataServiceMongoDB()
+        self.observable_information_service = ObservableInformationServiceMongoDB()
+
+        self.channel_service.registered_channel_service = (
+            self.registered_channel_service
+        )
+
+        self.recording_service.observable_information_service = (
+            self.observable_information_service
+        )
+        self.recording_service.participation_service = None
+        self.recording_service.registered_channel_service = (
+            self.registered_channel_service
+        )
+
+        self.registered_channel_service.channel_service = self.channel_service
+        self.registered_channel_service.registered_data_service = (
+            self.registered_data_service
+        )
+        self.registered_channel_service.recording_service = self.recording_service
+
+        self.registered_data_service.registered_channel_service = (
+            self.registered_channel_service
+        )
+
+        self.observable_information_service.recording_service = self.recording_service
+        self.observable_information_service.life_activity_service = None
+        self.observable_information_service.modality_service = None
+        self.observable_information_service.time_series_service = None
+
     def get_activity_service(self) -> ActivityService:
         return ActivityServiceGraphDB()
 
