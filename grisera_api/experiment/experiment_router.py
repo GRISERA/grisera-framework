@@ -4,7 +4,6 @@ from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
 from typing import Union
 from experiment.experiment_model import ExperimentIn, ExperimentOut, ExperimentsOut
-from experiment.experiment_service import ExperimentService
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 
@@ -43,7 +42,7 @@ class ExperimentRouter:
         response_model=Union[ExperimentOut, NotFoundByIdModel],
     )
     async def get_experiment(
-        self, experiment_id: Union[int, str], depth: int, response: Response
+        self, experiment_id: Union[int, str], response: Response, depth: int = 0
     ):
         """
         Get experiment from database. Depth attribute specifies how many models will be traversed to create the

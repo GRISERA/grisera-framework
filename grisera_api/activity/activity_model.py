@@ -22,9 +22,9 @@ class Activity(str, Enum):
     group = "group"
 
 
-class ActivityIn(BaseModel):
+class ActivityPropertyIn(BaseModel):
     """
-    Model of activity
+    Model of activity execution to acquire from client
 
     Attributes:
     activity (str): Type of activity
@@ -35,12 +35,19 @@ class ActivityIn(BaseModel):
     additional_properties: Optional[List[PropertyIn]]
 
 
+class ActivityIn(ActivityPropertyIn):
+    """
+    Model of activity
+
+    """
+
+
 class BasicActivityOut(ActivityIn):
     """
     Model of activity in database
 
     Attributes:
-    id (Optional[Union[int, str]]): Id of activity returned from api
+    id (Optional[Union[int, str]]): identity of activity returned from api
     """
 
     id: Optional[Union[int, str]]
@@ -51,10 +58,10 @@ class ActivityOut(BasicActivityOut, BaseModelOut):
     Model of activity to send to client as a result of request
 
     Attributes:
-    activity_executions (Optional[ActivityExecutionOut]): activity_executions related to this activity
+    activity_executions (Optional[List[ActivityExecutionOut]]): activity_executions related to this activity
     """
 
-    activity_executions: "Optional[ActivityExecutionOut]"
+    activity_executions: "Optional[List[ActivityExecutionOut]]"
 
 
 class ActivitiesOut(BaseModelOut):
@@ -68,7 +75,7 @@ class ActivitiesOut(BaseModelOut):
     activities: List[BasicActivityOut] = []
 
 
-# circular import exeption prevention
+# Circular import exception prevention
 from activity_execution.activity_execution_model import ActivityExecutionOut
 
 ActivityOut.update_forward_refs()

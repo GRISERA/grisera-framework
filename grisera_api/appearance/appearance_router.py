@@ -6,13 +6,11 @@ from hateoas import get_links
 from appearance.appearance_model import (
     AppearanceOcclusionIn,
     AppearanceOcclusionOut,
-    BasicAppearanceOcclusionOut,
     AppearanceSomatotypeIn,
     AppearanceSomatotypeOut,
-    BasicAppearanceSomatotypeOut,
     AppearancesOut,
 )
-from appearance.appearance_service import AppearanceService
+
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 
@@ -94,7 +92,7 @@ class AppearanceRouter:
         ],
     )
     async def get_appearance(
-        self, appearance_id: Union[int, str], depth: int, response: Response
+        self, appearance_id: Union[int, str], response: Response, depth: int = 0
     ):
         """
         Get appearance from database. Depth attribute specifies how many models will be traversed to create the response

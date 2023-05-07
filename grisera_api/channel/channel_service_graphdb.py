@@ -1,8 +1,10 @@
+from typing import Union
+
 from channel.channel_service import ChannelService
 from graph_api_service import GraphApiService
 from channel.channel_model import ChannelIn, ChannelOut, ChannelsOut, BasicChannelOut
+from helpers import create_stub_from_response
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
 
 
 class ChannelServiceGraphDB(ChannelService):
@@ -10,9 +12,12 @@ class ChannelServiceGraphDB(ChannelService):
     Object to handle logic of channel requests
 
     Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
+        graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
     graph_api_service = GraphApiService()
+
+    def __init__(self):
+        self.registered_channel_service = None
 
     def save_channel(self, channel: ChannelIn):
         """
@@ -34,7 +39,7 @@ class ChannelServiceGraphDB(ChannelService):
         if properties_response["errors"] is not None:
             return ChannelOut(type=channel.type, errors=properties_response["errors"])
 
-        return ChannelOut(type=channel.type,  id=channel_id)
+        return ChannelOut(type=channel.type, id=channel_id)
 
     def get_channels(self):
         """
@@ -51,16 +56,18 @@ class ChannelServiceGraphDB(ChannelService):
 
         return ChannelsOut(channels=channels)
 
-    def get_channel(self, channel_id: int):
+    def get_channel(self, channel_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given channel
 
         Args:
-        channel_id (int): Id of channel
+        channel_id (int | str): identity of channel
+        depth: (int): specifies how many related entities will be traversed to create the response
 
         Returns:
             Result of request as channel object
         """
+
         get_response = self.graph_api_service.get_node(channel_id)
 
         if get_response["errors"] is not None:
@@ -68,19 +75,18 @@ class ChannelServiceGraphDB(ChannelService):
         if get_response["labels"][0] != "Channel":
             return NotFoundByIdModel(id=channel_id, errors="Node not found.")
 
-        channel = {'id': get_response['id'], 'relations': [], 'reversed_relations': []}
-        for property in get_response["properties"]:
-            channel[property["key"]] = property["value"]
+        channel = create_stub_from_response(get_response, properties = ['type'])
 
-        relations_response = self.graph_api_service.get_node_relationships(channel_id)
+        if depth != 0:
+            channel["registered_channels"] = []
 
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == channel_id:
-                channel['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                name=relation["name"], relation_id=relation["id"]))
-            else:
-                channel['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
-                                                                         name=relation["name"],
-                                                                         relation_id=relation["id"]))
+            relations_response = self.graph_api_service.get_node_relationships(channel_id)
 
-        return ChannelOut(**channel)
+            for relation in relations_response["relationships"]:
+                if relation["end_node"] == channel_id & relation["name"] == "hasChannel":
+                    channel['registered_channels'].append(
+                        self.registered_channel_service.get_registered_channel(relation["start_node"], depth - 1))
+
+            return ChannelOut(**channel)
+        else:
+            return BasicChannelOut(**channel)

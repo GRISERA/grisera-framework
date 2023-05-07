@@ -70,7 +70,7 @@ class ArrangementsOut(BaseModelOut):
     arrangements: List[BasicArrangementOut] = []
 
 
-# circular import exeption prevention
+# Circular import exception prevention
 from activity_execution.activity_execution_model import ActivityExecutionOut
 
 ArrangementOut.update_forward_refs()

@@ -56,7 +56,7 @@ class RegisteredChannelsOut(BaseModelOut):
     registered_channels: List[BasicRegisteredChannelOut] = []
 
 
-# circular import exeption prevention
+# Circular import exception prevention
 from channel.channel_model import ChannelOut
 from recording.recording_model import RecordingOut
 from registered_data.registered_data_model import RegisteredDataOut

@@ -23,7 +23,7 @@ class TestExperimentRouterGet(unittest.TestCase):
         self.assertEqual(result, ExperimentOut(experiment_name="test",
                                                additional_properties=[PropertyIn(key="test", value="test")],
                                                id=experiment_id, links=get_links(router)))
-        get_experiment_mock.assert_called_once_with(experiment_id)
+        get_experiment_mock.assert_called_once_with(experiment_id, 0)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(ExperimentServiceGraphDB, 'get_experiment')
@@ -40,7 +40,7 @@ class TestExperimentRouterGet(unittest.TestCase):
         self.assertEqual(result, ExperimentOut(experiment_name="test",
                                                additional_properties=[PropertyIn(key="test", value="test")],
                                                errors={'errors': ['test']},  links=get_links(router)))
-        get_experiment_mock.assert_called_once_with(experiment_id)
+        get_experiment_mock.assert_called_once_with(experiment_id, 0)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(ExperimentServiceGraphDB, 'get_experiments')

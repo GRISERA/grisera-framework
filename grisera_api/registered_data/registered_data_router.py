@@ -7,10 +7,8 @@ from hateoas import get_links
 from registered_data.registered_data_model import (
     RegisteredDataIn,
     RegisteredDataOut,
-    BasicRegisteredDataOut,
     RegisteredDataNodesOut,
 )
-from registered_data.registered_data_service import RegisteredDataService
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 
@@ -55,7 +53,7 @@ class RegisteredDataRouter:
         response_model=Union[RegisteredDataOut, NotFoundByIdModel],
     )
     async def get_registered_data(
-        self, registered_data_id: Union[int, str], depth: int, response: Response
+        self, registered_data_id: Union[int, str], response: Response, depth: int = 0
     ):
         """
         Get registered data from database. Depth attribute specifies how many models will be traversed to create the

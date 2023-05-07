@@ -9,7 +9,6 @@ from participant_state.participant_state_model import (
     ParticipantStatePropertyIn,
     ParticipantStateRelationIn,
 )
-from participant_state.participant_state_service import ParticipantStateService
 from typing import Union
 from models.not_found_model import NotFoundByIdModel
 from services import Services
@@ -75,7 +74,7 @@ class ParticipantStateRouter:
         response_model=Union[ParticipantStateOut, NotFoundByIdModel],
     )
     async def get_participant_state(
-        self, participant_id: Union[int, str], depth: int, response: Response
+        self, participant_id: Union[int, str], response: Response, depth: int=0
     ):
         """
         Get participant state from database. Depth attribute specifies how many models will be traversed to create the

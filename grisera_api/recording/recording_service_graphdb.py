@@ -1,10 +1,10 @@
+from typing import Union
+
 from graph_api_service import GraphApiService
-from participation.participation_service_graphdb import ParticipationServiceGraphDB
+from helpers import create_stub_from_response
 from recording.recording_service import RecordingService
-from registered_channel.registered_channel_service_graphdb import RegisteredChannelServiceGraphDB
-from recording.recording_model import RecordingPropertyIn, RecordingRelationIn, RecordingIn, BasicRecordingOut, RecordingOut, RecordingsOut
+from recording.recording_model import RecordingPropertyIn, RecordingIn, BasicRecordingOut, RecordingOut, RecordingsOut
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
 
 
 class RecordingServiceGraphDB(RecordingService):
@@ -17,8 +17,11 @@ class RecordingServiceGraphDB(RecordingService):
     registered_channel_service(RegisteredChannelService): Service to send registered channel requests
     """
     graph_api_service = GraphApiService()
-    participation_service = ParticipationServiceGraphDB()
-    registered_channel_service = RegisteredChannelServiceGraphDB()
+
+    def __init__(self):
+        self.participation_service = None
+        self.registered_channel_service = None
+        self.observable_information_service = None
 
     def save_recording(self, recording: RecordingIn):
         """
@@ -50,7 +53,7 @@ class RecordingServiceGraphDB(RecordingService):
                                                         name="hasRegisteredChannel")
         recording.participation_id = recording.registered_channel_id = None
         self.graph_api_service.create_properties(recording_id, recording)
-        
+
         return self.get_recording(recording_id)
 
     def get_recordings(self):
@@ -72,14 +75,16 @@ class RecordingServiceGraphDB(RecordingService):
 
         return RecordingsOut(recordings=recordings)
 
-    def get_recording(self, recording_id: int):
+    def get_recording(self, recording_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given recording
         Args:
-            recording_id (int): Id of recording
+            depth: (int): specifies how many related entities will be traversed to create the response
+            recording_id (int | str): identity of recording
         Returns:
             Result of request as recording object
         """
+
         get_response = self.graph_api_service.get_node(recording_id)
 
         if get_response["errors"] is not None:
@@ -87,32 +92,38 @@ class RecordingServiceGraphDB(RecordingService):
         if get_response["labels"][0] != "Recording":
             return NotFoundByIdModel(id=recording_id, errors="Node not found.")
 
-        recording = {'id': get_response['id'], 'additional_properties': [], 'relations': [],
-                     'reversed_relations': []}
+        recording = create_stub_from_response(get_response)
 
-        for property in get_response["properties"]:
-            recording['additional_properties'].append({'key': property['key'], 'value': property['value']})
+        if depth != 0:
+            recording["registered_channel"] = None
+            recording["participation"] = None
+            recording["observable_informations"] = []
 
-        relations_response = self.graph_api_service.get_node_relationships(recording_id)
+            relations_response = self.graph_api_service.get_node_relationships(recording_id)
 
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == recording_id:
-                recording['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                  name=relation["name"],
-                                                                  relation_id=relation["id"]))
-            else:
-                recording['reversed_relations'].append(
-                    RelationInformation(second_node_id=relation["start_node"],
-                                        name=relation["name"],
-                                        relation_id=relation["id"]))
+            for relation in relations_response["relationships"]:
+                if relation["start_node"] == recording_id & relation["name"] == "hasRegisteredChannel":
+                    recording["registered_channel"] = self.registered_channel_service. \
+                        get_registered_channel(relation["end_node"], depth - 1)
+                else:
+                    if relation["start_node"] == recording_id & relation["name"] == "hasParticipation":
+                        recording["participation"] = self.participation_service. \
+                            get_participation(relation["end_node"], depth - 1)
+                    else:
+                        if relation["end_node"] == recording_id & relation["name"] == "hasRecording":
+                            recording["observable_informations"].append(self.participation_service.
+                                                                        get_participation(relation["start_node"],
+                                                                                          depth - 1))
 
-        return RecordingOut(**recording)
+            return RecordingOut(**recording)
+        else:
+            return BasicRecordingOut(**recording)
 
-    def delete_recording(self, recording_id: int):
+    def delete_recording(self, recording_id: Union[int, str]):
         """
         Send request to graph api to delete given recording
         Args:
-            recording_id (int): Id of recording
+            recording_id (int | str): identity of recording
         Returns:
             Result of request as recording object
         """
@@ -124,11 +135,11 @@ class RecordingServiceGraphDB(RecordingService):
         self.graph_api_service.delete_node(recording_id)
         return get_response
 
-    def update_recording(self, recording_id: int, recording: RecordingPropertyIn):
+    def update_recording(self, recording_id: Union[int, str], recording: RecordingPropertyIn):
         """
         Send request to graph api to update given participant state
         Args:
-            recording_id (int): Id of participant state
+            recording_id (int | str): identity of participant state
             recording (RecordingPropertyIn): Properties to update
         Returns:
             Result of request as participant state object
@@ -141,18 +152,17 @@ class RecordingServiceGraphDB(RecordingService):
         self.graph_api_service.delete_node_properties(recording_id)
         self.graph_api_service.create_properties(recording_id, recording)
 
-        recording_result = {"id": recording_id, "relations": get_response.relations,
-                            "reversed_relations": get_response.reversed_relations}
+        recording_result = {"id": recording_id, "additional_properties": recording.additional_properties}
         recording_result.update(recording.dict())
 
-        return RecordingOut(**recording_result)
-    
-    def update_recording_relationships(self, recording_id: int,
+        return BasicRecordingOut(**recording_result)
+
+    def update_recording_relationships(self, recording_id: Union[int, str],
                                        recording: RecordingIn):
         """
         Send request to graph api to update given recording
         Args:
-            recording_id (int): Id of recording
+            recording_id (int | str): identity of recording
             recording (RecordingIn): Relationships to update
         Returns:
             Result of request as recording object

@@ -10,7 +10,6 @@ from scenario.scenario_model import (
     OrderChangeIn,
     OrderChangeOut,
 )
-from scenario.scenario_service import ScenarioService
 from activity_execution.activity_execution_model import (
     ActivityExecutionOut,
     ActivityExecutionIn,

@@ -68,7 +68,7 @@ class MeasureNameOut(BasicMeasureNameOut, BaseModelOut):
     Model of measure name to send to client as a result of request
 
     Attributes:
-    measures (List[RelationInformation]): list of measures related to this measure name
+    measures (List[MeasureOut]): list of measures related to this measure name
     """
 
     measures: "Optional[List[MeasureOut]]"
@@ -85,7 +85,7 @@ class MeasureNamesOut(BaseModelOut):
     measure_names: List[BasicMeasureNameOut] = []
 
 
-# circular import exeption prevention
+# Circular import exception prevention
 from measure.measure_model import MeasureOut
 
 MeasureNameOut.update_forward_refs()

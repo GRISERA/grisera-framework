@@ -75,11 +75,9 @@ class RecordingsOut(BaseModelOut):
     recordings: List[BasicRecordingOut] = []
 
 
-# circular import exeption prevention
-from observable_information.observable_information_model import (
-    ObservableInformationOut,
-)
-from registered_channel.registered_channel_model import RegisteredChannelOut
+# Circular import exception prevention
+from observable_information.observable_information_model import ObservableInformationOut
 from participation.participation_model import ParticipationOut
+from registered_channel.registered_channel_model import RegisteredChannelOut
 
 RecordingOut.update_forward_refs()

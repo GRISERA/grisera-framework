@@ -37,7 +37,7 @@ class BasicPersonalityBigFiveOut(PersonalityBigFiveIn):
     Basic model of personality big five model to send to client as a result of request
 
     Attributes:
-        id (Optional[int]): Id of personality big five model returned from api
+        id (Optional[int | str]): Id of personality big five model returned from api
     """
 
     id: Optional[Union[int, str]]
@@ -73,7 +73,7 @@ class BasicPersonalityPanasOut(PersonalityPanasIn):
     Basic model of personality panas to send to client as a result of request
 
     Attributes:
-        id (Optional[int]): Id of personality panas returned from api
+        id (Optional[int | str]): Id of personality panas returned from api
     """
 
     id: Optional[Union[int, str]]
@@ -104,8 +104,8 @@ class PersonalitiesOut(BaseModelOut):
     ] = []
 
 
-# circular import exeption prevention
+# Circular import exception prevention
 from participant_state.participant_state_model import ParticipantStateOut
 
-PersonalityPanasOut.update_forward_refs()
 PersonalityBigFiveOut.update_forward_refs()
+PersonalityPanasOut.update_forward_refs()

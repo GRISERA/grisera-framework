@@ -10,8 +10,8 @@ class ParticipationIn(BaseModel):
     Participation model in database
 
     Attributes:
-    activity_execution_id (Optional[int]): Activity execution of participation
-    participant_state_id (Optional[int]): Participant state of participation
+    activity_execution_id (Optional[int | str]): Activity execution of participation
+    participant_state_id (Optional[int | str]): Participant state of participation
     """
 
     activity_execution_id: Optional[Union[int, str]]
@@ -55,7 +55,7 @@ class ParticipationsOut(BaseModelOut):
     participations: List[BasicParticipationOut] = []
 
 
-# circular import exeption prevention
+# Circular import exception prevention
 from activity_execution.activity_execution_model import ActivityExecutionOut
 from participant_state.participant_state_model import ParticipantStateOut
 from recording.recording_model import RecordingOut

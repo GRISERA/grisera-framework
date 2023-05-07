@@ -6,14 +6,12 @@ from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
 from personality.personality_model import (
     PersonalityBigFiveIn,
-    BasicPersonalityBigFiveOut,
     PersonalityBigFiveOut,
     PersonalityPanasIn,
-    BasicPersonalityPanasOut,
     PersonalityPanasOut,
     PersonalitiesOut,
 )
-from personality.personality_service import PersonalityService
+
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 
@@ -84,7 +82,7 @@ class PersonalityRouter:
         ],
     )
     async def get_personality(
-        self, personality_id: Union[int, str], depth: int, response: Response
+        self, personality_id: Union[int, str], response: Response, depth: int=0
     ):
         """
         Get personality from database. Depth attribute specifies how many models will be traversed to create the

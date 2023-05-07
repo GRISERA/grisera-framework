@@ -12,7 +12,6 @@ from recording.recording_model import (
     RecordingOut,
     RecordingsOut,
 )
-from recording.recording_service import RecordingService
 from services import Services
 
 router = InferringRouter()
@@ -47,7 +46,7 @@ class RecordingRouter:
     @router.get("/recordings", tags=["recordings"], response_model=RecordingsOut)
     async def get_recordings(self, response: Response):
         """
-        Get recordingss from database
+        Get recordings from database
         """
 
         get_response = self.recording_service.get_recordings()
@@ -63,7 +62,7 @@ class RecordingRouter:
         response_model=Union[RecordingOut, NotFoundByIdModel],
     )
     async def get_recording(
-        self, recording_id: Union[int, str], depth: int, response: Response
+        self, recording_id: Union[int, str], response: Response, depth: int=0
     ):
         """
         Get recordings from database. Depth attribute specifies how many models will be traversed to create the

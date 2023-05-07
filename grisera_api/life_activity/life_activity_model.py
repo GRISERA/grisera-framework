@@ -76,9 +76,7 @@ class LifeActivitiesOut(BaseModelOut):
     life_activities: List[BasicLifeActivityOut] = []
 
 
-# circular import exeption prevention
-from observable_information.observable_information_model import (
-    ObservableInformationOut,
-)
+# Circular import exception prevention
+from observable_information.observable_information_model import ObservableInformationOut
 
 LifeActivityOut.update_forward_refs()

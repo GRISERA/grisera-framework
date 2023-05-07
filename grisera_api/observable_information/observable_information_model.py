@@ -53,13 +53,13 @@ class ObservableInformationsOut(BaseModelOut):
     Model of information observed during experiment to send to client as a result of request
 
     Attributes:
-    observable_informations (List[BasicLifeActivityOut]): Observable informations from database
+    observable_informations (List[BasicObservableInformationOut]): Observable informations from database
     """
 
     observable_informations: List[BasicObservableInformationOut] = []
 
 
-# circular import exeption prevention
+# Circular import exception prevention
 from life_activity.life_activity_model import LifeActivityOut
 from modality.modality_model import ModalityOut
 from recording.recording_model import RecordingOut

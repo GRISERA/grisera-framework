@@ -1,10 +1,11 @@
+from typing import Union
+
 from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
 from measure.measure_model import MeasurePropertyIn, BasicMeasureOut, \
     MeasuresOut, MeasureOut, MeasureIn, MeasureRelationIn
 from measure.measure_service import MeasureService
-from measure_name.measure_name_service_graphdb import MeasureNameServiceGraphDB
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
 
 
 class MeasureServiceGraphDB(MeasureService):
@@ -16,7 +17,10 @@ class MeasureServiceGraphDB(MeasureService):
         measure_name_service (MeasureNameService): Service to manage measure name models
     """
     graph_api_service = GraphApiService()
-    measure_name_service = MeasureNameServiceGraphDB()
+
+    def __init__(self):
+        self.measure_name_service = None
+        self.time_series_service = None
 
     def save_measure(self, measure: MeasureIn):
         """
@@ -28,7 +32,7 @@ class MeasureServiceGraphDB(MeasureService):
         Returns:
             Result of request as measure object
         """
-        node_response = self.graph_api_service.create_node("`Measure`")
+        node_response = self.graph_api_service.create_node("Measure")
 
         if node_response["errors"] is not None:
             return MeasureOut(**measure.dict(), errors=node_response["errors"])
@@ -68,16 +72,18 @@ class MeasureServiceGraphDB(MeasureService):
 
         return MeasuresOut(measures=measures)
 
-    def get_measure(self, measure_id: int):
+    def get_measure(self, measure_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given measure
 
         Args:
-            measure_id (int): Id of measure
+            depth: (int): specifies how many related entities will be traversed to create the response
+            measure_id (int | str): identity of measure
 
         Returns:
             Result of request as measure object
         """
+
         get_response = self.graph_api_service.get_node(measure_id)
 
         if get_response["errors"] is not None:
@@ -85,32 +91,31 @@ class MeasureServiceGraphDB(MeasureService):
         if get_response["labels"][0] != "Measure":
             return NotFoundByIdModel(id=measure_id, errors="Node not found.")
 
-        measure = {'id': get_response['id'], 'relations': [],
-                   'reversed_relations': []}
-        for property in get_response["properties"]:
-            if property["key"] in ["datatype", "range", "unit"]:
-                measure[property["key"]] = property["value"]
+        measure = create_stub_from_response(get_response, properties = ['datatype', 'range', 'unit'])
 
-        relations_response = self.graph_api_service.get_node_relationships(measure_id)
+        if depth != 0:
+            measure["time_series"] = []
+            measure["measure_name"] = None
+            relations_response = self.graph_api_service.get_node_relationships(measure_id)
 
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == measure_id:
-                measure['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                name=relation["name"],
-                                                                relation_id=relation["id"]))
-            else:
-                measure['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
-                                                                         name=relation["name"],
-                                                                         relation_id=relation["id"]))
+            for relation in relations_response["relationships"]:
+                if relation["start_node"] == measure_id & relation["name"] == "hasMeasureName":
+                    measure['measure_name'] = self.measure_name_service.get_measure_name(relation["end_node"], depth-1)
+                else:
+                    if relation["end_node"] == measure_id & relation["name"] == "hasMeasure":
+                        measure['time_series'].append(self.time_series_service.get_time_series(relation["start_node"],
+                                                                                               depth - 1))
 
-        return MeasureOut(**measure)
+            return MeasureOut(**measure)
+        else:
+            return BasicMeasureOut(**measure)
 
-    def delete_measure(self, measure_id: int):
+    def delete_measure(self, measure_id: Union[int, str]):
         """
         Send request to graph api to delete given measure
 
         Args:
-            measure_id (int): Id of measure
+            measure_id (int | str): identity of measure
 
         Returns:
             Result of request as measure object
@@ -123,12 +128,12 @@ class MeasureServiceGraphDB(MeasureService):
         self.graph_api_service.delete_node(measure_id)
         return get_response
 
-    def update_measure(self, measure_id: int, measure: MeasurePropertyIn):
+    def update_measure(self, measure_id: Union[int, str], measure: MeasurePropertyIn):
         """
         Send request to graph api to update given measure
 
         Args:
-            measure_id (int): Id of measure
+            measure_id (int | str): identity of measure
             measure (MeasurePropertyIn): Properties to update
 
         Returns:
@@ -142,19 +147,18 @@ class MeasureServiceGraphDB(MeasureService):
         self.graph_api_service.delete_node_properties(measure_id)
         self.graph_api_service.create_properties(measure_id, measure)
 
-        measure_result = {"id": measure_id, "relations": get_response.relations,
-                          "reversed_relations": get_response.reversed_relations}
+        measure_result = {"id": measure_id}
         measure_result.update(measure.dict())
 
-        return MeasureOut(**measure_result)
+        return BasicMeasureOut(**measure_result)
 
-    def update_measure_relationships(self, measure_id: int,
+    def update_measure_relationships(self, measure_id: Union[int, str],
                                      measure: MeasureRelationIn):
         """
         Send request to graph api to update given measure
 
         Args:
-            measure_id (int): Id of measure
+            measure_id (int | str): identity of measure
             measure (MeasureRelationIn): Relationships to update
 
         Returns:

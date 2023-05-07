@@ -25,7 +25,7 @@ class MeasureRelationIn(BaseModel):
     Model of measure relations to acquire from client
 
     Attributes:
-    measure_name_id (int): Id of the measure name
+    measure_name_id (int | str): identity of the measure name
     """
 
     measure_name_id: Optional[Union[int, str]]
@@ -72,7 +72,7 @@ class MeasuresOut(BaseModelOut):
     measures: List[BasicMeasureOut] = []
 
 
-# circular import exeption prevention
+# Circular import exception prevention
 from measure_name.measure_name_model import MeasureNameOut
 from time_series.time_series_model import TimeSeriesOut
 

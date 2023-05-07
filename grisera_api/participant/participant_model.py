@@ -30,7 +30,7 @@ class ParticipantIn(BaseModel):
     Attributes:
         name (str): Name of the participant
         date_of_birth (Optional[date]): Date of birth of participant
-        sex (Optional[Sex]): Sex of participant
+        sex (Optional[str]): Sex of participant
         disorder (Optional[str]): Type of disorder
         additional_properties (Optional[List[PropertyIn]]): Additional properties for participant
     """
@@ -47,7 +47,7 @@ class BasicParticipantOut(ParticipantIn):
     Basic model of participant to send to client as a result of request
 
     Attributes:
-        id (Optional[int]): Id of participant returned from api
+        id (Optional[int | str]): Id of participant returned from api
     """
 
     id: Optional[Union[int, str]]
@@ -75,7 +75,7 @@ class ParticipantsOut(BaseModelOut):
     participants: List[BasicParticipantOut] = []
 
 
-# circular import exeption prevention
+# Circular import exception prevention
 from participant_state.participant_state_model import ParticipantStateOut
 
 ParticipantOut.update_forward_refs()

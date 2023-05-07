@@ -10,7 +10,6 @@ from participation.participation_model import (
     ParticipationOut,
     ParticipationsOut,
 )
-from participation.participation_service import ParticipationService
 from services import Services
 
 router = InferringRouter()
@@ -67,7 +66,7 @@ class ParticipationRouter:
         response_model=Union[ParticipationOut, NotFoundByIdModel],
     )
     async def get_participation(
-        self, participation_id: Union[int, str], depth: int, response: Response
+        self, participation_id: Union[int, str], response: Response, depth: int=0
     ):
         """
         Get participation from database. Depth attribute specifies how many models will be traversed to create the

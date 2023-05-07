@@ -1,9 +1,7 @@
+from typing import Union
+
 from activity_execution.activity_execution_model import ActivityExecutionPropertyIn, ActivityExecutionRelationIn, \
-    ActivityExecutionIn, ActivityExecutionOut, ActivityExecutionsOut, BasicActivityExecutionOut
-from arrangement.arrangement_service import ArrangementService
-from graph_api_service import GraphApiService
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+    ActivityExecutionIn
 
 
 class ActivityExecutionService:
@@ -34,45 +32,47 @@ class ActivityExecutionService:
 
         raise Exception("Reference to an abstract class.")
 
-    def get_activity_execution(self, activity_execution_id: int):
+    def get_activity_execution(self, activity_execution_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given activity execution
 
         Args:
-            activity_execution_id (int): Id of activity execution
+            depth (int): specifies how many related entities will be traversed to create the response
+            activity_execution_id (int | str): identity of activity execution
 
         Returns:
             Result of request as activity execution object
         """
         raise Exception("Reference to an abstract class.")
 
-    def delete_activity_execution(self, activity_execution_id: int):
+    def delete_activity_execution(self, activity_execution_id: Union[int, str]):
         """
         Send request to graph api to delete given activity execution
         Args:
-            activity_execution_id (int): Id of activity execution
+            activity_execution_id (int | str): identity of activity execution
         Returns:
             Result of request as activity execution object
         """
         raise Exception("Reference to an abstract class.")
 
-    def update_activity_execution(self, activity_execution_id: int, activity_execution: ActivityExecutionPropertyIn):
+    def update_activity_execution(self, activity_execution_id: Union[int, str],
+                                  activity_execution: ActivityExecutionPropertyIn):
         """
         Send request to graph api to update given participant state
         Args:
-            activity_execution_id (int): Id of participant state
+            activity_execution_id (int | str): identity of activity execution
             activity_execution (ActivityExecutionPropertyIn): Properties to update
         Returns:
             Result of request as participant state object
         """
         raise Exception("Reference to an abstract class.")
 
-    def update_activity_execution_relationships(self, activity_execution_id: int,
+    def update_activity_execution_relationships(self, activity_execution_id: Union[int, str],
                                                 activity_execution: ActivityExecutionRelationIn):
         """
         Send request to graph api to update given activity execution relationships
         Args:
-            activity_execution_id (int): Id of activity execution
+            activity_execution_id (int | str): identity of activity execution
             activity_execution (ActivityExecutionIn): Relationships to update
         Returns:
             Result of request as activity execution object

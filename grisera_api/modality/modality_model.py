@@ -90,9 +90,7 @@ class ModalitiesOut(BaseModelOut):
     modalities: List[BasicModalityOut] = []
 
 
-# circular import exeption prevention
-from observable_information.observable_information_model import (
-    ObservableInformationOut,
-)
+# Circular import exception prevention
+from observable_information.observable_information_model import ObservableInformationOut
 
 ModalityOut.update_forward_refs()

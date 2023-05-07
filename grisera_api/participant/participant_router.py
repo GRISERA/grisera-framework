@@ -63,7 +63,7 @@ class ParticipantRouter:
         response_model=Union[ParticipantOut, NotFoundByIdModel],
     )
     async def get_participant(
-        self, participant_id: Union[str, int], depth: int, response: Response
+        self, participant_id: Union[str, int], response: Response, depth: int=0
     ):
         """
         Get participant from database. Depth attribute specifies how many models will be traversed to create the

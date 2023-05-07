@@ -10,9 +10,6 @@ from registered_channel.registered_channel_model import (
     RegisteredChannelsOut,
     RegisteredChannelOut,
 )
-from registered_channel.registered_channel_service_graphdb import (
-    RegisteredChannelServiceGraphDB,
-)
 from services import Services
 
 router = InferringRouter()
@@ -75,7 +72,7 @@ class RegisteredChannelRouter:
         response_model=Union[RegisteredChannelOut, NotFoundByIdModel],
     )
     async def get_registered_channel(
-        self, registered_channel_id: Union[int, str], depth: int, response: Response
+        self, registered_channel_id: Union[int, str], response: Response, depth: int = 0,
     ):
         """
         Get registered channels from database. Depth attribute specifies how many models will be traversed to create the

@@ -80,7 +80,7 @@ class ChannelsOut(BaseModelOut):
     channels: List[BasicChannelOut] = []
 
 
-# circular import exeption prevention
+# Circular import exception prevention
 from registered_channel.registered_channel_model import RegisteredChannelOut
 
 ChannelOut.update_forward_refs()

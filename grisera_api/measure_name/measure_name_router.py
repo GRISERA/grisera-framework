@@ -5,12 +5,9 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
 from measure_name.measure_name_model import (
-    MeasureNameIn,
     MeasureNameOut,
-    BasicMeasureNameOut,
     MeasureNamesOut,
 )
-from measure_name.measure_name_service import MeasureNameService
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 
@@ -35,7 +32,7 @@ class MeasureNameRouter:
         response_model=Union[MeasureNameOut, NotFoundByIdModel],
     )
     async def get_measure_name(
-        self, measure_name_id: Union[int, str], depth: int, response: Response
+        self, measure_name_id: Union[int, str], response: Response, depth: int = 0
     ):
         """
         Get measure name from database. Depth attribute specifies how many models will be traversed to create the

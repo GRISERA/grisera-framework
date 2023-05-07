@@ -1,9 +1,6 @@
-from graph_api_service import GraphApiService
-from participation.participation_service import ParticipationService
-from registered_channel.registered_channel_service import RegisteredChannelService
-from recording.recording_model import RecordingPropertyIn, RecordingRelationIn, RecordingIn, BasicRecordingOut, RecordingOut, RecordingsOut
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from typing import Union
+
+from recording.recording_model import RecordingPropertyIn, RecordingIn
 
 
 class RecordingService:
@@ -32,43 +29,44 @@ class RecordingService:
         """
         raise Exception("get_recordings not implemented yet")
 
-    def get_recording(self, recording_id: int):
+    def get_recording(self, recording_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given recording
         Args:
-            recording_id (int): Id of recording
+            depth: (int): specifies how many related entities will be traversed to create the response
+            recording_id (int | str): identity of recording
         Returns:
             Result of request as recording object
         """
         raise Exception("get_recording not implemented yet")
 
-    def delete_recording(self, recording_id: int):
+    def delete_recording(self, recording_id: Union[int, str]):
         """
         Send request to graph api to delete given recording
         Args:
-            recording_id (int): Id of recording
+            recording_id (int | str): identity of recording
         Returns:
             Result of request as recording object
         """
         raise Exception("delete_recording not implemented yet")
 
-    def update_recording(self, recording_id: int, recording: RecordingPropertyIn):
+    def update_recording(self, recording_id: Union[int, str], recording: RecordingPropertyIn):
         """
         Send request to graph api to update given participant state
         Args:
-            recording_id (int): Id of participant state
+            recording_id (int | str): identity of participant state
             recording (RecordingPropertyIn): Properties to update
         Returns:
             Result of request as participant state object
         """
         raise Exception("update_recording not implemented yet")
-    
-    def update_recording_relationships(self, recording_id: int,
+
+    def update_recording_relationships(self, recording_id: Union[int, str],
                                        recording: RecordingIn):
         """
         Send request to graph api to update given recording
         Args:
-            recording_id (int): Id of recording
+            recording_id (int | str): identity of recording
             recording (RecordingIn): Relationships to update
         Returns:
             Result of request as recording object

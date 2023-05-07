@@ -22,8 +22,8 @@ class ActivityExecutionRelationIn(BaseModel):
     Model of activity execution relations to acquire from client
 
     Attributes:
-    activity_id (int): Id of activity
-    arrangement_id (int) : Id of arrangement
+    activity_id (int | str): identity of activity
+    arrangement_id (int | str) : identity number of arrangement
     """
 
     activity_id: Optional[Union[int, str]]
@@ -55,12 +55,14 @@ class ActivityExecutionOut(BasicActivityExecutionOut, BaseModelOut):
     Attributes:
     activity (Optional[ActivityOut]): activity related to this activity execution
     participations (Optional[List[ParticipationOut]]): participations related to this activity execution
-    experiments (Optional[List[ExperimentOut]]): experiments related to this participation
+    experiments (Optional[List[ExperimentOut]]): experiments related to this activity execution
+    arrangements (Optional[List[ArrangementOut]]): arrangements related to this activity execution
     """
 
     activity: "Optional[ActivityOut]"
     participations: "Optional[List[ParticipationOut]]"
     experiments: "Optional[List[ExperimentOut]]"
+    arrangements: "Optional[List[ArrangementOut]]"
 
 
 class ActivityExecutionsOut(BaseModelOut):
@@ -74,9 +76,10 @@ class ActivityExecutionsOut(BaseModelOut):
     activity_executions: List[BasicActivityExecutionOut] = []
 
 
-# circular import exeption prevention
+# Circular import exception prevention
 from participation.participation_model import ParticipationOut
 from activity.activity_model import ActivityOut
 from experiment.experiment_model import ExperimentOut
+from arrangement.arrangement_model import ArrangementOut
 
 ActivityExecutionOut.update_forward_refs()

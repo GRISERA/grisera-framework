@@ -1,8 +1,6 @@
-from graph_api_service import GraphApiService
-from personality.personality_model import PersonalityBigFiveIn, PersonalityBigFiveOut, \
-    PersonalityPanasIn, PersonalityPanasOut, BasicPersonalityBigFiveOut, BasicPersonalityPanasOut, PersonalitiesOut
-from models.relation_information_model import RelationInformation
-from models.not_found_model import NotFoundByIdModel
+from typing import Union
+
+from personality.personality_model import PersonalityBigFiveIn, PersonalityPanasIn
 
 
 class PersonalityService:
@@ -35,12 +33,13 @@ class PersonalityService:
         """
         raise Exception("save_personality_panas not implemented yet")
 
-    def get_personality(self, personality_id: int):
+    def get_personality(self, personality_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given personality
 
         Args:
-            personality_id (int): Id of personality
+            depth: (int): specifies how many related entities will be traversed to create the response
+            personality_id (int | str): identity of personality
 
         Returns:
             Result of request as personality object
@@ -56,24 +55,24 @@ class PersonalityService:
         """
         raise Exception("get_personalities not implemented yet")
 
-    def delete_personality(self, personality_id: int):
+    def delete_personality(self, personality_id: Union[int, str]):
         """
         Send request to graph api to delete given personality
 
         Args:
-            personality_id (int): Id of personality
+            personality_id (int | str): identity of personality
 
         Returns:
             Result of request as personality object
         """
         raise Exception("delete_personality not implemented yet")
 
-    def update_personality_big_five(self, personality_id: int, personality: PersonalityBigFiveIn):
+    def update_personality_big_five(self, personality_id: Union[int, str], personality: PersonalityBigFiveIn):
         """
         Send request to graph api to update given personality big five model
 
         Args:
-            personality_id (int): Id of personality
+            personality_id (int | str): identity of personality
             personality (PersonalityBigFiveIn): Properties to update
 
         Returns:
@@ -81,12 +80,12 @@ class PersonalityService:
         """
         raise Exception("update_personality_big_five not implemented yet")
 
-    def update_personality_panas(self, personality_id: int, personality: PersonalityPanasIn):
+    def update_personality_panas(self, personality_id: Union[int, str], personality: PersonalityPanasIn):
         """
         Send request to graph api to update given personality panas model
 
         Args:
-            personality_id (int): Id of personality
+            personality_id (int | str): identity of personality
             personality (PersonalityPanasIn): Properties to update
 
         Returns:

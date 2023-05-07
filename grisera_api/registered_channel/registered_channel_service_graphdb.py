@@ -1,11 +1,11 @@
+from typing import Union
+
 from graph_api_service import GraphApiService
-from channel.channel_service_graphdb import ChannelServiceGraphDB
+from helpers import create_stub_from_response
 from registered_channel.registered_channel_service import RegisteredChannelService
-from registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
 from registered_channel.registered_channel_model import BasicRegisteredChannelOut, RegisteredChannelsOut, \
     RegisteredChannelOut, RegisteredChannelIn
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
 
 
 class RegisteredChannelServiceGraphDB(RegisteredChannelService):
@@ -18,8 +18,11 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
     registered_data_service (RegisteredDataService): Service to send registered data requests
     """
     graph_api_service = GraphApiService()
-    channel_service = ChannelServiceGraphDB()
-    registered_data_service = RegisteredDataServiceGraphDB()
+
+    def __init__(self):
+        self.channel_service = None
+        self.registered_data_service = None
+        self.recording_service = None
 
     def save_registered_channel(self, registered_channel: RegisteredChannelIn):
         """
@@ -31,7 +34,7 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
         Returns:
             Result of request as registered channel object
         """
-        node_response = self.graph_api_service.create_node("`Registered Channel`")
+        node_response = self.graph_api_service.create_node("Registered Channel")
 
         if node_response["errors"] is not None:
             return RegisteredChannelOut(errors=node_response["errors"])
@@ -72,12 +75,13 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
 
         return RegisteredChannelsOut(registered_channels=registered_channels)
 
-    def get_registered_channel(self, registered_channel_id: int):
+    def get_registered_channel(self, registered_channel_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given registered channel
 
         Args:
-            registered_channel_id (int): Id of registered channel
+            depth: (int): specifies how many related entities will be traversed to create the response
+            registered_channel_id (int | str): identity of registered channel
 
         Returns:
             Result of request as registered channel object
@@ -89,33 +93,38 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
         if get_response["labels"][0] != "Registered Channel":
             return NotFoundByIdModel(id=registered_channel_id, errors="Node not found.")
 
-        registered_channel = {'id': get_response['id'], 'relations': [],
-                              'reversed_relations': []}
-        for property in get_response["properties"]:
-            if property["key"] == "age":
-                registered_channel[property["key"]] = property["value"]
+        registered_channel = create_stub_from_response(get_response)
 
-        relations_response = self.graph_api_service.get_node_relationships(registered_channel_id)
+        if depth != 0:
+            registered_channel["recordings"] = []
+            registered_channel["channel"] = None
+            registered_channel["registeredData"] = None
 
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == registered_channel_id:
-                registered_channel['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                           name=relation["name"],
-                                                                           relation_id=relation["id"]))
-            else:
-                registered_channel['reversed_relations'].append(
-                    RelationInformation(second_node_id=relation["start_node"],
-                                        name=relation["name"],
-                                        relation_id=relation["id"]))
+            relations_response = self.graph_api_service.get_node_relationships(registered_channel_id)
 
-        return RegisteredChannelOut(**registered_channel)
+            for relation in relations_response["relationships"]:
+                if relation["end_node"] == registered_channel_id & relation["name"] == "hasRegisteredChannel":
+                    registered_channel["recordings"].append(self.recording_service.
+                                                            get_recording(relation["start_node"], depth - 1))
+                else:
+                    if relation["start_node"] == registered_channel_id & relation["name"] == "hasChannel":
+                        registered_channel["channel"] = self.channel_service. \
+                            get_channel(relation["end_node"], depth - 1)
+                    else:
+                        if relation["start_node"] == registered_channel_id & relation["name"] == "hasRegisteredData":
+                            registered_channel["registeredData"] = self.registered_data_service. \
+                                get_registered_data(relation["start_node"], depth - 1)
 
-    def delete_registered_channel(self, registered_channel_id: int):
+            return RegisteredChannelOut(**registered_channel)
+        else:
+            return BasicRegisteredChannelOut(**registered_channel)
+
+    def delete_registered_channel(self, registered_channel_id: Union[int, str]):
         """
         Send request to graph api to delete given registered channel
 
         Args:
-            registered_channel_id (int): Id of registered channel
+            registered_channel_id (int | str): identity of registered channel
 
         Returns:
             Result of request as registered channel object
@@ -128,18 +137,19 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
         self.graph_api_service.delete_node(registered_channel_id)
         return get_response
 
-    def update_registered_channel_relationships(self, registered_channel_id: int,
+    def update_registered_channel_relationships(self, registered_channel_id: Union[int, str],
                                                 registered_channel: RegisteredChannelIn):
         """
         Send request to graph api to update given registered channel
 
         Args:
-            registered_channel_id (int): Id of registered channel
+            registered_channel_id (int | str): identity of registered channel
             registered_channel (RegisteredChannelIn): Relationships to update
 
         Returns:
             Result of request as registered channel object
         """
+        get_response: RegisteredChannelOut
         get_response = self.get_registered_channel(registered_channel_id)
 
         if type(get_response) is NotFoundByIdModel:

@@ -52,7 +52,7 @@ class ExperimentsOut(BaseModelOut):
     experiments: List[BasicExperimentOut] = []
 
 
-# circular import exeption prevention
+# Circular import exception prevention
 from activity_execution.activity_execution_model import ActivityExecutionOut
 
 ExperimentOut.update_forward_refs()

@@ -52,7 +52,7 @@ class RegisteredDataNodesOut(BaseModelOut):
     registered_data_nodes: List[BasicRegisteredDataOut] = []
 
 
-# circular import exeption prevention
+# Circular import exception prevention
 from registered_channel.registered_channel_model import RegisteredChannelOut
 
 RegisteredDataOut.update_forward_refs()

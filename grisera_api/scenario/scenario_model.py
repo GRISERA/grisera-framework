@@ -2,6 +2,7 @@ from typing import Union, List
 
 from pydantic import BaseModel
 
+from activity_execution.activity_execution_model import ActivityExecutionIn
 from models.base_model_out import BaseModelOut
 
 
@@ -11,22 +12,23 @@ class ScenarioIn(BaseModel):
 
     Attributes:
     activity_executions (List[ActivityExecutionIn]): list of activity executions in scenario
-    experiment_id (Union[int, str]): Id of experiment
     """
 
     experiment_id: Union[int, str]
-    activity_executions: "List[ActivityExecutionIn]"
+    activity_executions: List[ActivityExecutionIn]
 
 
-class ScenarioOut(ScenarioIn, BaseModelOut):
+class ScenarioOut(BaseModelOut):
     """
     Model of scenario to send to client as a result of request
 
     Attributes:
-    activity_executions (List[ActivityExecutionOut]): List of activity executions in scenario
+        activity_executions (List[ActivityExecutionOut]): List of activity executions in scenario
+        experiment (ExperimentOut): Experiment, the scenario belongs to
     """
 
     activity_executions: "List[ActivityExecutionOut]"
+    experiment: "ExperimentOut"
 
 
 class OrderChangeIn(BaseModel):
@@ -48,11 +50,8 @@ class OrderChangeOut(BaseModelOut):
     """
 
 
-# circular import exeption prevention
-from activity_execution.activity_execution_model import (
-    ActivityExecutionIn,
-    ActivityExecutionOut,
-)
+# Circular import exception prevention
+from activity_execution.activity_execution_model import ActivityExecutionOut
+from experiment.experiment_model import ExperimentOut
 
-ScenarioIn.update_forward_refs()
 ScenarioOut.update_forward_refs()
