@@ -104,8 +104,10 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
     def delete_recording(self, recording_id: Union[str, int]):
         """
         Send request to mongo api to delete given recording
+
         Args:
             recording_id (int): Id of recording
+
         Returns:
             Result of request as recording object
         """
@@ -116,9 +118,11 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
     ):
         """
         Send request to graph api to update given participant state
+
         Args:
             recording_id (int): Id of participant state
             recording (RecordingPropertyIn): Properties to update
+
         Returns:
             Result of request as participant state object
         """
@@ -129,9 +133,11 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
     ):
         """
         Send request to graph api to update given recording
+
         Args:
             recording_id (int): Id of recording
             recording (RecordingIn): Relationships to update
+
         Returns:
             Result of request as recording object
         """
@@ -171,8 +177,10 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
     ):
         """
         Add observable information to recording. Obervable information is embeded in related recording.
+
         Args:
             observable_information (ObservableInformationIn): observable information to add
+
         Returns:
             Added observable information as BasicObservableInformationOut object
         """
@@ -191,8 +199,10 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
     def update_observable_information(self, observable_information_dict: dict):
         """
         Edit observable information in recording. Obervable information is embeded in related recording.
+
         Args:
             observable_information (BasicObservableInformationOut): new version of observable information
+
         Returns:
             Removed observable information
         """
@@ -225,8 +235,10 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
     ):
         """
         Remove observable information from recording. Obervable information is embeded in related recording.
+
         Args:
             observable_information (ObservableInformationIn): observable information to add
+
         Returns:
             Removed observable information
         """

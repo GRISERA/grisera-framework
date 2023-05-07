@@ -33,7 +33,7 @@ class RegisteredChannelServiceMongoDB(
 
     def save_registered_channel(self, registered_channel: RegisteredChannelIn):
         """
-        Send request to mongo api to create new registered channel. This method uses mixin get implementation.
+        Send request to mongo api to create new registered channel. This method uses mixin create implementation.
 
         Args:
             registered_channel (RegisteredChannelIn): Registered channel to be added
@@ -140,7 +140,7 @@ class RegisteredChannelServiceMongoDB(
 
     def delete_registered_channel(self, registered_channel_id: int):
         """
-        Send request to mongo api to delete given registered channel. This method uses mixin get implementation.
+        Send request to mongo api to delete given registered channel. This method uses mixin delete implementation.
 
         Args:
             registered_channel_id (int): Id of registered channel

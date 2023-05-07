@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Union
+
+from pydantic import BaseModel
 from models.not_found_model import NotFoundByIdModel
 from mongo_service import mongo_api_service
 
@@ -8,7 +10,8 @@ class GenericMongoServiceMixin:
 
     """
     This mixin defines implementation of basic mongo services methods. It requires the sublass to implement:
-        model_out_class field - out model class of services model
+        model_out_class field - out model class of services model. Based on this atribute mongo collection is
+            determined
         _add_related_documents method - method for adding related documents to result when traversing models
     """
 
@@ -30,7 +33,13 @@ class GenericMongoServiceMixin:
         self, query: dict = {}, depth: int = 0, source: str = "", *args, **kwargs
     ):
         """
-        Generic method for sending request to mongo api to get single document
+        Generic method for getting a multiple documents from mongo api
+
+        Args:
+            query: Query to mongo api. Empty by default.
+            depth: This specifies the number of collections that are to be traversed
+            source: Helper arguments that specifies direction of collection traversion
+
         Returns:
             Result of request as list of dictionaries
         """
@@ -48,9 +57,15 @@ class GenericMongoServiceMixin:
         self, id: Union[str, int], depth: int = 0, source: str = "", *args, **kwargs
     ):
         """
-        Generic method for sending request to mongo api to get single document
+        Generic method for getting a single document in dict form from mongo api.
+
+        Args:
+            query: Query to mongo api. Empty by default.
+            depth: This specifies the number of collections that are to be traversed
+            source: Helper arguments that specifies direction of collection traversion
+
         Returns:
-            Result of request as list of recordings objects
+            Result of request as a dictionary
         """
         out_class = self.model_out_class
         result_dict = mongo_api_service.get_document(id, out_class, *args, **kwargs)
@@ -66,9 +81,15 @@ class GenericMongoServiceMixin:
         self, id: Union[str, int], depth: int = 0, source: str = "", *args, **kwargs
     ):
         """
-        Generic method for sending request to mongo api to get single document
+        Generic method for getting a single documents from mongo api.
+
+        Args:
+            query: Query to mongo api. Empty by default.
+            depth: This specifies the number of collections that are to be traversed
+            source: Helper arguments that specifies direction of collection traversion
+
         Returns:
-            Result of request as list of recordings objects
+            Result of request as a model object
         """
         out_class = self.model_out_class
         result = self.get_single_dict(id, depth, source, *args, **kwargs)
@@ -76,9 +97,14 @@ class GenericMongoServiceMixin:
             return result
         return out_class(**result)
 
-    def update(self, id: Union[str, int], updated_object):
+    def update(self, id: Union[str, int], updated_object: BaseModel):
         """
         Generic method for sending request to mongo api to update single document
+
+        Args:
+            id: Id of docuemnt to be updated.
+            updated_object: New version of document as model object
+
         Returns:
             Updated object
         """
@@ -94,6 +120,10 @@ class GenericMongoServiceMixin:
     def delete(self, id: Union[str, int]):
         """
         Generic method for delete request to mongo api
+
+        Args:
+            id: Id of docuemnt to be deleted.
+
         Returns:
             Deleted object
         """

@@ -23,7 +23,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
 
     def save_registered_data(self, registered_data: RegisteredDataIn):
         """
-        Send request to mongo api to create new registered data node. This method uses mixin get implementation.
+        Send request to mongo api to create new registered data node. This method uses mixin create implementation.
 
         Args:
             registered_data (RegisteredDataIn): Registered data to be added
@@ -64,23 +64,11 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
         """
         return self.get_single(registered_data_id, depth, source)
 
-    def delete_registered_data(self, registered_data_id: Union[str, int]):
-        """
-        Send request to mongo api to delete given registered data. This method uses mixin get implementation.
-
-        Args:
-        registered_data_id (int): Id of registered data
-
-        Returns:
-            Result of request as registered data object
-        """
-        return self.delete(registered_data_id)
-
     def update_registered_data(
         self, registered_data_id: Union[str, int], registered_data: RegisteredDataIn
     ):
         """
-        Send request to mongo api to update given registered data. This method uses mixin get implementation.
+        Send request to mongo api to update given registered data. This method uses mixin update implementation.
 
         Args:
         registered_data_id (int): Id of registered data
@@ -90,6 +78,18 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
             Result of request as registered data object
         """
         return self.update(registered_data_id, registered_data)
+
+    def delete_registered_data(self, registered_data_id: Union[str, int]):
+        """
+        Send request to mongo api to delete given registered data. This method uses mixin delete implementation.
+
+        Args:
+        registered_data_id (int): Id of registered data
+
+        Returns:
+            Result of request as registered data object
+        """
+        return self.delete(registered_data_id)
 
     def _add_related_documents(self, registered_data: dict, depth: int, source: str):
         if source != Collections.REGISTERED_CHANNEL and depth > 0:

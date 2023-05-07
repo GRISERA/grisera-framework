@@ -19,7 +19,7 @@ class ChannelServiceMongoDB(ChannelService, GenericMongoServiceMixin):
 
     def save_channel(self, channel: ChannelIn):
         """
-        Send request to mongo api to create new channel. This method uses mixin get implementation.
+        Send request to mongo api to create new channel. This method uses mixin create implementation.
 
         Args:
             channel (ChannelIn): Channel to be added
