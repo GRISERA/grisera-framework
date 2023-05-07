@@ -444,25 +444,46 @@ class DatabaseService:
         statement = "show databases"
         return self.post_statement(statement, dataset_name)
 
-    def dataset_exists(self, dataset_name):
+    # def dataset_exists(self, dataset_name):
+    #     """
+    #     Check whether dataset with given name exists
+    #
+    #     Args:
+    #         dataset_name (string): dataset name to be checked
+    #
+    #     Returns:
+    #         True if exists, otherwise false
+    #     """
+    #     show_databases_statement = "show databases"
+    #     database_name = "neo4j"  # database to ask the server
+    #
+    #     response = self.post_statement(show_databases_statement, database_name)
+    #
+    #     for db in response['results'][0]['data']:
+    #         db_name_in_system = db['row'][0]
+    #         if dataset_name == db_name_in_system:
+    #             return True
+    #     return False
+
+    def get_dataset(self, dataset_name):
         """
-        Check whether dataset with given name exists
+        Get dataset with given name
 
         Args:
             dataset_name (string): dataset name to be checked
 
         Returns:
-            True if exists, otherwise false
+            Result of request
         """
         show_databases_statement = "show databases"
         database_name = "neo4j"  # database to ask the server
-        response = self.post_statement(show_databases_statement, database_name)
-
-        for db in response['results'][0]['data']:
-            db_name_in_system = db['row'][0]
-            if dataset_name == db_name_in_system:
-                return True
-        return False
+        response = self.get_aliases_from_database(dataset_name)
+        return response
+        # return self.post_statement(show_databases_statement, database_name)
+        # for db in response['results'][0]['data']:
+        #     db_name_in_system = db['row'][0]
+        #     if dataset_name == db_name_in_system:
+        #         return DatasetOut()
 
     def delete_dataset(self, dataset_name):
         """

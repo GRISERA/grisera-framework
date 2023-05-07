@@ -23,19 +23,16 @@ class DatasetService:
         Returns:
             Result of request as dataset object
         """
-        print("jamnik1")
         name_hash = self.generate_random_dataset_hash(10)
 
-        print("jamnik2")
         create_dataset_response = self.db.create_dataset(name_hash)
-        print("jamnik3")
 
         if len(create_dataset_response["errors"]) > 0:
             return DatasetOut(errors=create_dataset_response["errors"])
 
         return DatasetOut(name_hash=name_hash, name_by_user=name_by_user)
 
-    def generate_random_dataset_hash(self, string_length):
+    def generate_random_dataset_hash(self, string_length: int):
         """
         Create a random string which will be used as the name of the dataset
 
@@ -47,8 +44,10 @@ class DatasetService:
         """
         while True:
             name_hash = ''.join(random.choices(string.ascii_lowercase, k=string_length))
-            if self.db.dataset_exists(name_hash) is False:
-                break
+            # todo: solve this error
+            #   if self.db.dataset_exists(name_hash) is False:
+                #break
+            break
         return name_hash
 
     def create_alias_for_database_with_name(self, name_hash, name_by_user):
@@ -84,19 +83,33 @@ class DatasetService:
         Returns:
             List of acquired nodes in NodesOut model
         """
-        found = self.db.dataset_exists(name_hash)
+        # found = self.db.dataset_exists(name_hash)
+        #
+        # if not found:
+        #     return DatasetOut(errors="Dataset not found")
+        #
+        # # get the alias from the DB
+        # get_aliases_response = self.db.get_aliases_from_database(name_hash)
+        # name_by_user = ""
+        # for row in get_aliases_response["results"][0]["data"]:
+        #     if "row" in row:
+        #         if "name_by_user" in row['row'][0]:
+        #             name_by_user = row['row'][0]['name_by_user']
+        # return DatasetOut(name_hash=name_hash, name_by_user=name_by_user)
 
-        if not found:
-            return DatasetOut(errors="Dataset not found")
+        response = self.db.get_aliases_from_database(name_hash)
 
-        # get the alias from the DB
-        get_aliases_response = self.db.get_aliases_from_database(name_hash)
+        if len(response["errors"]) > 0:
+            return DatasetOut(errors=response["errors"])
+
         name_by_user = ""
-        for row in get_aliases_response["results"][0]["data"]:
+        for row in response["results"][0]["data"]:
             if "row" in row:
                 if "name_by_user" in row['row'][0]:
                     name_by_user = row['row'][0]['name_by_user']
-        return DatasetOut(name_hash=name_hash, name_by_user=name_by_user)
+
+        result = DatasetOut(name_hash=name_hash, name_by_user=name_by_user)
+        return result
 
     def get_datasets(self):
         """
@@ -130,8 +143,7 @@ class DatasetService:
         """
         dataset = self.get_dataset(dataset_name)
         response = self.db.delete_dataset(dataset_name)
-
-        result = DatasetOut(errors=response["errors"]) if len(response["errors"]) > 0 else \
-            DatasetOut(name_hash=dataset.name_hash, name_by_user=dataset.name_by_user)
-
-        return result
+        if len(response['errors']) > 0:
+            return DatasetOut(errors=response['errors'])
+        else:
+            return DatasetOut(name_hash=dataset.name_hash, name_by_user=dataset.name_by_user)
