@@ -7,6 +7,14 @@ from models.relation_information_model import RelationInformation
 from property.property_model import PropertyIn
 
 
+class TransformationType(str, Enum):
+    """
+    The type of transformation
+    """
+    RESAMPLE_NEAREST = "resample_nearest"
+    QUADRANTS = "quadrants"
+
+
 class TimestampNodesIn(BaseModel):
     """
     Model of timestamp node
@@ -21,23 +29,25 @@ class SignalValueNodesIn(BaseModel):
     Model of signal value node
     Attributes:
         value (Union[str, float]): Value of signal
+        additional_properties (Optional[List[PropertyIn]]): Additional properties for signal value
     """
     value: Union[str, float]
+    additional_properties: Optional[List[PropertyIn]]
 
 
 class SignalIn(BaseModel):
     """
     Model of signal to acquire from client
     Attributes:
-        timestamp (int): Timestamp of signal measure of type Timestamp in milliseconds
-        start_timestamp (int): Timestamp of begin signal measure of type Epoch in milliseconds
-        end_timestamp (int): Timestamp of end signal measure of type Epoch in milliseconds
-        value (SignalValueIn): Value of signal
+        timestamp (Optional[int]): Timestamp of signal measure of type Timestamp in milliseconds
+        start_timestamp (Optional[int]): Timestamp of begin signal measure of type Epoch in milliseconds
+        end_timestamp (Optional[int]): Timestamp of end signal measure of type Epoch in milliseconds
+        signal_value (SignalValueNodesIn): Value of signal
     """
     timestamp: Optional[int]
     start_timestamp: Optional[int]
     end_timestamp: Optional[int]
-    value: Union[str, float]
+    signal_value: SignalValueNodesIn
 
 
 class Type(str, Enum):
@@ -77,13 +87,13 @@ class TimeSeriesTransformationIn(BaseModel):
     Model of time series transformation to acquire from client
 
     Attributes:
-        name (str): Name of the transformation
+        name (TransformationType): Name of the transformation
         source_time_series_ids (List[int]): Ids of source time series
         destination_observable_information_id (Optional[int]): Id of destination observable information
         destination_measure_id (Optional[int]): Id of destination measure
         additional_properties (Optional[List[PropertyIn]]): Additional properties for transformation
     """
-    name: str
+    name: TransformationType
     source_time_series_ids: List[int]
     destination_observable_information_id: Optional[int]
     destination_measure_id: Optional[int]
@@ -142,6 +152,22 @@ class TimeSeriesOut(BasicTimeSeriesOut):
     relations: List[RelationInformation] = []
     reversed_relations: List[RelationInformation] = []
     signal_values: list = []
+    errors: Optional[Any] = None
+    links: Optional[list] = None
+
+
+class TimeSeriesMultidimensionalOut(BaseModel):
+    """
+    Model of time multidimensional series to send to client as a result of request
+
+    Attributes:
+        signal_values (list): List of signal values
+        time_series (List[TimeSeriesOut]): Time series nodes from database
+        errors (Optional[Any]): Optional errors appeared during query executions
+        links (Optional[list]): List of links available from api
+    """
+    signal_values: list = []
+    time_series: List[TimeSeriesOut] = []
     errors: Optional[Any] = None
     links: Optional[list] = None
 
