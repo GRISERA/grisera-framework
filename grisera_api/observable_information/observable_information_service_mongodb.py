@@ -1,5 +1,6 @@
 from typing import Union
 from bson import ObjectId
+from grisera_api.mongo_service.collection_mapping import Collections
 from mongo_service.service_mixins import GenericMongoServiceMixin
 from observable_information.observable_information_model import (
     ObservableInformationIn,
@@ -45,7 +46,8 @@ class ObservableInformationServiceMongoDB(
         Send request to graph api to create new observable information
 
         Args:
-            observable_information (ObservableInformationIn): Observable information to be added. recording_id here is required
+            observable_information (ObservableInformationIn): Observable information to be added.
+            recording_id here is required
 
         Returns:
             Result of request as observable information object
@@ -94,28 +96,29 @@ class ObservableInformationServiceMongoDB(
         Returns:
             Result of request as list of dictionaries
         """
-        recording_query = {}
-        for field in query:
-            new_field_name = "observable_informations." + field
-            recording_query[new_field_name] = query[field]
+        recording_query = {
+            f"{Collections.OBSERVABLE_INFORMATION}.{field}": value
+            for field, value in query
+        }
         recording_result = self.recording_service.get_multiple(
             recording_query,
             depth=depth - 1,
-            source="observable_information",
+            source=Collections.OBSERVABLE_INFORMATION,
             projection=self._get_recording_projection(query),
         )
 
         result = []
         for recording_result in recording_result:
-            for observable_information in recording_result["observable_informations"]:
+            observable_informations = recording_result["observable_informations"]
+            del recording_result["observable_informations"]
+            for observable_information in observable_informations:
                 self._add_related_documents(
                     observable_information,
                     depth - 1,
-                    "observable_information",
+                    source,
                     recording_result,
                 )
-            del recording_result["observable_informations"]
-            result += recording_result["observable_informations"]
+            result += observable_informations
 
         return result
 
@@ -137,24 +140,28 @@ class ObservableInformationServiceMongoDB(
     ):
         observable_information_objectid = ObjectId(observable_information_objectid)
         recording_result = self.recording_service.get_multiple(
-            {"observable_informations.id": observable_information_objectid},
+            {
+                f"{Collections.OBSERVABLE_INFORMATION}.id": observable_information_objectid
+            },
             depth=depth - 1,
-            source="observable_information",
+            source=Collections.OBSERVABLE_INFORMATION,
             projection=self._get_recording_projection(
                 {"id": observable_information_objectid}
             ),
         )
         if (
             len(recording_result) == 0
-            or len(recording_result[0]["observable_informations"]) == 0
+            or len(recording_result[0][Collections.OBSERVABLE_INFORMATION]) == 0
         ):
             return NotFoundByIdModel(
                 id=id,
                 errors={"errors": "observable information not found"},
             )
         related_recording = recording_result[0]
-        observable_information_dict = related_recording["observable_informations"][0]
-        del related_recording["observable_informations"]
+        observable_information_dict = related_recording[
+            Collections.OBSERVABLE_INFORMATION
+        ][0]
+        del related_recording[Collections.OBSERVABLE_INFORMATION]
         self._add_related_documents(
             observable_information_dict, depth, source, related_recording
         )
@@ -169,7 +176,10 @@ class ObservableInformationServiceMongoDB(
         return ObservableInformationOut(**result)
 
     def get_observable_information(
-        self, observable_information_id: Union[str, int], depth: int = 0, source: str = ""
+        self,
+        observable_information_id: Union[str, int],
+        depth: int = 0,
+        source: str = "",
     ):
         """
         Send request to graph api to get given observable information
@@ -189,10 +199,8 @@ class ObservableInformationServiceMongoDB(
         Returns:
             Result of request as observable information object
         """
-        observable_information = (
-            self.get_observable_information(
-                observable_information_id
-            )
+        observable_information = self.get_observable_information(
+            observable_information_id
         )
         if type(observable_information) is NotFoundByIdModel:
             return NotFoundByIdModel(
@@ -216,7 +224,9 @@ class ObservableInformationServiceMongoDB(
         Returns:
             Result of request as observable information object
         """
-        return self.recording_service.update_observable_information(observable_information.dict())
+        return self.recording_service.update_observable_information(
+            observable_information.dict()
+        )
 
     def _add_related_documents(
         self,
@@ -260,7 +270,7 @@ class ObservableInformationServiceMongoDB(
     @staticmethod
     def _get_recording_projection(query):
         return {
-            "observable_informations": {"$elemMatch": query},
+            Collections.OBSERVABLE_INFORMATION: {"$elemMatch": query},
             "additional_properties": 1,
             "participation_id": 1,
             "registered_channel_id": 1,

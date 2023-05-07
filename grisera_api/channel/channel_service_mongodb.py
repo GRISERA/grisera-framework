@@ -1,6 +1,7 @@
 from typing import Union
 from channel.channel_service import ChannelService
 from channel.channel_model import ChannelIn, ChannelOut, ChannelsOut, BasicChannelOut
+from grisera_api.mongo_service.collection_mapping import Collections
 from mongo_service.service_mixins import GenericMongoServiceMixin
 
 
@@ -57,11 +58,11 @@ class ChannelServiceMongoDB(ChannelService, GenericMongoServiceMixin):
         return self.get_single(channel_id, depth, source)
 
     def _add_related_documents(self, channel: dict, depth: int, source: str):
-        if source != "recording" and depth > 0:
+        if source != Collections.REGISTERED_CHANNEL and depth > 0:
             channel[
                 "registered_channels"
             ] = self.registered_channel_service.get_multiple(
                 {"channel_id": channel["id"]},
                 depth=depth - 1,
-                source="channel",
+                source=Collections.CHANNEL,
             )

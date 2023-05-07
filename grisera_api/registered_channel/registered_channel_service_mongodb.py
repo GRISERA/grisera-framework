@@ -1,3 +1,4 @@
+from grisera_api.mongo_service.collection_mapping import Collections
 from mongo_service.service_mixins import (
     GenericMongoServiceMixin,
 )
@@ -158,31 +159,31 @@ class RegisteredChannelServiceMongoDB(
     def _add_related_recordings(
         self, registered_channel: dict, depth: int, source: str
     ):
-        if source != "recording":
+        if source != Collections.RECORDING:
             registered_channel["recordings"] = self.recording_service.get_multiple(
                 {"registered_channel_id": registered_channel["id"]},
                 depth=depth - 1,
-                source="registered_channel",
+                source=Collections.REGISTERED_CHANNEL,
             )
 
     def _add_related_channel(self, registered_channel: dict, depth: int, source: str):
         has_related_channel = registered_channel["channel_id"] is not None
-        if source != "channel" and has_related_channel:
+        if source != Collections.CHANNEL and has_related_channel:
             registered_channel["channel"] = self.channel_service.get_single_dict(
                 channel_id=registered_channel["channel_id"],
                 depth=depth - 1,
-                source="registered_channel",
+                source=Collections.REGISTERED_CHANNEL,
             )
 
     def _add_related_registered_data(
         self, registered_channel: dict, depth: int, source: str
     ):
         has_related_rd = registered_channel["registered_data_id"] is not None
-        if source != "registered_data" and has_related_rd:
+        if source != Collections.REGISTERED_DATA and has_related_rd:
             registered_channel[
                 "registered_data"
             ] = self.channel_service.get_single_dict(
                 registered_channel["registered_data_id"],
                 depth=depth - 1,
-                source="registered_channel",
+                source=Collections.REGISTERED_CHANNEL,
             )

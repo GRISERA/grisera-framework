@@ -41,38 +41,71 @@ from time_series.time_series_model import (
     TimeSeriesPropertyIn,
     TimeSeriesRelationIn,
 )
+from enum import Enum
+
+"""
+This module provides enum with collecion names in mongodb to help avoiding 
+possible errors with typos in collection names strings.
+
+It also provides mapping of model classes to collection names. It is usefull 
+as it allows to dynamically determine collection name based on model objets 
+class.
+"""
+
+
+class Collections(str, Enum):
+    ACTIVITY = "activities"
+    ACTIVITY_EXECUTION = "activity_executions"
+    APPEARANCE = "appearances"
+    ARRANGEMENT = "arrangements"
+    CHANNEL = "channels"
+    EXPERIMENT = "experiments"
+    LIFE_ACTIVITY = "life_activities"
+    MEASURE = "measures"
+    MEASURE_NAME = "measure_names"
+    MODALITY = "modalities"
+    OBSERVABLE_INFORMATION = "observable_informations"
+    PARTICIPANT = "participants"
+    PARTICIPANT_STATE = "participant_states"
+    PARTICIPATION = "participations"
+    PERSONALITY = "personalities"
+    RECORDING = "recordings"
+    REGISTERED_CHANNEL = "registered_channels"
+    REGISTERED_DATA = "registered_data"
+    SCENARIO = "scenarios"
+    TIME_SERIES = "time_series"
 
 
 SUPERCLASSES_TO_COLLECTION_NAMES = {
-    ActivityIn: "activities",
-    ActivityExecutionPropertyIn: "activity_executions",
-    ActivityExecutionRelationIn: "activity_executions",
-    AppearanceOcclusionIn: "appearances",
-    AppearanceSomatotypeOut: "appearances",
-    ArrangementIn: "arrangements",
-    ChannelIn: "channels",
-    ExperimentIn: "experiments",
-    LifeActivityIn: "life_activities",
-    MeasurePropertyIn: "measures",
-    MeasureRelationIn: "measures",
-    MeasureNameIn: "measure_names",
-    ModalityIn: "modalities",
-    ObservableInformationIn: "observable_informations",
-    ParticipantIn: "participants",
-    ParticipantStatePropertyIn: "participant_states",
-    ParticipantStateRelationIn: "participant_states",
-    BasicParticipationOut: "participations",
-    ParticipationIn: "participations",
-    PersonalityBigFiveIn: "personalities",
-    PersonalityPanasIn: "personalities",
-    RecordingPropertyIn: "recordings",
-    RecordingRelationIn: "recordings",
-    BasicRegisteredChannelOut: "registered_channels",
-    RegisteredChannelIn: "registered_channels",
-    RegisteredDataIn: "registered_data",
-    ScenarioIn: "scenarios",
-    TimeSeriesPropertyIn: "time_series",
-    TimeSeriesRelationIn: "time_series",
+    ActivityIn: Collections.ACTIVITY,
+    ActivityExecutionPropertyIn: Collections.ACTIVITY_EXECUTION,
+    ActivityExecutionRelationIn: Collections.ACTIVITY_EXECUTION,
+    AppearanceOcclusionIn: Collections.APPEARANCE,
+    AppearanceSomatotypeOut: Collections.APPEARANCE,
+    ArrangementIn: Collections.ARRANGEMENT,
+    ChannelIn: Collections.CHANNEL,
+    ExperimentIn: Collections.EXPERIMENT,
+    LifeActivityIn: Collections.LIFE_ACTIVITY,
+    MeasurePropertyIn: Collections.MEASURE,
+    MeasureRelationIn: Collections.MEASURE,
+    MeasureNameIn: Collections.MEASURE_NAME,
+    ModalityIn: Collections.MODALITY,
+    ObservableInformationIn: Collections.OBSERVABLE_INFORMATION,
+    ParticipantIn: Collections.PARTICIPANT,
+    ParticipantStatePropertyIn: Collections.PARTICIPANT_STATE,
+    ParticipantStateRelationIn: Collections.PARTICIPANT_STATE,
+    BasicParticipationOut: Collections.PARTICIPATION,
+    ParticipationIn: Collections.PARTICIPATION,
+    PersonalityBigFiveIn: Collections.PERSONALITY,
+    PersonalityPanasIn: Collections.PERSONALITY,
+    RecordingPropertyIn: Collections.RECORDING,
+    RecordingRelationIn: Collections.RECORDING,
+    BasicRegisteredChannelOut: Collections.REGISTERED_CHANNEL,
+    RegisteredChannelIn: Collections.REGISTERED_CHANNEL,
+    RegisteredDataIn: Collections.REGISTERED_DATA,
+    ScenarioIn: Collections.SCENARIO,
+    TimeSeriesPropertyIn: Collections.TIME_SERIES,
+    TimeSeriesRelationIn: Collections.TIME_SERIES,
 }
 
 

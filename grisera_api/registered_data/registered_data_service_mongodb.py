@@ -1,4 +1,5 @@
 from typing import Union
+from grisera_api.mongo_service.collection_mapping import Collections
 from mongo_service.service_mixins import (
     GenericMongoServiceMixin,
 )
@@ -91,11 +92,11 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
         return self.update(registered_data_id, registered_data)
 
     def _add_related_documents(self, registered_data: dict, depth: int, source: str):
-        if source != "recording" and depth > 0:
+        if source != Collections.REGISTERED_CHANNEL and depth > 0:
             registered_data[
                 "registered_channels"
             ] = self.registered_channel_service.get_multiple(
                 {"registered_data_id": registered_data["id"]},
                 depth=depth - 1,
-                source="registered_data",
+                source=Collections.REGISTERED_DATA,
             )
