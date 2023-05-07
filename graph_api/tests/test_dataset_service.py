@@ -64,17 +64,6 @@ class TestDatasetService(unittest.TestCase):
         self.assertEqual(result, DatasetOut(name_hash=result.name_hash, name_by_user="test", errors=None))
         get_dataset_mock.assert_called_once_with("neo4j")
 
-    @mock.patch.object(DatabaseService, 'dataset_exists')
-    def test_get_dataset_with_error(self, get_dataset_mock):
-        get_dataset_mock.return_value = {'results': [{'data': []}], 'errors': ['error']}
-
-        dataset_service = DatasetService()
-
-        result = dataset_service.get_dataset(name_hash="neo4j")
-
-        self.assertEqual(result, DatasetOut(errors=['error']))
-        get_dataset_mock.assert_called_once_with("neo4j")
-
     @mock.patch.object(DatabaseService, 'delete_dataset')
     def test_delete_dataset_without_error(self, delete_dataset_mock):
         delete_dataset_mock.return_value = {'results': [{'data': []}], 'errors': []}

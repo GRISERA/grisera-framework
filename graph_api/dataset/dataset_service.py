@@ -87,7 +87,6 @@ class DatasetService:
 
         # get the alias from the DB
         get_aliases_response = self.db.get_aliases_from_database(name_hash)
-        print("\n### get_aliases_response: {}\n".format(get_aliases_response))
         name_by_user = ""
         for row in get_aliases_response["results"][0]["data"]:
             if "row" in row:
