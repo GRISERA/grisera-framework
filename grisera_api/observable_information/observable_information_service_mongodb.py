@@ -169,7 +169,7 @@ class ObservableInformationServiceMongoDB(
         return ObservableInformationOut(**result)
 
     def get_observable_information(
-        self, observable_information_id: int, depth: int = 0, source: str = ""
+        self, observable_information_id: Union[str, int], depth: int = 0, source: str = ""
     ):
         """
         Send request to graph api to get given observable information
@@ -180,7 +180,7 @@ class ObservableInformationServiceMongoDB(
         """
         return self.get_single(observable_information_id, depth, source)
 
-    def delete_observable_information(self, observable_information_id: int):
+    def delete_observable_information(self, observable_information_id: Union[str, int]):
         """
         Send request to graph api to delete given observable information. Removal is performed by recording service, as observable information
         is embeded within recording
@@ -189,14 +189,24 @@ class ObservableInformationServiceMongoDB(
         Returns:
             Result of request as observable information object
         """
+        observable_information = (
+            self.get_observable_information(
+                observable_information_id
+            )
+        )
+        if type(observable_information) is NotFoundByIdModel:
+            return NotFoundByIdModel(
+                id=observable_information_id,
+                errors={"errors": "observable information not found"},
+            )
         return self.recording_service.remove_observable_information(
-            observable_information_id
+            observable_information
         )
 
     def update_observable_information_relationships(
         self,
-        observable_information_id: int,
-        observable_information: ObservableInformationIn,
+        observable_information_id: Union[str, int],
+        observable_information: BasicObservableInformationOut,
     ):
         """
         Send request to graph api to update given observable information
@@ -206,9 +216,7 @@ class ObservableInformationServiceMongoDB(
         Returns:
             Result of request as observable information object
         """
-        # TODO
-
-        return self.get_observable_information(observable_information_id)
+        return self.recording_service.update_observable_information(observable_information.dict())
 
     def _add_related_documents(
         self,
@@ -234,30 +242,20 @@ class ObservableInformationServiceMongoDB(
     def _add_related_modalities(
         self, observable_information: dict, depth: int, source: str
     ):
-        if source != "modality":
-            observable_information["modalities"] = self.modality_service.get_multiple(
-                {"observable_information_id": observable_information["id"]},
-                depth=depth - 1,
-                source="observable_information",
-            )
+        pass
+        # TODO add when modalities service is ready
 
     def _add_related_life_activities(
         self, observable_information: dict, depth: int, source: str
     ):
-        if source != "life_activity":
-            observable_information[
-                "life_activities"
-            ] = self.life_activity_service.get_multiple(
-                {"observable_information_id": observable_information["id"]},
-                depth=depth - 1,
-                source="observable_information",
-            )
+        pass
+        # TODO add when life_activities service is ready
 
     def _add_related_time_series(
         self, observable_information: dict, depth: int, source: str
     ):
         pass
-        # TODO
+        # TODO add when time series service is ready
 
     @staticmethod
     def _get_recording_projection(query):

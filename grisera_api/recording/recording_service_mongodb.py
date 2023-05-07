@@ -2,6 +2,7 @@ from typing import Union
 from bson import ObjectId
 from observable_information.observable_information_model import (
     BasicObservableInformationOut,
+    ObservableInformationOut,
 )
 from observable_information.observable_information_model import (
     ObservableInformationIn,
@@ -79,7 +80,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         results = [BasicRecordingOut(**result) for result in results_dict]
         return RecordingsOut(registered_channels=results)
 
-    def get_recording(self, recording_id: int, depth: int = 0, source: str = ""):
+    def get_recording(self, recording_id: Union[str, int], depth: int = 0, source: str = ""):
         """
         Send request to mongo api to get given recording. This method uses mixin get implementation.
 
@@ -97,7 +98,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         """
         self.get_single(recording_id, depth, source)
 
-    def delete_recording(self, recording_id: int):
+    def delete_recording(self, recording_id: Union[str, int]):
         """
         Send request to mongo api to delete given recording
         Args:
@@ -107,7 +108,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         """
         return self.delete(recording_id)
 
-    def update_recording(self, recording_id: int, recording: RecordingPropertyIn):
+    def update_recording(self, recording_id: Union[str, int], recording: RecordingPropertyIn):
         """
         Send request to graph api to update given participant state
         Args:
@@ -118,7 +119,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         """
         return self.update(recording_id, recording)
 
-    def update_recording_relationships(self, recording_id: int, recording: RecordingIn):
+    def update_recording_relationships(self, recording_id: Union[str, int], recording: RecordingIn):
         """
         Send request to graph api to update given recording
         Args:
@@ -180,7 +181,35 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         self.update(recording_id, recording)
         return BasicObservableInformationOut(**observable_information_dict)
 
-    def remove_observable_information(self, observable_information_id: Union[str, int]):
+    def update_observable_information(self, observable_information_dict: dict):
+        """
+        Edit observable information in recording. Obervable information is embeded in related recording.
+        Args:
+            observable_information (BasicObservableInformationOut): new version of observable information
+        Returns:
+            Removed observable information
+        """
+        observable_information_id = observable_information_dict["id"]
+        recording_id = observable_information_dict["recording_id"]
+        recording = self.get_single_dict(recording_id)
+        if type(recording) is NotFoundByIdModel:
+            return NotFoundByIdModel(
+                id=observable_information_id,
+                errors={"errors": "recording related to given observable information not found"},
+            )
+        
+        to_update_index = self._get_observable_information_index_from_recording(recording, observable_information_id)
+        if to_update_index is None:
+            return NotFoundByIdModel(
+                id=observable_information_id,
+                errors={"errors": "observable information not found"},
+            )
+        observable_informations = recording["observable_informations"]
+        observable_informations[to_update_index] = observable_information_dict
+        self.update(recording_id, recording)
+        return observable_information_dict
+
+    def remove_observable_information(self, observable_information: ObservableInformationOut):
         """
         Remove observable information from recording. Obervable information is embeded in related recording.
         Args:
@@ -188,21 +217,23 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         Returns:
             Removed observable information
         """
-        observable_information = (
-            self.observable_information_service.get_observable_information(
-                observable_information_id
-            )
-        )
+        observable_information_id = observable_information["id"]
         recording_id = observable_information.recording_id
         recording = self.get_single_dict(recording_id)
+        if type(recording) is NotFoundByIdModel:
+            return NotFoundByIdModel(
+                id=observable_information_id,
+                errors={"errors": "recording related to given observable information not found"},
+            )
+        
+        to_remove_index = self._get_observable_information_index_from_recording(recording, observable_information_id)
+        if to_remove_index is None:
+            return NotFoundByIdModel(
+                id=observable_information_id,
+                errors={"errors": "observable information not found"},
+            )
         observable_informations = recording["observable_informations"]
-        to_remove_index = None
-        for i, oi in enumerate(observable_informations):
-            if ObjectId(oi["id"]) == ObjectId(observable_information_id):
-                to_remove_index = i
-                break
-        if to_remove_index is not None:
-            del observable_informations[to_remove_index]
+        del observable_informations[to_remove_index]
         self.update(recording_id, recording)
         return observable_information
 
@@ -244,3 +275,15 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
                 self.observable_information_service._add_related_documents(
                     oi, depth - 1, "recording"
                 )
+
+    def _get_observable_information_index_from_recording(
+        self, recording_dict: dict, observable_information_id: Union[str, int]
+    ):
+        """
+        Oservable information is embeded within recording model
+        """
+        observable_informations = recording_dict["observable_informations"]
+        return next(
+            (i for i, oi in enumerate(observable_informations) if ObjectId(oi["id"]) == ObjectId(observable_information_id)), 
+            None
+        )
