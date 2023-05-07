@@ -21,27 +21,27 @@ class TestTimeSeriesRouterPostTransformation(unittest.TestCase):
 
     @mock.patch.object(TimeSeriesServiceGraphDB, 'transform_time_series')
     def test_transform_time_series_without_error(self, transform_time_series_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         transform_time_series_mock.return_value = TimeSeriesOut(id=1, type="Epoch", source="cos")
         response = Response()
         time_series_router = TimeSeriesRouter()
 
-        result = asyncio.run(time_series_router.transform_time_series(self.transformation, response, database_name))
+        result = asyncio.run(time_series_router.transform_time_series(self.transformation, response, dataset_name))
 
         self.assertEqual(result, TimeSeriesOut(id=1, type="Epoch", source="cos", links=get_links(router)))
-        transform_time_series_mock.assert_called_once_with(self.transformation, database_name)
+        transform_time_series_mock.assert_called_once_with(self.transformation, dataset_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(TimeSeriesServiceGraphDB, 'transform_time_series')
     def test_transform_time_series_with_error(self, transform_time_series_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         transform_time_series_mock.return_value = TimeSeriesOut(type="Epoch", source="cos", errors={'errors': ['test']})
         response = Response()
         time_series_router = TimeSeriesRouter()
 
-        result = asyncio.run(time_series_router.transform_time_series(self.transformation, response, database_name))
+        result = asyncio.run(time_series_router.transform_time_series(self.transformation, response, dataset_name))
 
         self.assertEqual(result, TimeSeriesOut(type="Epoch", source="cos", errors={'errors': ['test']},
                                                links=get_links(router)))
-        transform_time_series_mock.assert_called_once_with(self.transformation, database_name)
+        transform_time_series_mock.assert_called_once_with(self.transformation, dataset_name)
         self.assertEqual(response.status_code, 422)

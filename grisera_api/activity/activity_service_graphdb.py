@@ -14,7 +14,7 @@ class ActivityServiceGraphDB(ActivityService):
     """
     graph_api_service = GraphApiService()
 
-    def save_activity(self, activity: ActivityIn, database_name: str):
+    def save_activity(self, activity: ActivityIn, dataset_name: str):
         """
         Send request to graph api to create new activity
 
@@ -26,20 +26,20 @@ class ActivityServiceGraphDB(ActivityService):
             Result of request as activity object
         """
 
-        node_response = self.graph_api_service.create_node("Activity", database_name)
+        node_response = self.graph_api_service.create_node("Activity", dataset_name)
 
         if node_response["errors"] is not None:
             return ActivityOut(activity=activity.activity, errors=node_response["errors"])
 
         activity_id = node_response["id"]
 
-        properties_response = self.graph_api_service.create_properties(activity_id, activity, database_name)
+        properties_response = self.graph_api_service.create_properties(activity_id, activity, dataset_name)
         if properties_response["errors"] is not None:
             return ActivityOut(activity=activity.activity, errors=properties_response["errors"])
 
         return ActivityOut(activity=activity.activity, id=activity_id)
 
-    def get_activities(self, database_name: str):
+    def get_activities(self, dataset_name: str):
         """
         Send request to graph api to get all activities
 
@@ -48,8 +48,7 @@ class ActivityServiceGraphDB(ActivityService):
         Returns:
             Result of request as list of activity objects
         """
-        get_response = self.graph_api_service.get_nodes("Activity", database_name)
-
+        get_response = self.graph_api_service.get_nodes("Activity", dataset_name)
         if get_response["errors"] is not None:
             return ActivitiesOut(errors=get_response["errors"])
         activities = [BasicActivityOut(id=activity["id"], activity=activity["properties"][0]["value"])
@@ -57,7 +56,7 @@ class ActivityServiceGraphDB(ActivityService):
 
         return ActivitiesOut(activities=activities)
 
-    def get_activity(self, activity_id: int, database_name: str):
+    def get_activity(self, activity_id: int, dataset_name: str):
         """
         Send request to graph api to get given activity
         Args:
@@ -66,7 +65,7 @@ class ActivityServiceGraphDB(ActivityService):
         Returns:
             Result of request as activity object
         """
-        get_response = self.graph_api_service.get_node(activity_id, database_name)
+        get_response = self.graph_api_service.get_node(activity_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=activity_id, errors=get_response["errors"])
@@ -77,7 +76,7 @@ class ActivityServiceGraphDB(ActivityService):
         for property in get_response["properties"]:
             activity[property["key"]] = property["value"]
 
-        relations_response = self.graph_api_service.get_node_relationships(activity_id, database_name)
+        relations_response = self.graph_api_service.get_node_relationships(activity_id, dataset_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == activity_id:

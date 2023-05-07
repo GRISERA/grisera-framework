@@ -23,11 +23,11 @@ class ExperimentRouter:
         self.experiment_service = Services().experiment_service()
 
     @router.post("/experiments", tags=["experiments"], response_model=ExperimentOut)
-    async def create_experiment(self, experiment: ExperimentIn, response: Response, database_name: str):
+    async def create_experiment(self, experiment: ExperimentIn, response: Response, dataset_name: str):
         """
         Create experiment in database
         """
-        create_response = self.experiment_service.save_experiment(experiment, database_name)
+        create_response = self.experiment_service.save_experiment(experiment, dataset_name)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -38,12 +38,12 @@ class ExperimentRouter:
 
     @router.get("/experiments/{experiment_id}", tags=["experiments"],
                 response_model=Union[ExperimentOut, NotFoundByIdModel])
-    async def get_experiment(self, experiment_id: int, response: Response, database_name: str):
+    async def get_experiment(self, experiment_id: int, response: Response, dataset_name: str):
         """
         Get experiment from database
         """
 
-        get_response = self.experiment_service.get_experiment(experiment_id, database_name)
+        get_response = self.experiment_service.get_experiment(experiment_id, dataset_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -53,12 +53,12 @@ class ExperimentRouter:
         return get_response
 
     @router.get("/experiments", tags=["experiments"], response_model=ExperimentsOut)
-    async def get_experiments(self, response: Response, database_name: str):
+    async def get_experiments(self, response: Response, dataset_name: str):
         """
         Get experiments from database
         """
 
-        get_response = self.experiment_service.get_experiments(database_name)
+        get_response = self.experiment_service.get_experiments(dataset_name)
 
         # add links from hateoas
         get_response.links = get_links(router)
@@ -67,11 +67,11 @@ class ExperimentRouter:
 
     @router.delete("/experiments/{experiment_id}", tags=["experiments"],
                    response_model=Union[ExperimentOut, NotFoundByIdModel])
-    async def delete_experiment(self, experiment_id: int, response: Response, database_name: str):
+    async def delete_experiment(self, experiment_id: int, response: Response, dataset_name: str):
         """
         Delete experiment from database
         """
-        get_response = self.experiment_service.delete_experiment(experiment_id, database_name)
+        get_response = self.experiment_service.delete_experiment(experiment_id, dataset_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -82,11 +82,11 @@ class ExperimentRouter:
 
     @router.put("/experiments/{experiment_id}", tags=["experiments"],
                 response_model=Union[ExperimentOut, NotFoundByIdModel])
-    async def update_experiment(self, experiment_id: int, experiment: ExperimentIn, response: Response, database_name: str):
+    async def update_experiment(self, experiment_id: int, experiment: ExperimentIn, response: Response, dataset_name: str):
         """
         Update experiment model in database
         """
-        update_response = self.experiment_service.update_experiment(experiment_id, experiment, database_name)
+        update_response = self.experiment_service.update_experiment(experiment_id, experiment, dataset_name)
         if update_response.errors is not None:
             response.status_code = 404
 

@@ -10,7 +10,7 @@ class TestMeasureRouterPut(unittest.TestCase):
 
     @mock.patch.object(MeasureServiceGraphDB, 'update_measure')
     def test_update_measure_without_error(self, update_measure_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         measure_id = 1
         update_measure_mock.return_value = MeasureOut(datatype="Test", range="Unknown", unit="cm", id=measure_id)
         response = Response()
@@ -18,15 +18,15 @@ class TestMeasureRouterPut(unittest.TestCase):
         measure_router = MeasureRouter()
 
         result = asyncio.run(measure_router.update_measure(
-            measure_id, measure, response, database_name))
+            measure_id, measure, response, dataset_name))
 
         self.assertEqual(result, MeasureOut(datatype="Test", range="Unknown", unit="cm", id=measure_id, links=get_links(router)))
-        update_measure_mock.assert_called_once_with(measure_id, measure, database_name)
+        update_measure_mock.assert_called_once_with(measure_id, measure, dataset_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(MeasureServiceGraphDB, 'update_measure')
     def test_update_measure_with_error(self, update_measure_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         measure_id = 1
         update_measure_mock.return_value = MeasureOut(datatype="Test", range="Unknown", unit="cm", errors={'errors': ['test']})
         response = Response()
@@ -34,16 +34,16 @@ class TestMeasureRouterPut(unittest.TestCase):
         measure_router = MeasureRouter()
 
         result = asyncio.run(measure_router.update_measure(
-            measure_id, measure, response, database_name))
+            measure_id, measure, response, dataset_name))
 
         self.assertEqual(result, MeasureOut(datatype="Test", range="Unknown", unit="cm", errors={'errors': ['test']},
                                             links=get_links(router)))
-        update_measure_mock.assert_called_once_with(measure_id, measure, database_name)
+        update_measure_mock.assert_called_once_with(measure_id, measure, dataset_name)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(MeasureServiceGraphDB, 'update_measure_relationships')
     def test_update_measure_relationships_without_error(self, update_measure_relationships_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         update_measure_relationships_mock.return_value = MeasureOut(datatype="Test", unit="cm",
                                                                     range="Unknown", id=id_node)
@@ -53,15 +53,15 @@ class TestMeasureRouterPut(unittest.TestCase):
         measure_router = MeasureRouter()
 
         result = asyncio.run(measure_router.
-                             update_measure_relationships(id_node, measure_in, response, database_name))
+                             update_measure_relationships(id_node, measure_in, response, dataset_name))
 
         self.assertEqual(result, measure_out)
-        update_measure_relationships_mock.assert_called_once_with(id_node, measure_in, database_name)
+        update_measure_relationships_mock.assert_called_once_with(id_node, measure_in, dataset_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(MeasureServiceGraphDB, 'update_measure_relationships')
     def test_update_measure_relationships_with_error(self, update_measure_relationships_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         update_measure_relationships_mock.return_value = MeasureOut(datatype="Test", unit="cm", range="Unknown", id=id_node,
                                                                     errors="error")
@@ -71,8 +71,8 @@ class TestMeasureRouterPut(unittest.TestCase):
         measure_router = MeasureRouter()
 
         result = asyncio.run(measure_router.
-                             update_measure_relationships(id_node, measure_in, response, database_name))
+                             update_measure_relationships(id_node, measure_in, response, dataset_name))
 
         self.assertEqual(result, measure_out)
-        update_measure_relationships_mock.assert_called_once_with(id_node, measure_in, database_name)
+        update_measure_relationships_mock.assert_called_once_with(id_node, measure_in, dataset_name)
         self.assertEqual(response.status_code, 404)

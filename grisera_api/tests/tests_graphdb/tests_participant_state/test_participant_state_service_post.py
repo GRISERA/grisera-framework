@@ -21,7 +21,7 @@ class TestParticipantStateServicePost(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_save_participant_state_without_errors(self, get_node_relationships_mock, get_node_mock,
                                                    create_relationships_mock, create_properties_mock, create_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Participant State'],
                                       'properties': [{'key': 'age', 'value': 5},
@@ -50,22 +50,22 @@ class TestParticipantStateServicePost(unittest.TestCase):
         calls = [mock.call(end_node=3, start_node=1, name="hasPersonality")]
         participant_state_service = ParticipantStateServiceGraphDB()
 
-        result = participant_state_service.save_participant_state(participant_state_in, database_name)
+        result = participant_state_service.save_participant_state(participant_state_in, dataset_name)
 
         self.assertEqual(result, participant_state_out)
-        create_node_mock.assert_called_once_with('`Participant State`', database_name)
-        create_properties_mock.assert_called_once_with(id_node, participant_state_in, database_name)
+        create_node_mock.assert_called_once_with('`Participant State`', dataset_name)
+        create_properties_mock.assert_called_once_with(id_node, participant_state_in, dataset_name)
         create_relationships_mock.assert_not_called()
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_participant_state_with_node_error(self, create_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         participant_state = ParticipantStateIn(age=5, participant_id=1, personality_id=2)
         participant_state_service = ParticipantStateServiceGraphDB()
 
-        result = participant_state_service.save_participant_state(participant_state, database_name)
+        result = participant_state_service.save_participant_state(participant_state, dataset_name)
 
         self.assertEqual(result, ParticipantStateOut(age=5, errors=['error']))
-        create_node_mock.assert_called_once_with('`Participant State`', database_name)
+        create_node_mock.assert_called_once_with('`Participant State`', dataset_name)

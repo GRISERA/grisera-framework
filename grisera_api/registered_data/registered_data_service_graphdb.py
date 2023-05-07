@@ -15,7 +15,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
     """
     graph_api_service = GraphApiService()
 
-    def save_registered_data(self, registered_data: RegisteredDataIn, database_name: str):
+    def save_registered_data(self, registered_data: RegisteredDataIn, dataset_name: str):
         """
         Send request to graph api to create new registered data node
 
@@ -25,26 +25,26 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         Returns:
             Result of request as registered data object
         """
-        node_response = self.graph_api_service.create_node("`Registered Data`", database_name)
+        node_response = self.graph_api_service.create_node("`Registered Data`", dataset_name)
 
         if node_response["errors"] is not None:
             return RegisteredDataOut(**registered_data.dict(), errors=node_response["errors"])
 
         registered_data_id = node_response["id"]
-        properties_response = self.graph_api_service.create_properties(registered_data_id, registered_data, database_name)
+        properties_response = self.graph_api_service.create_properties(registered_data_id, registered_data, dataset_name)
         if properties_response["errors"] is not None:
             return RegisteredDataOut(**registered_data.dict(), errors=properties_response["errors"])
 
         return RegisteredDataOut(**registered_data.dict(), id=registered_data_id)
 
-    def get_registered_data_nodes(self, database_name: str):
+    def get_registered_data_nodes(self, dataset_name: str):
         """
         Send request to graph api to get registered_data_nodes
 
         Returns:
             Result of request as list of registered_data_nodes objects
         """
-        get_response = self.graph_api_service.get_nodes("`Registered Data`", database_name)
+        get_response = self.graph_api_service.get_nodes("`Registered Data`", dataset_name)
 
         registered_data_nodes = []
 
@@ -60,7 +60,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
 
         return RegisteredDataNodesOut(registered_data_nodes=registered_data_nodes)
 
-    def get_registered_data(self, registered_data_id: int, database_name: str):
+    def get_registered_data(self, registered_data_id: int, dataset_name: str):
         """
         Send request to graph api to get given registered data
 
@@ -70,7 +70,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         Returns:
             Result of request as registered data object
         """
-        get_response = self.graph_api_service.get_node(registered_data_id, database_name)
+        get_response = self.graph_api_service.get_node(registered_data_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=registered_data_id, errors=get_response["errors"])
@@ -85,7 +85,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
             else:
                 registered_data['additional_properties'].append({'key': property['key'], 'value': property['value']})
 
-        relations_response = self.graph_api_service.get_node_relationships(registered_data_id, database_name)
+        relations_response = self.graph_api_service.get_node_relationships(registered_data_id, dataset_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == registered_data_id:
@@ -99,7 +99,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
 
         return RegisteredDataOut(**registered_data)
 
-    def delete_registered_data(self, registered_data_id: int, database_name: str):
+    def delete_registered_data(self, registered_data_id: int, dataset_name: str):
         """
         Send request to graph api to delete given registered data
 
@@ -109,15 +109,15 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         Returns:
             Result of request as registered data object
         """
-        get_response = self.get_registered_data(registered_data_id, database_name)
+        get_response = self.get_registered_data(registered_data_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node(registered_data_id, database_name)
+        self.graph_api_service.delete_node(registered_data_id, dataset_name)
         return get_response
 
-    def update_registered_data(self, registered_data_id: int, registered_data: RegisteredDataIn, database_name: str):
+    def update_registered_data(self, registered_data_id: int, registered_data: RegisteredDataIn, dataset_name: str):
         """
         Send request to graph api to update given registered data
 
@@ -128,13 +128,13 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         Returns:
             Result of request as registered data object
         """
-        get_response = self.get_registered_data(registered_data_id, database_name)
+        get_response = self.get_registered_data(registered_data_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node_properties(registered_data_id, database_name)
-        self.graph_api_service.create_properties(registered_data_id, registered_data, database_name)
+        self.graph_api_service.delete_node_properties(registered_data_id, dataset_name)
+        self.graph_api_service.create_properties(registered_data_id, registered_data, dataset_name)
 
         registered_data_result = {'id': registered_data_id, 'relations': get_response.relations,
                                   'reversed_relations': get_response.reversed_relations}

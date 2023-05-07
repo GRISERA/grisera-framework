@@ -94,6 +94,7 @@ class RelationshipService:
         Returns:
             Result of request as relationship object
         """
+
         if self.db.relationship_exist(id, database_name):
             response = self.db.create_relationship_properties(id, properties, database_name)
             if len(response["errors"]) > 0:

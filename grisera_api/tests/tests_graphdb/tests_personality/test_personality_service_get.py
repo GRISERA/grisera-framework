@@ -13,7 +13,7 @@ class TestPersonalityServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_get_personality_big_five_without_error(self, get_node_relationships_mock, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Personality'],
                                       'properties': [{'key': 'agreeableness', 'value': 2.5},
@@ -38,16 +38,16 @@ class TestPersonalityServiceGet(unittest.TestCase):
                                                                     relation_id=0)])
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.get_personality(id_node, database_name)
+        result = personality_service.get_personality(id_node, dataset_name)
 
         self.assertEqual(result, personality)
-        get_node_mock.assert_called_once_with(id_node, database_name)
-        get_node_relationships_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
+        get_node_relationships_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_get_personality_panas_without_error(self, get_node_relationships_mock, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Personality'],
                                       'properties': [{'key': 'negative_affect', 'value': 0.5},
@@ -68,42 +68,42 @@ class TestPersonalityServiceGet(unittest.TestCase):
                                                                     relation_id=0)])
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.get_personality(id_node, database_name)
+        result = personality_service.get_personality(id_node, dataset_name)
 
         self.assertEqual(result, personality)
-        get_node_mock.assert_called_once_with(id_node, database_name)
-        get_node_relationships_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
+        get_node_relationships_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_personality_without_appearance_label(self, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.get_personality(id_node, database_name)
+        result = personality_service.get_personality(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_personality_with_error(self, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.get_personality(id_node, database_name)
+        result = personality_service.get_personality(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_personalities(self, get_nodes_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Personality'],
                                                   'properties': [{'key': 'agreeableness', 'value': 2.5},
                                                      {'key': 'conscientiousness', 'value': 2.5},
@@ -119,19 +119,19 @@ class TestPersonalityServiceGet(unittest.TestCase):
         personalities = PersonalitiesOut(personalities=[personality_big_five, personality_panas])
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.get_personalities(database_name)
+        result = personality_service.get_personalities(dataset_name)
 
         self.assertEqual(result, personalities)
-        get_nodes_mock.assert_called_once_with("Personality", database_name)
+        get_nodes_mock.assert_called_once_with("Personality", dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_personalities_empty(self, get_nodes_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         get_nodes_mock.return_value = {'nodes': []}
         personalities = PersonalitiesOut(personality=[])
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.get_personalities(database_name)
+        result = personality_service.get_personalities(dataset_name)
 
         self.assertEqual(result, personalities)
-        get_nodes_mock.assert_called_once_with("Personality", database_name)
+        get_nodes_mock.assert_called_once_with("Personality", dataset_name)

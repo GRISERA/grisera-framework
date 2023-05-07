@@ -16,7 +16,7 @@ class TestObservableInformationServicePut(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_update_observable_information_relationships_without_error(self, get_node_relationships_mock, delete_node_properties_mock,
                                                     get_node_mock, create_properties_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
@@ -35,19 +35,19 @@ class TestObservableInformationServicePut(unittest.TestCase):
                                  [RelationInformation(second_node_id=19, name="testRelation", relation_id=0)],
                                                     reversed_relations=
                                  [RelationInformation(second_node_id=15, name="testReversedRelation", relation_id=0)])
-        calls = [mock.call(1, database_name)]
+        calls = [mock.call(1, dataset_name)]
         observable_information_service = ObservableInformationServiceGraphDB()
 
-        result = observable_information_service.update_observable_information_relationships(id_node, observable_information_in, database_name)
+        result = observable_information_service.update_observable_information_relationships(id_node, observable_information_in, dataset_name)
 
         self.assertEqual(result, observable_information_out)
         get_node_mock.assert_has_calls(calls)
         create_properties_mock.assert_not_called()
-        get_node_relationships_mock.assert_has_calls([mock.call(1, database_name), mock.call(1, database_name)])
+        get_node_relationships_mock.assert_has_calls([mock.call(1, dataset_name), mock.call(1, dataset_name)])
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_observable_information_relationships_without_label(self, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
@@ -55,21 +55,21 @@ class TestObservableInformationServicePut(unittest.TestCase):
         observable_information_in = ObservableInformationIn(modality_id=15, life_activity_id=19)
         observable_information_service = ObservableInformationServiceGraphDB()
 
-        result = observable_information_service.update_observable_information_relationships(id_node, observable_information_in, database_name)
+        result = observable_information_service.update_observable_information_relationships(id_node, observable_information_in, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_observable_information_relationships_with_error(self, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         observable_information_in = ObservableInformationIn(modality_id=15, life_activity_id=19)
         observable_information_service = ObservableInformationServiceGraphDB()
 
-        result = observable_information_service.update_observable_information_relationships(id_node, observable_information_in, database_name)
+        result = observable_information_service.update_observable_information_relationships(id_node, observable_information_in, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)

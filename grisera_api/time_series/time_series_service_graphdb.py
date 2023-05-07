@@ -25,7 +25,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
     measure_service = MeasureServiceGraphDB()
     observable_information_service = ObservableInformationServiceGraphDB()
 
-    def save_time_series(self, time_series: TimeSeriesIn, database_name: str):
+    def save_time_series(self, time_series: TimeSeriesIn, dataset_name: str):
         """
         Send request to graph api to create new time series
 
@@ -35,7 +35,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         Returns:
             Result of request as time series object
         """
-        node_response = self.graph_api_service.create_node("`Time Series`", database_name)
+        node_response = self.graph_api_service.create_node("`Time Series`", dataset_name)
 
         if node_response["errors"] is not None:
             return TimeSeriesOut(**time_series.dict(), errors=node_response["errors"])
@@ -44,31 +44,31 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
 
         if time_series.observable_information_id is not None and \
                 type(self.observable_information_service.get_observable_information(
-                    time_series.observable_information_id, database_name)) is not NotFoundByIdModel:
+                    time_series.observable_information_id, dataset_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=time_series_id,
                                                         end_node=time_series.observable_information_id,
                                                         name="hasObservableInformation",
-                                                        database_name=database_name)
+                                                        dataset_name=dataset_name)
         if time_series.measure_id is not None and \
-                type(self.measure_service.get_measure(time_series.measure_id, database_name)) is not NotFoundByIdModel:
+                type(self.measure_service.get_measure(time_series.measure_id, dataset_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=time_series_id,
                                                         end_node=time_series.measure_id,
                                                         name="hasMeasure",
-                                                        database_name=database_name)
+                                                        dataset_name=dataset_name)
 
         time_series.observable_information_id = time_series.measure_id = None
-        self.graph_api_service.create_properties(time_series_id, time_series, database_name)
+        self.graph_api_service.create_properties(time_series_id, time_series, dataset_name)
 
-        return self.get_time_series(time_series_id, database_name)
+        return self.get_time_series(time_series_id, dataset_name)
 
-    def get_time_series_nodes(self, database_name: str, params: QueryParams = None):
+    def get_time_series_nodes(self, dataset_name: str, params: QueryParams = None):
         """
         Send request to graph api to get time series nodes
 
         Returns:
             Result of request as list of time series nodes objects
         """
-        get_response = self.graph_api_service.get_nodes("`Time Series`", database_name)
+        get_response = self.graph_api_service.get_nodes("`Time Series`", dataset_name)
 
         time_series_nodes = []
 
@@ -84,7 +84,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
 
         return TimeSeriesNodesOut(time_series_nodes=time_series_nodes)
 
-    def get_time_series(self, time_series_id: int, database_name: str,
+    def get_time_series(self, time_series_id: int, dataset_name: str,
                         signal_min_value: Optional[int] = None,
                         signal_max_value: Optional[int] = None):
         """
@@ -98,7 +98,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         Returns:
             Result of request as time series object
         """
-        get_response = self.graph_api_service.get_node(time_series_id, database_name)
+        get_response = self.graph_api_service.get_node(time_series_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=time_series_id, errors=get_response["errors"])
@@ -113,7 +113,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
             else:
                 time_series['additional_properties'].append({'key': property['key'], 'value': property['value']})
 
-        relations_response = self.graph_api_service.get_node_relationships(time_series_id, database_name)
+        relations_response = self.graph_api_service.get_node_relationships(time_series_id, dataset_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == time_series_id:
@@ -127,7 +127,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
 
         return TimeSeriesOut(**time_series)
 
-    def delete_time_series(self, time_series_id: int, database_name: str):
+    def delete_time_series(self, time_series_id: int, dataset_name: str):
         """
         Send request to graph api to delete given time series
 
@@ -137,15 +137,15 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         Returns:
             Result of request as time series object
         """
-        get_response = self.get_time_series(time_series_id, database_name)
+        get_response = self.get_time_series(time_series_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node(time_series_id, database_name)
+        self.graph_api_service.delete_node(time_series_id, dataset_name)
         return get_response
 
-    def update_time_series(self, time_series_id: int, time_series: TimeSeriesPropertyIn, database_name: str):
+    def update_time_series(self, time_series_id: int, time_series: TimeSeriesPropertyIn, dataset_name: str):
         """
         Send request to graph api to update given time series
 
@@ -156,13 +156,13 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         Returns:
             Result of request as time series object
         """
-        get_response = self.get_time_series(time_series_id, database_name)
+        get_response = self.get_time_series(time_series_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node_properties(time_series_id, database_name)
-        self.graph_api_service.create_properties(time_series_id, time_series, database_name)
+        self.graph_api_service.delete_node_properties(time_series_id, dataset_name)
+        self.graph_api_service.create_properties(time_series_id, time_series, dataset_name)
 
         time_series_result = {"id": time_series_id, "relations": get_response.relations,
                                     "reversed_relations": get_response.reversed_relations}
@@ -171,7 +171,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         return TimeSeriesOut(**time_series_result)
 
     def update_time_series_relationships(self, time_series_id: int,
-                                               time_series: TimeSeriesRelationIn, database_name: str):
+                                               time_series: TimeSeriesRelationIn, dataset_name: str):
         """
         Send request to graph api to update given time series
 
@@ -182,23 +182,23 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         Returns:
             Result of request as time series object
         """
-        get_response = self.get_time_series(time_series_id, database_name)
+        get_response = self.get_time_series(time_series_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
         if time_series.observable_information_id is not None and \
                 type(self.observable_information_service.get_observable_information(
-                    time_series.observable_information_id, database_name)) is not NotFoundByIdModel:
+                    time_series.observable_information_id, dataset_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=time_series_id,
                                                         end_node=time_series.observable_information_id,
                                                         name="hasObservableInformation",
-                                                        database_name=database_name)
+                                                        dataset_name=dataset_name)
         if time_series.measure_id is not None and \
-                type(self.measure_service.get_measure(time_series.measure_id, database_name)) is not NotFoundByIdModel:
+                type(self.measure_service.get_measure(time_series.measure_id, dataset_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=time_series_id,
                                                         end_node=time_series.personality_id,
                                                         name="hasMeasure",
-                                                        database_name=database_name)
+                                                        dataset_name=dataset_name)
 
-        return self.get_time_series(time_series_id, database_name)
+        return self.get_time_series(time_series_id, dataset_name)

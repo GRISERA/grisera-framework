@@ -21,7 +21,7 @@ class ScenarioServiceGraphDB(ScenarioService):
     activity_execution_service = ActivityExecutionServiceGraphDB()
     experiment_service = ExperimentServiceGraphDB()
 
-    def save_scenario(self, scenario: ScenarioIn, database_name: str):
+    def save_scenario(self, scenario: ScenarioIn, dataset_name: str):
         """
         Send request to graph api to create new scenario
 
@@ -32,17 +32,17 @@ class ScenarioServiceGraphDB(ScenarioService):
             Result of request as scenario object
         """
         activity_executions = [
-            self.activity_execution_service.save_activity_execution(activity_execution=activity_execution, database_name=database_name) for
+            self.activity_execution_service.save_activity_execution(activity_execution=activity_execution, dataset_name=dataset_name) for
             activity_execution in scenario.activity_executions]
         self.graph_api_service.create_relationships(scenario.experiment_id, activity_executions[0].id,
-                                                    'hasScenario', database_name)
+                                                    'hasScenario', dataset_name)
         [self.graph_api_service.create_relationships(activity_executions[index - 1].id, activity_executions[index].id,
-                                                     'nextActivityExecution', database_name)
+                                                     'nextActivityExecution', dataset_name)
          for index in range(1, len(activity_executions))]
 
-        return ScenarioOut(experiment_id=scenario.experiment_id, activity_executions=activity_executions, database_name=database_name)
+        return ScenarioOut(experiment_id=scenario.experiment_id, activity_executions=activity_executions, dataset_name=dataset_name)
 
-    def add_activity_execution(self, previous_id: int, activity_execution: ActivityExecutionIn, database_name: str):
+    def add_activity_execution(self, previous_id: int, activity_execution: ActivityExecutionIn, dataset_name: str):
         """
         Send request to graph api to add activity_execution to scenario
 
@@ -53,16 +53,16 @@ class ScenarioServiceGraphDB(ScenarioService):
         Returns:
             Result of request as activity_execution object
         """
-        relationships = self.graph_api_service.get_node_relationships(previous_id, database_name)['relationships']
-        activity_execution_result = self.activity_execution_service.save_activity_execution(activity_execution, database_name)
+        relationships = self.graph_api_service.get_node_relationships(previous_id, dataset_name)['relationships']
+        activity_execution_result = self.activity_execution_service.save_activity_execution(activity_execution, dataset_name)
 
         if previous_id in [relation['start_node'] for relation in relationships if
                            relation['name'] == 'hasScenario']:
             self.graph_api_service.create_relationships(previous_id, activity_execution_result.id,
-                                                        'hasScenario', database_name)
+                                                        'hasScenario', dataset_name)
         else:
             self.graph_api_service.create_relationships(previous_id, activity_execution_result.id,
-                                                        'nextActivityExecution', database_name)
+                                                        'nextActivityExecution', dataset_name)
 
         try:
             next_id, relation_id = [(relation['end_node'], relation['id']) for relation in relationships
@@ -71,12 +71,12 @@ class ScenarioServiceGraphDB(ScenarioService):
         except IndexError:
             return activity_execution_result
 
-        self.graph_api_service.create_relationships(activity_execution_result.id, next_id, 'nextActivityExecution', database_name)
-        self.graph_api_service.delete_relationship(relation_id, database_name)
+        self.graph_api_service.create_relationships(activity_execution_result.id, next_id, 'nextActivityExecution', dataset_name)
+        self.graph_api_service.delete_relationship(relation_id, dataset_name)
 
         return activity_execution_result
 
-    def change_order_middle_with_last(self, middle_id, last_id, middle_relationships, last_relationships, database_name: str):
+    def change_order_middle_with_last(self, middle_id, last_id, middle_relationships, last_relationships, dataset_name: str):
         """
             Changes order of the middle node and the last node
 
@@ -91,7 +91,7 @@ class ScenarioServiceGraphDB(ScenarioService):
             middle_relationships[0]['start_node'], last_id,
             middle_relationships[0]['name']
         )
-        self.graph_api_service.create_relationships(start_node, end_node, relation_name, database_name)
+        self.graph_api_service.create_relationships(start_node, end_node, relation_name, dataset_name)
 
         if middle_relationships[1] == last_relationships[0]:
             # nodes are next to each other
@@ -99,7 +99,7 @@ class ScenarioServiceGraphDB(ScenarioService):
                 last_id, middle_relationships[1]['start_node'],
                 middle_relationships[1]['name']
             )
-            self.graph_api_service.create_relationships(start_node, end_node, relation_name, database_name)
+            self.graph_api_service.create_relationships(start_node, end_node, relation_name, dataset_name)
 
             return
 
@@ -108,18 +108,18 @@ class ScenarioServiceGraphDB(ScenarioService):
             last_id, middle_relationships[1]['end_node'],
             middle_relationships[1]['name']
         )
-        self.graph_api_service.create_relationships(start_node, end_node, relation_name, database_name)
+        self.graph_api_service.create_relationships(start_node, end_node, relation_name, dataset_name)
 
         start_node, end_node, relation_name = (
             last_relationships[0]['start_node'], middle_id,
             last_relationships[0]['name']
         )
         if start_node != end_node:
-            self.graph_api_service.create_relationships(start_node, end_node, relation_name, database_name)
+            self.graph_api_service.create_relationships(start_node, end_node, relation_name, dataset_name)
 
         return
 
-    def change_order_middle_with_middle(self, middle_id, last_id, middle_relationships, last_relationships, database_name: str):
+    def change_order_middle_with_middle(self, middle_id, last_id, middle_relationships, last_relationships, dataset_name: str):
         """
             Changes order of the two middle nodes
 
@@ -134,7 +134,7 @@ class ScenarioServiceGraphDB(ScenarioService):
             middle_relationships[0]['start_node'], last_id,
             middle_relationships[0]['name']
         )
-        self.graph_api_service.create_relationships(start_node, end_node, relation_name, database_name)
+        self.graph_api_service.create_relationships(start_node, end_node, relation_name, dataset_name)
 
         if middle_relationships[1] == last_relationships[0]:
             # nodes are next to each other
@@ -142,13 +142,13 @@ class ScenarioServiceGraphDB(ScenarioService):
                 last_id, middle_id,
                 middle_relationships[1]['name']
             )
-            self.graph_api_service.create_relationships(start_node, end_node, relation_name, database_name)
+            self.graph_api_service.create_relationships(start_node, end_node, relation_name, dataset_name)
 
             start_node, end_node, relation_name = (
                 middle_id, last_relationships[1]['end_node'],
                 last_relationships[1]['name']
             )
-            self.graph_api_service.create_relationships(start_node, end_node, relation_name, database_name)
+            self.graph_api_service.create_relationships(start_node, end_node, relation_name, dataset_name)
 
             return
 
@@ -156,20 +156,20 @@ class ScenarioServiceGraphDB(ScenarioService):
             last_id, middle_relationships[1]['end_node'],
             middle_relationships[1]['name']
         )
-        self.graph_api_service.create_relationships(start_node, end_node, relation_name, database_name)
+        self.graph_api_service.create_relationships(start_node, end_node, relation_name, dataset_name)
 
         start_node, end_node, relation_name = (
             last_relationships[0]['start_node'], middle_id,
             last_relationships[0]['name']
         )
         if start_node != end_node:
-            self.graph_api_service.create_relationships(start_node, end_node, relation_name, database_name)
+            self.graph_api_service.create_relationships(start_node, end_node, relation_name, dataset_name)
 
         start_node, end_node, relation_name = (
             middle_id, last_relationships[1]['end_node'],
             last_relationships[1]['name']
         )
-        self.graph_api_service.create_relationships(start_node, end_node, relation_name, database_name)
+        self.graph_api_service.create_relationships(start_node, end_node, relation_name, dataset_name)
 
         return
 
@@ -222,7 +222,7 @@ class ScenarioServiceGraphDB(ScenarioService):
 
         return relationships
 
-    def change_order(self, order_change: OrderChangeIn, database_name: str):
+    def change_order(self, order_change: OrderChangeIn, dataset_name: str):
         """
         Send request to graph api to change order in scenario
 
@@ -233,19 +233,19 @@ class ScenarioServiceGraphDB(ScenarioService):
             Result of request as changed order ids
         """
         # save all relationships in lists
-        previous_relationships = self.graph_api_service.get_node_relationships(order_change.previous_id, database_name)[
+        previous_relationships = self.graph_api_service.get_node_relationships(order_change.previous_id, dataset_name)[
             'relationships']
         activity_execution_relationships = \
-            self.graph_api_service.get_node_relationships(order_change.activity_execution_id, database_name)['relationships']
+            self.graph_api_service.get_node_relationships(order_change.activity_execution_id, dataset_name)['relationships']
 
         # check which node is before the other
         previous_first, activity_execution_first = self.what_order(previous_relationships,
                                                                    activity_execution_relationships)
 
         # delete nextActivityExecution and hasScenario relationships 
-        [self.graph_api_service.delete_relationship(relation['id'], database_name) for relation in previous_relationships
+        [self.graph_api_service.delete_relationship(relation['id'], dataset_name) for relation in previous_relationships
          if relation['name'] in ['nextActivityExecution', 'hasScenario']]
-        [self.graph_api_service.delete_relationship(relation['id'], database_name) for relation in activity_execution_relationships
+        [self.graph_api_service.delete_relationship(relation['id'], dataset_name) for relation in activity_execution_relationships
          if relation['name'] in ['nextActivityExecution', 'hasScenario']]
 
         # save nextActivityExecution and hasScenario relationships 
@@ -265,14 +265,14 @@ class ScenarioServiceGraphDB(ScenarioService):
             self.change_order_middle_with_last(middle_id=order_change.previous_id,
                                                last_id=order_change.activity_execution_id,
                                                middle_relationships=previous_relationships,
-                                               last_relationships=activity_execution_relationships, database_name=database_name)
+                                               last_relationships=activity_execution_relationships, dataset_name=dataset_name)
 
         elif len(previous_relationships) == 1:
             # change order when previous node is last
             self.change_order_middle_with_last(middle_id=order_change.activity_execution_id,
                                                last_id=order_change.previous_id,
                                                middle_relationships=activity_execution_relationships,
-                                               last_relationships=previous_relationships, database_name=database_name)
+                                               last_relationships=previous_relationships, dataset_name=dataset_name)
 
         elif len(previous_relationships) == 2 and len(activity_execution_relationships) == 2:
             if previous_first is True:
@@ -280,18 +280,18 @@ class ScenarioServiceGraphDB(ScenarioService):
                 self.change_order_middle_with_middle(middle_id=order_change.previous_id,
                                                      last_id=order_change.activity_execution_id,
                                                      middle_relationships=previous_relationships,
-                                                     last_relationships=activity_execution_relationships, database_name=database_name)
+                                                     last_relationships=activity_execution_relationships, dataset_name=dataset_name)
             elif activity_execution_first is True:
                 # change order when activity execution node is before previous node
                 self.change_order_middle_with_middle(middle_id=order_change.activity_execution_id,
                                                      last_id=order_change.previous_id,
                                                      middle_relationships=activity_execution_relationships,
-                                                     last_relationships=previous_relationships, database_name=database_name)
+                                                     last_relationships=previous_relationships, dataset_name=dataset_name)
 
         return OrderChangeOut(previous_id=order_change.previous_id,
                               activity_execution_id=order_change.activity_execution_id)
 
-    def delete_activity_execution(self, activity_execution_id: int, database_name: str):
+    def delete_activity_execution(self, activity_execution_id: int, dataset_name: str):
         """
         Send request to graph api to delete activity_execution from scenario
 
@@ -301,11 +301,11 @@ class ScenarioServiceGraphDB(ScenarioService):
         Returns:
             Result of request as activity_execution object
         """
-        relationships = self.graph_api_service.get_node_relationships(activity_execution_id, database_name)['relationships']
+        relationships = self.graph_api_service.get_node_relationships(activity_execution_id, dataset_name)['relationships']
         if len(relationships) == 0:
             return ActivityExecutionOut(errors='Relationships not found')
 
-        activity_execution = self.graph_api_service.delete_node(activity_execution_id, database_name)
+        activity_execution = self.graph_api_service.delete_node(activity_execution_id, dataset_name)
 
         properties = {p['key']: p['value'] for p in activity_execution['properties']}
         additional_properties = [PropertyIn(key=key, value=value) for key, value in properties.items()
@@ -323,11 +323,11 @@ class ScenarioServiceGraphDB(ScenarioService):
         end_node = [relationship['end_node'] for relationship in relationships
                     if relationship['start_node'] == activity_execution_id
                     and relationship['name'] == 'nextActivityExecution'][0]
-        self.graph_api_service.create_relationships(start_node, end_node, relationships[0]['name'], database_name)
+        self.graph_api_service.create_relationships(start_node, end_node, relationships[0]['name'], dataset_name)
 
         return activity_execution_response
 
-    def get_scenario(self, node_id: int, database_name: str):
+    def get_scenario(self, node_id: int, dataset_name: str):
         """
         Send request to graph api to get activity executions and experiment from scenario
 
@@ -337,7 +337,7 @@ class ScenarioServiceGraphDB(ScenarioService):
         Returns:
             Result of request as Scenario object
         """
-        get_response = self.graph_api_service.get_node(node_id, database_name)
+        get_response = self.graph_api_service.get_node(node_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=node_id, errors=get_response["errors"])
@@ -345,11 +345,11 @@ class ScenarioServiceGraphDB(ScenarioService):
             return NotFoundByIdModel(id=node_id, errors="Node not found.")
 
         if get_response["labels"][0] == "Activity Execution":
-            return self.get_scenario_by_activity_execution(node_id, database_name)
+            return self.get_scenario_by_activity_execution(node_id, dataset_name)
         elif get_response["labels"][0] == "Experiment":
-            return self.get_scenario_by_experiment(node_id, database_name)
+            return self.get_scenario_by_experiment(node_id, dataset_name)
 
-    def get_scenario_by_experiment(self, experiment_id: int, database_name: str):
+    def get_scenario_by_experiment(self, experiment_id: int, dataset_name: str):
         """
         Send request to graph api to get activity_executions from scenario which starts in experiment
 
@@ -361,7 +361,7 @@ class ScenarioServiceGraphDB(ScenarioService):
         """
         activity_executions = []
 
-        experiment = self.experiment_service.get_experiment(experiment_id, database_name)
+        experiment = self.experiment_service.get_experiment(experiment_id, dataset_name)
         if type(experiment) is NotFoundByIdModel:
             return experiment
 
@@ -369,13 +369,13 @@ class ScenarioServiceGraphDB(ScenarioService):
 
         for relation in experiment.relations:
             if relation.name == "hasScenario":
-                self.get_scenario_after_activity_execution(relation.second_node_id, activity_executions, database_name)
+                self.get_scenario_after_activity_execution(relation.second_node_id, activity_executions, dataset_name)
 
         [scenario['activity_executions'].append(a) for a in activity_executions if a not in scenario['activity_executions']]
 
         return ScenarioOut(**scenario)
 
-    def get_scenario_by_activity_execution(self, activity_execution_id: int, database_name: str):
+    def get_scenario_by_activity_execution(self, activity_execution_id: int, dataset_name: str):
         """
         Send request to graph api to get activity_executions from scenario which has activity execution id incuded
 
@@ -388,16 +388,16 @@ class ScenarioServiceGraphDB(ScenarioService):
         activity_executions = []
         activity_executions_before = []
 
-        activity_execution = self.activity_execution_service.get_activity_execution(activity_execution_id, database_name)
+        activity_execution = self.activity_execution_service.get_activity_execution(activity_execution_id, dataset_name)
         if type(activity_execution) is NotFoundByIdModel:
             return activity_execution
 
-        experiment_id = self.get_scenario_before_activity_execution(activity_execution_id, activity_executions_before, database_name)
+        experiment_id = self.get_scenario_before_activity_execution(activity_execution_id, activity_executions_before, dataset_name)
         [activity_executions.append(a) for a in activity_executions_before if a not in activity_executions]
 
         activity_executions_after = []
 
-        self.get_scenario_after_activity_execution(activity_execution_id, activity_executions_after, database_name)
+        self.get_scenario_after_activity_execution(activity_execution_id, activity_executions_after, dataset_name)
         [activity_executions.append(a) for a in activity_executions_after if a not in activity_executions]
 
         scenario = {'experiment_id': experiment_id,
@@ -407,7 +407,7 @@ class ScenarioServiceGraphDB(ScenarioService):
 
         return ScenarioOut(**scenario)
 
-    def get_scenario_after_activity_execution(self, activity_execution_id: int, activity_executions: [], database_name: str):
+    def get_scenario_after_activity_execution(self, activity_execution_id: int, activity_executions: [], dataset_name: str):
         """
         Gets activity executions from scenario which are saved after activity_execution_id
 
@@ -415,7 +415,7 @@ class ScenarioServiceGraphDB(ScenarioService):
             activity_execution_id (int): Id of activity execution included in scenario
             activity_executions: List of activity executions in scenario
         """
-        activity_execution = self.activity_execution_service.get_activity_execution(activity_execution_id, database_name)
+        activity_execution = self.activity_execution_service.get_activity_execution(activity_execution_id, dataset_name)
 
         if type(activity_execution) is NotFoundByIdModel:
             return activity_execution
@@ -424,16 +424,16 @@ class ScenarioServiceGraphDB(ScenarioService):
 
         for relation in activity_execution.relations:
             if relation.name == "nextActivityExecution":
-                activity_execution = self.activity_execution_service.get_activity_execution(relation.second_node_id, database_name)
+                activity_execution = self.activity_execution_service.get_activity_execution(relation.second_node_id, dataset_name)
 
                 if type(activity_execution) is NotFoundByIdModel:
                     return activity_execution
 
                 activity_executions.append(activity_execution)
-                [self.get_scenario_after_activity_execution(activity_execution.id, activity_executions, database_name)
+                [self.get_scenario_after_activity_execution(activity_execution.id, activity_executions, dataset_name)
                  for r in activity_execution.relations if r.name == "nextActivityExecution"]
 
-    def get_scenario_before_activity_execution(self, activity_execution_id: int, activity_executions: [], database_name: str):
+    def get_scenario_before_activity_execution(self, activity_execution_id: int, activity_executions: [], dataset_name: str):
         """
         Gets activity executions from scenario which are saved before activity_execution_id
 
@@ -441,7 +441,7 @@ class ScenarioServiceGraphDB(ScenarioService):
             activity_execution_id (int): Id of activity execution included in scenario
             activity_executions: List of activity executions in scenario
         """
-        activity_execution = self.activity_execution_service.get_activity_execution(activity_execution_id, database_name)
+        activity_execution = self.activity_execution_service.get_activity_execution(activity_execution_id, dataset_name)
         if type(activity_execution) is NotFoundByIdModel:
             return activity_execution
 
@@ -450,15 +450,15 @@ class ScenarioServiceGraphDB(ScenarioService):
         for relation in activity_execution.reversed_relations:
 
             if relation.name == "nextActivityExecution":
-                activity_execution = self.activity_execution_service.get_activity_execution(relation.second_node_id, database_name)
+                activity_execution = self.activity_execution_service.get_activity_execution(relation.second_node_id, dataset_name)
                 if type(activity_execution) is NotFoundByIdModel:
                     return activity_execution
 
                 activity_executions.append(activity_execution)
-                return self.get_scenario_before_activity_execution(activity_execution.id, activity_executions, database_name)
+                return self.get_scenario_before_activity_execution(activity_execution.id, activity_executions, dataset_name)
 
             elif relation.name == "hasScenario":
-                experiment = self.experiment_service.get_experiment(relation.second_node_id, database_name)
+                experiment = self.experiment_service.get_experiment(relation.second_node_id, dataset_name)
                 if type(experiment) is NotFoundByIdModel:
                     return experiment
 

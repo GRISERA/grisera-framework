@@ -16,6 +16,9 @@ from arrangement.arrangement_service_ontology import ArrangementServiceOntology
 from channel.channel_service import ChannelService
 from channel.channel_service_graphdb import ChannelServiceGraphDB
 from channel.channel_service_ontology import ChannelServiceOntology
+from dataset.dataset_service import DatasetService
+from dataset.dataset_service_graphdb import DatasetServiceGraphDB
+from dataset.dataset_service_ontology import DatasetServiceOntology
 from experiment.experiment_service import ExperimentService
 from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
 from experiment.experiment_service_ontology import ExperimentServiceOntology
@@ -119,6 +122,14 @@ class Services:
             return ChannelServiceOntology()
         else:
             return ChannelService()
+
+    def dataset_service(self) -> DatasetService:
+        if self.persistence_type in [PersistenceTypes.GRAPHDB, PersistenceTypes.GRAPHDB_WITH_SIGNAL_VALUES]:
+            return DatasetServiceGraphDB()
+        elif self.persistence_type == PersistenceTypes.ONTOLOGY:
+            return DatasetServiceOntology()
+        else:
+            return DatasetService()
 
     def experiment_service(self) -> ExperimentService:
         if self.persistence_type in [PersistenceTypes.GRAPHDB, PersistenceTypes.GRAPHDB_WITH_SIGNAL_VALUES]:

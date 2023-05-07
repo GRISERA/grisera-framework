@@ -14,7 +14,7 @@ class TestRecordingServiceDelete(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_delete_recording_without_error(self, get_node_relationships_mock, get_node_mock, delete_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Recording'],
                                                                       'properties': [],
@@ -35,35 +35,35 @@ class TestRecordingServiceDelete(unittest.TestCase):
                                                                                           relation_id=0)])
         recording_service = RecordingServiceGraphDB()
 
-        result = recording_service.delete_recording(id_node, database_name)
+        result = recording_service.delete_recording(id_node, dataset_name)
 
         self.assertEqual(result, recording)
-        get_node_mock.assert_called_once_with(id_node, database_name)
-        delete_node_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
+        delete_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_delete_recording_without_participant_label(self, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         recording_service = RecordingServiceGraphDB()
 
-        result = recording_service.delete_recording(id_node, database_name)
+        result = recording_service.delete_recording(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_delete_recording_with_error(self, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         recording_service = RecordingServiceGraphDB()
 
-        result = recording_service.delete_recording(id_node, database_name)
+        result = recording_service.delete_recording(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)

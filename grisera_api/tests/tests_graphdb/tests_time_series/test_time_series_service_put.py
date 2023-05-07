@@ -16,7 +16,7 @@ class TestTimeSeriesServicePut(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_update_time_series_without_error(self, get_node_relationships_mock, delete_node_properties_mock,
                                                     get_node_mock, create_properties_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
@@ -38,19 +38,19 @@ class TestTimeSeriesServicePut(unittest.TestCase):
                                                     reversed_relations=
                                  [RelationInformation(second_node_id=15, name="testReversedRelation", relation_id=0)],
                                  additional_properties=additional_properties)
-        calls = [mock.call(1, database_name)]
+        calls = [mock.call(1, dataset_name)]
         time_series_service = TimeSeriesServiceGraphDB()
 
-        result = time_series_service.update_time_series(id_node, time_series_in, database_name)
+        result = time_series_service.update_time_series(id_node, time_series_in, dataset_name)
 
         self.assertEqual(result, time_series_out)
         get_node_mock.assert_has_calls(calls)
-        create_properties_mock.assert_called_once_with(id_node, time_series_in, database_name)
-        get_node_relationships_mock.assert_called_once_with(id_node, database_name)
+        create_properties_mock.assert_called_once_with(id_node, time_series_in, dataset_name)
+        get_node_relationships_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_time_series_without_label(self, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
@@ -59,14 +59,14 @@ class TestTimeSeriesServicePut(unittest.TestCase):
         time_series_in = TimeSeriesPropertyIn(type="Epoch", source="cos", additional_properties=additional_properties)
         time_series_service = TimeSeriesServiceGraphDB()
 
-        result = time_series_service.update_time_series(id_node, time_series_in, database_name)
+        result = time_series_service.update_time_series(id_node, time_series_in, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_time_series_with_error(self, get_node_mock):
-        database_name = "neo4j"
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
@@ -74,7 +74,7 @@ class TestTimeSeriesServicePut(unittest.TestCase):
         time_series_in = TimeSeriesPropertyIn(type="Epoch", source="cos", id=id_node, additional_properties=additional_properties)
         time_series_service = TimeSeriesServiceGraphDB()
 
-        result = time_series_service.update_time_series(id_node, time_series_in, database_name)
+        result = time_series_service.update_time_series(id_node, time_series_in, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node, database_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)

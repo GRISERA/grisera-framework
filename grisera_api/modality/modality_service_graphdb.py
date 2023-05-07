@@ -14,7 +14,7 @@ class ModalityServiceGraphDB(ModalityService):
     """
     graph_api_service = GraphApiService()
 
-    def save_modality(self, modality: ModalityIn, database_name: str):
+    def save_modality(self, modality: ModalityIn, dataset_name: str):
         """
         Send request to graph api to create new modality
 
@@ -25,33 +25,33 @@ class ModalityServiceGraphDB(ModalityService):
             Result of request as modality object
         """
 
-        node_response = self.graph_api_service.create_node("Modality", database_name)
+        node_response = self.graph_api_service.create_node("Modality", dataset_name)
 
         if node_response["errors"] is not None:
             return ModalityOut(modality=modality.modality, errors=node_response["errors"])
 
         modality_id = node_response["id"]
 
-        properties_response = self.graph_api_service.create_properties(modality_id, modality, database_name)
+        properties_response = self.graph_api_service.create_properties(modality_id, modality, dataset_name)
         if properties_response["errors"] is not None:
             return ModalityOut(modality=modality.modality, errors=properties_response["errors"])
 
         return ModalityOut(modality=modality.modality, id=modality_id)
 
-    def get_modalities(self, database_name: str):
+    def get_modalities(self, dataset_name: str):
         """
         Send request to graph api to get all modalities
 
         Returns:
             Result of request as list of modality objects
         """
-        get_response = self.graph_api_service.get_nodes("Modality", database_name)
+        get_response = self.graph_api_service.get_nodes("Modality", dataset_name)
         modalities = [BasicModalityOut(id=modality["id"], modality=modality["properties"][0]["value"])
                       for modality in get_response["nodes"]]
 
         return ModalitiesOut(modalities=modalities)
 
-    def get_modality(self, modality_id: int, database_name: str):
+    def get_modality(self, modality_id: int, dataset_name: str):
         """
         Send request to graph api to get given modality
 
@@ -61,7 +61,7 @@ class ModalityServiceGraphDB(ModalityService):
         Returns:
             Result of request as modality object
         """
-        get_response = self.graph_api_service.get_node(modality_id, database_name)
+        get_response = self.graph_api_service.get_node(modality_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=modality_id, errors=get_response["errors"])
@@ -72,7 +72,7 @@ class ModalityServiceGraphDB(ModalityService):
         for property in get_response["properties"]:
             modality[property["key"]] = property["value"]
 
-        relations_response = self.graph_api_service.get_node_relationships(modality_id, database_name)
+        relations_response = self.graph_api_service.get_node_relationships(modality_id, dataset_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == modality_id:

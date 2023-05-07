@@ -14,7 +14,7 @@ class ExperimentServiceGraphDB(ExperimentService):
     """
     graph_api_service = GraphApiService()
     
-    def save_experiment(self, experiment: ExperimentIn, database_name: str):
+    def save_experiment(self, experiment: ExperimentIn, dataset_name: str):
         """
         Send request to graph api to create new experiment
 
@@ -24,30 +24,28 @@ class ExperimentServiceGraphDB(ExperimentService):
         Returns:
             Result of request as experiment object
         """
-        node_response_experiment = self.graph_api_service.create_node("Experiment", database_name)
-
-        # print("--------node_response_experiment: ", node_response_experiment)
+        node_response_experiment = self.graph_api_service.create_node("Experiment", dataset_name)
 
         if node_response_experiment["errors"] is not None:
             return ExperimentOut(**experiment.dict(), errors=node_response_experiment["errors"])
 
         experiment_id = node_response_experiment["id"]
-        properties_response = self.graph_api_service.create_properties(experiment_id, experiment, database_name)
+        properties_response = self.graph_api_service.create_properties(experiment_id, experiment, dataset_name)
         if properties_response["errors"] is not None:
             return ExperimentOut(**experiment.dict(), errors=properties_response["errors"])
 
         return ExperimentOut(**experiment.dict(), id=experiment_id)
 
-    def get_experiments(self, database_name: str):
+    def get_experiments(self, dataset_name: str):
         """
         Send request to graph api to get experiments
 
         Returns:
             Result of request as list of experiments objects
         """
-        get_response = self.graph_api_service.get_nodes("Experiment", database_name)
+        get_response = self.graph_api_service.get_nodes("Experiment", dataset_name)
 
-        # print("--------get_response_: ", get_response)
+
 
         experiments = []
 
@@ -63,7 +61,7 @@ class ExperimentServiceGraphDB(ExperimentService):
 
         return ExperimentsOut(experiments=experiments)
 
-    def get_experiment(self, experiment_id: int, database_name: str):
+    def get_experiment(self, experiment_id: int, dataset_name: str):
         """
         Send request to graph api to get given experiment
 
@@ -73,7 +71,7 @@ class ExperimentServiceGraphDB(ExperimentService):
         Returns:
             Result of request as experiment object
         """
-        get_response = self.graph_api_service.get_node(experiment_id, database_name)
+        get_response = self.graph_api_service.get_node(experiment_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=experiment_id, errors=get_response["errors"])
@@ -87,7 +85,7 @@ class ExperimentServiceGraphDB(ExperimentService):
             else:
                 experiment['additional_properties'].append({'key': property['key'], 'value': property['value']})
 
-        relations_response = self.graph_api_service.get_node_relationships(experiment_id, database_name)
+        relations_response = self.graph_api_service.get_node_relationships(experiment_id, dataset_name)
 
         for relation in relations_response["relationships"]:
             if relation["start_node"] == experiment_id:
@@ -100,7 +98,7 @@ class ExperimentServiceGraphDB(ExperimentService):
 
         return ExperimentOut(**experiment)
 
-    def delete_experiment(self, experiment_id: int, database_name: str):
+    def delete_experiment(self, experiment_id: int, dataset_name: str):
         """
         Send request to graph api to delete given experiment
 
@@ -110,15 +108,15 @@ class ExperimentServiceGraphDB(ExperimentService):
         Returns:
             Result of request as experiment object
         """
-        get_response = self.get_experiment(experiment_id, database_name)
+        get_response = self.get_experiment(experiment_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node(experiment_id, database_name)
+        self.graph_api_service.delete_node(experiment_id, dataset_name)
         return get_response
 
-    def update_experiment(self, experiment_id: int, experiment: ExperimentIn, database_name: str):
+    def update_experiment(self, experiment_id: int, experiment: ExperimentIn, dataset_name: str):
         """
         Send request to graph api to update given experiment
 
@@ -129,13 +127,13 @@ class ExperimentServiceGraphDB(ExperimentService):
         Returns:
             Result of request as experiment object
         """
-        get_response = self.get_experiment(experiment_id, database_name)
+        get_response = self.get_experiment(experiment_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node_properties(experiment_id, database_name)
-        self.graph_api_service.create_properties(experiment_id, experiment, database_name)
+        self.graph_api_service.delete_node_properties(experiment_id, dataset_name)
+        self.graph_api_service.create_properties(experiment_id, experiment, dataset_name)
 
         experiment_result = {'id': experiment_id, 'relations': get_response.relations,
                              'reversed_relations': get_response.reversed_relations}
