@@ -23,8 +23,12 @@ class DatasetService:
         Returns:
             Result of request as dataset object
         """
+        print("jamnik1")
         name_hash = self.generate_random_dataset_hash(10)
+
+        print("jamnik2")
         create_dataset_response = self.db.create_dataset(name_hash)
+        print("jamnik3")
 
         if len(create_dataset_response["errors"]) > 0:
             return DatasetOut(errors=create_dataset_response["errors"])
