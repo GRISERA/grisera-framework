@@ -42,3 +42,24 @@ class ArrangementService:
             Result of request as arrangement object
         """
         raise Exception("get_arrangement not implemented yet")
+
+    def delete_arrangement(self, arrangement_id: int):
+        """
+        Send request to graph api to get given arrangement
+        Args:
+            arrangement_id (int): Id of arrangement
+        Returns:
+            Result of request as arrangement object
+        """
+        raise Exception("Reference to an abstract class.")
+
+    def update_arrangement(self, arrangement_id: int, arrangement: ArrangementIn):
+        """
+        Send request to graph api to update given arrangement
+        Args:
+            arrangement_id (int): Id of arrangement
+            arrangement (ArrangementIn): Arrangement to be updated
+        Returns:
+            Result of request as arrangement object
+        """
+        raise Exception("Reference to an abstract class.")

@@ -20,6 +20,7 @@ class ArrangementServiceGraphDB(ArrangementService):
 
         Args:
             arrangement (ArrangementIn): Arrangement to be added
+            database_name (str): name of database
 
         Returns:
             Result of request as arrangement object
@@ -45,6 +46,9 @@ class ArrangementServiceGraphDB(ArrangementService):
     def get_arrangements(self, database_name: str):
         """
         Send request to graph api to get all arrangements
+
+        Args:
+            database_name (str): name of database
 
         Returns:
             Result of request as list of arrangement objects
@@ -72,6 +76,7 @@ class ArrangementServiceGraphDB(ArrangementService):
 
         Args:
             arrangement_id (int): Id of arrangement
+            database_name (str): name of database
 
         Returns:
             Result of request as arrangement object
@@ -99,3 +104,43 @@ class ArrangementServiceGraphDB(ArrangementService):
                                                                              relation_id=relation["id"]))
 
         return ArrangementOut(**arrangement)
+
+    def delete_arrangement(self, arrangement_id: int, database_name: str):
+        """
+        Send request to graph api to get given arrangement
+        Args:
+            arrangement_id (int): Id of arrangement
+            database_name (str): name of database
+        Returns:
+            Result of request as arrangement object
+        """
+        get_response = self.get_arrangement(arrangement_id, database_name)
+
+        if type(get_response) is NotFoundByIdModel:
+            return get_response
+
+        self.graph_api_service.delete_node(arrangement_id, database_name)
+        return get_response
+
+    def update_arrangement(self, arrangement_id: int, arrangement: ArrangementIn, database_name: str):
+        """
+        Send request to graph api to update given arrangement
+        Args:
+            arrangement_id (int): Id of arrangement
+            arrangement (ArrangementIn): arrangement to be updated
+            database_name (str): name of database
+        Returns:
+            Result of request as arrangement object
+        """
+        get_response = self.get_arrangement(arrangement_id, database_name)
+
+        if type(get_response) is NotFoundByIdModel:
+            return get_response
+        self.graph_api_service.delete_node_properties(arrangement_id, database_name)
+        self.graph_api_service.create_properties(arrangement_id, arrangement, database_name)
+
+        arrangement_result = {'id': arrangement_id, 'relations': get_response.relations,
+                             'reversed_relations': get_response.reversed_relations}
+        arrangement_result.update(get_response.dict())
+
+        return ArrangementOut(**arrangement_result)
