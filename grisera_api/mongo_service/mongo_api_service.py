@@ -128,7 +128,7 @@ class MongoApiService:
         """
         Perform deep iteration over query result and parser all ObjectId's fields to str
         """
-        if type(value) is not dict:
+        if type(result) is not dict:
             return
         for field, value in result.items():
             if type(value) is dict:

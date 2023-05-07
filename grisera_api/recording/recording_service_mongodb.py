@@ -47,9 +47,8 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         Returns:
             Result of request as recording object
         """
-        participation = self.participation_service.get_participation(
-            recording.participation_id
-        )
+        # TODO update when participation service is ready
+        participation = NotFoundByIdModel()
         participation_exists = participation is not NotFoundByIdModel
         if recording.participation_id is not None and not participation_exists:
             return RecordingOut(errors={"errors": "given participation does not exist"})
