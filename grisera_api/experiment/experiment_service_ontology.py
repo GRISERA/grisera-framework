@@ -30,6 +30,11 @@ class ExperimentServiceOntology(ExperimentService):
         if instance_response_experiment["errors"] is not None:
             return ExperimentOut(**experiment.dict(), errors=instance_response_experiment["errors"])
 
+        for prop in experiment.additional_properties:
+            response = self.ontology_api_service.add_role(model_id, prop.key, experiment.experiment_name, prop.value)
+            if response["errors"] is not None:
+                return ExperimentOut(**experiment.dict(), errors=response["errors"])
+
         experiment_label = instance_response_experiment["label"]
         experiment.__dict__.update({'experiment_name': experiment_label})
 
