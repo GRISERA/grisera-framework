@@ -13,6 +13,7 @@ from scenario.scenario_service import ScenarioService
 from experiment.experiment_service import ExperimentService
 from participation.participation_service import ParticipationService
 
+
 class ActivityExecutionServiceGraphDB(ActivityExecutionService):
     """
     Object to handle logic of activities requests

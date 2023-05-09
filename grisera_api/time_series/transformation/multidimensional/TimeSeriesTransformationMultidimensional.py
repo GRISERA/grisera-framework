@@ -1,6 +1,6 @@
 from typing import List
 
-from time_series.helpers import get_node_property
+from time_series.ts_helpers import get_node_property
 from time_series.time_series_model import TimeSeriesOut, Type, TimeSeriesMultidimensionalOut
 
 

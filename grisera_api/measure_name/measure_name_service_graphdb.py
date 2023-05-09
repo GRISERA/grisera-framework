@@ -2,6 +2,7 @@ from typing import Union
 
 from graph_api_service import GraphApiService
 from helpers import create_stub_from_response
+from measure.measure_service import MeasureService
 from measure_name.measure_name_model import MeasureNameIn, MeasureNameOut, MeasureNamesOut, BasicMeasureNameOut
 from measure_name.measure_name_service import MeasureNameService
 from models.not_found_model import NotFoundByIdModel
@@ -17,7 +18,7 @@ class MeasureNameServiceGraphDB(MeasureNameService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.measure_service = None
+        self.measure_service: MeasureService = None
 
     def save_measure_name(self, measure_name: MeasureNameIn):
         """

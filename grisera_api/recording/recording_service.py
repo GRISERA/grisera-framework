@@ -1,6 +1,6 @@
 from typing import Union
 
-from recording.recording_model import RecordingPropertyIn, RecordingIn
+from recording.recording_model import RecordingPropertyIn, RecordingIn, RecordingRelationIn
 
 
 class RecordingService:
@@ -62,12 +62,12 @@ class RecordingService:
         raise Exception("update_recording not implemented yet")
 
     def update_recording_relationships(self, recording_id: Union[int, str],
-                                       recording: RecordingIn):
+                                       recording: RecordingRelationIn):
         """
         Send request to graph api to update given recording
         Args:
             recording_id (int | str): identity of recording
-            recording (RecordingIn): Relationships to update
+            recording (RecordingRelationIn): Relationships to update
         Returns:
             Result of request as recording object
         """

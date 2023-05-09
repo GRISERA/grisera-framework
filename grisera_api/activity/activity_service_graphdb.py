@@ -1,5 +1,6 @@
 from typing import Union
 
+from activity_execution.activity_execution_service import ActivityExecutionService
 from graph_api_service import GraphApiService
 from activity.activity_model import ActivityIn, ActivityOut, ActivitiesOut, BasicActivityOut
 from activity.activity_service import ActivityService
@@ -17,7 +18,7 @@ class ActivityServiceGraphDB(ActivityService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.activity_execution_service = None
+        self.activity_execution_service: ActivityExecutionService = None
 
     def save_activity(self, activity: ActivityIn):
         """

@@ -5,6 +5,7 @@ from helpers import create_stub_from_response
 from life_activity.life_activity_model import LifeActivityIn, LifeActivityOut, LifeActivitiesOut, BasicLifeActivityOut
 from life_activity.life_activity_service import LifeActivityService
 from models.not_found_model import NotFoundByIdModel
+from observable_information.observable_information_service import ObservableInformationService
 
 
 class LifeActivityServiceGraphDB(LifeActivityService):
@@ -17,7 +18,7 @@ class LifeActivityServiceGraphDB(LifeActivityService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.observable_information_service = None
+        self.observable_information_service: ObservableInformationService = None
 
     def save_life_activity(self, life_activity: LifeActivityIn):
         """
