@@ -1,6 +1,6 @@
 from typing import Union
 from bson import ObjectId
-from grisera_api.mongo_service.collection_mapping import Collections
+from mongo_service.collection_mapping import Collections
 from mongo_service.service_mixins import GenericMongoServiceMixin
 from observable_information.observable_information_model import (
     ObservableInformationIn,
@@ -8,14 +8,10 @@ from observable_information.observable_information_model import (
     BasicObservableInformationOut,
     ObservableInformationsOut,
 )
-from modality.modality_service_graphdb import ModalityServiceGraphDB
-from life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
 from observable_information.observable_information_service import (
     ObservableInformationService,
 )
-from recording.recording_service_graphdb import RecordingServiceGraphDB
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
 from mongo_service import mongo_api_service
 
 

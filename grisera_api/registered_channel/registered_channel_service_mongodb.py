@@ -1,4 +1,4 @@
-from grisera_api.mongo_service.collection_mapping import Collections
+from mongo_service.collection_mapping import Collections
 from mongo_service.service_mixins import (
     GenericMongoServiceMixin,
 )

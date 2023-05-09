@@ -1,6 +1,6 @@
 from typing import Union
 from bson import ObjectId
-from grisera_api.mongo_service.collection_mapping import Collections
+from mongo_service.collection_mapping import Collections
 from observable_information.observable_information_model import (
     BasicObservableInformationOut,
     ObservableInformationOut,
