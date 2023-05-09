@@ -20,7 +20,7 @@ from recording.recording_model import (
     RecordingsOut,
 )
 from models.not_found_model import NotFoundByIdModel
-from mongo_service import mongo_api_service
+from mongo_service import MongoApiService
 
 
 class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
@@ -34,6 +34,8 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
     """
 
     def __init__(self):
+        super().__init__()
+        self.mongo_api_service = MongoApiService()
         self.model_out_class = RecordingOut
         self.registered_channel_service = None
         self.observable_information_service = None
@@ -153,7 +155,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
             type(related_registered_channel) is not NotFoundByIdModel
         )
         if related_registered_channel_exists:
-            mongo_api_service.update_document(
+            self.mongo_api_service.update_document(
                 recording_id,
                 RecordingIn(registered_channel_id=recording.registered_channel_id),
             )
@@ -165,7 +167,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
             type(related_participation) is not NotFoundByIdModel
         )
         if related_participation_exists:
-            mongo_api_service.update_document(
+            self.mongo_api_service.update_document(
                 recording_id,
                 RecordingIn(participation_id=recording.participation_id),
             )

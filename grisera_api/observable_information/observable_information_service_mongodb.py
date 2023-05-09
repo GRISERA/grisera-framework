@@ -12,7 +12,6 @@ from observable_information.observable_information_service import (
     ObservableInformationService,
 )
 from models.not_found_model import NotFoundByIdModel
-from mongo_service import mongo_api_service
 
 
 class ObservableInformationServiceMongoDB(
@@ -29,6 +28,7 @@ class ObservableInformationServiceMongoDB(
     """
 
     def __init__(self):
+        super().__init__()
         self.model_out_class = ObservableInformationOut
         self.recording_service = None
         self.life_activity_service = None

@@ -1,8 +1,7 @@
 from typing import Union
 from pydantic import BaseModel
-from pymongo import MongoClient
+import pymongo
 from bson import ObjectId
-from grisera_api.mongo_service.utils import mongo_deep_iteration
 
 from models.not_found_model import NotFoundByIdModel
 from mongo_service.collection_mapping import get_collection_name
@@ -21,7 +20,7 @@ class MongoApiService:
         """
         Connect to MongoDB database
         """
-        self.client = MongoClient(mongo_api_address)
+        self.client = pymongo.MongoClient(mongo_api_address)
         self.db = self.client[mongo_database_name]
 
     def create_document(self, data_in: BaseModel):
@@ -121,25 +120,31 @@ class MongoApiService:
         del mongo_output[self.MONGO_ID_FIELD]
         self._fix_output_ids(mongo_output)
 
-    @mongo_deep_iteration
-    def _fix_input_ids(self, field):
+    def _fix_input_ids(self, mongo_query):
         """
         Mongo uses ObjectId in id fields, while models use int/str. This function
         performs conversion on each id field in input query.
         """
-        if self._field_is_id(field):
-            return ObjectId(field)
-        return field
 
-    @mongo_deep_iteration
-    def _fix_output_ids(self, field):
+        def fix_input_id(field):
+            if self._field_is_id(field):
+                return ObjectId(field)
+            return field
+
+        self._mongo_object_deep_iterate(mongo_query, fix_input_id)
+
+    def _fix_output_ids(self, mongo_document):
         """
         Mongo uses ObjectId in id fields, while models use int/str. This function
         performs conversion on each id field in output dict.
         """
-        if self._field_is_id(field):
-            return str(field)
-        return field
+
+        def fix_output_id(field):
+            if self._field_is_id(field):
+                return str(field)
+            return field
+
+        self._mongo_object_deep_iterate(mongo_document, fix_output_id)
 
     @staticmethod
     def _field_is_id(field):
@@ -147,5 +152,18 @@ class MongoApiService:
             return False
         return field == "id" or field[-3:] in ("_id", ".id")
 
-
-mongo_api_service = MongoApiService()
+    def _mongo_object_deep_iterate(self, mongo_object: dict, func):
+        """
+        Call a function on each primitive value in mongo output document or input query
+        dict. Mongo document field values are either primitives, dicts or arrays.
+        """
+        if type(mongo_object) is not dict:
+            return
+        for field, value in mongo_object.items():
+            if type(value) is dict:
+                self._mongo_object_deep_iterate(value)
+            elif type(value) is list:
+                for list_elem in value:
+                    self._mongo_object_deep_iterate(list_elem)
+            else:
+                mongo_object[field] = func(mongo_object[field])

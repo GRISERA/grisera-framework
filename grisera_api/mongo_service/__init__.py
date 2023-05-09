@@ -1,1 +1,1 @@
-from mongo_service.mongo_api_service import mongo_api_service
+from mongo_service.mongo_api_service import MongoApiService

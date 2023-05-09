@@ -18,6 +18,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
     """
 
     def __init__(self):
+        super().__init__()
         self.model_out_class = RegisteredDataOut
         self.registered_channel_service = None
 

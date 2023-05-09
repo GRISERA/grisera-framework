@@ -2,7 +2,7 @@ from mongo_service.collection_mapping import Collections
 from mongo_service.service_mixins import (
     GenericMongoServiceMixin,
 )
-from mongo_service import mongo_api_service
+from mongo_service import MongoApiService
 from registered_channel.registered_channel_service import RegisteredChannelService
 from registered_channel.registered_channel_model import (
     RegisteredChannelOut,
@@ -26,6 +26,8 @@ class RegisteredChannelServiceMongoDB(
     """
 
     def __init__(self):
+        super().__init__()
+        self.mongo_api_service = MongoApiService()
         self.model_out_class = RegisteredChannelOut
         self.channel_service = None
         self.registered_data_service = None
@@ -117,7 +119,7 @@ class RegisteredChannelServiceMongoDB(
         )
         related_channel_exists = type(related_channel) is not NotFoundByIdModel
         if related_channel_exists:
-            mongo_api_service.update_document(
+            self.mongo_api_service.update_document(
                 registered_channel_id,
                 RegisteredChannelIn(channel_id=registered_channel.channel_id),
             )
@@ -129,7 +131,7 @@ class RegisteredChannelServiceMongoDB(
             type(related_registered_channel) is not NotFoundByIdModel
         )
         if related_registered_channel_exists:
-            mongo_api_service.update_document(
+            self.mongo_api_service.update_document(
                 registered_channel_id,
                 RegisteredChannelIn(
                     registered_data_id=registered_channel.registered_data_id
