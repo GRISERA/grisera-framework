@@ -107,7 +107,7 @@ class MongoApiService:
             mongo_input[self.MONGO_ID_FIELD] = ObjectId(
                 mongo_input[self.MODEL_ID_FIELD]
             )
-        del mongo_input[self.MODEL_ID_FIELD]
+            del mongo_input[self.MODEL_ID_FIELD]
         self._fix_input_ids(mongo_input)
 
     def _update_mongo_output_id(self, mongo_output: dict):
@@ -117,7 +117,7 @@ class MongoApiService:
         """
         if self.MONGO_ID_FIELD in mongo_output:
             mongo_output[self.MODEL_ID_FIELD] = str(mongo_output[self.MONGO_ID_FIELD])
-        del mongo_output[self.MONGO_ID_FIELD]
+            del mongo_output[self.MONGO_ID_FIELD]
         self._fix_output_ids(mongo_output)
 
     def _fix_input_ids(self, mongo_query):
@@ -126,10 +126,10 @@ class MongoApiService:
         performs conversion on each id field in input query.
         """
 
-        def fix_input_id(field):
-            if self._field_is_id(field):
-                return ObjectId(field)
-            return field
+        def fix_input_id(field, value):
+            if self._field_is_id(field) and value is not None:
+                return ObjectId(value)
+            return value
 
         self._mongo_object_deep_iterate(mongo_query, fix_input_id)
 
@@ -139,10 +139,10 @@ class MongoApiService:
         performs conversion on each id field in output dict.
         """
 
-        def fix_output_id(field):
+        def fix_output_id(field, value):
             if self._field_is_id(field):
-                return str(field)
-            return field
+                return str(value)
+            return value
 
         self._mongo_object_deep_iterate(mongo_document, fix_output_id)
 
@@ -166,4 +166,4 @@ class MongoApiService:
                 for list_elem in value:
                     self._mongo_object_deep_iterate(list_elem)
             else:
-                mongo_object[field] = func(mongo_object[field])
+                mongo_object[field] = func(field, mongo_object[field])

@@ -97,7 +97,9 @@ class RegisteredChannelServiceMongoDB(
         return self.get_single(registered_channel_id, depth, source)
 
     def update_registered_channel_relationships(
-        self, registered_channel_id: int, registered_channel: RegisteredChannelIn
+        self,
+        registered_channel_id: int,
+        updated_registered_channel: RegisteredChannelIn,
     ):
         """
         Send request to mongo api to update given registered channel
@@ -114,30 +116,38 @@ class RegisteredChannelServiceMongoDB(
         if type(existing_registered_channel) is NotFoundByIdModel:
             return existing_registered_channel
 
-        related_channel = self.channel_service.get_channel(
-            registered_channel.channel_id
-        )
-        related_channel_exists = type(related_channel) is not NotFoundByIdModel
-        if related_channel_exists:
-            self.mongo_api_service.update_document(
-                registered_channel_id,
-                RegisteredChannelIn(channel_id=registered_channel.channel_id),
+        if updated_registered_channel.channel_id is not None:
+            related_channel = self.channel_service.get_channel(
+                updated_registered_channel.channel_id
+            )
+            related_channel_exists = type(related_channel) is not NotFoundByIdModel
+            if not related_channel_exists:
+                return related_channel
+        else:
+            updated_registered_channel.channel_id = (
+                existing_registered_channel.channel.getattr("id", None)
             )
 
-        related_registered_channel = self.registered_data_service.get_channel(
-            registered_channel.registered_data_id
-        )
-        related_registered_channel_exists = (
-            type(related_registered_channel) is not NotFoundByIdModel
-        )
-        if related_registered_channel_exists:
-            self.mongo_api_service.update_document(
-                registered_channel_id,
-                RegisteredChannelIn(
-                    registered_data_id=registered_channel.registered_data_id
-                ),
+        if updated_registered_channel.registered_data_id is not None:
+            related_registered_channel = (
+                self.registered_data_service.get_registered_data(
+                    updated_registered_channel.registered_data_id
+                )
+            )
+            related_registered_channel_exists = (
+                type(related_registered_channel) is not NotFoundByIdModel
+            )
+            if not related_registered_channel_exists:
+                return related_registered_channel
+        else:
+            updated_registered_channel.registered_data_id = (
+                existing_registered_channel.registered_data.getattr("id", None)
             )
 
+        self.mongo_api_service.update_document(
+            registered_channel_id,
+            updated_registered_channel,
+        )
         return self.get_registered_channel(registered_channel_id)
 
     def delete_registered_channel(self, registered_channel_id: int):
