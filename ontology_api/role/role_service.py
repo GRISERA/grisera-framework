@@ -156,7 +156,7 @@ class RoleService:
 
         roles = []
 
-        for prop in onto.object_properties():
+        for prop in onto.object_properties() + onto.data_properties():
 
             for subj, obj in prop.get_relations():
                 if subj.label[0] == instance_name:
