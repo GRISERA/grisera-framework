@@ -1,9 +1,9 @@
-from typing import List, Optional
+from typing import List, Union, Optional
 
 from starlette.datastructures import QueryParams
 
 from models.not_found_model import NotFoundByIdModel
-from time_series.helpers import get_node_property
+from time_series.ts_helpers import get_node_property
 from time_series.time_series_model import Type, TimeSeriesIn, TimeSeriesOut, SignalIn, SignalValueNodesIn, \
     TimestampNodesIn, TimeSeriesNodesOut, BasicTimeSeriesOut, TimeSeriesTransformationIn, \
     TimeSeriesTransformationRelationshipIn, TimeSeriesMultidimensionalOut
@@ -176,7 +176,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             timestamp, previous_timestamp_timestamp_relation_id = self.get_neighbour_node(timestamp["id"], "next")
 
         if timestamp is None or int(get_node_property(timestamp, "timestamp")) != timestamp_value:
-            new_timestamp_node = self.graph_api_service.create_node("`Timestamp`")
+            new_timestamp_node = self.graph_api_service.create_node("Timestamp")
 
             if new_timestamp_node["errors"] is not None:
                 return new_timestamp_node
@@ -204,7 +204,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         return timestamp
 
     def create_signal_value(self, signal_value: SignalValueNodesIn, previous_signal_value_node, time_series_id: int):
-        signal_value_node_response = self.graph_api_service.create_node("`Signal Value`")
+        signal_value_node_response = self.graph_api_service.create_node("Signal Value")
 
         if signal_value_node_response["errors"] is not None:
             return signal_value_node_response
@@ -276,29 +276,30 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             signal_value_node = current_signal_value_node
         return None
 
-    def get_time_series(self, time_series_id: int,
+    def get_time_series(self, time_series_id: Union[int, str], depth: int = 0,
                         signal_min_value: Optional[int] = None,
                         signal_max_value: Optional[int] = None):
         """
         Send request to graph api to get given time series
         Args:
-            time_series_id (int): Id of time series
+            time_series_id (int | str): identity of time series
+            depth: (int): specifies how many related entities will be traversed to create the response
             signal_min_value (Optional[int]): Filter signal values by min value
             signal_max_value (Optional[int]): Filter signal values by max value
         Returns:
             Result of request as time series object
         """
-        time_series = super().get_time_series(time_series_id)
+        time_series = super().get_time_series(time_series_id, depth)
         if time_series.errors is None:
             time_series.signal_values = self.get_signal_values(time_series_id, time_series.type,
                                                                signal_min_value, signal_max_value)
         return time_series
 
-    def get_time_series_multidimensional(self, time_series_ids: List[int]):
+    def get_time_series_multidimensional(self, time_series_ids: List[Union[int, str]]):
         """
         Send request to graph api to get given time series
         Args:
-            time_series_ids (TimeSeriesIds): Ids of the time series
+            time_series_ids (int | str): Ids of the time series
         Returns:
             Result of request as time series object
         """
@@ -317,13 +318,13 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         except Exception as e:
             return TimeSeriesMultidimensionalOut(errors=str(e))
 
-    def get_signal_values(self, time_series_id: int, time_series_type: str,
+    def get_signal_values(self, time_series_id: Union[int, str], time_series_type: str,
                           signal_min_value: Optional[int] = None,
                           signal_max_value: Optional[int] = None):
         """
         Send requests to graph api to get all signal values
         Args:
-            time_series_id (int): id of the time series
+            time_series_id (int | str): identity of the time series
             time_series_type (str): type of the time series
             signal_min_value (Optional[int]): Filter signal values by min value
             signal_max_value (Optional[int]): Filter signal values by max value
@@ -439,7 +440,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 signal_values.append({'signal_value': row[0], 'start_timestamp': row[1], 'end_timestamp': row[2]})
         return signal_values
 
-    def get_time_series_nodes(self, params: QueryParams):
+    def get_time_series_nodes(self, params: QueryParams = None):
         """
         Send request to graph api to get time series nodes
 

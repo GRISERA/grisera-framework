@@ -1,7 +1,6 @@
 import json
 import unittest
 import unittest.mock as mock
-from life_activity.life_activity_model import *
 from life_activity.life_activity_service_graphdb import *
 from requests import Response
 

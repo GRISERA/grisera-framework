@@ -1,16 +1,15 @@
+from typing import Optional, Any
+
 from pydantic import BaseModel
-from typing import Optional, Any, Union
 
 
-class NotFoundByIdModel(BaseModel):
+class BaseModelOut(BaseModel):
     """
-    Model send when source was not found by id
+    Base model for models used as a response, with links and errors
 
     Attributes:
-        id (int | str): Id of searching source
         errors (Optional[Any]): Optional errors appeared during query executions
         links (Optional[list]): List of links available from api
     """
-    id: Union[int, str] = None
     errors: Optional[Any] = None
     links: Optional[list] = None

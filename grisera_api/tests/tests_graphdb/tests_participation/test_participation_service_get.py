@@ -1,41 +1,59 @@
 import unittest
 import unittest.mock as mock
 
+from activity_execution.activity_execution_model import BasicActivityExecutionOut
 from graph_api_service import GraphApiService
 from models.not_found_model import *
+from participant_state.participant_state_model import BasicParticipantStateOut
 from participation.participation_model import *
 from participation.participation_service_graphdb import ParticipationServiceGraphDB
+from recording.recording_model import BasicRecordingOut
 
 
 class TestParticipationServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_node')
-    @mock.patch.object(GraphApiService, 'get_node_relationships')
-    def test_get_participation_without_error(self, get_node_relationships_mock, get_node_mock):
+    def test_get_participation_without_error(self, get_node_mock):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Participation'],
                                       'properties': [],
                                       "errors": None, 'links': None}
-        get_node_relationships_mock.return_value = {"relationships": [
-            {"start_node": id_node, "end_node": 19,
-             "name": "testRelation", "id": 0,
-             "properties": None},
-            {"start_node": 15, "end_node": id_node,
-             "name": "testReversedRelation", "id": 0,
-             "properties": None}]}
-        participation = ParticipationOut(id=id_node,
-                                                  relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                                                 relation_id=0)],
-                                                  reversed_relations=[RelationInformation(second_node_id=15,
-                                                                                          name="testReversedRelation",
-                                                                                          relation_id=0)])
+        participation = BasicParticipationOut(id=id_node)
         participation_service = ParticipationServiceGraphDB()
 
         result = participation_service.get_participation(id_node)
 
         self.assertEqual(result, participation)
         get_node_mock.assert_called_once_with(id_node)
-        get_node_relationships_mock.assert_called_once_with(id_node)
+
+        # @mock.patch.object(GraphApiService, 'get_node')
+        # @mock.patch.object(GraphApiService, 'get_node_relationships')
+        # def test_get_participation_without_error(self, get_node_relationships_mock, get_node_mock):
+        #     id_node = 1
+        #     get_node_mock.return_value = {'id': id_node, 'labels': ['Participation'],
+        #                                   'properties': [],
+        #                                   "errors": None, 'links': None}
+        #     get_node_relationships_mock.return_value = {"relationships": [
+        #         {"start_node": id_node, "end_node": 19,
+        #          "name": "hasParticipantState", "id": 0,
+        #          "properties": None},
+        #         {"start_node": id_node, "end_node": 15,
+        #          "name": "hasActivityExecution", "id": 0,
+        #          "properties": None},
+        #         {"start_node": 16, "end_node": id_node,
+        #          "name": "hasParticipation", "id": 0,
+        #          "properties": None},
+        #     ]}
+        #     participation = ParticipationOut(id=id_node, participant_state=BasicParticipantStateOut(**{id: 19}),
+        #                                      activity_execution=BasicActivityExecutionOut(**{id: 15}),
+        #                                      recordings=[BasicRecordingOut(**{id: 16})])
+        #     participation_service = ParticipationServiceGraphDB()
+        #
+        #     result = participation_service.get_participation(id_node)
+        #
+        #     self.assertEqual(result, participation)
+        #     get_node_mock.assert_called_once_with(id_node)
+        #     get_node_relationships_mock.assert_called_once_with(id_node)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_participation_without_label(self, get_node_mock):

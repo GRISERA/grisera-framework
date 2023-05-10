@@ -1,10 +1,6 @@
-from graph_api_service import GraphApiService
-from activity_execution.activity_execution_service import ActivityExecutionService
-from participant_state.participant_state_service import ParticipantStateService
-from participation.participation_model import ParticipationIn, ParticipationOut, ParticipationsOut, \
-    BasicParticipationOut
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from typing import Union
+
+from participation.participation_model import ParticipationIn
 
 
 class ParticipationService:
@@ -33,32 +29,33 @@ class ParticipationService:
         """
         raise Exception("get_participations not implemented yet")
 
-    def get_participation(self, participation_id: int):
+    def get_participation(self, participation_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given participation
         Args:
-            participation_id (int): Id of participation
+            depth: (int): specifies how many related entities will be traversed to create the response
+            participation_id (int | str): identity of participation
         Returns:
             Result of request as participation object
         """
         raise Exception("get_participation not implemented yet")
 
-    def delete_participation(self, participation_id: int):
+    def delete_participation(self, participation_id: Union[int, str]):
         """
         Send request to graph api to delete given participation
         Args:
-            participation_id (int): Id of participation
+            participation_id (int | str): identity of participation
         Returns:
             Result of request as participation object
         """
         raise Exception("delete_participation not implemented yet")
 
-    def update_participation_relationships(self, participation_id: int,
+    def update_participation_relationships(self, participation_id: Union[int, str],
                                            participation: ParticipationIn):
         """
         Send request to graph api to update given participation relationships
         Args:
-            participation_id (int): Id of participation
+            participation_id (int | str): identity of participation
             participation (ParticipationIn): Relationships to update
         Returns:
             Result of request as participation object

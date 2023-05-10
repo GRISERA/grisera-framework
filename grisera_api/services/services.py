@@ -1,6 +1,5 @@
 import os
 from enum import Enum
-from typing import Dict
 
 from services.service_factory import ServiceFactory
 from services.graph_services import (
@@ -18,9 +17,7 @@ from life_activity.life_activity_service import LifeActivityService
 from measure.measure_service import MeasureService
 from measure_name.measure_name_service import MeasureNameService
 from modality.modality_service import ModalityService
-from observable_information.observable_information_service import (
-    ObservableInformationService,
-)
+from observable_information.observable_information_service import ObservableInformationService
 from participant.participant_service import ParticipantService
 from participant_state.participant_state_service import ParticipantStateService
 from participation.participation_service import ParticipationService
