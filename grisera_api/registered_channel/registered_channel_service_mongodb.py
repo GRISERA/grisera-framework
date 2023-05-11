@@ -182,7 +182,7 @@ class RegisteredChannelServiceMongoDB(
         has_related_channel = registered_channel["channel_id"] is not None
         if source != Collections.CHANNEL and has_related_channel:
             registered_channel["channel"] = self.channel_service.get_single_dict(
-                channel_id=registered_channel["channel_id"],
+                registered_channel["channel_id"],
                 depth=depth - 1,
                 source=Collections.REGISTERED_CHANNEL,
             )
