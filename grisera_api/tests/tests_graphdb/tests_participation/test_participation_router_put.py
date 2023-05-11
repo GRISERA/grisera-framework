@@ -39,5 +39,7 @@ class TestParticipationRouterPut(unittest.TestCase):
                              update_participation_relationships(id_node, participation_in, response, dataset_name))
 
         self.assertEqual(result, participation_out)
-        update_participation_relationships_mock.assert_called_once_with(id_node, participation_in, dataset_name)
+
+        update_participation_relationships_mock.assert_called_once_with(id_node, participation_in,dataset_name)
         self.assertEqual(response.status_code, 404)
+

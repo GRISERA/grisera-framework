@@ -18,14 +18,18 @@ class TestMeasureRouterDelete(unittest.TestCase):
 
         result = asyncio.run(measure_router.delete_measure(measure_id, response, dataset_name))
 
-        self.assertEqual(result, MeasureOut(datatype="Test", range="Unknown", id=measure_id, unit="cm", links=get_links(router)))
-        delete_measure_mock.assert_called_once_with(measure_id, dataset_name)
+
+        self.assertEqual(result, MeasureOut(datatype="Test", range="Unknown", id=measure_id, unit="cm",
+                                            links=get_links(router)))
+        delete_measure_mock.assert_called_once_with(measure_id,dataset_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(MeasureServiceGraphDB, 'delete_measure')
     def test_delete_measure_with_error(self, delete_measure_mock):
+
         dataset_name = "neo4j"
         delete_measure_mock.return_value = MeasureOut(datatype="Test", range="Unknown", unit="cm", errors={'errors': ['test']})
+
         response = Response()
         measure_id = 1
         measure_router = MeasureRouter()

@@ -19,7 +19,7 @@ class TestParticipantStateRouterGet(unittest.TestCase):
         result = asyncio.run(participant_state_router.get_participant_state(participant_state_id, response, dataset_name))
 
         self.assertEqual(result, ParticipantStateOut(age=5, links=get_links(router)))
-        get_participant_state_mock.assert_called_once_with(participant_state_id, dataset_name)
+        get_participant_state_mock.assert_called_once_with(participant_state_id, dataset_name, 0)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(ParticipantStateServiceGraphDB, 'get_participant_state')
@@ -33,8 +33,8 @@ class TestParticipantStateRouterGet(unittest.TestCase):
         result = asyncio.run(participant_state_router.get_participant_state(participant_state_id, response, dataset_name))
 
         self.assertEqual(result, ParticipantStateOut(age=5, errors={'errors': ['test']},
-                                                             links=get_links(router)))
-        get_participant_state_mock.assert_called_once_with(participant_state_id, dataset_name)
+                                                     links=get_links(router)))
+        get_participant_state_mock.assert_called_once_with(participant_state_id, dataset_name, 0)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(ParticipantStateServiceGraphDB, 'get_participant_states')

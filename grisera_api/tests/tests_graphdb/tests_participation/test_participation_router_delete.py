@@ -35,3 +35,4 @@ class TestParticipationRouterDelete(unittest.TestCase):
         self.assertEqual(result, ParticipationOut(errors={'errors': ['test']}, links=get_links(router)))
         delete_participation_mock.assert_called_once_with(participation_id, dataset_name)
         self.assertEqual(response.status_code, 404)
+

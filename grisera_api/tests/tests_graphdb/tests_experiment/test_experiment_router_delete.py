@@ -13,7 +13,8 @@ class TestExperimentRouterDelete(unittest.TestCase):
         dataset_name = "neo4j"
         experiment_id = 1
         delete_experiment_mock.return_value = ExperimentOut(experiment_name="test", id=experiment_id,
-                                                            additional_properties=[PropertyIn(key="test", value="test")])
+                                                            additional_properties=[
+                                                                PropertyIn(key="test", value="test")])
         response = Response()
         experiment_router = ExperimentRouter()
 

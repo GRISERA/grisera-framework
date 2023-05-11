@@ -1,6 +1,8 @@
 import asyncio
 import unittest
 import unittest.mock as mock
+
+from personality.personality_model import BasicPersonalityBigFiveOut
 from personality.personality_router import *
 from personality.personality_service_graphdb import PersonalityServiceGraphDB
 
@@ -22,7 +24,9 @@ class TestPersonalityRouterGet(unittest.TestCase):
         self.assertEqual(result, PersonalityBigFiveOut(agreeableness=2.5, conscientiousness=2.5,
                                                        extroversion=2.5, neuroticism=2.5, openess=2.5,
                                                        id=personality_id, links=get_links(router)))
-        get_personality_mock.assert_called_once_with(personality_id, dataset_name)
+
+        get_personality_mock.assert_called_once_with(personality_id,dataset_name, 0)
+
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(PersonalityServiceGraphDB, 'get_personality')
@@ -40,7 +44,9 @@ class TestPersonalityRouterGet(unittest.TestCase):
         self.assertEqual(result, PersonalityBigFiveOut(agreeableness=2.5, conscientiousness=2.5, extroversion=2.5,
                                                        neuroticism=2.5, openess=2.5, errors={'errors': ['test']},
                                                        links=get_links(router)))
-        get_personality_mock.assert_called_once_with(personality_id, dataset_name)
+
+        get_personality_mock.assert_called_once_with(personality_id,dataset_name, 0)
+
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(PersonalityServiceGraphDB, 'get_personalities')

@@ -1,8 +1,11 @@
+from typing import Union
+
+from activity_execution.activity_execution_service import ActivityExecutionService
 from graph_api_service import GraphApiService
 from activity.activity_model import ActivityIn, ActivityOut, ActivitiesOut, BasicActivityOut
 from activity.activity_service import ActivityService
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from helpers import create_stub_from_response
 
 
 class ActivityServiceGraphDB(ActivityService):
@@ -14,7 +17,12 @@ class ActivityServiceGraphDB(ActivityService):
     """
     graph_api_service = GraphApiService()
 
-    def save_activity(self, activity: ActivityIn, dataset_name: str):
+
+    def __init__(self):
+        self.activity_execution_service: ActivityExecutionService = None
+
+    def save_activity(self, activity: ActivityIn,dataset_name: str):
+
         """
         Send request to graph api to create new activity
 
@@ -56,12 +64,15 @@ class ActivityServiceGraphDB(ActivityService):
 
         return ActivitiesOut(activities=activities)
 
-    def get_activity(self, activity_id: int, dataset_name: str):
+
+    def get_activity(self, activity_id: Union[int, str],dataset_name: str, depth: int = 0):
         """
         Send request to graph api to get given activity
         Args:
-            activity_id (int): Id of activity
+            activity_id (int | str): identity of activity
             dataset_name (str): name of dataset
+            depth(int): specifies how many related entities will be traversed to create the response
+
         Returns:
             Result of request as activity object
         """
@@ -72,22 +83,22 @@ class ActivityServiceGraphDB(ActivityService):
         if get_response["labels"][0] != "Activity":
             return NotFoundByIdModel(id=activity_id, errors="Node not found.")
 
-        activity = {'id': get_response['id'], 'relations': [], 'reversed_relations': []}
-        for property in get_response["properties"]:
-            activity[property["key"]] = property["value"]
+        activity = create_stub_from_response(get_response, properties=['activity'])
 
-        relations_response = self.graph_api_service.get_node_relationships(activity_id, dataset_name)
+        if depth != 0:
+            activity['activity_executions'] = []
+            relations_response = self.graph_api_service.get_node_relationships(activity_id, dataset_name)
 
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == activity_id:
-                activity['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                 name=relation["name"], relation_id=relation["id"]))
-            else:
-                activity['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
-                                                                          name=relation["name"],
-                                                                          relation_id=relation["id"]))
 
-        return ActivityOut(**activity)
+            for relation in relations_response["relationships"]:
+                if relation["end_node"] == str(activity_id) and relation["name"] == "hasActivity":
+                    activity['activity_executions']. \
+                        append(
+                        self.activity_execution_service.get_activity_execution(relation["start_node"], depth - 1))
+
+            return ActivityOut(**activity)
+        else:
+            return BasicActivityOut(**activity)
 
     def delete_activity(self, activity_id: int, dataset_name: str):
         """
@@ -129,3 +140,4 @@ class ActivityServiceGraphDB(ActivityService):
         activity_result.update(get_response.dict())
 
         return ActivityOut(**activity_result)
+

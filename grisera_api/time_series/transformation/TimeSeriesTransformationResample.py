@@ -1,9 +1,10 @@
 from typing import List, Optional
 
 from property.property_model import PropertyIn
-from time_series.helpers import get_node_property, get_additional_parameter
-from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, Type, SignalIn
-from time_series.transformation.TimeSeriesTransformation import TimeSeriesTransformation, TransformationType
+from time_series.ts_helpers import get_node_property, get_additional_parameter
+from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, Type, SignalIn, TransformationType, \
+    SignalValueNodesIn
+from time_series.transformation.TimeSeriesTransformation import TimeSeriesTransformation
 
 
 class TimeSeriesTransformationResample(TimeSeriesTransformation):
@@ -14,7 +15,10 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
 
     def transform(self, time_series: List[TimeSeriesOut], additional_properties: Optional[List[PropertyIn]]):
         """
-        Transform time series data
+        Transform time series data.
+
+        Get signal values with new sampling period.
+        This transformation will find the nearest signal value including values in the future.
 
         Args:
             time_series (List[TimeSeriesOut]): Time series to be transformed
@@ -41,7 +45,7 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
         additional_properties.append(PropertyIn(key="transformation_name", value=TransformationType.RESAMPLE_NEAREST))
 
         new_signal_values = []
-        new_signal_values_index_mapping = []
+        new_signal_values_id_mapping = []
         current_time = start_timestamp
         current_signal_value_index = 0
         if len(time_series[0].signal_values) > 0:
@@ -66,14 +70,14 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
                     if abs(current_time - before_signal_value_timestamp) <= abs(
                             after_signal_value_timestamp - current_time):
                         new_signal_value_index = current_signal_value_index - 1
-                new_signal_values.append(SignalIn(value=int(
-                    get_node_property(time_series[0].signal_values[new_signal_value_index]["signal_value"], "value")),
+                new_signal_values.append(SignalIn(signal_value=SignalValueNodesIn(value=int(
+                    get_node_property(time_series[0].signal_values[new_signal_value_index]["signal_value"], "value"))),
                     timestamp=current_time))
-                new_signal_values_index_mapping.append(
+                new_signal_values_id_mapping.append(
                     [time_series[0].signal_values[new_signal_value_index]["signal_value"]["id"]])
                 current_time += period
 
-        return TimeSeriesIn(type=time_series[0].type,
+        return TimeSeriesIn(type=Type.timestamp,
                             additional_properties=additional_properties,
                             signal_values=new_signal_values
-                            ), new_signal_values_index_mapping
+                            ), new_signal_values_id_mapping

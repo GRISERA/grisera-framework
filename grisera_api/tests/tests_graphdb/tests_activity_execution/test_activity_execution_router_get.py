@@ -6,6 +6,8 @@ from activity_execution.activity_execution_model import *
 from activity_execution.activity_execution_router import *
 from activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
 
+"""TODO: expand unit test for get with depth different from  0"""
+
 
 class TestActivityExecutionRouterGet(unittest.TestCase):
 
@@ -20,7 +22,8 @@ class TestActivityExecutionRouterGet(unittest.TestCase):
         result = asyncio.run(activity_execution_router.get_activity_execution(activity_execution_id, response, dataset_name))
 
         self.assertEqual(result, ActivityExecutionOut(id=activity_execution_id, links=get_links(router)))
-        get_activity_execution_mock.assert_called_once_with(activity_execution_id, dataset_name)
+
+        get_activity_execution_mock.assert_called_once_with(activity_execution_id,dataset_name, 0)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(ActivityExecutionServiceGraphDB, 'get_activity_execution')
@@ -35,7 +38,8 @@ class TestActivityExecutionRouterGet(unittest.TestCase):
 
         self.assertEqual(result, ActivityExecutionOut(errors={'errors': ['test']},
                                                       links=get_links(router)))
-        get_activity_execution_mock.assert_called_once_with(activity_execution_id, dataset_name)
+        get_activity_execution_mock.assert_called_once_with(activity_execution_id,dataset_name, 0)
+
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(ActivityExecutionServiceGraphDB, 'get_activity_executions')

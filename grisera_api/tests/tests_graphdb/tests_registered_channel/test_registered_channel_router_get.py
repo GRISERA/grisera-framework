@@ -20,7 +20,7 @@ class TestRegisteredChannelRouterGet(unittest.TestCase):
         result = asyncio.run(registered_channel_router.get_registered_channel(registered_channel_id, response, dataset_name))
 
         self.assertEqual(result, RegisteredChannelOut(id=registered_channel_id, links=get_links(router)))
-        get_registered_channel_mock.assert_called_once_with(registered_channel_id, dataset_name)
+        get_registered_channel_mock.assert_called_once_with(registered_channel_id, dataset_name, 0)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(RegisteredChannelServiceGraphDB, 'get_registered_channel')
@@ -35,7 +35,7 @@ class TestRegisteredChannelRouterGet(unittest.TestCase):
 
         self.assertEqual(result, RegisteredChannelOut(errors={'errors': ['test']},
                                                       links=get_links(router)))
-        get_registered_channel_mock.assert_called_once_with(registered_channel_id, dataset_name)
+        get_registered_channel_mock.assert_called_once_with(registered_channel_id, dataset_name, 0)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(RegisteredChannelServiceGraphDB, 'get_registered_channels')

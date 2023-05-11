@@ -27,7 +27,8 @@ class TestTimeSeriesRouterPut(unittest.TestCase):
     def test_update_time_series_with_error(self, update_time_series_mock):
         dataset_name = "neo4j"
         time_series_id = 1
-        update_time_series_mock.return_value = TimeSeriesOut(id=1, type="Epoch", source="cos", errors={'errors': ['test']})
+        update_time_series_mock.return_value = TimeSeriesOut(id=1, type="Epoch", source="cos",
+                                                             errors={'errors': ['test']})
         response = Response()
         time_series = TimeSeriesPropertyIn(id=1, type="Epoch", source="cos")
         time_series_router = TimeSeriesRouter()

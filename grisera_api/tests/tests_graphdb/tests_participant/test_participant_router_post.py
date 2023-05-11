@@ -33,7 +33,7 @@ class TestParticipantRouterPost(unittest.TestCase):
 
         result = asyncio.run(participant_router.create_participant(participant, response, dataset_name))
 
-        self.assertEqual(result, ParticipantOut(name="Test Test",sex='male', id=1, errors={'errors': ['test']},
+        self.assertEqual(result, ParticipantOut(name="Test Test", sex='male', id=1, errors={'errors': ['test']},
                                                 links=get_links(router)))
         save_participant_mock.assert_called_once_with(participant, dataset_name)
         self.assertEqual(response.status_code, 422)

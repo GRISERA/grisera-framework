@@ -1,4 +1,4 @@
-from time_series.transformation.TimeSeriesTransformation import TransformationType
+from time_series.time_series_model import TransformationType
 from time_series.transformation.TimeSeriesTransformationQuadrants import TimeSeriesTransformationQuadrants
 from time_series.transformation.TimeSeriesTransformationResample import TimeSeriesTransformationResample
 

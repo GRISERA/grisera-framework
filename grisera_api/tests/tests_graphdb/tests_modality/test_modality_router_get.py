@@ -4,7 +4,6 @@ import unittest.mock as mock
 from modality.modality_router import *
 from modality.modality_model import BasicModalityOut
 from modality.modality_service_graphdb import ModalityServiceGraphDB
-from property.property_model import PropertyIn
 
 
 class TestModalityRouterGet(unittest.TestCase):
@@ -20,7 +19,8 @@ class TestModalityRouterGet(unittest.TestCase):
         result = asyncio.run(modality_router.get_modality(modality_id, response, dataset_name))
 
         self.assertEqual(result, ModalityOut(modality='url', id=modality_id, links=get_links(router)))
-        get_modality_mock.assert_called_once_with(modality_id, dataset_name)
+
+        get_modality_mock.assert_called_once_with(modality_id,dataset_name, 0)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(ModalityServiceGraphDB, 'get_modality')
@@ -34,7 +34,8 @@ class TestModalityRouterGet(unittest.TestCase):
         result = asyncio.run(modality_router.get_modality(modality_id, response, dataset_name))
 
         self.assertEqual(result, ModalityOut(modality='url', errors={'errors': ['test']},  links=get_links(router)))
-        get_modality_mock.assert_called_once_with(modality_id, dataset_name)
+
+        get_modality_mock.assert_called_once_with(modality_id,dataset_name, 0)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(ModalityServiceGraphDB, 'get_modalities')

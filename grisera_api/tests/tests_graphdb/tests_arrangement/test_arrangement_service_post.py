@@ -24,9 +24,11 @@ class TestArrangementServicePost(unittest.TestCase):
 
         result = arrangement_service.save_arrangement(arrangement, dataset_name)
 
-        self.assertEqual(result, ArrangementOut(id=id_node, arrangement_type='personal two persons', arrangement_distance='intimate zone'))
-        create_node_mock.assert_called_once_with('Arrangement', dataset_name)
-        create_properties_mock.assert_called_once_with(id_node, arrangement, dataset_name)
+        self.assertEqual(result, ArrangementOut(id=id_node, arrangement_type='personal two persons',
+                                                arrangement_distance='intimate zone'))
+        create_node_mock.assert_called_once_with('Arrangement',dataset_name)
+        create_properties_mock.assert_called_once_with(id_node, arrangement,dataset_name)
+
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_arrangement_with_node_error(self, create_node_mock):
@@ -38,8 +40,11 @@ class TestArrangementServicePost(unittest.TestCase):
 
         result = arrangement_service.save_arrangement(arrangement, dataset_name)
 
-        self.assertEqual(result, ArrangementOut(arrangement_type='personal two persons', arrangement_distance='intimate zone', errors=['error']))
-        create_node_mock.assert_called_once_with('Arrangement', dataset_name)
+
+        self.assertEqual(result, ArrangementOut(arrangement_type='personal two persons',
+                                                arrangement_distance='intimate zone', errors=['error']))
+        create_node_mock.assert_called_once_with('Arrangement',dataset_name)
+
 
     @mock.patch.object(GraphApiService, 'create_node')
     @mock.patch.object(GraphApiService, 'create_properties')
@@ -53,9 +58,11 @@ class TestArrangementServicePost(unittest.TestCase):
 
         result = arrangement_service.save_arrangement(arrangement, dataset_name)
 
-        self.assertEqual(result, ArrangementOut(arrangement_type='personal two persons', arrangement_distance='intimate zone', errors=['error']))
-        create_node_mock.assert_called_once_with('Arrangement', dataset_name)
-        create_properties_mock.assert_called_once_with(id_node, arrangement, dataset_name)
+
+        self.assertEqual(result, ArrangementOut(arrangement_type='personal two persons',
+                                                arrangement_distance='intimate zone', errors=['error'],dataset_name))
+        create_node_mock.assert_called_once_with('Arrangement')
+        create_properties_mock.assert_called_once_with(id_node, arrangement,dataset_name)
 
     # @mock.patch.object(GraphApiService, 'get_nodes')
     # def test_get_arrangements_without_error(self, get_nodes_mock):

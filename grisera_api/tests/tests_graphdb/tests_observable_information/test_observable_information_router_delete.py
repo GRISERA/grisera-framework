@@ -3,7 +3,8 @@ import unittest
 import unittest.mock as mock
 
 from observable_information.observable_information_router import *
-from observable_information.observable_information_service_graphdb import ObservableInformationServiceGraphDB
+from observable_information.observable_information_service_graphdb import \
+    ObservableInformationServiceGraphDB
 
 
 class TestObservableInformationRouterDelete(unittest.TestCase):
@@ -16,7 +17,8 @@ class TestObservableInformationRouterDelete(unittest.TestCase):
         response = Response()
         observable_information_router = ObservableInformationRouter()
 
-        result = asyncio.run(observable_information_router.delete_observable_information(observable_information_id, response, dataset_name))
+        result = asyncio.run(observable_information_router.delete_observable_information(observable_information_id,
+                                                                                         response,dataset_name))
 
         self.assertEqual(result, ObservableInformationOut(id=observable_information_id, links=get_links(router)))
         delete_observable_information_mock.assert_called_once_with(observable_information_id, dataset_name)
@@ -30,8 +32,9 @@ class TestObservableInformationRouterDelete(unittest.TestCase):
         observable_information_id = 1
         observable_information_router = ObservableInformationRouter()
 
-        result = asyncio.run(observable_information_router.delete_observable_information(observable_information_id, response, dataset_name))
-
+        result = asyncio.run(observable_information_router.delete_observable_information(observable_information_id,
+                                                                                         response,dataset_name))
         self.assertEqual(result, ObservableInformationOut(errors={'errors': ['test']}, links=get_links(router)))
-        delete_observable_information_mock.assert_called_once_with(observable_information_id, dataset_name)
+        delete_observable_information_mock.assert_called_once_with(observable_information_id,dataset_name)
         self.assertEqual(response.status_code, 404)
+

@@ -1,7 +1,6 @@
-from graph_api_service import GraphApiService
-from measure_name.measure_name_model import MeasureNameIn, MeasureNameOut, MeasureNamesOut, BasicMeasureNameOut
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from typing import Union
+
+from measure_name.measure_name_model import MeasureNameIn
 
 
 class MeasureNameService:
@@ -32,12 +31,13 @@ class MeasureNameService:
         """
         raise Exception("get_measure_names not implemented yet")
 
-    def get_measure_name(self, measure_name_id: int):
+    def get_measure_name(self, measure_name_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given measure name
 
         Args:
-        measure_name_id (int): Id of measure name
+            depth: (int): specifies how many related entities will be traversed to create the response
+            measure_name_id (int | str): Id of measure name
 
         Returns:
             Result of request as measure name object

@@ -1,8 +1,11 @@
+from typing import Union
+
 from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
 from modality.modality_model import ModalityIn, ModalityOut, ModalitiesOut, BasicModalityOut
 from modality.modality_service import ModalityService
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from observable_information.observable_information_service import ObservableInformationService
 
 
 class ModalityServiceGraphDB(ModalityService):
@@ -14,7 +17,11 @@ class ModalityServiceGraphDB(ModalityService):
     """
     graph_api_service = GraphApiService()
 
-    def save_modality(self, modality: ModalityIn, dataset_name: str):
+
+    def __init__(self):
+        self.observable_information_service: ObservableInformationService = None
+
+    def save_modality(self, modality: ModalityIn,dataset_name: str):
         """
         Send request to graph api to create new modality
 
@@ -51,12 +58,14 @@ class ModalityServiceGraphDB(ModalityService):
 
         return ModalitiesOut(modalities=modalities)
 
-    def get_modality(self, modality_id: int, dataset_name: str):
+
+    def get_modality(self, modality_id: Union[int, str],dataset_name: str, depth: int = 0):
         """
         Send request to graph api to get given modality
 
         Args:
-        modality_id (int): Id of modality
+            depth: (int): specifies how many related entities will be traversed to create the response
+            modality_id (int | str): identity of modality
 
         Returns:
             Result of request as modality object
@@ -68,19 +77,19 @@ class ModalityServiceGraphDB(ModalityService):
         if get_response["labels"][0] != "Modality":
             return NotFoundByIdModel(id=modality_id, errors="Node not found.")
 
-        modality = {'id': get_response['id'], 'relations': [], 'reversed_relations': []}
-        for property in get_response["properties"]:
-            modality[property["key"]] = property["value"]
+        modality = create_stub_from_response(get_response, properties=['modality'])
 
-        relations_response = self.graph_api_service.get_node_relationships(modality_id, dataset_name)
 
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == modality_id:
-                modality['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                 name=relation["name"], relation_id=relation["id"]))
-            else:
-                modality['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
-                                                                          name=relation["name"],
-                                                                          relation_id=relation["id"]))
+        if depth != 0:
+            modality["observable_informations"] = []
+            relations_response = self.graph_api_service.get_node_relationships(modality_id,dataset_name)
 
-        return ModalityOut(**modality)
+            for relation in relations_response["relationships"]:
+                if relation["end_node"] == modality_id & relation["name"] == "hasModality":
+                    modality['observable_informations'].append(self.observable_information_service.
+                                                               get_observable_information(relation["start_node"],
+                                                                                          depth - 1))
+
+            return ModalityOut(**modality)
+        else:
+            return BasicModalityOut(**modality)

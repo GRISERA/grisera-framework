@@ -14,8 +14,9 @@ class TestExperimentServicePost(unittest.TestCase):
         dataset_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
-        create_properties_mock.return_value = {'id': id_node, 'properties': [{'key': 'experiment_name', 'value': 'test'},
-                                                                             {'key': 'test', 'value': 'test'}],
+        create_properties_mock.return_value = {'id': id_node, 'properties':
+            [{'key': 'experiment_name', 'value': 'test'},
+             {'key': 'test', 'value': 'test'}],
                                                "errors": None, 'links': None}
         additional_properties = [PropertyIn(key='test', value='test')]
         experiment = ExperimentIn(experiment_name="test", additional_properties=additional_properties)

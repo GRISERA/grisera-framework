@@ -1,14 +1,12 @@
-from typing import Optional
+from typing import Union, Optional
 
 from starlette.datastructures import QueryParams
 
 from graph_api_service import GraphApiService
-from measure.measure_service_graphdb import MeasureServiceGraphDB
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
-from observable_information.observable_information_service_graphdb import ObservableInformationServiceGraphDB
+from helpers import create_stub_from_response
 from time_series.time_series_model import TimeSeriesPropertyIn, BasicTimeSeriesOut, \
     TimeSeriesNodesOut, TimeSeriesOut, TimeSeriesIn, TimeSeriesRelationIn
+from models.not_found_model import NotFoundByIdModel
 from time_series.time_series_service import TimeSeriesService
 
 
@@ -22,8 +20,10 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         observable_information_service (ObservableInformationService): Service to manage observable information models
     """
     graph_api_service = GraphApiService()
-    measure_service = MeasureServiceGraphDB()
-    observable_information_service = ObservableInformationServiceGraphDB()
+
+    def __init__(self):
+        self.measure_service = None
+        self.observable_information_service = None
 
     def save_time_series(self, time_series: TimeSeriesIn, dataset_name: str):
         """
@@ -35,7 +35,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         Returns:
             Result of request as time series object
         """
-        node_response = self.graph_api_service.create_node("`Time Series`", dataset_name)
+        node_response = self.graph_api_service.create_node("Time Series", dataset_name)
 
         if node_response["errors"] is not None:
             return TimeSeriesOut(**time_series.dict(), errors=node_response["errors"])
@@ -84,14 +84,16 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
 
         return TimeSeriesNodesOut(time_series_nodes=time_series_nodes)
 
-    def get_time_series(self, time_series_id: int, dataset_name: str,
+
+    def get_time_series(self, time_series_id: Union[int, str],dataset_name: str, depth: int = 0,
                         signal_min_value: Optional[int] = None,
                         signal_max_value: Optional[int] = None):
         """
         Send request to graph api to get given time series
 
         Args:
-            time_series_id (int): Id of time series
+            time_series_id (int | str): identity of time series
+            depth: (int): specifies how many related entities will be traversed to create the response
             signal_min_value (Optional[int]): Filter signal values by min value
             signal_max_value (Optional[int]): Filter signal values by max value
 
@@ -105,34 +107,34 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         if get_response["labels"][0] != "Time Series":
             return NotFoundByIdModel(id=time_series_id, errors="Node not found.")
 
-        time_series = {'id': get_response['id'], 'additional_properties': [], 'relations': [],
-                             'reversed_relations': []}
-        for property in get_response["properties"]:
-            if property["key"] in ["type", "source"]:
-                time_series[property["key"]] = property["value"]
-            else:
-                time_series['additional_properties'].append({'key': property['key'], 'value': property['value']})
+        time_series = create_stub_from_response(get_response, properties=['type', 'source'])
 
-        relations_response = self.graph_api_service.get_node_relationships(time_series_id, dataset_name)
 
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == time_series_id:
-                time_series['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                          name=relation["name"],
-                                                                          relation_id=relation["id"]))
-            else:
-                time_series['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
-                                                                                   name=relation["name"],
-                                                                                   relation_id=relation["id"]))
+        if depth != 0:
+            time_series["observable_informations"] = []
+            time_series["measure"] = None
 
-        return TimeSeriesOut(**time_series)
+            relations_response = self.graph_api_service.get_node_relationships(time_series_id,dataset_name)
 
-    def delete_time_series(self, time_series_id: int, dataset_name: str):
+            for relation in relations_response["relationships"]:
+                if relation["start_node"] == time_series_id & relation["name"] == "hasObservableInformation":
+                    time_series["observable_informations"].append(self.observable_information_service.
+                                                                  get_observable_information(relation["start_node"],
+                                                                                             depth - 1))
+                else:
+                    if relation["start_node"] == time_series_id & relation["name"] == "hasMeasure":
+                        time_series["measure"] = self.measure_service.get_measure(relation["start_node"],
+                                                                                  depth - 1)
+            return TimeSeriesOut(**time_series)
+        else:
+            return BasicTimeSeriesOut(**time_series)
+
+    def delete_time_series(self, time_series_id: Union[int, str],dataset_name: str):
         """
         Send request to graph api to delete given time series
 
         Args:
-            time_series_id (int): Id of time series
+            time_series_id (int | str): identity of time series
 
         Returns:
             Result of request as time series object
@@ -145,12 +147,13 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         self.graph_api_service.delete_node(time_series_id, dataset_name)
         return get_response
 
-    def update_time_series(self, time_series_id: int, time_series: TimeSeriesPropertyIn, dataset_name: str):
+
+    def update_time_series(self, time_series_id: Union[int, str], time_series: TimeSeriesPropertyIn,dataset_name: str):
         """
         Send request to graph api to update given time series
 
         Args:
-            time_series_id (int): Id of time series
+            time_series_id (int | str): identity of time series
             time_series (TimeSeriesPropertyIn): Properties to update
 
         Returns:
@@ -164,19 +167,22 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         self.graph_api_service.delete_node_properties(time_series_id, dataset_name)
         self.graph_api_service.create_properties(time_series_id, time_series, dataset_name)
 
-        time_series_result = {"id": time_series_id, "relations": get_response.relations,
-                                    "reversed_relations": get_response.reversed_relations}
+        time_series_result = {"id": time_series_id, "type": get_response.type,
+                              'signal_values': get_response.signal_values,
+                              'source': get_response.source,
+                              'additional_properties': get_response.additional_properties}
         time_series_result.update(time_series.dict())
 
-        return TimeSeriesOut(**time_series_result)
+        return BasicTimeSeriesOut(**time_series_result)
 
-    def update_time_series_relationships(self, time_series_id: int,
-                                               time_series: TimeSeriesRelationIn, dataset_name: str):
+
+    def update_time_series_relationships(self, time_series_id: Union[int, str],
+                                         time_series: TimeSeriesRelationIn,dataset_name: str):
         """
         Send request to graph api to update given time series
 
         Args:
-            time_series_id (int): Id of time series
+            time_series_id (int | str): identity of time series
             time_series (TimeSeriesRelationIn): Relationships to update
 
         Returns:
@@ -197,8 +203,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         if time_series.measure_id is not None and \
                 type(self.measure_service.get_measure(time_series.measure_id, dataset_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=time_series_id,
-                                                        end_node=time_series.personality_id,
+                                                        end_node=time_series.measure_id,
                                                         name="hasMeasure",
                                                         dataset_name=dataset_name)
-
         return self.get_time_series(time_series_id, dataset_name)

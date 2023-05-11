@@ -4,8 +4,10 @@ from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
-from measure_name.measure_name_model import MeasureNameIn, MeasureNameOut, BasicMeasureNameOut, MeasureNamesOut
-from measure_name.measure_name_service import MeasureNameService
+from measure_name.measure_name_model import (
+    MeasureNameOut,
+    MeasureNamesOut,
+)
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 
@@ -20,16 +22,27 @@ class MeasureNameRouter:
     Attributes:
         measure_name_service (MeasureNameService): Service instance for measure name
     """
+
     def __init__(self):
         self.measure_name_service = Services().measure_name_service()
 
-    @router.get("/measure_names/{measure_name_id}", tags=["measure names"],
-                response_model=Union[MeasureNameOut, NotFoundByIdModel])
-    async def get_measure_name(self, measure_name_id: int, response: Response, dataset_name: str):
+
+    @router.get(
+        "/measure_names/{measure_name_id}",
+        tags=["measure names"],
+        response_model=Union[MeasureNameOut, NotFoundByIdModel],
+    )
+    async def get_measure_name(
+        self, measure_name_id: Union[int, str], response: Response,dataset_name: str, depth: int = 0
+    ):
         """
-        Get measure name from database
+        Get measure name from database. Depth attribute specifies how many models will be traversed to create the
+        response.
         """
-        get_response = self.measure_name_service.get_measure_name(measure_name_id, dataset_name)
+
+        get_response = self.measure_name_service.get_measure_name(
+            measure_name_id, dataset_name, depth
+        )
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -38,8 +51,11 @@ class MeasureNameRouter:
 
         return get_response
 
-    @router.get("/measure_names", tags=["measure names"], response_model=MeasureNamesOut)
-    async def get_measure_names(self, response: Response, dataset_name: str):
+
+    @router.get(
+        "/measure_names", tags=["measure names"], response_model=MeasureNamesOut
+    )
+    async def get_measure_names(self, response: Response,dataset_name: str):
         """
         Get measure names from dataset
         """

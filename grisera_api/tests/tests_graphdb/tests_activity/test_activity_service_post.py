@@ -3,9 +3,8 @@ import unittest
 import unittest.mock as mock
 from activity.activity_model import *
 from requests import Response
-
-from activity.activity_service_graphdb import ActivityServiceGraphDB
 from graph_api_service import GraphApiService
+from services import Services
 
 
 class TestActivityService(unittest.TestCase):
@@ -18,7 +17,7 @@ class TestActivityService(unittest.TestCase):
                                         'links': None}).encode('utf-8')
         mock_requests.post.return_value = response
         activity = ActivityIn(activity="group")
-        activity_service = ActivityServiceGraphDB()
+        activity_service = Services().activity_service()
 
         result = activity_service.save_activity(activity, dataset_name)
 
@@ -32,7 +31,7 @@ class TestActivityService(unittest.TestCase):
                                         'links': None}).encode('utf-8')
         mock_requests.post.return_value = response
         activity = ActivityIn(activity="group")
-        activity_service = ActivityServiceGraphDB()
+        activity_service = Services().activity_service()
 
         result = activity_service.save_activity(activity, dataset_name)
 
@@ -51,3 +50,4 @@ class TestActivityService(unittest.TestCase):
             self.assertEqual(result, ActivityOut(activity="group", errors=['error']))
             create_node_mock.assert_called_once_with('Activity')
             create_properties_mock.assert_called_once_with(id_node, activity, dataset_name)
+

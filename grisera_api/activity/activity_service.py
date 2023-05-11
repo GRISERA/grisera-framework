@@ -1,3 +1,4 @@
+from typing import Union
 from activity.activity_model import ActivityIn
 
 
@@ -28,11 +29,12 @@ class ActivityService:
         """
         raise Exception("Reference to an abstract class.")
 
-    def get_activity(self, activity_id: int):
+    def get_activity(self, activity_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given activity
         Args:
-            activity_id (int): Id of activity
+            depth (int): specifies how many related entities will be traversed to create the response
+            activity_id (int | str): identity of activity
         Returns:
             Result of request as activity object
         """

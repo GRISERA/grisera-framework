@@ -38,13 +38,13 @@ class ActivityRouter:
 
         return create_response
 
-    @router.get("/activities/{activity_id}", tags=["activities"],
-                response_model=Union[ActivityOut, NotFoundByIdModel])
-    async def get_activity(self, activity_id: int, response: Response, dataset_name: str):
+    @router.get("/activities/{activity_id}",tags=["activities"],response_model=Union[ActivityOut, NotFoundByIdModel],)
+    async def get_activity(self, activity_id: Union[int, str], response: Response,dataset_name: str, depth: int = 0 ):
         """
-        Get activity from dataset
+        Get activity from database. Depth attribute specifies how many models will be traversed to create the response.
         """
-        get_response = self.activity_service.get_activity(activity_id, dataset_name)
+        get_response = self.activity_service.get_activity(activity_id,dataset_name, depth)
+
         if get_response.errors is not None:
             response.status_code = 404
 

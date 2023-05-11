@@ -2,8 +2,13 @@ from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
-from measure.measure_model import MeasureIn, MeasuresOut, MeasureOut, MeasurePropertyIn, MeasureRelationIn
-from measure.measure_service import MeasureService
+from measure.measure_model import (
+    MeasureIn,
+    MeasuresOut,
+    MeasureOut,
+    MeasurePropertyIn,
+    MeasureRelationIn,
+)
 from typing import Union
 from models.not_found_model import NotFoundByIdModel
 from services import Services
@@ -19,6 +24,7 @@ class MeasureRouter:
     Attributes:
         measure_service (MeasureService): Service instance for measures
     """
+
     def __init__(self):
         self.measure_service = Services().measure_service()
 
@@ -50,14 +56,23 @@ class MeasureRouter:
 
         return get_response
 
-    @router.get("/measures/{measure_id}", tags=["measures"],
-                response_model=Union[MeasureOut, NotFoundByIdModel])
-    async def get_measure(self, measure_id: int, response: Response, dataset_name: str):
+
+    @router.get(
+        "/measures/{measure_id}",
+        tags=["measures"],
+        response_model=Union[MeasureOut, NotFoundByIdModel],
+    )
+    async def get_measure(
+        self, measure_id: Union[int, str], response: Response,dataset_name: str, depth: int = 0
+    ):
+
         """
-        Get measure from database
+        Get measure from database. Depth attribute specifies how many models will be traversed to create the response.
         """
 
-        get_response = self.measure_service.get_measure(measure_id, dataset_name)
+
+        get_response = self.measure_service.get_measure(measure_id,dataset_name, depth)
+
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -66,9 +81,13 @@ class MeasureRouter:
 
         return get_response
 
-    @router.delete("/measures/{measure_id}", tags=["measures"],
-                   response_model=Union[MeasureOut, NotFoundByIdModel])
-    async def delete_measure(self, measure_id: int, response: Response, dataset_name: str):
+
+    @router.delete(
+        "/measures/{measure_id}",
+        tags=["measures"],
+        response_model=Union[MeasureOut, NotFoundByIdModel],
+    )
+    async def delete_measure(self, measure_id: Union[int, str], response: Response,dataset_name: str):
         """
         Delete measure from database
         """
@@ -81,13 +100,22 @@ class MeasureRouter:
 
         return get_response
 
-    @router.put("/measures/{measure_id}", tags=["measures"],
-                response_model=Union[MeasureOut, NotFoundByIdModel])
-    async def update_measure(self, measure_id: int, measure: MeasurePropertyIn, response: Response, dataset_name: str):
+    @router.put(
+        "/measures/{measure_id}",
+        tags=["measures"],
+        response_model=Union[MeasureOut, NotFoundByIdModel],
+    )
+    async def update_measure(
+        self,
+        measure_id: Union[int, str],
+        measure: MeasurePropertyIn,
+        response: Response,
+        dataset_name: str
+    ):
         """
         Update measure model in database
         """
-        update_response = self.measure_service.update_measure(measure_id, measure, dataset_name)
+        update_response = self.measure_service.update_measure(measure_id, measure,dataset_name)
         if update_response.errors is not None:
             response.status_code = 404
 
@@ -96,14 +124,25 @@ class MeasureRouter:
 
         return update_response
 
-    @router.put("/measures/{measure_id}/relationships", tags=["measures"],
-                response_model=Union[MeasureOut, NotFoundByIdModel])
-    async def update_measure_relationships(self, measure_id: int,
-                                                     measure: MeasureRelationIn, response: Response, dataset_name: str):
+    @router.put(
+        "/measures/{measure_id}/relationships",
+        tags=["measures"],
+        response_model=Union[MeasureOut, NotFoundByIdModel],
+    )
+    async def update_measure_relationships(
+        self,
+        measure_id: Union[int, str],
+        measure: MeasureRelationIn,
+        response: Response,
+        dataset_name: str
+    ):
         """
         Update measure relations in database
         """
-        update_response = self.measure_service.update_measure_relationships(measure_id, measure, dataset_name)
+        update_response = self.measure_service.update_measure_relationships(
+            measure_id, measure,dataset_name
+        )
+
         if update_response.errors is not None:
             response.status_code = 404
 

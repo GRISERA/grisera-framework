@@ -4,8 +4,10 @@ from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
-from arrangement.arrangement_model import ArrangementIn, ArrangementOut, BasicArrangementOut, ArrangementsOut
-from arrangement.arrangement_service import ArrangementService
+from arrangement.arrangement_model import (
+    ArrangementOut,
+    ArrangementsOut,
+)
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 
@@ -20,16 +22,25 @@ class ArrangementRouter:
     Attributes:
         arrangement_service (ArrangementService): Service instance for arrangement
     """
+
     def __init__(self):
         self.arrangement_service = Services().arrangement_service()
 
-    @router.get("/arrangements/{arrangement_id}", tags=["arrangements"],
-                response_model=Union[ArrangementOut, NotFoundByIdModel])
-    async def get_arrangement(self, arrangement_id: int, response: Response, dataset_name: str):
+
+    @router.get(
+        "/arrangements/{arrangement_id}",
+        tags=["arrangements"],
+        response_model=Union[ArrangementOut, NotFoundByIdModel],
+    )
+    async def get_arrangement(
+        self, arrangement_id: Union[int, str], response: Response, dataset_name: str, depth: int = 0
+    ):
         """
-        Get arrangement from dataset
+        Get arrangement from database. Depth attribute specifies how many models will be traversed to create the
+        response.
         """
-        get_response = self.arrangement_service.get_arrangement(arrangement_id, dataset_name)
+        get_response = self.arrangement_service.get_arrangement(arrangement_id,dataset_name, depth)
+
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -50,6 +61,7 @@ class ArrangementRouter:
         get_response.links = get_links(router)
 
         return get_response
+
 
     @router.post("/arrangements", tags=["arrangements"], response_model=ArrangementsOut)
     async def create_activity(self, arrangement: ArrangementIn, response: Response, dataset_name: str):
@@ -94,3 +106,4 @@ class ArrangementRouter:
         update_response.links = get_links(router)
 
         return update_response
+

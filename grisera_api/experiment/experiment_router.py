@@ -4,7 +4,6 @@ from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
 from typing import Union
 from experiment.experiment_model import ExperimentIn, ExperimentOut, ExperimentsOut
-from experiment.experiment_service import ExperimentService
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 
@@ -19,6 +18,7 @@ class ExperimentRouter:
     Attributes:
         experiment_service (ExperimentService): Service instance for experiments
     """
+
     def __init__(self):
         self.experiment_service = Services().experiment_service()
 
@@ -36,14 +36,24 @@ class ExperimentRouter:
 
         return create_response
 
-    @router.get("/experiments/{experiment_id}", tags=["experiments"],
-                response_model=Union[ExperimentOut, NotFoundByIdModel])
-    async def get_experiment(self, experiment_id: int, response: Response, dataset_name: str):
+
+    @router.get(
+        "/experiments/{experiment_id}",
+        tags=["experiments"],
+        response_model=Union[ExperimentOut, NotFoundByIdModel],
+    )
+    async def get_experiment(
+        self, experiment_id: Union[int, str], response: Response, dataset_name: str, depth: int = 0
+    ):
+
         """
-        Get experiment from database
+        Get experiment from database. Depth attribute specifies how many models will be traversed to create the
+        response.
         """
 
-        get_response = self.experiment_service.get_experiment(experiment_id, dataset_name)
+
+        get_response = self.experiment_service.get_experiment(experiment_id,dataset_name, depth)
+
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -65,9 +75,16 @@ class ExperimentRouter:
 
         return get_response
 
-    @router.delete("/experiments/{experiment_id}", tags=["experiments"],
-                   response_model=Union[ExperimentOut, NotFoundByIdModel])
-    async def delete_experiment(self, experiment_id: int, response: Response, dataset_name: str):
+
+    @router.delete(
+        "/experiments/{experiment_id}",
+        tags=["experiments"],
+        response_model=Union[ExperimentOut, NotFoundByIdModel],
+    )
+    async def delete_experiment(
+        self, experiment_id: Union[int, str], response: Response, dataset_name: str
+    ):
+
         """
         Delete experiment from database
         """
@@ -80,13 +97,26 @@ class ExperimentRouter:
 
         return get_response
 
-    @router.put("/experiments/{experiment_id}", tags=["experiments"],
-                response_model=Union[ExperimentOut, NotFoundByIdModel])
-    async def update_experiment(self, experiment_id: int, experiment: ExperimentIn, response: Response, dataset_name: str):
+
+    @router.put(
+        "/experiments/{experiment_id}",
+        tags=["experiments"],
+        response_model=Union[ExperimentOut, NotFoundByIdModel],
+    )
+    async def update_experiment(
+        self,
+        experiment_id: Union[int, str],
+        experiment: ExperimentIn,
+        response: Response,
+        dataset_name: str
+    ):
         """
         Update experiment model in database
         """
-        update_response = self.experiment_service.update_experiment(experiment_id, experiment, dataset_name)
+        update_response = self.experiment_service.update_experiment(
+            experiment_id, experiment,dataset_name
+        )
+
         if update_response.errors is not None:
             response.status_code = 404
 

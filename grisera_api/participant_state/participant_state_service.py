@@ -1,11 +1,7 @@
-from graph_api_service import GraphApiService
-from participant.participant_service import ParticipantService
-from personality.personality_service import PersonalityService
-from appearance.appearance_service import AppearanceService
-from participant_state.participant_state_model import ParticipantStatePropertyIn, BasicParticipantStateOut, \
-    ParticipantStatesOut, ParticipantStateOut, ParticipantStateIn, ParticipantStateRelationIn
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from typing import Union
+
+from participant_state.participant_state_model import ParticipantStatePropertyIn, ParticipantStateIn, \
+    ParticipantStateRelationIn
 
 
 class ParticipantStateService:
@@ -35,36 +31,38 @@ class ParticipantStateService:
         """
         raise Exception("get_participant_states not implemented yet")
 
-    def get_participant_state(self, participant_state_id: int):
+    def get_participant_state(self, participant_state_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given participant state
 
         Args:
-            participant_state_id (int): Id of participant state
+            depth: (int): specifies how many related entities will be traversed to create the response
+            participant_state_id (int | str): identity of participant state
 
         Returns:
             Result of request as participant state object
         """
         raise Exception("get_participant_state not implemented yet")
 
-    def delete_participant_state(self, participant_state_id: int):
+    def delete_participant_state(self, participant_state_id: Union[int, str]):
         """
         Send request to graph api to delete given participant state
 
         Args:
-            participant_state_id (int): Id of participant state
+            participant_state_id (int | str): identity of participant state
 
         Returns:
             Result of request as participant state object
         """
         raise Exception("delete_participant_state not implemented yet")
 
-    def update_participant_state(self, participant_state_id: int, participant_state: ParticipantStatePropertyIn):
+    def update_participant_state(self, participant_state_id: Union[int, str],
+                                 participant_state: ParticipantStatePropertyIn):
         """
         Send request to graph api to update given participant state
 
         Args:
-            participant_state_id (int): Id of participant state
+            participant_state_id (int | str): identity of participant state
             participant_state (ParticipantStatePropertyIn): Properties to update
 
         Returns:
@@ -72,13 +70,13 @@ class ParticipantStateService:
         """
         raise Exception("update_participant_state not implemented yet")
 
-    def update_participant_state_relationships(self, participant_state_id: int,
+    def update_participant_state_relationships(self, participant_state_id: Union[int, str],
                                                participant_state: ParticipantStateRelationIn):
         """
         Send request to graph api to update given participant state
 
         Args:
-            participant_state_id (int): Id of participant state
+            participant_state_id (int | str): identity of participant state
             participant_state (ParticipantStateRelationIn): Relationships to update
 
         Returns:

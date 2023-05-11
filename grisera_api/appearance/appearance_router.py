@@ -3,9 +3,14 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from typing import Union
 from hateoas import get_links
-from appearance.appearance_model import AppearanceOcclusionIn, AppearanceOcclusionOut, BasicAppearanceOcclusionOut, \
-     AppearanceSomatotypeIn, AppearanceSomatotypeOut, BasicAppearanceSomatotypeOut, AppearancesOut
-from appearance.appearance_service import AppearanceService
+from appearance.appearance_model import (
+    AppearanceOcclusionIn,
+    AppearanceOcclusionOut,
+    AppearanceSomatotypeIn,
+    AppearanceSomatotypeOut,
+    AppearancesOut,
+)
+
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 
@@ -24,8 +29,16 @@ class AppearanceRouter:
     def __init__(self):
         self.appearance_service = Services().appearance_service()
 
-    @router.post("/appearance/occlusion_model", tags=["appearance"], response_model=AppearanceOcclusionOut)
-    async def create_appearance_occlusion(self, appearance: AppearanceOcclusionIn, response: Response, dataset_name: str):
+
+    @router.post(
+        "/appearance/occlusion_model",
+        tags=["appearance"],
+        response_model=AppearanceOcclusionOut,
+    )
+    async def create_appearance_occlusion(
+        self, appearance: AppearanceOcclusionIn, response: Response, dataset_name: str
+    ):
+
         """
         Create appearance occlusion model in database
         """
@@ -39,8 +52,16 @@ class AppearanceRouter:
 
         return create_response
 
-    @router.post("/appearance/somatotype_model", tags=["appearance"], response_model=AppearanceSomatotypeOut)
-    async def create_appearance_somatotype(self, appearance: AppearanceSomatotypeIn, response: Response, dataset_name: str):
+
+    @router.post(
+        "/appearance/somatotype_model",
+        tags=["appearance"],
+        response_model=AppearanceSomatotypeOut,
+    )
+    async def create_appearance_somatotype(
+        self, appearance: AppearanceSomatotypeIn, response: Response, dataset_name: str
+    ):
+
         """
         Create appearance somatotype model in database
         """
@@ -67,14 +88,25 @@ class AppearanceRouter:
 
         return get_response
 
-    @router.get("/appearance/{appearance_id}", tags=["appearance"],
-                response_model=Union[AppearanceSomatotypeOut, AppearanceOcclusionOut, NotFoundByIdModel])
-    async def get_appearance(self, appearance_id: int, response: Response, dataset_name: str):
+
+    @router.get(
+        "/appearance/{appearance_id}",
+        tags=["appearance"],
+        response_model=Union[
+            AppearanceSomatotypeOut, AppearanceOcclusionOut, NotFoundByIdModel
+        ],
+    )
+    async def get_appearance(
+        self, appearance_id: Union[int, str], response: Response, dataset_name: str, depth: int = 0
+    ):
+
         """
-        Get appearance from database
+        Get appearance from database. Depth attribute specifies how many models will be traversed to create the response
         """
 
-        get_response = self.appearance_service.get_appearance(appearance_id, dataset_name)
+
+        get_response = self.appearance_service.get_appearance(appearance_id, dataset_name, depth)
+
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -83,9 +115,18 @@ class AppearanceRouter:
 
         return get_response
 
-    @router.delete("/appearance/{appearance_id}", tags=["appearance"],
-                   response_model=Union[AppearanceSomatotypeOut, AppearanceOcclusionOut, NotFoundByIdModel])
-    async def delete_appearance(self, appearance_id: int, response: Response, dataset_name: str):
+
+    @router.delete(
+        "/appearance/{appearance_id}",
+        tags=["appearance"],
+        response_model=Union[
+            AppearanceSomatotypeOut, AppearanceOcclusionOut, NotFoundByIdModel
+        ],
+    )
+    async def delete_appearance(
+        self, appearance_id: Union[int, str], response: Response, dataset_name: str
+    ):
+
         """
         Delete appearance from database
         """
@@ -98,14 +139,25 @@ class AppearanceRouter:
 
         return get_response
 
-    @router.put("/appearance/occlusion_model/{appearance_id}", tags=["appearance"],
-                response_model=Union[AppearanceOcclusionOut, NotFoundByIdModel])
-    async def update_appearance_occlusion(self, appearance_id: int, appearance: AppearanceOcclusionIn,
-                                          response: Response, dataset_name: str):
+
+    @router.put(
+        "/appearance/occlusion_model/{appearance_id}",
+        tags=["appearance"],
+        response_model=Union[AppearanceOcclusionOut, NotFoundByIdModel],
+    )
+    async def update_appearance_occlusion(
+        self,
+        appearance_id: Union[int, str],
+        appearance: AppearanceOcclusionIn,
+        response: Response, dataset_name: str
+    ):
         """
         Update appearance occlusion model in database
         """
-        update_response = self.appearance_service.update_appearance_occlusion(appearance_id, appearance, dataset_name)
+        update_response = self.appearance_service.update_appearance_occlusion(
+            appearance_id, appearance,dataset_name
+        )
+
         if update_response.errors is not None:
             response.status_code = 404
 
@@ -114,16 +166,29 @@ class AppearanceRouter:
 
         return update_response
 
-    @router.put("/appearance/somatotype_model/{appearance_id}", tags=["appearance"],
-                response_model=Union[AppearanceSomatotypeOut, NotFoundByIdModel])
-    async def update_appearance_somatotype(self, appearance_id: int, appearance: AppearanceSomatotypeIn,
-                                           response: Response, dataset_name: str):
+
+    @router.put(
+        "/appearance/somatotype_model/{appearance_id}",
+        tags=["appearance"],
+        response_model=Union[AppearanceSomatotypeOut, NotFoundByIdModel],
+    )
+    async def update_appearance_somatotype(
+        self,
+        appearance_id: Union[int, str],
+        appearance: AppearanceSomatotypeIn,
+        response: Response,dataset_name: str
+    ):
         """
         Update appearance somatotype model in database
         """
-        update_response = self.appearance_service.update_appearance_somatotype(appearance_id, appearance, dataset_name)
+        update_response = self.appearance_service.update_appearance_somatotype(
+            appearance_id, appearance,dataset_name
+        )
+
         if update_response.errors is not None:
-            response.status_code = 404 if type(update_response) == NotFoundByIdModel else 422
+            response.status_code = (
+                404 if type(update_response) == NotFoundByIdModel else 422
+            )
 
         # add links from hateoas
         update_response.links = get_links(router)

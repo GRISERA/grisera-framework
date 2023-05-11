@@ -5,9 +5,12 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
 from models.not_found_model import NotFoundByIdModel
-from registered_channel.registered_channel_model import RegisteredChannelIn, RegisteredChannelsOut, \
-    RegisteredChannelOut
-from registered_channel.registered_channel_service_graphdb import RegisteredChannelServiceGraphDB
+from registered_channel.registered_channel_model import (
+    RegisteredChannelIn,
+    RegisteredChannelsOut,
+    RegisteredChannelOut,
+)
+
 from services import Services
 
 router = InferringRouter()
@@ -25,12 +28,20 @@ class RegisteredChannelRouter:
     def __init__(self):
         self.registered_channel_service = Services().registered_channel_service()
 
-    @router.post("/registered_channels", tags=["registered channels"], response_model=RegisteredChannelOut)
-    async def create_registered_channel(self, registered_channel: RegisteredChannelIn, response: Response, dataset_name: str):
+    @router.post(
+        "/registered_channels",
+        tags=["registered channels"],
+        response_model=RegisteredChannelOut,
+    )
+    async def create_registered_channel(
+        self, registered_channel: RegisteredChannelIn, response: Response, dataset_name : str
+    ):
         """
         Create registered channel in database
         """
-        create_response = self.registered_channel_service.save_registered_channel(registered_channel, dataset_name)
+        create_response = self.registered_channel_service.save_registered_channel(
+            registered_channel, dataset_name
+        )
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -39,8 +50,12 @@ class RegisteredChannelRouter:
 
         return create_response
 
-    @router.get("/registered_channels", tags=["registered channels"], response_model=RegisteredChannelsOut)
-    async def get_registered_channels(self, response: Response, dataset_name: str):
+    @router.get(
+        "/registered_channels",
+        tags=["registered channels"],
+        response_model=RegisteredChannelsOut,
+    )
+    async def get_registered_channels(self, response: Response, dataset_name : str):
         """
         Get registered channels from database
         """
@@ -52,14 +67,22 @@ class RegisteredChannelRouter:
 
         return get_response
 
-    @router.get("/registered_channels/{registered_channel_id}", tags=["registered channels"],
-                response_model=Union[RegisteredChannelOut, NotFoundByIdModel])
-    async def get_registered_channel(self, registered_channel_id: int, response: Response, dataset_name: str):
+    @router.get(
+        "/registered_channels/{registered_channel_id}",
+        tags=["registered channels"],
+        response_model=Union[RegisteredChannelOut, NotFoundByIdModel],
+    )
+    async def get_registered_channel(
+        self, registered_channel_id: Union[int, str], response: Response, dataset_name : str, depth: int = 0,
+    ):
         """
-        Get registered channels from database
+        Get registered channels from database. Depth attribute specifies how many models will be traversed to create the
+        response.
         """
 
-        get_response = self.registered_channel_service.get_registered_channel(registered_channel_id, dataset_name)
+        get_response = self.registered_channel_service.get_registered_channel(
+            registered_channel_id, dataset_name, depth
+        )
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -68,13 +91,22 @@ class RegisteredChannelRouter:
 
         return get_response
 
-    @router.delete("/registered_channels/{registered_channel_id}", tags=["registered channels"],
-                   response_model=Union[RegisteredChannelOut, NotFoundByIdModel])
-    async def delete_registered_channel(self, registered_channel_id: int, response: Response, dataset_name: str):
+
+    @router.delete(
+        "/registered_channels/{registered_channel_id}",
+        tags=["registered channels"],
+        response_model=Union[RegisteredChannelOut, NotFoundByIdModel],
+    )
+    async def delete_registered_channel(
+        self, registered_channel_id: Union[int, str], response: Response, dataset_name: str
+    ):
         """
         Delete registered channels from database
         """
-        get_response = self.registered_channel_service.delete_registered_channel(registered_channel_id, dataset_name)
+        get_response = self.registered_channel_service.delete_registered_channel(
+            registered_channel_id,dataset_name
+        )
+
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -83,16 +115,26 @@ class RegisteredChannelRouter:
 
         return get_response
 
-    @router.put("/registered_channels/{registered_channel_id}/relationships", tags=["registered channels"],
-                response_model=Union[RegisteredChannelOut, NotFoundByIdModel])
-    async def update_registered_channel_relationships(self, registered_channel_id: int,
-                                                      registered_channel: RegisteredChannelIn,
-                                                      response: Response, dataset_name: str):
+    @router.put(
+        "/registered_channels/{registered_channel_id}/relationships",
+        tags=["registered channels"],
+        response_model=Union[RegisteredChannelOut, NotFoundByIdModel],
+    )
+    async def update_registered_channel_relationships(
+        self,
+        registered_channel_id: Union[int, str],
+        registered_channel: RegisteredChannelIn,
+        response: Response, dataset_name: str
+    ):
         """
         Update registered channels relations in database
         """
-        update_response = self.registered_channel_service.update_registered_channel_relationships(registered_channel_id,
-                                                                                                  registered_channel, dataset_name)
+        update_response = (
+            self.registered_channel_service.update_registered_channel_relationships(
+                registered_channel_id, registered_channel,dataset_name
+            )
+        )
+
         if update_response.errors is not None:
             response.status_code = 404
 

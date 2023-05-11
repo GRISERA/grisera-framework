@@ -39,5 +39,7 @@ class TestRecordingRouterPut(unittest.TestCase):
                              update_recording_relationships(id_node, recording_in, response, dataset_name))
 
         self.assertEqual(result, recording_out)
-        update_recording_relationships_mock.assert_called_once_with(id_node, recording_in, dataset_name)
+
+        update_recording_relationships_mock.assert_called_once_with(id_node, recording_in,dataset_name)
         self.assertEqual(response.status_code, 404)
+

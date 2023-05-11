@@ -1,6 +1,7 @@
 import unittest
 import unittest.mock as mock
 
+from measure.measure_model import BasicMeasureOut
 from measure_name.measure_name_model import *
 from models.not_found_model import *
 
@@ -11,33 +12,20 @@ from graph_api_service import GraphApiService
 class TestMeasureNameServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_node')
-    @mock.patch.object(GraphApiService, 'get_node_relationships')
-    def test_get_measure_name_without_error(self, get_node_relationships_mock, get_node_mock):
+    def test_get_measure_name_without_error(self, get_node_mock):
         dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Measure Name'],
                                       'properties': [{'key': 'name', 'value': 'Familiarity'},
-                                                     {'key': 'type', 'value': 'Addional emotions measure'}],
+                                                     {'key': 'type', 'value': 'Additional emotions measure'}],
                                       "errors": None, 'links': None}
-        get_node_relationships_mock.return_value = {"relationships": [
-                                                    {"start_node": id_node, "end_node": 19,
-                                                     "name": "testRelation", "id": 0,
-                                                     "properties": None},
-                                                    {"start_node": 15, "end_node": id_node,
-                                                     "name": "testReversedRelation", "id": 0,
-                                                     "properties": None}]}
-        measure_name = MeasureNameOut(name="Familiarity", type="Addional emotions measure", id=id_node,
-                                   relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                                  relation_id=0)],
-                                   reversed_relations=[RelationInformation(second_node_id=15,
-                                                                           name="testReversedRelation", relation_id=0)])
+        measure_name = BasicMeasureNameOut(name="Familiarity", type="Additional emotions measure", id=id_node)
         measure_name_service = MeasureNameServiceGraphDB()
 
         result = measure_name_service.get_measure_name(id_node, dataset_name)
 
         self.assertEqual(result, measure_name)
-        get_node_mock.assert_called_once_with(id_node, dataset_name)
-        get_node_relationships_mock.assert_called_once_with(id_node, dataset_name)
+        get_node_mock.assert_called_once_with(id_node,dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_measure_name_without_participant_label(self, get_node_mock):
@@ -71,13 +59,15 @@ class TestMeasureNameServiceGet(unittest.TestCase):
         dataset_name = "neo4j"
         get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Measure Name'],
                                                   'properties': [{'key': 'name', 'value': 'Familiarity'},
-                                                     {'key': 'type', 'value': 'Addional emotions measure'}]},
+                                                                 {'key': 'type',
+                                                                  'value': 'Additional emotions measure'}]},
                                                  {'id': 2, 'labels': ['Measure Name'],
                                                   'properties': [{'key': 'name', 'value': 'Familiarity'},
-                                                     {'key': 'type', 'value': 'Addional emotions measure'}]}],
+                                                                 {'key': 'type',
+                                                                  'value': 'Additional emotions measure'}]}],
                                        'errors': None}
-        measure_name_one = BasicMeasureNameOut(name="Familiarity", type="Addional emotions measure", id=1)
-        measure_name_two = BasicMeasureNameOut(name="Familiarity", type="Addional emotions measure", id=2)
+        measure_name_one = BasicMeasureNameOut(name="Familiarity", type="Additional emotions measure", id=1)
+        measure_name_two = BasicMeasureNameOut(name="Familiarity", type="Additional emotions measure", id=2)
         measure_names = MeasureNamesOut(measure_names=[measure_name_one, measure_name_two])
         measure_name_service = MeasureNameServiceGraphDB()
 

@@ -33,5 +33,7 @@ class TestRecordingRouterDelete(unittest.TestCase):
         result = asyncio.run(recording_router.delete_recording(recording_id, response, dataset_name))
 
         self.assertEqual(result, RecordingOut(errors={'errors': ['test']}, links=get_links(router)))
-        delete_recording_mock.assert_called_once_with(recording_id, dataset_name)
+
+        delete_recording_mock.assert_called_once_with(recording_id,dataset_name)
         self.assertEqual(response.status_code, 404)
+

@@ -1,7 +1,9 @@
-from pydantic import BaseModel
-from typing import Optional, Any, List, Union
+from typing import Optional, List, Union
 from enum import Enum
-from models.relation_information_model import RelationInformation
+
+from pydantic import BaseModel
+
+from models.base_model_out import BaseModelOut
 
 
 class FacialHair(str, Enum):
@@ -22,6 +24,7 @@ class PersonalityBigFiveIn(BaseModel):
         openess (float): Scale of openness (Intellect) reflects imagination, creativity
 
     """
+
     agreeableness: float
     conscientiousness: float
     extroversion: float
@@ -34,25 +37,22 @@ class BasicPersonalityBigFiveOut(PersonalityBigFiveIn):
     Basic model of personality big five model to send to client as a result of request
 
     Attributes:
-        id (Optional[int]): Id of personality big five model returned from graph api
+        id (Optional[int | str]): Id of personality big five model returned from api
     """
-    id: Optional[int]
+
+    id: Optional[Union[int, str]]
 
 
-class PersonalityBigFiveOut(BasicPersonalityBigFiveOut):
+class PersonalityBigFiveOut(BasicPersonalityBigFiveOut, BaseModelOut):
     """
     Model of personality big five model with relationships to send to client as a result of request
 
     Attributes:
-        relations (List[RelationInformation]): List of relations starting in personality node
-        reversed_relations (List[RelationInformation]): List of relations ending in personality node
-        errors (Optional[Any]): Optional errors appeared during query executions
-        links (Optional[list]): List of links available from api
+        participant_states (Optional[List[ParticipantStateOut]]): List of participant states related to this
+            personality
     """
-    relations: List[RelationInformation] = []
-    reversed_relations: List[RelationInformation] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
+
+    participant_states: "Optional[List[ParticipantStateOut]]"
 
 
 class PersonalityPanasIn(BaseModel):
@@ -63,6 +63,7 @@ class PersonalityPanasIn(BaseModel):
         negative_affect (float): Scale of negative affect to community
         positive_affect (float): Scale of positive affect to community
     """
+
     negative_affect: float
     positive_affect: float
 
@@ -72,36 +73,39 @@ class BasicPersonalityPanasOut(PersonalityPanasIn):
     Basic model of personality panas to send to client as a result of request
 
     Attributes:
-        id (Optional[int]): Id of personality panas returned from graph api
+        id (Optional[int | str]): Id of personality panas returned from api
     """
-    id: Optional[int]
+
+    id: Optional[Union[int, str]]
 
 
-class PersonalityPanasOut(BasicPersonalityPanasOut):
+class PersonalityPanasOut(BasicPersonalityPanasOut, BaseModelOut):
     """
     Model of personality panas with relationships to send to client as a result of request
 
     Attributes:
-        relations (List[RelationInformation]): List of relations starting in personality node
-        reversed_relations (List[RelationInformation]): List of relations ending in personality node
-        errors (Optional[Any]): Optional errors appeared during query executions
-        links (Optional[list]): List of links available from api
+        participant_states (Optional[List[ParticipantStateOut]]): List of participant states related to this
+            personality
     """
-    relations: List[RelationInformation] = []
-    reversed_relations: List[RelationInformation] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
+
+    participant_states: "Optional[List[ParticipantStateOut]]"
 
 
-class PersonalitiesOut(BaseModel):
+class PersonalitiesOut(BaseModelOut):
     """
     Model of personalities to send to client as a result of request
 
     Attributes:
         personalities (List[Union[BasicPersonalityBigFiveOut, BasicPersonalityPanasOut]]): Personalities from database
-        errors (Optional[Any]): Optional errors appeared during query executions
-        links (Optional[list]): List of links available from api
     """
-    personalities: List[Union[BasicPersonalityBigFiveOut, BasicPersonalityPanasOut]] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
+
+    personalities: List[
+        Union[BasicPersonalityBigFiveOut, BasicPersonalityPanasOut]
+    ] = []
+
+
+# Circular import exception prevention
+from participant_state.participant_state_model import ParticipantStateOut
+
+PersonalityBigFiveOut.update_forward_refs()
+PersonalityPanasOut.update_forward_refs()

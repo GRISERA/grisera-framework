@@ -20,7 +20,9 @@ class TestRecordingRouterGet(unittest.TestCase):
         result = asyncio.run(recording_router.get_recording(recording_id, response, dataset_name))
 
         self.assertEqual(result, RecordingOut(id=recording_id, links=get_links(router)))
-        get_recording_mock.assert_called_once_with(recording_id, dataset_name)
+
+        get_recording_mock.assert_called_once_with(recording_id,dataset_name, 0)
+
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(RecordingServiceGraphDB, 'get_recording')
@@ -34,8 +36,8 @@ class TestRecordingRouterGet(unittest.TestCase):
         result = asyncio.run(recording_router.get_recording(recording_id, response, dataset_name))
 
         self.assertEqual(result, RecordingOut(errors={'errors': ['test']},
-                                                      links=get_links(router)))
-        get_recording_mock.assert_called_once_with(recording_id, dataset_name)
+                                              links=get_links(router)))
+        get_recording_mock.assert_called_once_with(recording_id,dataset_name, 0)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(RecordingServiceGraphDB, 'get_recordings')

@@ -1,12 +1,15 @@
+from typing import Union
+
 from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
+from life_activity.life_activity_service import LifeActivityService
+from modality.modality_service import ModalityService
 from observable_information.observable_information_model import ObservableInformationIn, ObservableInformationOut, \
     BasicObservableInformationOut, ObservableInformationsOut
-from modality.modality_service_graphdb import ModalityServiceGraphDB
-from life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
 from observable_information.observable_information_service import ObservableInformationService
-from recording.recording_service_graphdb import RecordingServiceGraphDB
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from recording.recording_service import RecordingService
+from time_series.time_series_service import TimeSeriesService
 
 
 class ObservableInformationServiceGraphDB(ObservableInformationService):
@@ -19,10 +22,14 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
     life_activity_service (LifeActivityService): Service used to communicate with Life Activity
     recording_service (RecordingService): Service used to communicate with Recording
     """
+
     graph_api_service = GraphApiService()
-    modality_service = ModalityServiceGraphDB()
-    life_activity_service = LifeActivityServiceGraphDB()
-    recording_service = RecordingServiceGraphDB()
+
+    def __init__(self):
+        self.modality_service: ModalityService = None
+        self.life_activity_service: LifeActivityService = None
+        self.recording_service: RecordingService = None
+        self.time_series_service: TimeSeriesService = None
 
     def save_observable_information(self, observable_information: ObservableInformationIn, dataset_name: str):
         """
@@ -34,7 +41,8 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
         Returns:
             Result of request as observable information object
         """
-        node_response = self.graph_api_service.create_node("`Observable Information`", dataset_name)
+
+        node_response = self.graph_api_service.create_node("Observable Information",dataset_name)
 
         if node_response["errors"] is not None:
             return ObservableInformationOut(errors=node_response["errors"])
@@ -82,11 +90,13 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
 
         return ObservableInformationsOut(observable_informations=observable_informations)
 
-    def get_observable_information(self, observable_information_id: int, dataset_name: str):
+
+    def get_observable_information(self, observable_information_id: Union[int, str],dataset_name: str, depth: int = 0):
         """
         Send request to graph api to get given observable information
         Args:
-            observable_information_id (int): Id of observable information
+            depth: (int): specifies how many related entities will be traversed to create the response
+            observable_information_id (int | str): identity of observable information
         Returns:
             Result of request as observable information object
         """
@@ -97,29 +107,46 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
         if get_response["labels"][0] != "Observable Information":
             return NotFoundByIdModel(id=observable_information_id, errors="Node not found.")
 
-        observable_information = {'id': get_response['id'], 'relations': [],
-                                  'reversed_relations': []}
+        observable_information = create_stub_from_response(get_response)
 
-        relations_response = self.graph_api_service.get_node_relationships(observable_information_id, dataset_name)
 
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == observable_information_id:
-                observable_information['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                               name=relation["name"],
-                                                                               relation_id=relation["id"]))
-            else:
-                observable_information['reversed_relations'].append(
-                    RelationInformation(second_node_id=relation["start_node"],
-                                        name=relation["name"],
-                                        relation_id=relation["id"]))
+        if depth != 0:
+            observable_information["recording"] = None
+            observable_information["modality"] = None
+            observable_information["life_activity"] = None
+            observable_information["timeSeries"] = []
+            relations_response = self.graph_api_service.get_node_relationships(observable_information_id,dataset_name)
 
-        return ObservableInformationOut(**observable_information)
+            for relation in relations_response["relationships"]:
+                if relation["start_node"] == observable_information_id & relation["name"] == "hasModality":
+                    observable_information['modality'] = self.modality_service.get_modality(relation["end_node"],
+                                                                                            depth - 1)
+                else:
+                    if relation["start_node"] == observable_information_id & relation["name"] == "hasRecording":
+                        observable_information['recording'] = self.recording_service.get_recording(relation["end_node"],
+                                                                                                   depth - 1)
+                    else:
+                        if relation["start_node"] == observable_information_id & relation["name"] == "hasLifeActivity":
+                            observable_information['life_activity'] = self.life_activity_service.get_life_activity(
+                                relation["end_node"],
+                                depth - 1)
+                        else:
+                            if relation["end_node"] == observable_information_id & \
+                                    relation["name"] == "hasObservableInformation":
+                                observable_information['timeSeries'].append(self.time_series_service.
+                                                                            get_time_series(relation["start_node"],
+                                                                                            depth - 1))
 
-    def delete_observable_information(self, observable_information_id: int, dataset_name: str):
+            return ObservableInformationOut(**observable_information)
+        else:
+            return BasicObservableInformationOut(**observable_information)
+
+
+    def delete_observable_information(self, observable_information_id: Union[int, str],dataset_name: str):
         """
         Send request to graph api to delete given observable information
         Args:
-            observable_information_id (int): Id of observable information
+            observable_information_id (int | str): identity of observable information
         Returns:
             Result of request as observable information object
         """
@@ -131,12 +158,13 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
         self.graph_api_service.delete_node(observable_information_id, dataset_name)
         return get_response
 
-    def update_observable_information_relationships(self, observable_information_id: int,
-                                                    observable_information: ObservableInformationIn, dataset_name: str):
+
+    def update_observable_information_relationships(self, observable_information_id: Union[int, str],
+                                                    observable_information: ObservableInformationIn,dataset_name: str):
         """
         Send request to graph api to update given observable information
         Args:
-            observable_information_id (int): Id of observable information
+            observable_information_id (int | str): identity of observable information
             observable_information (ObservableInformationIn): Relationships to update
         Returns:
             Result of request as observable information object
