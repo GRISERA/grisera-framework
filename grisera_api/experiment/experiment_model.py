@@ -1,61 +1,58 @@
-from typing import Union
+from typing import Optional, Union, List
 
-from fastapi import Response
-from fastapi_utils.cbv import cbv
-from fastapi_utils.inferring_router import InferringRouter
-from hateoas import get_links
-from modality.modality_model import (
-    ModalityOut,
-    ModalitiesOut
-)
+from pydantic import BaseModel
 
-from models.not_found_model import NotFoundByIdModel
-from services import Services
-
-router = InferringRouter()
+from property.property_model import PropertyIn
+from models.base_model_out import BaseModelOut
 
 
-@cbv(router)
-class ModalityRouter:
+class ExperimentIn(BaseModel):
     """
-    Class for routing modality based requests
+    Model of experiment to acquire from client
 
     Attributes:
-        modality_service (ModalityService): Service instance for modality
+    experiment_name (str): Name of experiment
+    additional_properties (Optional[List[PropertyIn]]): Additional properties for experiment
     """
 
-    def __init__(self):
-        self.modality_service = Services().modality_service()
+    experiment_name: str
+    additional_properties: Optional[List[PropertyIn]]
 
-    @router.get(
-        "/modalities/{modality_id}",
-        tags=["modalities"],
-        response_model=Union[ModalityOut, NotFoundByIdModel],
-    )
-    async def get_modality(
-        self, modality_id: Union[int, str], response: Response, depth: int=0
-    ):
-        """
-        Get modality from database. Depth attribute specifies how many models will be traversed to create the response.
-        """
-        get_response = self.modality_service.get_modality(modality_id, depth)
-        if get_response.errors is not None:
-            response.status_code = 404
 
-        # add links from hateoas
-        get_response.links = get_links(router)
+class BasicExperimentOut(ExperimentIn):
+    """
+    Basic model of experiment to send to client as a result of request
 
-        return get_response
+    Attributes:
+    id (Union[int, str]): Id of experiment returned from api
+    """
 
-    @router.get("/modalities", tags=["modalities"], response_model=ModalitiesOut)
-    async def get_modalities(self, response: Response):
-        """
-        Get modalities from database
-        """
+    id: Optional[Union[int, str]]
 
-        get_response = self.modality_service.get_modalities()
 
-        # add links from hateoas
-        get_response.links = get_links(router)
+class ExperimentOut(BasicExperimentOut, BaseModelOut):
+    """
+    Model of experiment with relationships to send to client as a result of request
 
-        return get_response
+    Attributes:
+    activity_executions (Optional[ActivityExecutionOut]): activity_executions related to this experiment
+    """
+
+    activity_executions: "Optional[ActivityExecutionOut]"
+
+
+class ExperimentsOut(BaseModelOut):
+    """
+    Model of experiments to send to client as a result of request
+
+    Attributes:
+    experiments (List[BasicExperimentOut]): Experiments from database
+    """
+
+    experiments: List[BasicExperimentOut] = []
+
+
+# Circular import exception prevention
+from activity_execution.activity_execution_model import ActivityExecutionOut
+
+ExperimentOut.update_forward_refs()

@@ -19,9 +19,8 @@ class TimestampNodesIn(BaseModel):
     """
     Model of timestamp node
     Attributes:
-    timestamp (int): Timestamp of signal measure in milliseconds
+        timestamp (int): Timestamp of signal measure in milliseconds
     """
-
     timestamp: int
 
 
@@ -32,7 +31,6 @@ class SignalValueNodesIn(BaseModel):
         value (Union[str, float]): Value of signal
         additional_properties (Optional[List[PropertyIn]]): Additional properties for signal value
     """
-
     value: Union[str, float]
     additional_properties: Optional[List[PropertyIn]]
 
@@ -46,7 +44,6 @@ class SignalIn(BaseModel):
         end_timestamp (Optional[int]): Timestamp of end signal measure of type Epoch in milliseconds
         signal_value (SignalValueNodesIn): Value of signal
     """
-
     timestamp: Optional[int]
     start_timestamp: Optional[int]
     end_timestamp: Optional[int]
@@ -58,12 +55,11 @@ class Type(str, Enum):
     Types of time series
 
     Attributes:
-    epoch (str): Epoch signal
-    irregularly_spaced (str): Irregularly spaced signal
-    regularly_spaced (str): Regularly spaced signal
-    timestamp (str): Timestamp signal
+        epoch (str): Epoch signal
+        irregularly_spaced (str): Irregularly spaced signal
+        regularly_spaced (str): Regularly spaced signal
+        timestamp (str): Timestamp signal
     """
-
     epoch = "Epoch"
     irregularly_spaced = "Irregularly spaced"
     regularly_spaced = "Regularly spaced"
@@ -80,7 +76,6 @@ class TimeSeriesPropertyIn(BaseModel):
         signal_values (List[SignalIn]): list of signals
         additional_properties (Optional[List[PropertyIn]]): Additional properties for signal
     """
-
     type: Type
     source: Optional[str]
     signal_values: List[SignalIn] = []
@@ -179,7 +174,6 @@ class TimeSeriesNodesOut(BaseModelOut):
     Attributes:
         time_series_nodes (List[BasicTimeSeriesOut]): Time series nodes from database
     """
-
     time_series_nodes: List[BasicTimeSeriesOut] = []
 
 

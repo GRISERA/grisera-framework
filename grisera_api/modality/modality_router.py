@@ -4,7 +4,10 @@ from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
-from modality.modality_model import ModalityOut, ModalitiesOut
+from modality.modality_model import (
+    ModalityOut,
+    ModalitiesOut
+)
 
 from models.not_found_model import NotFoundByIdModel
 from services import Services
@@ -30,7 +33,7 @@ class ModalityRouter:
         response_model=Union[ModalityOut, NotFoundByIdModel],
     )
     async def get_modality(
-        self, modality_id: Union[int, str], response: Response, depth: int = 0
+        self, modality_id: Union[int, str], response: Response, depth: int=0
     ):
         """
         Get modality from database. Depth attribute specifies how many models will be traversed to create the response.
