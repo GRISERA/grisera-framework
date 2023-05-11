@@ -107,7 +107,7 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
         time_series_nodes = TimeSeriesNodesOut(time_series_nodes=[time_series_one, time_series_two])
         time_series_nodes_service = TimeSeriesServiceGraphDBWithSignalValues()
 
-        result = time_series_nodes_service.get_time_series_nodes({"participant_date_of_birth": "2023-01-11"}, dataset_name)
+        result = time_series_nodes_service.get_time_series_nodes(dataset_name, {"participant_date_of_birth": "2023-01-11"})
 
         self.assertEqual(time_series_nodes, result)
         get_nodes_by_query.assert_called_once_with({

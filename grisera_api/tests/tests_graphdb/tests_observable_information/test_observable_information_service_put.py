@@ -61,9 +61,9 @@ class TestObservableInformationServicePut(unittest.TestCase):
         result = observable_information_service.update_observable_information_relationships(id_node,
                                                                                             observable_information_in, dataset_name)
 
-        create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=6, name="hasModality"),
-                                                    mock.call(start_node=id_node, end_node=7, name="hasLifeActivity"),
-                                                    mock.call(start_node=id_node, end_node=8, name="hasRecording")])
+        create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=6, name="hasModality",dataset_name=dataset_name),
+                                                    mock.call(start_node=id_node, end_node=7, name="hasLifeActivity",dataset_name=dataset_name),
+                                                    mock.call(start_node=id_node, end_node=8, name="hasRecording",dataset_name=dataset_name)])
         self.assertEqual(result, observable_information_out)
         get_node_mock.assert_has_calls(calls)
         create_properties_mock.assert_not_called()

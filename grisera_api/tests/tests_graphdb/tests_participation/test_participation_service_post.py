@@ -47,10 +47,10 @@ class TestParticipationServicePost(unittest.TestCase):
 
 
         create_relationships_mock.assert_has_calls(
-            [mock.call(start_node=id_node, end_node=6, name="hasActivityExecution"),
-             mock.call(start_node=id_node, end_node=7, name="hasParticipantState")])
+            [mock.call(start_node=id_node, end_node=6, name="hasActivityExecution",dataset_name=dataset_name),
+             mock.call(start_node=id_node, end_node=7, name="hasParticipantState",dataset_name=dataset_name)])
         create_properties_mock.assert_not_called()
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node,dataset_name)
         self.assertEqual(result, participation_out)
 
 

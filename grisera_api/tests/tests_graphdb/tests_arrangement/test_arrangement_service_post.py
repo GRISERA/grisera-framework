@@ -60,8 +60,8 @@ class TestArrangementServicePost(unittest.TestCase):
 
 
         self.assertEqual(result, ArrangementOut(arrangement_type='personal two persons',
-                                                arrangement_distance='intimate zone', errors=['error'],dataset_name))
-        create_node_mock.assert_called_once_with('Arrangement')
+                                                arrangement_distance='intimate zone', errors=['error'],dataset_name=dataset_name))
+        create_node_mock.assert_called_once_with('Arrangement',dataset_name)
         create_properties_mock.assert_called_once_with(id_node, arrangement,dataset_name)
 
     # @mock.patch.object(GraphApiService, 'get_nodes')

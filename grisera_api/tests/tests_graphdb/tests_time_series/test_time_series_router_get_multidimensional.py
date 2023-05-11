@@ -10,11 +10,12 @@ class TestTimeSeriesRouterPostTransformation(unittest.TestCase):
 
     @mock.patch.object(TimeSeriesServiceGraphDB, 'get_time_series_multidimensional')
     def test_get_time_series_multidimensional_without_error(self, get_time_series_multidimensional_mock):
+        dataset_name="neo4j"
         get_time_series_multidimensional_mock.return_value = TimeSeriesMultidimensionalOut(signal_values=[])
         response = Response()
         time_series_router = TimeSeriesRouter()
 
-        result = asyncio.run(time_series_router.get_time_series_multidimensional("15, 20, 25", response))
+        result = asyncio.run(time_series_router.get_time_series_multidimensional("15, 20, 25", response, dataset_name))
 
         self.assertEqual(TimeSeriesMultidimensionalOut(signal_values=[], links=get_links(router)), result)
         get_time_series_multidimensional_mock.assert_called_once_with([15, 20, 25])
@@ -22,11 +23,12 @@ class TestTimeSeriesRouterPostTransformation(unittest.TestCase):
 
     @mock.patch.object(TimeSeriesServiceGraphDB, 'get_time_series_multidimensional')
     def test_get_time_series_multidimensional_with_error(self, get_time_series_multidimensional_mock):
+        dataset_name="neo4j"
         get_time_series_multidimensional_mock.return_value = TimeSeriesMultidimensionalOut(errors={'errors': ['test']})
         response = Response()
         time_series_router = TimeSeriesRouter()
 
-        result = asyncio.run(time_series_router.get_time_series_multidimensional("15, 20, 25", response))
+        result = asyncio.run(time_series_router.get_time_series_multidimensional("15, 20, 25", response,dataset_name))
 
         self.assertEqual(TimeSeriesMultidimensionalOut(errors={'errors': ['test']},
                                                        links=get_links(router)), result)

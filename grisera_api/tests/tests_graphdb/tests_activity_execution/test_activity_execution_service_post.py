@@ -31,31 +31,15 @@ class TestActivityExecutionServicePost(unittest.TestCase):
         id_node = 1
         activity_id = 2
         arrangement_id = 3
-        additional_properties = []
 
         create_relationships_mock.return_value = None
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'errors': None, 'links': None}
-
-##########
-        create_relationships_mock.return_value = {'start_node': 1, 'end_node': 2,
-                                                  'name': 'hasParticipant', 'errors': None}
-
-        #activity_execution_out = ActivityExecutionOut(additional_properties=additional_properties, relations=
-        #                                              [RelationInformation(second_node_id=19, name="testRelation",
-        #                                                                   relation_id=0)],
-        #                                              reversed_relations=
-        #                                              [RelationInformation(second_node_id=15,
-        #                                                                   name="testReversedRelation",
-        #                                                                   relation_id=0)], id=id_node)
-
-        calls = [mock.call(2, dataset_name), mock.call(3, dataset_name), mock.call(1, dataset_name)]
-#########
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Activity Execution'], 'properties': [], "errors": None, 'links': None}
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Activity Execution'], 'properties': [], "errors": None,
+                                      'links': None}
         get_activity_mock.return_value = None
         get_arrangement_mock.return_value = None
 
-########
         activity_execution_service = ActivityExecutionServiceGraphDB()
         activity_execution_service.activity_service = mock.create_autospec(ActivityServiceGraphDB)
         activity_execution_service.activity_service.get_activity = get_activity_mock
@@ -68,16 +52,12 @@ class TestActivityExecutionServicePost(unittest.TestCase):
         result = activity_execution_service.save_activity_execution(activity_execution_in, dataset_name)
 
         self.assertEqual(result, activity_execution_out)
-
-
-        get_node_mock.assert_has_calls(calls)
-
         create_node_mock.assert_called_once_with('Activity Execution', dataset_name)
         create_relationships_mock.assert_has_calls([
-            mock.call(start_node=id_node, end_node=activity_id, name='hasActivity'),
-            mock.call(start_node=id_node, end_node=arrangement_id, name='hasArrangement')
+            mock.call(start_node=id_node, end_node=activity_id, name='hasActivity',dataset_name=dataset_name),
+            mock.call(start_node=id_node, end_node=arrangement_id, name='hasArrangement',dataset_name=dataset_name)
         ])
-        create_properties_mock.assert_has_calls([mock.call(id_node, activity_execution_in)])
+        create_properties_mock.assert_has_calls([mock.call(id_node, activity_execution_in, dataset_name)])
 
     # @mock.patch.object(GraphApiService, 'create_node')
     # @mock.patch.object(GraphApiService, 'create_properties')

@@ -26,7 +26,7 @@ class TestRecordingServiceGet(unittest.TestCase):
         result = recording_service.get_recording(id_node, dataset_name)
 
         self.assertEqual(result, recording)
-        get_node_mock.assert_called_once_with(id_nodee, dataset_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_recording_without_label(self, get_node_mock):

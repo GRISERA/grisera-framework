@@ -50,10 +50,10 @@ class TestRecordingServicePost(unittest.TestCase):
 
 
         create_relationships_mock.assert_has_calls(
-            [mock.call(start_node=id_node, end_node=6,name="hasParticipation"),
-             mock.call(start_node=id_node, end_node=7, name="hasRegisteredChannel")])
-        create_properties_mock.assert_called_once_with(id_node, recording_in)
-        get_node_mock.assert_called_once_with(id_node)
+            [mock.call(start_node=id_node, end_node=6,name="hasParticipation",dataset_name=dataset_name),
+             mock.call(start_node=id_node, end_node=7, name="hasRegisteredChannel",dataset_name=dataset_name)])
+        create_properties_mock.assert_called_once_with(id_node, recording_in,dataset_name)
+        get_node_mock.assert_called_once_with(id_node,dataset_name)
         self.assertEqual(result, recording_out)
 
     @mock.patch.object(GraphApiService, 'create_node')

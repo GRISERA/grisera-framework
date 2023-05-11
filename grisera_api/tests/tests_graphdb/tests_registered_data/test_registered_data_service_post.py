@@ -24,7 +24,7 @@ class TestRegisteredDataServicePost(unittest.TestCase):
 
         self.assertEqual(result, RegisteredDataOut(source='url', id=id_node, additional_properties=additional_properties))
         create_node_mock.assert_called_once_with('Registered Data', dataset_name)
-        create_properties_mock.assert_called_once_with(id_node, registered_data), dataset_name
+        create_properties_mock.assert_called_once_with(id_node, registered_data, dataset_name)
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_registered_data_with_node_error(self, create_node_mock):

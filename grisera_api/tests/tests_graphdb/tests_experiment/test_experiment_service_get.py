@@ -38,6 +38,7 @@ class TestExperimentServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_experiment_without_error(self, get_node_mock):
         id_node = 1
+        dataset_name="neo4j"
         get_node_mock.return_value = {'id': id_node, 'labels': ['Experiment'],
                                       'properties': [{'key': 'experiment_name', 'value': 'test'},
                                                      {'key': 'test', 'value': 'test'}],
@@ -46,10 +47,10 @@ class TestExperimentServiceGet(unittest.TestCase):
         experiment = BasicExperimentOut(experiment_name="test", additional_properties=additional_properties, id=id_node)
         experiment_service = ExperimentServiceGraphDB()
 
-        result = experiment_service.get_experiment(id_node)
+        result = experiment_service.get_experiment(id_node,dataset_name)
 
         self.assertEqual(result, experiment)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node,dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_experiment_without_participant_label(self, get_node_mock):

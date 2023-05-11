@@ -177,7 +177,7 @@ class TimeSeriesRouter:
         response_model=Union[TimeSeriesOut, NotFoundByIdModel],
     )
     async def delete_time_series(
-        self, time_series_id: Union[int, str], response: Response
+        self, time_series_id: Union[int, str], response: Response,dataset_name
     ):
         """
         Delete time series by id from database with all signal values.

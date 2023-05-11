@@ -25,12 +25,12 @@ class TestActivityExecutionServicePut(unittest.TestCase):
         activity_execution_in = ActivityExecutionPropertyIn(id=id_node, additional_properties=additional_properties)
 
         activity_execution_out = ActivityExecutionOut(additional_properties=additional_properties, id=id_node)
-        calls = [mock.call(1)]
+        calls = [mock.call(1,dataset_name)]
         activity_execution_service = ActivityExecutionServiceGraphDB()
         result = activity_execution_service.update_activity_execution(id_node, activity_execution_in,dataset_name)
 
         self.assertEqual(result, activity_execution_out)
-        get_node_mock.assert_has_calls(calls)
+        get_node_mock.assert_has_calls(calls,dataset_name)
         create_properties_mock.assert_called_once_with(id_node, activity_execution_in,dataset_name)
 
     # @mock.patch.object(GraphApiService, 'create_properties')

@@ -50,8 +50,8 @@ class TestRegisteredChannelServicePut(unittest.TestCase):
         get_node_mock.assert_has_calls(calls)
         create_properties_mock.assert_not_called()
         create_relationships_mock.assert_has_calls([
-            mock.call(start_node=id_node, end_node=2, name='hasChannel'),
-            mock.call(start_node=id_node, end_node=3, name='hasRegisteredData')
+            mock.call(start_node=id_node, end_node=2, name='hasChannel', dataset_name=dataset_name),
+            mock.call(start_node=id_node, end_node=3, name='hasRegisteredData',dataset_name=dataset_name)
         ])
 
         # @mock.patch.object(GraphApiService, 'create_properties')

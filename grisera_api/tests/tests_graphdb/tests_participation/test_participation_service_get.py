@@ -13,6 +13,7 @@ from recording.recording_model import BasicRecordingOut
 class TestParticipationServiceGet(unittest.TestCase):
 
 
+    @mock.patch.object(GraphApiService, 'get_node')
     def test_get_participation_without_error(self, get_node_mock):
 
         id_node = 1
@@ -28,7 +29,7 @@ class TestParticipationServiceGet(unittest.TestCase):
         self.assertEqual(result, participation)
 
 
-        get_node_mock.assert_called_once_with(id_node,dataset_name
+        get_node_mock.assert_called_once_with(id_node,dataset_name)
 
         # @mock.patch.object(GraphApiService, 'get_node')
         # @mock.patch.object(GraphApiService, 'get_node_relationships')

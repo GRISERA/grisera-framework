@@ -6,7 +6,7 @@ from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
 from arrangement.arrangement_model import (
     ArrangementOut,
-    ArrangementsOut,
+    ArrangementsOut, ArrangementIn
 )
 from models.not_found_model import NotFoundByIdModel
 from services import Services

@@ -28,7 +28,7 @@ class TestMeasureNameRouterGet(unittest.TestCase):
     @mock.patch.object(MeasureNameServiceGraphDB, 'get_measure_name')
     def test_get_measure_name_with_error(self, get_measure_name_mock):
         dataset_name = "neo4j"
-        get_measure_name_mock.return_value = MeasureNameOut(name="Familiarity", type="Addional emotions measure", errors={'errors': ['test']})
+        get_measure_name_mock.return_value = MeasureNameOut(name="Familiarity", type="Additional emotions measure", errors={'errors': ['test']})
         response = Response()
         measure_name_id = 1
         measure_name_router = MeasureNameRouter()

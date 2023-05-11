@@ -63,11 +63,11 @@ class TestParticipantStateServicePost(unittest.TestCase):
 
         result = participant_state_service.save_participant_state(participant_state_in, dataset_name)
 
-        create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=6, name="hasParticipant"),
-                                                    mock.call(start_node=id_node, end_node=7, name="hasPersonality"),
-                                                    mock.call(start_node=id_node, end_node=8, name="hasPersonality"),
-                                                    mock.call(start_node=id_node, end_node=9, name="hasAppearance"),
-                                                    mock.call(start_node=id_node, end_node=10, name="hasAppearance")])
+        create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=6, name="hasParticipant",dataset_name=dataset_name),
+                                                    mock.call(start_node=id_node, end_node=7, name="hasPersonality",dataset_name=dataset_name),
+                                                    mock.call(start_node=id_node, end_node=8, name="hasPersonality",dataset_name=dataset_name),
+                                                    mock.call(start_node=id_node, end_node=9, name="hasAppearance",dataset_name=dataset_name),
+                                                    mock.call(start_node=id_node, end_node=10, name="hasAppearance",dataset_name=dataset_name)])
         create_properties_mock.assert_called_once_with(id_node, participant_state_in, dataset_name)
         get_node_mock.assert_called_once_with(id_node, dataset_name)
         self.assertEqual(result, participant_state_out)

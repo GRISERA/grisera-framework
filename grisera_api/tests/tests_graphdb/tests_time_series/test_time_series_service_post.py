@@ -54,9 +54,9 @@ class TestTimeSeriesServicePost(unittest.TestCase):
         create_node_mock.assert_called_once_with('Time Series', dataset_name)
         create_properties_mock.assert_called_once_with(id_node, time_series_in, dataset_name)
         create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=2,
-                                                              name="hasObservableInformation"),
+                                                              name="hasObservableInformation",dataset_name=dataset_name),
                                                     mock.call(start_node=id_node, end_node=3,
-                                                              name="hasMeasure")])
+                                                              name="hasMeasure",dataset_name=dataset_name)])
 
     # @mock.patch.object(GraphApiService, 'create_node')
     # @mock.patch.object(GraphApiService, 'create_properties')

@@ -6,6 +6,7 @@ from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
 from measure_name.measure_name_model import (
     MeasureNameOut,
+    MeasureNameIn,
     MeasureNamesOut,
 )
 from models.not_found_model import NotFoundByIdModel

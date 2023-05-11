@@ -52,10 +52,10 @@ class TestObservableInformationServicePost(unittest.TestCase):
 
         result = observable_information_service.save_observable_information(observable_information_in, dataset_name)
 
-        create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=6, name="hasModality"),
-                 mock.call(start_node=id_node, end_node=7, name="hasLifeActivity"),
-                 mock.call(start_node=id_node, end_node=8, name="hasRecording")])
-        get_node_mock.assert_called_once_with(id_node)
+        create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=6, name="hasModality",dataset_name=dataset_name),
+                 mock.call(start_node=id_node, end_node=7, name="hasLifeActivity",dataset_name=dataset_name),
+                 mock.call(start_node=id_node, end_node=8, name="hasRecording",dataset_name=dataset_name)])
+        get_node_mock.assert_called_once_with(id_node,dataset_name)
         self.assertEqual(result, observable_information_out)
 
         @mock.patch.object(GraphApiService, 'create_node')

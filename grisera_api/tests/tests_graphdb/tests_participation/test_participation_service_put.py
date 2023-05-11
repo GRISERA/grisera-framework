@@ -39,7 +39,7 @@ class TestParticipationServicePut(unittest.TestCase):
 
         participation_in = ParticipationIn(activity_execution_id=6, participant_state_id=7)
         participation_out = BasicParticipationOut(id=id_node)
-        calls = [mock.call(1)]
+        calls = [mock.call(1,dataset_name)]
         participation_service = ParticipationServiceGraphDB()
 
         participation_service.activity_execution_service = mock.create_autospec(ActivityExecutionServiceGraphDB)
@@ -54,9 +54,9 @@ class TestParticipationServicePut(unittest.TestCase):
 
 
         create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=6,
-                                                              name="hasActivityExecution"),
+                                                              name="hasActivityExecution",dataset_name=dataset_name),
                                                     mock.call(start_node=id_node, end_node=7,
-                                                              name="hasParticipantState")])
+                                                              name="hasParticipantState",dataset_name=dataset_name)])
         self.assertEqual(result, participation_out)
 
 
