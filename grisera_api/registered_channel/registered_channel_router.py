@@ -10,6 +10,7 @@ from registered_channel.registered_channel_model import (
     RegisteredChannelsOut,
     RegisteredChannelOut,
 )
+
 from services import Services
 
 router = InferringRouter()

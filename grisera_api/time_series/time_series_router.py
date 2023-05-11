@@ -115,9 +115,7 @@ class TimeSeriesRouter:
         - registereddata
         """
 
-        get_response = self.time_series_service.get_time_series_nodes(
-            request.query_params
-        )
+        get_response = self.time_series_service.get_time_series_nodes(request.query_params)
 
         # add links from hateoas
         get_response.links = get_links(router)

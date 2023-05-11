@@ -1,4 +1,5 @@
 from typing import Union
+
 from registered_data.registered_data_model import RegisteredDataIn
 
 

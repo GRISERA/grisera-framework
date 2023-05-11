@@ -74,10 +74,7 @@ class ActivityExecutionRouter:
         response_model=Union[ActivityExecutionOut, NotFoundByIdModel],
     )
     async def get_activity_execution(
-        self,
-        activity_execution_id: Union[int, str],
-        response: Response,
-        depth: int = 0,
+        self, activity_execution_id: Union[int, str], response: Response, depth: int = 0,
     ):
         """
         Get activity execution from database. Depth attribute specifies how many models will be traversed to create the

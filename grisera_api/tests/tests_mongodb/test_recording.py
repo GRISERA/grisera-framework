@@ -53,7 +53,6 @@ class TestMongoRegisteredData(MongoTestCase):
     @mongomock.patch(servers=((mongo_api_host, mongo_api_port),))
     def test_traverse_one(self):
         service = Services().recording_service()
-        registered_channel_service = Services().registered_channel_service()
         observable_information_service = Services().observable_information_service()
 
         related_rc = self.generate_registered_channel(save=True)
