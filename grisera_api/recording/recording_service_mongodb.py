@@ -200,7 +200,11 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         self.update(recording_id, RecordingOut(**recording))
         return BasicObservableInformationOut(**observable_information_dict)
 
-    def update_observable_information(self, observable_information_dict: dict):
+    def update_observable_information(
+        self,
+        observable_information_id: Union[int, str],
+        observable_information_dict: dict,
+    ):
         """
         Edit observable information in recording. Obervable information is embeded in related recording.
 
@@ -246,28 +250,27 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         Returns:
             Removed observable information
         """
-        observable_information_id = observable_information["id"]
         recording_id = observable_information.recording_id
         recording = self.get_single_dict(recording_id)
         if type(recording) is NotFoundByIdModel:
             return NotFoundByIdModel(
-                id=observable_information_id,
+                id=observable_information.id,
                 errors={
                     "errors": "recording related to given observable information not found"
                 },
             )
 
         to_remove_index = self._get_observable_information_index_from_recording(
-            recording, observable_information_id
+            recording, observable_information.id
         )
         if to_remove_index is None:
             return NotFoundByIdModel(
-                id=observable_information_id,
+                id=observable_information.id,
                 errors={"errors": "observable information not found"},
             )
         observable_informations = recording[Collections.OBSERVABLE_INFORMATION]
         del observable_informations[to_remove_index]
-        self.update(recording_id, recording)
+        self.update(recording_id, ObservableInformationIn(**recording))
         return observable_information
 
     def _add_related_documents(self, recording: dict, depth: int, source: str):

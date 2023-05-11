@@ -140,7 +140,7 @@ class ObservableInformationServiceMongoDB(
         Get observable information dict. Observable information is fetched from its
         recording.
         """
-        observable_information_objectid = ObjectId(observable_information_objectid)
+        observable_information_objectid = ObjectId(id)
         recording_result = self.recording_service.get_multiple(
             {
                 f"{Collections.OBSERVABLE_INFORMATION}.id": observable_information_objectid
@@ -230,7 +230,7 @@ class ObservableInformationServiceMongoDB(
             Result of request as observable information object
         """
         return self.recording_service.update_observable_information(
-            observable_information.dict()
+            observable_information_id, observable_information.dict()
         )
 
     def _add_related_documents(
