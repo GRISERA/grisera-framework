@@ -7,6 +7,7 @@ from time_series.time_series_service_graphdb_with_signal_values import TimeSerie
 
 class TestTimeSeriesWithSignalValuesServiceGetMultidimensional(unittest.TestCase):
     def test_get_time_series_multidimensional_without_errors(self):
+        dataset_name = "neo4j"
         result_timeseries = TimeSeriesMultidimensionalOut(
             type=Type.timestamp,
             signal_values=[
@@ -41,7 +42,7 @@ class TestTimeSeriesWithSignalValuesServiceGetMultidimensional(unittest.TestCase
             ]
         )
 
-        def get_time_series_side_effect(time_series_id: int):
+        def get_time_series_side_effect(time_series_id: int, dataset_name: str):
             if time_series_id == 60:
                 return TimeSeriesOut(
                     id=time_series_id,
@@ -88,9 +89,8 @@ class TestTimeSeriesWithSignalValuesServiceGetMultidimensional(unittest.TestCase
                     ])
             else:
                 return None
-
         time_series_service = TimeSeriesServiceGraphDBWithSignalValues()
         time_series_service.get_time_series = get_time_series_side_effect
-        result = time_series_service.get_time_series_multidimensional([60, 61])
+        result = time_series_service.get_time_series_multidimensional([60, 61], dataset_name)
 
         self.assertEqual(result_timeseries, result)

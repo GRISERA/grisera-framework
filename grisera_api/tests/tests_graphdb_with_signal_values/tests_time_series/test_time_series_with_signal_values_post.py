@@ -278,6 +278,7 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
         get_node_mock.return_value = previous_timestamp_node
 
         time_series_service = TimeSeriesServiceGraphDBWithSignalValues()
+
         result = time_series_service.save_signal_values([SignalIn(start_timestamp=100, end_timestamp=200,
                                                                   signal_value=SignalValueNodesIn(value=10))],
                                                         15, 20, Type.epoch, dataset_name)
@@ -291,6 +292,7 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
             mock.call(start_node=60, end_node=70, name='startInSec'),
             mock.call(start_node=60, end_node=70, name='endInSec')
         ], create_relationships_mock.call_args_list)
+
         delete_relationship_mock.assert_not_called()
         self.assertEqual([mock.call(20, dataset_name)], get_node_relationships_mock.call_args_list)
         self.assertEqual([mock.call(SignalValueNodesIn(value=10), None, 15, dataset_name)], create_signal_value_mock.call_args_list)
