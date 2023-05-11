@@ -6,6 +6,7 @@ from appearance.appearance_model import AppearanceOcclusionIn, AppearanceOcclusi
     AppearanceSomatotypeIn, AppearanceSomatotypeOut, BasicAppearanceSomatotypeOut, AppearancesOut
 from helpers import create_stub_from_response
 from models.not_found_model import NotFoundByIdModel
+from participant_state.participant_state_service import ParticipantStateService
 
 
 class AppearanceServiceGraphDB(AppearanceService):
@@ -18,7 +19,7 @@ class AppearanceServiceGraphDB(AppearanceService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.participant_state_service = None
+        self.participant_state_service: ParticipantStateService = None
 
     def save_appearance_occlusion(self, appearance: AppearanceOcclusionIn):
         """
@@ -97,7 +98,8 @@ class AppearanceServiceGraphDB(AppearanceService):
         if get_response["labels"][0] != "Appearance":
             return NotFoundByIdModel(id=appearance_id, errors="Node not found.")
 
-        appearance = create_stub_from_response(get_response, properties=['ectomorph', 'endomorph', 'mesomorph', 'glasses', 'moustache', 'beard'] )
+        appearance = create_stub_from_response(get_response, properties=['ectomorph', 'endomorph', 'mesomorph',
+                                                                         'glasses', 'moustache', 'beard'])
 
         if depth != 0:
             appearance["participant_states"] = []

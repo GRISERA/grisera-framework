@@ -1,11 +1,15 @@
 from typing import Union
 
+from appearance.appearance_service import AppearanceService
 from graph_api_service import GraphApiService
 from helpers import create_stub_from_response
+from participant.participant_service import ParticipantService
 from participant_state.participant_state_service import ParticipantStateService
 from participant_state.participant_state_model import ParticipantStatePropertyIn, BasicParticipantStateOut, \
     ParticipantStatesOut, ParticipantStateOut, ParticipantStateIn, ParticipantStateRelationIn
 from models.not_found_model import NotFoundByIdModel
+from participation.participation_service import ParticipationService
+from personality.personality_service import PersonalityService
 
 
 class ParticipantStateServiceGraphDB(ParticipantStateService):
@@ -21,10 +25,10 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.participant_service = None
-        self.appearance_service = None
-        self.personality_service = None
-        self.participation_service = None
+        self.participant_service: ParticipantService = None
+        self.appearance_service: AppearanceService = None
+        self.personality_service: PersonalityService = None
+        self.participation_service: ParticipationService = None
 
     def save_participant_state(self, participant_state: ParticipantStateIn):
         """

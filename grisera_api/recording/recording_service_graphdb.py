@@ -2,9 +2,13 @@ from typing import Union
 
 from graph_api_service import GraphApiService
 from helpers import create_stub_from_response
+from observable_information.observable_information_service import ObservableInformationService
+from participation.participation_service import ParticipationService
 from recording.recording_service import RecordingService
-from recording.recording_model import RecordingPropertyIn, RecordingIn, BasicRecordingOut, RecordingOut, RecordingsOut
+from recording.recording_model import RecordingPropertyIn, RecordingIn, BasicRecordingOut, RecordingOut, \
+    RecordingsOut, RecordingRelationIn
 from models.not_found_model import NotFoundByIdModel
+from registered_channel.registered_channel_service import RegisteredChannelService
 
 
 class RecordingServiceGraphDB(RecordingService):
@@ -19,9 +23,9 @@ class RecordingServiceGraphDB(RecordingService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.participation_service = None
-        self.registered_channel_service = None
-        self.observable_information_service = None
+        self.participation_service: ParticipationService = None
+        self.registered_channel_service: RegisteredChannelService = None
+        self.observable_information_service: ObservableInformationService = None
 
     def save_recording(self, recording: RecordingIn):
         """
@@ -158,12 +162,12 @@ class RecordingServiceGraphDB(RecordingService):
         return BasicRecordingOut(**recording_result)
 
     def update_recording_relationships(self, recording_id: Union[int, str],
-                                       recording: RecordingIn):
+                                       recording: RecordingRelationIn):
         """
         Send request to graph api to update given recording
         Args:
             recording_id (int | str): identity of recording
-            recording (RecordingIn): Relationships to update
+            recording (RecordingRelationIn): Relationships to update
         Returns:
             Result of request as recording object
         """

@@ -2,10 +2,14 @@ from typing import Union
 
 from graph_api_service import GraphApiService
 from helpers import create_stub_from_response
+from life_activity.life_activity_service import LifeActivityService
+from modality.modality_service import ModalityService
 from observable_information.observable_information_model import ObservableInformationIn, ObservableInformationOut, \
     BasicObservableInformationOut, ObservableInformationsOut
 from observable_information.observable_information_service import ObservableInformationService
 from models.not_found_model import NotFoundByIdModel
+from recording.recording_service import RecordingService
+from time_series.time_series_service import TimeSeriesService
 
 
 class ObservableInformationServiceGraphDB(ObservableInformationService):
@@ -22,10 +26,10 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.modality_service = None
-        self.life_activity_service = None
-        self.recording_service = None
-        self.time_series_service = None
+        self.modality_service: ModalityService = None
+        self.life_activity_service: LifeActivityService = None
+        self.recording_service: RecordingService = None
+        self.time_series_service: TimeSeriesService = None
 
     def save_observable_information(self, observable_information: ObservableInformationIn):
         """

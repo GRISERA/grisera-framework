@@ -1,11 +1,14 @@
 from typing import Union
 
+from channel.channel_service import ChannelService
 from graph_api_service import GraphApiService
 from helpers import create_stub_from_response
+from recording.recording_service import RecordingService
 from registered_channel.registered_channel_service import RegisteredChannelService
 from registered_channel.registered_channel_model import BasicRegisteredChannelOut, RegisteredChannelsOut, \
     RegisteredChannelOut, RegisteredChannelIn
 from models.not_found_model import NotFoundByIdModel
+from registered_data.registered_data_service import RegisteredDataService
 
 
 class RegisteredChannelServiceGraphDB(RegisteredChannelService):
@@ -20,9 +23,9 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.channel_service = None
-        self.registered_data_service = None
-        self.recording_service = None
+        self.channel_service: ChannelService = None
+        self.registered_data_service: RegisteredDataService = None
+        self.recording_service: RecordingService = None
 
     def save_registered_channel(self, registered_channel: RegisteredChannelIn):
         """

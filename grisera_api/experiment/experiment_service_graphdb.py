@@ -1,5 +1,6 @@
 from typing import Union
 
+from activity_execution.activity_execution_service import ActivityExecutionService
 from experiment.experiment_service import ExperimentService
 from graph_api_service import GraphApiService
 from experiment.experiment_model import ExperimentIn, ExperimentsOut, BasicExperimentOut, ExperimentOut
@@ -17,7 +18,7 @@ class ExperimentServiceGraphDB(ExperimentService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.activity_execution_service = None
+        self.activity_execution_service: ActivityExecutionService = None
 
     def save_experiment(self, experiment: ExperimentIn):
         """
@@ -83,7 +84,7 @@ class ExperimentServiceGraphDB(ExperimentService):
         if get_response["labels"][0] != "Experiment":
             return NotFoundByIdModel(id=experiment_id, errors="Node not found.")
 
-        experiment = create_stub_from_response(get_response, properties = ['experiment_name'])
+        experiment = create_stub_from_response(get_response, properties=['experiment_name'])
 
         if depth != 0:
             experiment["activity_executions"] = []

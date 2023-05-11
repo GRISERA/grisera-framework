@@ -3,7 +3,7 @@ from typing import List, Union, Optional
 from starlette.datastructures import QueryParams
 
 from models.not_found_model import NotFoundByIdModel
-from time_series.helpers import get_node_property
+from time_series.ts_helpers import get_node_property
 from time_series.time_series_model import Type, TimeSeriesIn, TimeSeriesOut, SignalIn, SignalValueNodesIn, \
     TimestampNodesIn, TimeSeriesNodesOut, BasicTimeSeriesOut, TimeSeriesTransformationIn, \
     TimeSeriesTransformationRelationshipIn, TimeSeriesMultidimensionalOut
@@ -440,7 +440,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 signal_values.append({'signal_value': row[0], 'start_timestamp': row[1], 'end_timestamp': row[2]})
         return signal_values
 
-    def get_time_series_nodes(self, params: QueryParams):
+    def get_time_series_nodes(self, params: QueryParams = None):
         """
         Send request to graph api to get time series nodes
 

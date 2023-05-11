@@ -2,6 +2,7 @@ from typing import Union
 
 from graph_api_service import GraphApiService
 from helpers import create_stub_from_response
+from registered_channel.registered_channel_service import RegisteredChannelService
 from registered_data.registered_data_model import RegisteredDataIn, RegisteredDataNodesOut, \
     BasicRegisteredDataOut, RegisteredDataOut
 from models.not_found_model import NotFoundByIdModel
@@ -18,7 +19,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.registered_channel_service = None
+        self.registered_channel_service: RegisteredChannelService = None
 
     def save_registered_data(self, registered_data: RegisteredDataIn):
         """

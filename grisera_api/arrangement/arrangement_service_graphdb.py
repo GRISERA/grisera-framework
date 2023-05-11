@@ -1,5 +1,6 @@
 from typing import Union
 
+from activity_execution.activity_execution_service import ActivityExecutionService
 from arrangement.arrangement_service import ArrangementService
 from graph_api_service import GraphApiService
 from arrangement.arrangement_model import ArrangementIn, ArrangementOut, ArrangementsOut, BasicArrangementOut
@@ -17,7 +18,7 @@ class ArrangementServiceGraphDB(ArrangementService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.activity_execution_service = None
+        self.activity_execution_service: ActivityExecutionService = None
 
     def save_arrangement(self, arrangement: ArrangementIn):
         """
@@ -89,7 +90,7 @@ class ArrangementServiceGraphDB(ArrangementService):
         if get_response["labels"][0] != "Arrangement":
             return NotFoundByIdModel(id=arrangement_id, errors="Node not found.")
 
-        arrangement = create_stub_from_response(get_response, properties = ['arrangement_type', 'arrangement_distance'])
+        arrangement = create_stub_from_response(get_response, properties=['arrangement_type', 'arrangement_distance'])
 
         if depth != 0:
             arrangement["activity_executions"] = []

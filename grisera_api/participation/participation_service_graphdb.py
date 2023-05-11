@@ -1,11 +1,14 @@
 from typing import Union
 
+from activity_execution.activity_execution_service import ActivityExecutionService
 from graph_api_service import GraphApiService
 from helpers import create_stub_from_response
+from participant_state.participant_state_service import ParticipantStateService
 from participation.participation_model import ParticipationIn, ParticipationOut, ParticipationsOut, \
     BasicParticipationOut
 from models.not_found_model import NotFoundByIdModel
 from participation.participation_service import ParticipationService
+from recording.recording_service import RecordingService
 
 
 class ParticipationServiceGraphDB(ParticipationService):
@@ -20,9 +23,9 @@ class ParticipationServiceGraphDB(ParticipationService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.activity_execution_service = None
-        self.participant_state_service = None
-        self.recording_service = None
+        self.activity_execution_service: ActivityExecutionService = None
+        self.participant_state_service: ParticipantStateService = None
+        self.recording_service: RecordingService = None
 
     def save_participation(self, participation: ParticipationIn):
         """

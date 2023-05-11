@@ -5,7 +5,9 @@ from helpers import create_stub_from_response
 from measure.measure_model import MeasurePropertyIn, BasicMeasureOut, \
     MeasuresOut, MeasureOut, MeasureIn, MeasureRelationIn
 from measure.measure_service import MeasureService
+from measure_name.measure_name_service import MeasureNameService
 from models.not_found_model import NotFoundByIdModel
+from time_series.time_series_service import TimeSeriesService
 
 
 class MeasureServiceGraphDB(MeasureService):
@@ -19,8 +21,8 @@ class MeasureServiceGraphDB(MeasureService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.measure_name_service = None
-        self.time_series_service = None
+        self.measure_name_service: MeasureNameService = None
+        self.time_series_service: TimeSeriesService = None
 
     def save_measure(self, measure: MeasureIn):
         """
@@ -91,7 +93,7 @@ class MeasureServiceGraphDB(MeasureService):
         if get_response["labels"][0] != "Measure":
             return NotFoundByIdModel(id=measure_id, errors="Node not found.")
 
-        measure = create_stub_from_response(get_response, properties = ['datatype', 'range', 'unit'])
+        measure = create_stub_from_response(get_response, properties=['datatype', 'range', 'unit'])
 
         if depth != 0:
             measure["time_series"] = []
@@ -100,7 +102,8 @@ class MeasureServiceGraphDB(MeasureService):
 
             for relation in relations_response["relationships"]:
                 if relation["start_node"] == measure_id & relation["name"] == "hasMeasureName":
-                    measure['measure_name'] = self.measure_name_service.get_measure_name(relation["end_node"], depth-1)
+                    measure['measure_name'] = self.measure_name_service.get_measure_name(relation["end_node"],
+                                                                                         depth - 1)
                 else:
                     if relation["end_node"] == measure_id & relation["name"] == "hasMeasure":
                         measure['time_series'].append(self.time_series_service.get_time_series(relation["start_node"],

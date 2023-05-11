@@ -2,6 +2,7 @@ from typing import Union
 
 from graph_api_service import GraphApiService
 from helpers import create_stub_from_response
+from participant_state.participant_state_service import ParticipantStateService
 from personality.personality_model import PersonalityBigFiveIn, PersonalityBigFiveOut, \
     PersonalityPanasIn, PersonalityPanasOut, BasicPersonalityBigFiveOut, BasicPersonalityPanasOut, PersonalitiesOut
 from models.not_found_model import NotFoundByIdModel
@@ -18,7 +19,7 @@ class PersonalityServiceGraphDB(PersonalityService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.participant_state_service = None
+        self.participant_state_service: ParticipantStateService = None
 
     def save_personality_big_five(self, personality: PersonalityBigFiveIn):
         """
@@ -80,7 +81,8 @@ class PersonalityServiceGraphDB(PersonalityService):
 
         personality = create_stub_from_response(get_response, properties=['agreeableness', 'conscientiousness',
                                                                           'extroversion', 'neuroticism',
-                                                                          'openess', 'negative_affect', 'positive_affect'])
+                                                                          'openess', 'negative_affect',
+                                                                          'positive_affect'])
 
         if depth != 0:
             personality["participant_states"] = None

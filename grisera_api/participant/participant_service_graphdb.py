@@ -5,6 +5,7 @@ from helpers import create_stub_from_response
 from participant.participant_model import ParticipantIn, ParticipantsOut, BasicParticipantOut, ParticipantOut
 from models.not_found_model import NotFoundByIdModel
 from participant.participant_service import ParticipantService
+from participant_state.participant_state_service import ParticipantStateService
 
 
 class ParticipantServiceGraphDB(ParticipantService):
@@ -17,7 +18,7 @@ class ParticipantServiceGraphDB(ParticipantService):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        self.participant_state_service = None
+        self.participant_state_service: ParticipantStateService = None
 
     def save_participant(self, participant: ParticipantIn):
         """
