@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Union
 
 from pydantic import BaseModel
+from grisera_api.mongo_service.collection_mapping import get_collection_name
 from models.not_found_model import NotFoundByIdModel
 from mongo_service import MongoApiService
 
@@ -18,7 +19,7 @@ class GenericMongoServiceMixin:
     def __init__(self):
         self.mongo_api_service = MongoApiService()
 
-    def create(self, object_in):
+    def create(self, object_in: BaseModel):
         """
         Generic method for sending request to mongo api to create new document
 
@@ -46,9 +47,9 @@ class GenericMongoServiceMixin:
         Returns:
             Result of request as list of dictionaries
         """
-        out_class = self.model_out_class
+        collection_name = get_collection_name(self.model_out_class)
         results_dict = self.mongo_api_service.get_documents(
-            out_class, query=query, *args, **kwargs
+            collection_name, query, *args, **kwargs
         )
 
         for result in results_dict:
@@ -70,9 +71,9 @@ class GenericMongoServiceMixin:
         Returns:
             Result of request as a dictionary
         """
-        out_class = self.model_out_class
+        collection_name = get_collection_name(self.model_out_class)
         result_dict = self.mongo_api_service.get_document(
-            id, out_class, *args, **kwargs
+            id, collection_name, *args, **kwargs
         )
 
         if type(result_dict) is NotFoundByIdModel:

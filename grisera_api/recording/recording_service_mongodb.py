@@ -25,7 +25,8 @@ from mongo_service import MongoApiService
 
 class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
     """
-    Object to handle logic of recording requests
+    Object to handle logic of recording requests. There are also observable information methods,
+    as observable information documents are embedded within recording documents.
 
     Attributes:
     graph_api_service (GraphApiService): Service used to communicate with Graph API

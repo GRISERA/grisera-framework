@@ -18,7 +18,8 @@ class ObservableInformationServiceMongoDB(
     ObservableInformationService, GenericMongoServiceMixin
 ):
     """
-    Object to handle logic of observable information requests
+    Object to handle logic of observable information requests Observable information documents
+    are embedded within recording documents.
 
     Attributes:
     graph_api_service (GraphApiService): Service used to communicate with Graph API
@@ -39,7 +40,9 @@ class ObservableInformationServiceMongoDB(
         self, observable_information: ObservableInformationIn
     ):
         """
-        Send request to graph api to create new observable information
+        Send request to graph api to create new observable information. Saving is performed by
+        recording service, as observable information documents are embedded within recording
+        documents.
 
         Args:
             observable_information (ObservableInformationIn): Observable information to be added.
@@ -88,9 +91,8 @@ class ObservableInformationServiceMongoDB(
         self, query: dict = {}, depth: int = 0, source: str = "", *args, **kwargs
     ):
         """
-        Generic method for sending request to mongo api to get single document
-        Returns:
-            Result of request as list of dictionaries
+        Get multiple observable informations based on query. Query has to be adjusted, as observable
+        information documents are embedded within recording documents.
         """
         recording_query = {
             f"{Collections.OBSERVABLE_INFORMATION}.{field}": value
@@ -120,9 +122,7 @@ class ObservableInformationServiceMongoDB(
 
     def get_observable_informations(self):
         """
-        Send request to graph api to get observable information
-        Returns:
-            Result of request as list of observable information objects
+        Send request to graph api to get all observable informations.
         """
         observable_information_dicts = self.get_multiple()
         results = [
@@ -134,6 +134,10 @@ class ObservableInformationServiceMongoDB(
     def get_single_dict(
         self, id: Union[str, int], depth: int = 0, source: str = "", *args, **kwargs
     ):
+        """
+        Get observable information dict. Observable information is fetched from its
+        recording.
+        """
         observable_information_objectid = ObjectId(observable_information_objectid)
         recording_result = self.recording_service.get_multiple(
             {
@@ -166,6 +170,9 @@ class ObservableInformationServiceMongoDB(
     def get_single(
         self, id: Union[str, int], depth: int = 0, source: str = "", *args, **kwargs
     ):
+        """
+        Get single observable information object.
+        """
         result = self.get_single_dict(id, depth, source, *args, **kwargs)
         if type(result) is NotFoundByIdModel:
             return result
@@ -188,8 +195,8 @@ class ObservableInformationServiceMongoDB(
 
     def delete_observable_information(self, observable_information_id: Union[str, int]):
         """
-        Send request to graph api to delete given observable information. Removal is performed by recording service, as observable information
-        is embeded within recording
+        Send request to graph api to delete given observable information. Removal is performed by recording service,
+        as observable information is embeded within recording
         Args:
             observable_information_id (int): Id of observable information
         Returns:

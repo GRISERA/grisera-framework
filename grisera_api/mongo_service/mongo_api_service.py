@@ -33,11 +33,10 @@ class MongoApiService:
         created_id = self.db[collection_name].insert_one(data_as_dict).inserted_id
         return str(created_id)
 
-    def get_document(self, id: Union[str, int], model_class, *args, **kwargs):
+    def get_document(self, id: Union[str, int], collection_name: str, *args, **kwargs):
         """
         Load single document. Output id fields are converted from ObjectId type to str.
         """
-        collection_name = get_collection_name(model_class)
         result_dict = self.db[collection_name].find_one(
             {self.MONGO_ID_FIELD: ObjectId(id)}, *args, **kwargs
         )
@@ -51,11 +50,10 @@ class MongoApiService:
         self._update_mongo_output_id(result_dict)
         return result_dict
 
-    def get_documents(self, model_class, query: dict = {}, *args, **kwargs):
+    def get_documents(self, collection_name: str, query: dict = {}, *args, **kwargs):
         """
         Load many documents. Output id fields are converted from ObjectId type to str.
         """
-        collection_name = get_collection_name(model_class)
         self._fix_input_ids(query)
         results = list(self.db[collection_name].find(query, *args, **kwargs))
 
