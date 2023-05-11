@@ -61,29 +61,31 @@ class ObservableInformationServiceMongoDB(
                 errors={"errors": "given recording does not exist"}
             )
 
-        related_modality = self.modality_service.get_modality(
-            observable_information.modality_id
-        )
-        related_modality_exists = related_modality is not NotFoundByIdModel
-        if (
-            observable_information.modality_id is not None
-            and not related_modality_exists
-        ):
-            return ObservableInformationOut(
-                errors={"errors": "given modality does not exist"}
-            )
+        # TODO uncomment once modality service is ready
+        # related_modality = self.modality_service.get_modality(
+        #     observable_information.modality_id
+        # )
+        # related_modality_exists = related_modality is not NotFoundByIdModel
+        # if (
+        #     observable_information.modality_id is not None
+        #     and not related_modality_exists
+        # ):
+        #     return ObservableInformationOut(
+        #         errors={"errors": "given modality does not exist"}
+        #     )
 
-        related_life_activity = self.life_activity_service.get_life_activity(
-            observable_information.life_activity_id
-        )
-        related_life_activity_exists = related_life_activity is not NotFoundByIdModel
-        if (
-            observable_information.life_activity_id is not None
-            and not related_life_activity_exists
-        ):
-            return ObservableInformationOut(
-                errors={"errors": "given life activity does not exist"}
-            )
+        # TODO uncomment once life_activity service is ready
+        # related_life_activity = self.life_activity_service.get_life_activity(
+        #     observable_information.life_activity_id
+        # )
+        # related_life_activity_exists = related_life_activity is not NotFoundByIdModel
+        # if (
+        #     observable_information.life_activity_id is not None
+        #     and not related_life_activity_exists
+        # ):
+        #     return ObservableInformationOut(
+        #         errors={"errors": "given life activity does not exist"}
+        #     )
 
         return self.recording_service.add_observable_information(observable_information)
 

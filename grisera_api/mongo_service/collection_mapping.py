@@ -116,4 +116,4 @@ def get_collection_name(model_class):
     for superclass, collection_name in SUPERCLASSES_TO_COLLECTION_NAMES.items():
         if issubclass(model_class, superclass):
             return collection_name
-    raise ValueError("Given class is not subclass of any model")
+    raise ValueError(f"{model_class} class is not subclass of any model")

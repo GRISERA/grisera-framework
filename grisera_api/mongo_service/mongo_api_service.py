@@ -138,7 +138,7 @@ class MongoApiService:
         """
 
         def fix_output_id(field, value):
-            if self._field_is_id(field):
+            if self._field_is_id(field) and value is not None:
                 return str(value)
             return value
 
@@ -159,9 +159,9 @@ class MongoApiService:
             return
         for field, value in mongo_object.items():
             if type(value) is dict:
-                self._mongo_object_deep_iterate(value)
+                self._mongo_object_deep_iterate(value, func)
             elif type(value) is list:
                 for list_elem in value:
-                    self._mongo_object_deep_iterate(list_elem)
+                    self._mongo_object_deep_iterate(list_elem, func)
             else:
                 mongo_object[field] = func(field, mongo_object[field])

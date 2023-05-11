@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Union
 
 from pydantic import BaseModel
-from grisera_api.mongo_service.collection_mapping import get_collection_name
+from mongo_service.collection_mapping import get_collection_name
 from models.not_found_model import NotFoundByIdModel
 from mongo_service import MongoApiService
 

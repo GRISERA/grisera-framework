@@ -102,7 +102,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         Returns:
             Result of request as registered channel object
         """
-        self.get_single(recording_id, depth, source)
+        return self.get_single(recording_id, depth, source)
 
     def delete_recording(self, recording_id: Union[str, int]):
         """
@@ -188,15 +188,16 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
             Added observable information as BasicObservableInformationOut object
         """
         observable_information_dict = observable_information.dict()
-        observable_information_dict["id"] = ObjectId()
+        observable_information_dict["id"] = str(ObjectId())
+        observable_information = ObservableInformationOut(**observable_information_dict)
 
         recording_id = observable_information.recording_id
         recording = self.get_single_dict(recording_id)
         observable_informations = recording.get(Collections.OBSERVABLE_INFORMATION, [])
-        observable_informations.push(observable_information_dict)
+        observable_informations.append(observable_information)
         recording[Collections.OBSERVABLE_INFORMATION] = observable_informations
 
-        self.update(recording_id, recording)
+        self.update(recording_id, RecordingOut(**recording))
         return BasicObservableInformationOut(**observable_information_dict)
 
     def update_observable_information(self, observable_information_dict: dict):
@@ -307,7 +308,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         if source != Collections.OBSERVABLE_INFORMATION and has_observable_informations:
             for oi in recording[Collections.OBSERVABLE_INFORMATION]:
                 self.observable_information_service._add_related_documents(
-                    oi, depth - 1, Collections.RECORDING
+                    oi, depth - 1, Collections.RECORDING, recording
                 )
 
     def _get_observable_information_index_from_recording(
