@@ -67,7 +67,7 @@ class ExperimentRouter:
 
     @router.delete("/experiments/{experiment_id}", tags=["experiments"],
                    response_model=Union[ExperimentOut, NotFoundByIdModel])
-    async def delete_experiment(self, experiment_id: int, response: Response):
+    async def delete_experiment(self, experiment_id: Union[int, str], response: Response):
         """
         Delete experiment from database
         """
