@@ -1,7 +1,6 @@
-from graph_api_service import GraphApiService
-from channel.channel_model import ChannelIn, ChannelOut, ChannelsOut, BasicChannelOut
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from typing import Union
+
+from channel.channel_model import ChannelIn
 
 
 class ChannelService:
@@ -31,12 +30,13 @@ class ChannelService:
         """
         raise Exception("get_channels not implemented yet")
 
-    def get_channel(self, channel_id: int):
+    def get_channel(self, channel_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given channel
 
         Args:
-        channel_id (int): Id of channel
+            channel_id (int | str ): identity of channel
+            depth: (int): specifies how many related entities will be traversed to create the response
 
         Returns:
             Result of request as channel object

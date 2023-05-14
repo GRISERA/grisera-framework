@@ -4,8 +4,7 @@ from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
-from channel.channel_model import ChannelIn, ChannelOut, BasicChannelOut, ChannelsOut
-from channel.channel_service import ChannelService
+from channel.channel_model import ChannelOut, ChannelsOut
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 
@@ -20,16 +19,22 @@ class ChannelRouter:
     Attributes:
         channel_service (ChannelService): Service instance for channel
     """
+
     def __init__(self):
         self.channel_service = Services().channel_service()
 
-    @router.get("/channels/{channel_id}", tags=["channels"],
-                response_model=Union[ChannelOut, NotFoundByIdModel])
-    async def get_channel(self, channel_id: int, response: Response):
+    @router.get(
+        "/channels/{channel_id}",
+        tags=["channels"],
+        response_model=Union[ChannelOut, NotFoundByIdModel],
+    )
+    async def get_channel(
+        self, channel_id: Union[int, str], response: Response, depth: int = 0,
+    ):
         """
-        Get channel from database
+        Get channel from database. Depth attribute specifies how many models will be traversed to create the response.
         """
-        get_response = self.channel_service.get_channel(channel_id)
+        get_response = self.channel_service.get_channel(channel_id, depth)
         if get_response.errors is not None:
             response.status_code = 404
 

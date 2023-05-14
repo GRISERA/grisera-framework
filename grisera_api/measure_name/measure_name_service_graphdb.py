@@ -1,8 +1,11 @@
+from typing import Union
+
 from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
+from measure.measure_service import MeasureService
 from measure_name.measure_name_model import MeasureNameIn, MeasureNameOut, MeasureNamesOut, BasicMeasureNameOut
 from measure_name.measure_name_service import MeasureNameService
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
 
 
 class MeasureNameServiceGraphDB(MeasureNameService):
@@ -13,6 +16,9 @@ class MeasureNameServiceGraphDB(MeasureNameService):
         graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
     graph_api_service = GraphApiService()
+
+    def __init__(self):
+        self.measure_service: MeasureService = None
 
     def save_measure_name(self, measure_name: MeasureNameIn):
         """
@@ -48,19 +54,20 @@ class MeasureNameServiceGraphDB(MeasureNameService):
             return MeasureNamesOut(errors=get_response["errors"])
         measure_names = [BasicMeasureNameOut(id=measure_name["id"],
                                              **{measure_name["properties"][0]["key"]:
-                                                    measure_name["properties"][0]["value"],
+                                                measure_name["properties"][0]["value"],
                                                 measure_name["properties"][1]["key"]:
                                                     measure_name["properties"][1]["value"]})
                          for measure_name in get_response["nodes"]]
 
         return MeasureNamesOut(measure_names=measure_names)
 
-    def get_measure_name(self, measure_name_id: int):
+    def get_measure_name(self, measure_name_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given measure name
 
         Args:
-        measure_name_id (int): Id of measure name
+            depth: (int): specifies how many related entities will be traversed to create the response
+            measure_name_id (int | str): identity of measure name
 
         Returns:
             Result of request as measure name object
@@ -72,20 +79,17 @@ class MeasureNameServiceGraphDB(MeasureNameService):
         if get_response["labels"][0] != "Measure Name":
             return NotFoundByIdModel(id=measure_name_id, errors="Node not found.")
 
-        measure_name = {'id': get_response['id'], 'relations': [], 'reversed_relations': []}
-        for property in get_response["properties"]:
-            measure_name[property["key"]] = property["value"]
+        measure_name = create_stub_from_response(get_response, properties=['name', 'type'])
 
-        relations_response = self.graph_api_service.get_node_relationships(measure_name_id)
+        if depth != 0:
+            measure_name["measures"] = []
+            relations_response = self.graph_api_service.get_node_relationships(measure_name_id)
 
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == measure_name_id:
-                measure_name['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                     name=relation["name"],
-                                                                     relation_id=relation["id"]))
-            else:
-                measure_name['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
-                                                                              name=relation["name"],
-                                                                              relation_id=relation["id"]))
+            for relation in relations_response["relationships"]:
+                if relation["end_node"] == measure_name_id & relation["name"] == "hasMeasureName":
+                    measure_name['measures'].append(self.measure_service.
+                                                    get_measure(relation["start_node"], depth - 1))
 
-        return MeasureNameOut(**measure_name)
+            return MeasureNameOut(**measure_name)
+        else:
+            return BasicMeasureNameOut(**measure_name)

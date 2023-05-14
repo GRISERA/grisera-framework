@@ -1,8 +1,11 @@
+from typing import Union
+
+from activity_execution.activity_execution_service import ActivityExecutionService
 from experiment.experiment_service import ExperimentService
 from graph_api_service import GraphApiService
-from experiment.experiment_model import ExperimentIn, ExperimentsOut, BasicExperimentOut,ExperimentOut
+from experiment.experiment_model import ExperimentIn, ExperimentsOut, BasicExperimentOut, ExperimentOut
+from helpers import create_stub_from_response
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
 
 
 class ExperimentServiceGraphDB(ExperimentService):
@@ -10,10 +13,13 @@ class ExperimentServiceGraphDB(ExperimentService):
     Object to handle logic of experiments requests
 
     Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
+        graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
     graph_api_service = GraphApiService()
-    
+
+    def __init__(self):
+        self.activity_execution_service: ActivityExecutionService = None
+
     def save_experiment(self, experiment: ExperimentIn):
         """
         Send request to graph api to create new experiment
@@ -59,16 +65,18 @@ class ExperimentServiceGraphDB(ExperimentService):
 
         return ExperimentsOut(experiments=experiments)
 
-    def get_experiment(self, experiment_id: int):
+    def get_experiment(self, experiment_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given experiment
 
         Args:
-        experiment_id (int): Id of experiment
+            experiment_id (int | str): identity of experiment
+            depth: (int): specifies how many related entities will be traversed to create the response
 
         Returns:
             Result of request as experiment object
         """
+
         get_response = self.graph_api_service.get_node(experiment_id)
 
         if get_response["errors"] is not None:
@@ -76,25 +84,21 @@ class ExperimentServiceGraphDB(ExperimentService):
         if get_response["labels"][0] != "Experiment":
             return NotFoundByIdModel(id=experiment_id, errors="Node not found.")
 
-        experiment = {'id': get_response['id'], 'additional_properties': [], 'relations': [], 'reversed_relations': []}
-        for property in get_response["properties"]:
-            if property["key"] == "experiment_name":
-                experiment[property["key"]] = property["value"]
-            else:
-                experiment['additional_properties'].append({'key': property['key'], 'value': property['value']})
+        experiment = create_stub_from_response(get_response, properties=['experiment_name'])
 
-        relations_response = self.graph_api_service.get_node_relationships(experiment_id)
+        if depth != 0:
+            experiment["activity_executions"] = []
 
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == experiment_id:
-                experiment['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                   name=relation["name"], relation_id=relation["id"]))
-            else:
-                experiment['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
-                                                                            name=relation["name"],
-                                                                            relation_id=relation["id"]))
+            relations_response = self.graph_api_service.get_node_relationships(experiment_id)
 
-        return ExperimentOut(**experiment)
+            for relation in relations_response["relationships"]:
+                if relation["start_node"] == experiment_id & relation["name"] == "hasScenario":
+                    experiment['activity_executions'].append(
+                        self.activity_execution_service.get_activity_execution(relation["start_node"], depth - 1))
+
+            return ExperimentOut(**experiment)
+        else:
+            return BasicExperimentOut(**experiment)
 
     def delete_experiment(self, experiment_id: int):
         """
@@ -133,8 +137,7 @@ class ExperimentServiceGraphDB(ExperimentService):
         self.graph_api_service.delete_node_properties(experiment_id)
         self.graph_api_service.create_properties(experiment_id, experiment)
 
-        experiment_result = {'id': experiment_id, 'relations': get_response.relations,
-                             'reversed_relations': get_response.reversed_relations}
+        experiment_result = {'id': experiment_id}
         experiment_result.update(experiment.dict())
 
-        return ExperimentOut(**experiment_result)
+        return BasicExperimentOut(**experiment_result)
