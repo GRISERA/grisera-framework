@@ -6,6 +6,7 @@ from activity_execution.activity_execution_service_graphdb import (
 from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 from arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
 from channel.channel_service_graphdb import ChannelServiceGraphDB
+from dataset.dataset_service_graphdb import DatasetServiceGraphDB
 from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
 from life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
 from measure.measure_service_graphdb import MeasureServiceGraphDB
@@ -32,6 +33,7 @@ from activity_execution.activity_execution_service import ActivityExecutionServi
 from appearance.appearance_service import AppearanceService
 from arrangement.arrangement_service import ArrangementService
 from channel.channel_service import ChannelService
+from dataset.dataset_service import DatasetService
 from experiment.experiment_service import ExperimentService
 from life_activity.life_activity_service import LifeActivityService
 from measure.measure_service import MeasureService
@@ -66,6 +68,9 @@ class MongoServiceFactory(ServiceFactory):
 
     def get_channel_service(self) -> ChannelService:
         return ChannelServiceGraphDB()
+
+    def get_dataset_service(self) -> DatasetService:
+        return DatasetServiceGraphDB()
 
     def get_experiment_service(self) -> ExperimentService:
         return ExperimentServiceGraphDB()

@@ -40,7 +40,13 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         Returns:
             Result of request as participant state object
         """
+<<<<<<< Updated upstream
         node_response = self.graph_api_service.create_node("Participant State")
+=======
+
+        node_response = self.graph_api_service.create_node("`Participant State`", dataset_name)
+
+>>>>>>> Stashed changes
 
         if node_response["errors"] is not None:
             return ParticipantStateOut(**participant_state.dict(), errors=node_response["errors"])
@@ -48,20 +54,19 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         participant_state_id = node_response["id"]
 
         if participant_state.participant_id is not None and \
-                type(self.participant_service.get_participant(participant_state.participant_id)) \
-                is not NotFoundByIdModel:
+                type(self.participant_service.get_participant(participant_state.participant_id, dataset_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                         end_node=participant_state.participant_id,
                                                         name="hasParticipant")
         for personality_id in participant_state.personality_ids:
             if personality_id is not None and \
-                    type(self.personality_service.get_personality(personality_id)) is not NotFoundByIdModel:
+                    type(self.personality_service.get_personality(personality_id, dataset_name)) is not NotFoundByIdModel:
                 self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                             end_node=personality_id,
                                                             name="hasPersonality")
         for appearance_id in participant_state.appearance_ids:
             if appearance_id is not None and \
-                    type(self.appearance_service.get_appearance(appearance_id)) is not NotFoundByIdModel:
+                    type(self.appearance_service.get_appearance(appearance_id, dataset_name)) is not NotFoundByIdModel:
                 self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                             end_node=appearance_id,
                                                             name="hasAppearance")
@@ -203,6 +208,13 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
+        get_response_from_get = self.graph_api_service.get_node_relationships(participant_state_id, dataset_name)
+
+        print("get_response_from_get ", get_response_from_get)
+
+        get_response_delete = self.graph_api_service.delete_relationship(participant_state.participant_id, dataset_name)
+        print("get_response_from_delete: ", get_response_delete)
+
         if participant_state.participant_id is not None and \
                 type(self.participant_service.get_participant(
                     participant_state.participant_id)) is not NotFoundByIdModel:
@@ -212,13 +224,13 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         for personality_id in participant_state.personality_ids:
             if personality_id is not None and \
                     type(self.personality_service.get_personality(
-                        personality_id)) is not NotFoundByIdModel:
+                        personality_id,dataset_name)) is not NotFoundByIdModel:
                 self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                             end_node=personality_id,
                                                             name="hasPersonality")
         for appearance_id in participant_state.appearance_ids:
             if appearance_id is not None and \
-                    type(self.appearance_service.get_appearance(appearance_id)) is not NotFoundByIdModel:
+                    type(self.appearance_service.get_appearance(appearance_id,dataset_name)) is not NotFoundByIdModel:
                 self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                             end_node=appearance_id,
                                                             name="hasAppearance")

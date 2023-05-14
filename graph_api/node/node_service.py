@@ -53,7 +53,7 @@ class NodeService:
 
         node = response['results'][0]["data"][0]
         properties = [PropertyIn(key=property[0], value=property[1]) for property in node["row"][0].items()]
-        result = NodeOut(id=node_id, properties=properties, labels={node["row"][1][0]})
+        result = NodeOut(id=node_id, properties=properties, labels={node["row"][1][0]}, error=None)
 
         return result
 

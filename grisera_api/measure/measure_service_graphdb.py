@@ -169,6 +169,7 @@ class MeasureServiceGraphDB(MeasureService):
         """
         get_response = self.get_measure(measure_id)
 
+
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
