@@ -57,10 +57,9 @@ class OntologyApiService:
             model_id (int): ID of the model to which the instance is to be added
             instance_label (str): Label of instance
             value (int | str): Value of this relationship
-            role (str): Name of property
+            role (str): Name of propertygit
 
         Returns: Request result
         """
         request_body = {"role": role, "instance_name": instance_label, "value": value}
         return self.post(f"/models/{model_id}/roles", request_body)
-
