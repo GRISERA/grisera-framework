@@ -49,7 +49,7 @@ class OntologyApiService:
             Result of request
         """
 
-        response = requests.delete(url=self.graph_api_url + url_part,
+        response = requests.delete(url=self.ontology_api_url + url_part,
                                    params=params).json()
         return response
 
