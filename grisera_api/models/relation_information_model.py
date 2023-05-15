@@ -13,7 +13,7 @@ class RelationInformation(BaseModel):
         relation_id (int): ID of relationship from database.
         name (str): Name of relationship.
     """
-    value: [Optional]([Union](int, str))
+    value: Optional[Union[int, str]]
     second_node_id: int
     relation_id: int
     name: str
