@@ -50,6 +50,18 @@ class OntologyApiService:
         request_body = {"name": instance_label}
         return self.post(f"/models/{model_id}/classes/{class_name}/instances", request_body)
 
+    def get_instance(self, model_id, class_name, instance_label):
+        """
+        Send a request to get an instance from Ontology API
+        Args:
+            instance_label (str): Label of instance
+            class_name (str): Name of the class of the instance
+            model_id (int): ID of the model to which the instance is to be added
+
+        Returns: Request result
+        """
+        return self.get(f"/models/{model_id}/classes/{class_name}/instances/{instance_label}", {})
+
     def get_roles(self, model_id, experiment_label):
         """
         Send a GET request to get roles from Ontology API
