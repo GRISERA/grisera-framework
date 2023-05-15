@@ -79,11 +79,11 @@ class OntologyApiService:
 
     def add_role(self, model_id, role, instance_label, value):
         """
-        Send a request to delete roles of the instance to Ontology API
+        Send a request to add role of the instance to Ontology API
         Args:
             model_id (int): ID of the model to which the instance is to be added
             instance_label (str): Label of instance
-            value (int/str): Value of this relationship
+            value (int | str): Value of this relationship
             role (str): Name of property
 
         Returns: Request result
