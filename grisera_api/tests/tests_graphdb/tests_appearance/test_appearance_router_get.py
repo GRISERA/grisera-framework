@@ -1,6 +1,8 @@
 import asyncio
 import unittest
 import unittest.mock as mock
+
+from appearance.appearance_model import BasicAppearanceOcclusionOut, BasicAppearanceSomatotypeOut
 from appearance.appearance_router import *
 from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 
@@ -10,7 +12,8 @@ class TestAppearanceRouterGet(unittest.TestCase):
     @mock.patch.object(AppearanceServiceGraphDB, 'get_appearance')
     def test_get_appearance_without_error(self, get_appearance_mock):
         appearance_id = 1
-        get_appearance_mock.return_value = AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy", id=appearance_id)
+        get_appearance_mock.return_value = AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy",
+                                                                  id=appearance_id)
         response = Response()
         appearance_router = AppearanceRouter()
 
@@ -18,7 +21,7 @@ class TestAppearanceRouterGet(unittest.TestCase):
 
         self.assertEqual(result, AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy",
                                                         id=appearance_id, links=get_links(router)))
-        get_appearance_mock.assert_called_once_with(appearance_id)
+        get_appearance_mock.assert_called_once_with(appearance_id, 0)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(AppearanceServiceGraphDB, 'get_appearance')
@@ -31,9 +34,10 @@ class TestAppearanceRouterGet(unittest.TestCase):
 
         result = asyncio.run(appearance_router.get_appearance(appearance_id, response))
 
-        self.assertEqual(result, AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy", errors={'errors': ['test']},
+        self.assertEqual(result, AppearanceOcclusionOut(glasses=False, beard="Heavy", moustache="Heavy",
+                                                        errors={'errors': ['test']},
                                                         links=get_links(router)))
-        get_appearance_mock.assert_called_once_with(appearance_id)
+        get_appearance_mock.assert_called_once_with(appearance_id, 0)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(AppearanceServiceGraphDB, 'get_appearances')

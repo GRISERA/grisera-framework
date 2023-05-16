@@ -1,7 +1,6 @@
-from graph_api_service import GraphApiService
-from participant.participant_model import ParticipantIn, ParticipantsOut, BasicParticipantOut, ParticipantOut
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from typing import Union
+
+from participant.participant_model import ParticipantIn
 
 
 class ParticipantService:
@@ -31,36 +30,37 @@ class ParticipantService:
         """
         raise Exception("get_participants not implemented yet")
 
-    def get_participant(self, participant_id: int):
+    def get_participant(self, participant_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given participant
 
         Args:
-            participant_id (int): Id of participant
+            depth: (int): specifies how many related entities will be traversed to create the response
+            participant_id (int | str): identity of participant
 
         Returns:
             Result of request as participant object
         """
         raise Exception("get_participant not implemented yet")
 
-    def delete_participant(self, participant_id: int):
+    def delete_participant(self, participant_id: Union[int, str]):
         """
         Send request to graph api to delete given participant
 
         Args:
-            participant_id (int): Id of participant
+            participant_id (int | str): identity of participant
 
         Returns:
             Result of request as participant object
         """
         raise Exception("delete_participant not implemented yet")
 
-    def update_participant(self, participant_id: int, participant: ParticipantIn):
+    def update_participant(self, participant_id: Union[int, str], participant: ParticipantIn):
         """
         Send request to graph api to update given participant
 
         Args:
-            participant_id (int): Id of participant
+            participant_id (int | str): identity of participant
             participant (ParticipantIn): Properties to update
 
         Returns:
