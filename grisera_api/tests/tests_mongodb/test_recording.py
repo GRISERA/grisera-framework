@@ -5,7 +5,6 @@ from registered_channel.registered_channel_model import RegisteredChannelIn
 from tests.tests_mongodb.utils import MongoTestCase
 from models.not_found_model import NotFoundByIdModel
 from services import Services
-from registered_data.registered_data_model import RegisteredDataIn
 from mongo_service.mongodb_api_config import mongo_api_host, mongo_api_port
 from recording.recording_model import RecordingIn
 

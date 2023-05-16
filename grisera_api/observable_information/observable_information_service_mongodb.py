@@ -22,10 +22,11 @@ class ObservableInformationServiceMongoDB(
     are embedded within recording documents.
 
     Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
+    recording_service (RecordingService): Service used to communicate with Recording
     modality_service (ModalityService): Service used to communicate with Modality
     life_activity_service (LifeActivityService): Service used to communicate with Life Activity
     recording_service (RecordingService): Service used to communicate with Recording
+    model_out_class (Type[BaseModel]): Out class of the model, used by GenericMongoServiceMixin
     """
 
     def __init__(self):
@@ -40,7 +41,7 @@ class ObservableInformationServiceMongoDB(
         self, observable_information: ObservableInformationIn
     ):
         """
-        Send request to graph api to create new observable information. Saving is performed by
+        Send request to mongo api to create new observable information. Saving is performed by
         recording service, as observable information documents are embedded within recording
         documents.
 
@@ -124,7 +125,7 @@ class ObservableInformationServiceMongoDB(
 
     def get_observable_informations(self):
         """
-        Send request to graph api to get all observable informations.
+        Send request to mongo api to get all observable informations.
         """
         observable_information_dicts = self.get_multiple()
         results = [
@@ -140,15 +141,15 @@ class ObservableInformationServiceMongoDB(
         Get observable information dict. Observable information is fetched from its
         recording.
         """
-        observable_information_objectid = ObjectId(id)
+        observable_information_object_id = ObjectId(id)
         recording_result = self.recording_service.get_multiple(
             {
-                f"{Collections.OBSERVABLE_INFORMATION}.id": observable_information_objectid
+                f"{Collections.OBSERVABLE_INFORMATION}.id": observable_information_object_id
             },
             depth=depth - 1,
             source=Collections.OBSERVABLE_INFORMATION,
             projection=self._get_recording_projection(
-                {"id": observable_information_objectid}
+                {"id": observable_information_object_id}
             ),
         )
         if (
@@ -187,9 +188,12 @@ class ObservableInformationServiceMongoDB(
         source: str = "",
     ):
         """
-        Send request to graph api to get given observable information
+        Send request to mongo api to get given observable information
         Args:
-            observable_information_id (int): Id of observable information
+            observable_information_id (Union[str, int]): Id of observable information
+            depth (int): this attribute specifies how many models will be traversed to create the response.
+                         for depth=0, only no further models will be traversed.
+            source (str): internal argument for mongo services, used to tell the direction of model fetching.
         Returns:
             Result of request as observable information object
         """
@@ -197,10 +201,10 @@ class ObservableInformationServiceMongoDB(
 
     def delete_observable_information(self, observable_information_id: Union[str, int]):
         """
-        Send request to graph api to delete given observable information. Removal is performed by recording service,
-        as observable information is embeded within recording
+        Send request to mongo api to delete given observable information. Removal is performed by recording service,
+        as observable information is embedded within recording
         Args:
-            observable_information_id (int): Id of observable information
+            observable_information_id (Union[str, int]): Id of observable information
         Returns:
             Result of request as observable information object
         """
@@ -222,10 +226,10 @@ class ObservableInformationServiceMongoDB(
         observable_information: BasicObservableInformationOut,
     ):
         """
-        Send request to graph api to update given observable information
+        Send request to mongo api to update given observable information
         Args:
-            observable_information_id (int): Id of observable information
-            observable_information (ObservableInformationIn): Relationships to update
+            observable_information_id (Union[str, int]): Id of observable information
+            observable_information (BasicObservableInformationOut): Relationships to update
         Returns:
             Result of request as observable information object
         """

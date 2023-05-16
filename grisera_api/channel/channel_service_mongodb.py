@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Type
 from channel.channel_service import ChannelService
 from channel.channel_model import ChannelIn, ChannelOut, ChannelsOut, BasicChannelOut
 from mongo_service.collection_mapping import Collections
@@ -11,6 +11,7 @@ class ChannelServiceMongoDB(ChannelService, GenericMongoServiceMixin):
 
     Attributes:
     registered_channel_service (RegisteredChannelService): Service to send registered channel requests
+    model_out_class (Type[BaseModel]): Out class of the model, used by GenericMongoServiceMixin
     """
 
     def __init__(self):
@@ -48,9 +49,9 @@ class ChannelServiceMongoDB(ChannelService, GenericMongoServiceMixin):
         Send request to mongo api to get given channel with related models. This method uses mixin get implementation.
 
         Args:
-            channel_id (int): Id of channel
+            channel_id (Union[str, int]): Id of channel
             depth (int): this attribute specifies how many models will be traversed to create the response.
-                         for depth=0, only no further models will be travesed.
+                         for depth=0, only no further models will be traversed.
             source (str): internal argument for mongo services, used to tell the direction of model fetching.
 
         Returns:

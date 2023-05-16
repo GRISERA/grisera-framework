@@ -29,9 +29,11 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
     as observable information documents are embedded within recording documents.
 
     Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
+    mongo_api_service (MongoApiService): Service used to communicate with Mongo API
     participation_service (ParticipationService): Service to send participation requests
     registered_channel_service(RegisteredChannelService): Service to send registered channel requests
+    observable_information_service(ObservableInformationService): Service to send observable information requests
+    model_out_class (Type[BaseModel]): Out class of the model, used by GenericMongoServiceMixin
     """
 
     def __init__(self):
@@ -76,7 +78,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
 
     def get_recordings(self, query: dict = {}):
         """
-        Send request to graph api to get recordings
+        Send request to mongo api to get recordings
         Returns:
             Result of request as list of recordings objects
         """
@@ -91,9 +93,9 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         Send request to mongo api to get given recording. This method uses mixin get implementation.
 
         Args:
-            recording_id (int): Id of registered channel
+            recording_id (Union[str, int]): Id of registered channel
             depth (int): this attribute specifies how many models will be traversed to create the response.
-                         for depth=0, only no further models will be travesed.
+                         for depth=0, only no further models will be traversed.
             source (str): internal argument for mongo services, used to tell the direction of model fetching.
                           i.e. if for this service, if source="registered_channel", it means that this method was invoked
                           from registered channel service, so registered channel model will not be fetched, as it is already
@@ -109,7 +111,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         Send request to mongo api to delete given recording
 
         Args:
-            recording_id (int): Id of recording
+            recording_id (Union[str, int]): Id of recording
 
         Returns:
             Result of request as recording object
@@ -120,10 +122,10 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         self, recording_id: Union[str, int], recording: RecordingPropertyIn
     ):
         """
-        Send request to graph api to update given participant state
+        Send request to mongo api to update given participant state
 
         Args:
-            recording_id (int): Id of participant state
+            recording_id (Union[str, int]): Id of participant state
             recording (RecordingPropertyIn): Properties to update
 
         Returns:
@@ -135,10 +137,10 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         self, recording_id: Union[str, int], recording: RecordingIn
     ):
         """
-        Send request to graph api to update given recording
+        Send request to mongo api to update given recording
 
         Args:
-            recording_id (int): Id of recording
+            recording_id (Union[str, int]): Id of recording
             recording (RecordingIn): Relationships to update
 
         Returns:
@@ -179,7 +181,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         self, observable_information: ObservableInformationIn
     ):
         """
-        Add observable information to recording. Obervable information is embeded in related recording.
+        Add observable information to recording. Observable information is embedded in related recording.
 
         Args:
             observable_information (ObservableInformationIn): observable information to add
@@ -206,15 +208,15 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         observable_information_dict: dict,
     ):
         """
-        Edit observable information in recording. Obervable information is embeded in related recording.
+        Edit observable information in recording. Observable information is embedded in related recording.
 
         Args:
-            observable_information (BasicObservableInformationOut): new version of observable information
+            observable_information_id (Union[int, str]): id of observable information that is to be updated
+            observable_information_dict (dict): new version of observable information
 
         Returns:
             Removed observable information
         """
-        observable_information_id = observable_information_dict["id"]
         recording_id = observable_information_dict["recording_id"]
         recording = self.get_single_dict(recording_id)
         if type(recording) is NotFoundByIdModel:
@@ -242,7 +244,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         self, observable_information: ObservableInformationOut
     ):
         """
-        Remove observable information from recording. Obervable information is embeded in related recording.
+        Remove observable information from recording. Observable information is embedded in related recording.
 
         Args:
             observable_information (ObservableInformationIn): observable information to add
@@ -303,7 +305,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         self, recording: dict, depth: int, source: str
     ):
         """
-        Oservable information is embeded within recording model
+        Observable information is embedded within recording model
         """
         has_observable_informations = (
             recording[Collections.OBSERVABLE_INFORMATION] is not None
@@ -318,7 +320,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         self, recording_dict: dict, observable_information_id: Union[str, int]
     ):
         """
-        Oservable information is embeded within recording model
+        Observable information is embedded within recording model
         """
         observable_informations = recording_dict[Collections.OBSERVABLE_INFORMATION]
         return next(

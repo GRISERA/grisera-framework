@@ -15,6 +15,8 @@ from registered_data.registered_data_service import RegisteredDataService
 class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMixin):
     """
     Object to handle logic of registered data requests
+    registered_channel_service (RegisteredChannelService): Channel service for adding related channels
+    model_out_class (Type[BaseModel]): Out class of the model, used by GenericMongoServiceMixin
     """
 
     def __init__(self):
@@ -36,10 +38,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
 
     def get_registered_data_nodes(self):
         """
-        Send request to mongo api to get ass registered data nodes. This method uses mixin get implementation.
-
-        Args:
-            query (dict): Query for mongo request.
+        Send request to mongo api to get all registered data nodes. This method uses mixin get implementation.
 
         Returns:
             Result of request as list of registered data objects
@@ -52,12 +51,12 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
         self, registered_data_id: Union[str, int], depth: int = 0, source: str = ""
     ):
         """
-        Send request to graph api to get given registered data with related models. This method uses mixin get implementation.
+        Send request to mongo api to get given registered data with related models. This method uses mixin get implementation.
 
         Args:
-            registered_channel_id (int): Id of registered data
+            registered_channel_id (Union[str, int]): Id of registered data
             depth (int): this attribute specifies how many models will be traversed to create the response.
-                         for depth=0, only no further models will be travesed.
+                         for depth=0, only no further models will be traversed.
             source (str): internal argument for mongo services, used to tell the direction of model fetching.
 
         Returns:
@@ -72,7 +71,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
         Send request to mongo api to update given registered data. This method uses mixin update implementation.
 
         Args:
-        registered_data_id (int): Id of registered data
+        registered_data_id (Union[str, int]): Id of registered data
         registered_data (RegisteredDataIn): Properties to update
 
         Returns:
@@ -85,7 +84,7 @@ class RegisteredDataServiceMongoDB(RegisteredDataService, GenericMongoServiceMix
         Send request to mongo api to delete given registered data. This method uses mixin delete implementation.
 
         Args:
-        registered_data_id (int): Id of registered data
+        registered_data_id (Union[str, int]): Id of registered data
 
         Returns:
             Result of request as registered data object

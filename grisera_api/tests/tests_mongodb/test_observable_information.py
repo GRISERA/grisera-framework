@@ -22,16 +22,16 @@ class TestMongoRegisteredData(MongoTestCase):
     def test_create(self):
         service = Services().observable_information_service()
         recording = self.generate_recording(save=True)
-        observable_infromation = ObservableInformationIn(recording_id=recording.id)
-        created_oi = service.save_observable_information(observable_infromation)
+        observable_information = ObservableInformationIn(recording_id=recording.id)
+        created_oi = service.save_observable_information(observable_information)
         self.assertEqual(created_oi.recording_id, recording.id)
 
     @mongomock.patch(servers=((mongo_api_host, mongo_api_port),))
     def test_get(self):
         service = Services().observable_information_service()
         recording = self.generate_recording(save=True)
-        observable_infromation = ObservableInformationIn(recording_id=recording.id)
-        created_oi = service.save_observable_information(observable_infromation)
+        observable_information = ObservableInformationIn(recording_id=recording.id)
+        created_oi = service.save_observable_information(observable_information)
         fetched_oi = service.get_observable_information(created_oi.id)
         self.assertFalse(type(fetched_oi) is NotFoundByIdModel)
         self.assertEqual(fetched_oi.recording_id, recording.id)
@@ -41,8 +41,8 @@ class TestMongoRegisteredData(MongoTestCase):
         service = Services().observable_information_service()
 
         recording = self.generate_recording(save=True)
-        observable_infromation = ObservableInformationIn(recording_id=recording.id)
-        created_oi = service.save_observable_information(observable_infromation)
+        observable_information = ObservableInformationIn(recording_id=recording.id)
+        created_oi = service.save_observable_information(observable_information)
         other_oi = service.save_observable_information(
             ObservableInformationIn(recording_id=recording.id)
         )
@@ -59,8 +59,8 @@ class TestMongoRegisteredData(MongoTestCase):
         service = Services().observable_information_service()
 
         recording = self.generate_recording(save=True)
-        observable_infromation = ObservableInformationIn(recording_id=recording.id)
-        created_oi = service.save_observable_information(observable_infromation)
+        observable_information = ObservableInformationIn(recording_id=recording.id)
+        created_oi = service.save_observable_information(observable_information)
 
         fetched_oi = service.get_observable_information(created_oi.id, depth=1)
         self.assertFalse(type(fetched_oi) is NotFoundByIdModel)

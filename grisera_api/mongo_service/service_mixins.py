@@ -10,8 +10,8 @@ from mongo_service import MongoApiService
 class GenericMongoServiceMixin:
 
     """
-    This mixin defines implementation of basic mongo services methods. It requires the sublass to implement:
-        model_out_class field - out model class of services model. Based on this atribute mongo collection is
+    This mixin defines implementation of basic mongo services methods. It requires the subclass to implement:
+        model_out_class field - out model class of services model. Based on this attribute mongo collection is
             determined
         _add_related_documents method - method for adding related documents to result when traversing models
     """
@@ -64,7 +64,7 @@ class GenericMongoServiceMixin:
         Generic method for getting a single document in dict form from mongo api.
 
         Args:
-            query: Query to mongo api. Empty by default.
+            id: Id of the document.
             depth: This specifies the number of collections that are to be traversed
             source: Helper arguments that specifies direction of collection traversion
 
@@ -87,10 +87,10 @@ class GenericMongoServiceMixin:
         self, id: Union[str, int], depth: int = 0, source: str = "", *args, **kwargs
     ):
         """
-        Generic method for getting a single documents from mongo api.
+        Generic method for getting a single document from mongo api.
 
         Args:
-            query: Query to mongo api. Empty by default.
+            id: Id of the document.
             depth: This specifies the number of collections that are to be traversed
             source: Helper arguments that specifies direction of collection traversion
 
@@ -108,7 +108,7 @@ class GenericMongoServiceMixin:
         Generic method for sending request to mongo api to update single document
 
         Args:
-            id: Id of docuemnt to be updated.
+            id: Id of document to be updated.
             updated_object: New version of document as model object
 
         Returns:
@@ -128,7 +128,7 @@ class GenericMongoServiceMixin:
         Generic method for delete request to mongo api
 
         Args:
-            id: Id of docuemnt to be deleted.
+            id: Id of document to be deleted.
 
         Returns:
             Deleted object

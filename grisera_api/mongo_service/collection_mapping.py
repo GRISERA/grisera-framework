@@ -44,10 +44,10 @@ from time_series.time_series_model import (
 from enum import Enum
 
 """
-This module provides enum with collecion names in mongodb to help avoiding 
+This module provides enum with collection names in mongodb to help avoiding 
 possible errors with typos in collection names strings.
 
-It also provides mapping of model classes to collection names. It is usefull 
+It also provides mapping of model classes to collection names. It is useful 
 as it allows to dynamically determine collection name based on model objets 
 class.
 """

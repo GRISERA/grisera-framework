@@ -1,3 +1,5 @@
+from typing import Union
+
 from mongo_service.collection_mapping import Collections
 from mongo_service.service_mixins import (
     GenericMongoServiceMixin,
@@ -23,6 +25,7 @@ class RegisteredChannelServiceMongoDB(
     channel_service (ChannelServiceMongoDB): Service to send channel requests
     registered_data_service (RegisteredDataServiceMongoDB): Service to send registered data requests
     recording_service (RecordingServiceMongoDB): Service to send recording requests
+    model_out_class (Type[BaseModel]): Out class of the model, used by GenericMongoServiceMixin
     """
 
     def __init__(self):
@@ -78,15 +81,15 @@ class RegisteredChannelServiceMongoDB(
         return RegisteredChannelsOut(registered_channels=results)
 
     def get_registered_channel(
-        self, registered_channel_id: int, depth: int = 0, source: str = ""
+        self, registered_channel_id: Union[str, int], depth: int = 0, source: str = ""
     ):
         """
         Send request to mongo api to get given registered channel. This method uses mixin get implementation.
 
         Args:
-            registered_channel_id (int): Id of registered channel
+            registered_channel_id (Union[str, int]): Id of registered channel
             depth (int): this attribute specifies how many models will be traversed to create the response.
-                         for depth=0, only no further models will be travesed.
+                         for depth=0, only no further models will be traversed.
             source (str): internal argument for mongo services, used to tell the direction of model fetching.
                           i.e. if for this service, if source="recording", it means that this method was invoked
                           from recording service, so recording model will not be fetched, as it is already in response.
@@ -98,15 +101,15 @@ class RegisteredChannelServiceMongoDB(
 
     def update_registered_channel_relationships(
         self,
-        registered_channel_id: int,
+        registered_channel_id: Union[str, int],
         updated_registered_channel: RegisteredChannelIn,
     ):
         """
         Send request to mongo api to update given registered channel
 
         Args:
-            registered_channel_id (int): Id of registered channel
-            registered_channel (RegisteredChannelIn): Document to update
+            registered_channel_id (Union[str, int]): Id of registered channel
+            updated_registered_channel (RegisteredChannelIn): Document to update
 
         Returns:
             Result of request as registered channel object
@@ -150,12 +153,12 @@ class RegisteredChannelServiceMongoDB(
         )
         return self.get_registered_channel(registered_channel_id)
 
-    def delete_registered_channel(self, registered_channel_id: int):
+    def delete_registered_channel(self, registered_channel_id: Union[str, int]):
         """
         Send request to mongo api to delete given registered channel. This method uses mixin delete implementation.
 
         Args:
-            registered_channel_id (int): Id of registered channel
+            registered_channel_id (Union[str, int]): Id of registered channel
 
         Returns:
             Result of request as registered channel object
