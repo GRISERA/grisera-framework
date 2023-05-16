@@ -1,8 +1,11 @@
+from typing import Union
+
 from graph_api_service import GraphApiService
+from helpers import create_stub_from_response
 from participant.participant_model import ParticipantIn, ParticipantsOut, BasicParticipantOut, ParticipantOut
 from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
 from participant.participant_service import ParticipantService
+from participant_state.participant_state_service import ParticipantStateService
 
 
 class ParticipantServiceGraphDB(ParticipantService):
@@ -13,6 +16,9 @@ class ParticipantServiceGraphDB(ParticipantService):
         graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
     graph_api_service = GraphApiService()
+
+    def __init__(self):
+        self.participant_state_service: ParticipantStateService = None
 
     def save_participant(self, participant: ParticipantIn):
         """
@@ -59,12 +65,13 @@ class ParticipantServiceGraphDB(ParticipantService):
 
         return ParticipantsOut(participants=participants)
 
-    def get_participant(self, participant_id: int):
+    def get_participant(self, participant_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given participant
 
         Args:
-            participant_id (int): Id of participant
+            depth: (int): specifies how many related entities will be traversed to create the response
+            participant_id (int | str): identity of participant
 
         Returns:
             Result of request as participant object
@@ -76,27 +83,23 @@ class ParticipantServiceGraphDB(ParticipantService):
         if get_response["labels"][0] != "Participant":
             return NotFoundByIdModel(id=participant_id, errors="Node not found.")
 
-        participant = {'id': get_response['id'], 'additional_properties': [], 'relations': [], 'reversed_relations': []}
-        for property in get_response["properties"]:
-            if property["key"] in ["name", "date_of_birth", "sex", "disorder"]:
-                participant[property["key"]] = property["value"]
-            else:
-                participant['additional_properties'].append({'key': property['key'], 'value': property['value']})
+        participant = create_stub_from_response(get_response, properties=['name', 'date_of_birth', 'sex', 'disorder'])
 
-        relations_response = self.graph_api_service.get_node_relationships(participant_id)
+        if depth != 0:
+            participant["participant_states"] = []
+            relations_response = self.graph_api_service.get_node_relationships(participant_id)
 
-        for relation in relations_response["relationships"]:
-            if relation["start_node"] == participant_id:
-                participant['relations'].append(RelationInformation(second_node_id=relation["end_node"],
-                                                                    name=relation["name"], relation_id=relation["id"]))
-            else:
-                participant['reversed_relations'].append(RelationInformation(second_node_id=relation["start_node"],
-                                                                             name=relation["name"],
-                                                                             relation_id=relation["id"]))
+            for relation in relations_response["relationships"]:
+                if relation["start_node"] == participant_id & relation["name"] == "hasParticipantState":
+                    participant['participant_states'].append(self.participant_state_service.
+                                                             get_participant_state(relation["end_node"],
+                                                                                   depth - 1))
 
-        return ParticipantOut(**participant)
+            return ParticipantOut(**participant)
+        else:
+            return BasicParticipantOut(**participant)
 
-    def delete_participant(self, participant_id: int):
+    def delete_participant(self, participant_id: Union[int, str]):
         """
         Send request to graph api to delete given participant
 
@@ -114,12 +117,12 @@ class ParticipantServiceGraphDB(ParticipantService):
         self.graph_api_service.delete_node(participant_id)
         return get_response
 
-    def update_participant(self, participant_id: int, participant: ParticipantIn):
+    def update_participant(self, participant_id: Union[int, str], participant: ParticipantIn):
         """
         Send request to graph api to update given participant
 
         Args:
-            participant_id (int): Id of participant
+            participant_id (int | str): Id of participant
             participant (ParticipantIn): Properties to update
 
         Returns:
@@ -136,8 +139,7 @@ class ParticipantServiceGraphDB(ParticipantService):
         self.graph_api_service.delete_node_properties(participant_id)
         self.graph_api_service.create_properties(participant_id, participant)
 
-        participant_result = {"id": participant_id, 'relations': get_response.relations,
-                              'reversed_relations': get_response.reversed_relations}
+        participant_result = {"id": participant_id}
         participant_result.update(participant.dict())
 
-        return ParticipantOut(**participant_result)
+        return BasicParticipantOut(**participant_result)

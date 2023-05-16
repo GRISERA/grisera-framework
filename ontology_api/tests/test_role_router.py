@@ -139,3 +139,43 @@ class RoleRouterTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(result.errors, f"Instance ps not found")
         os.remove("database" + os.path.sep + f"{model_id}.owl")
+
+    def test_delete_roles_without_error(self):
+        role_router = RoleRouter()
+        response = Response()
+        model_id = 1
+        onto = get_ontology("https://road.affectivese.org/documentation/owlAC.owl").load()
+        src = onto["ParticipantState"]("ps")
+        dst = onto["Participant"]("p")
+        src.hasParticipant = dst
+        src.age = 23
+        onto.save(file="database" + os.path.sep + f"{model_id}.owl", format="rdfxml")
+        onto.destroy()
+        result = asyncio.run(role_router.delete_roles(model_id, "ps", response))
+        self.assertEqual(response.status_code, 200)
+        onto = get_ontology("database" + os.path.sep + f"{model_id}.owl").load()
+        self.assertEqual(len(onto["ps"].get_properties()), 0)
+        onto.destroy()
+        os.remove("database" + os.path.sep + f"{model_id}.owl")
+
+    def test_delete_roles_model_does_not_exist(self):
+        role_router = RoleRouter()
+        response = Response()
+        model_id = 1
+        result = asyncio.run(role_router.delete_roles(model_id, "ps", response))
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(result.errors, f"Model with id {model_id} not found")
+
+    def test_delete_roles_instance_not_found(self):
+        role_router = RoleRouter()
+        response = Response()
+        model_id = 1
+        instance_name = "za_górami"
+        onto = get_ontology("https://road.affectivese.org/documentation/owlAC.owl").load()
+        onto.save(file="database" + os.path.sep + f"{model_id}.owl", format="rdfxml")
+        onto.destroy()
+        result = asyncio.run(role_router.delete_roles(model_id, instance_name, response))
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(result.errors, f"Instance {instance_name} not found")
+        os.remove("database" + os.path.sep + f"{model_id}.owl")
+        

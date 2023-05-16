@@ -23,7 +23,7 @@ class TestRegisteredDataRouterGet(unittest.TestCase):
 
         self.assertEqual(result, RegisteredDataOut(source='url', additional_properties=additional_properties,
                                                    id=registered_data_id, links=get_links(router)))
-        get_registered_data_mock.assert_called_once_with(registered_data_id)
+        get_registered_data_mock.assert_called_once_with(registered_data_id, 0)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(RegisteredDataServiceGraphDB, 'get_registered_data')
@@ -40,7 +40,7 @@ class TestRegisteredDataRouterGet(unittest.TestCase):
 
         self.assertEqual(result, RegisteredDataOut(source='url', additional_properties=additional_properties,
                                                    errors={'errors': ['test']},  links=get_links(router)))
-        get_registered_data_mock.assert_called_once_with(registered_data_id)
+        get_registered_data_mock.assert_called_once_with(registered_data_id, 0)
         self.assertEqual(response.status_code, 404)
 
     @mock.patch.object(RegisteredDataServiceGraphDB, 'get_registered_data_nodes')

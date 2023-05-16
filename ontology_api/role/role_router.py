@@ -31,3 +31,50 @@ class RoleRouter:
         role_out.links = get_links(router)
 
         return role_out
+
+    @router.delete("/models/{model_id}/instances/{instance_name}/roles", tags=["role"], response_model=None)
+    async def delete_roles(self, model_id: int, instance_name: str, response: Response):
+        """
+                Delete all relationships of the given individual
+                Return 404 when model or instance not found
+        """
+        role_out = self.role_service.delete_roles(model_id, instance_name)
+
+        if role_out.errors is not None:
+            response.status_code = 404
+
+        role_out.links = get_links(router)
+
+        return role_out
+
+    @router.get("/models/{model_id}/instances/{instance_label}/reversed_roles", tags=["role"],
+                response_model=None)
+    async def get_reversed_roles(self, model_id: int, instance_name: str, response: Response):
+        """
+                Return a list of reverse roles for given instance and in the given model
+                Return 404 when model with the given id does not exist
+        """
+        role_out = self.role_service.get_reversed_roles(model_id, instance_name)
+
+        if role_out.errors is not None:
+            response.status_code = 404
+
+        role_out.links = get_links(router)
+
+        return role_out
+
+    @router.get("/models/{model_id}/instances/{instance_label}/roles", tags=["role"],
+                response_model=None)
+    async def get_roles(self, model_id: int, instance_name: str, response: Response):
+        """
+                Return a list of roles for given instance and in the given model
+                Return 404 when model with the given id does not exist
+        """
+        role_out = self.role_service.get_roles(model_id, instance_name)
+
+        if role_out.errors is not None:
+            response.status_code = 404
+
+        role_out.links = get_links(router)
+
+        return role_out

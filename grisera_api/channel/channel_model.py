@@ -1,7 +1,9 @@
-from pydantic import BaseModel
-from typing import Optional, Any, List
+from typing import Optional, Union, List
 from enum import Enum
-from models.relation_information_model import RelationInformation
+
+from pydantic import BaseModel
+
+from models.base_model_out import BaseModelOut
 
 
 class Type(str, Enum):
@@ -9,17 +11,18 @@ class Type(str, Enum):
     Types of channel
 
     Attributes:
-        audio (str): Audio channel
-        bvp (str): BVP channel
-        chest_size (str): Chest size channel
-        depth_video (str): Depth video channel
-        ecg (str): ECG channel
-        eda (str): EDA channel
-        eeg (str): EEG channel
-        emg (str): EMG channel
-        rgb_video (str): RGB video channel
-        temperature (str): Temperature channel
+    audio (str): Audio channel
+    bvp (str): BVP channel
+    chest_size (str): Chest size channel
+    depth_video (str): Depth video channel
+    ecg (str): ECG channel
+    eda (str): EDA channel
+    eeg (str): EEG channel
+    emg (str): EMG channel
+    rgb_video (str): RGB video channel
+    temperature (str): Temperature channel
     """
+
     audio = "Audio"
     bvp = "BVP"
     chest_size = "Chest size"
@@ -39,6 +42,7 @@ class ChannelIn(BaseModel):
     Attributes:
     type (str): Type of the channel
     """
+
     type: str
 
 
@@ -47,36 +51,36 @@ class BasicChannelOut(ChannelIn):
     Model of channel in database
 
     Attributes:
-    id (Optional[int]): Id of channel returned from graph api
+    id (Optional[Union[int, str]]): Id of channel returned from api
     """
-    id: Optional[int]
+
+    id: Optional[Union[int, str]]
 
 
-class ChannelOut(BasicChannelOut):
+class ChannelOut(BasicChannelOut, BaseModelOut):
     """
     Model of channel to send to client as a result of request
 
     Attributes:
-    relations (List[RelationInformation]): List of relations starting in registered data node
-    reversed_relations (List[RelationInformation]): List of relations ending in registered data node
-    errors (Optional[Any]): Optional errors appeared during query executions
-    links (Optional[list]): List of links available from api
+    registered_channels (Optional[List[RegisteredChannelOut]]): registered channels related to this channel
+
     """
-    relations: List[RelationInformation] = []
-    reversed_relations: List[RelationInformation] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
+
+    registered_channels: "Optional[List[RegisteredChannelOut]]"
 
 
-class ChannelsOut(BaseModel):
+class ChannelsOut(BaseModelOut):
     """
     Model of channels to send to client as a result of request
 
     Attributes:
     channels (List[BasicChannelOut]): Channels from database
-    errors (Optional[Any]): Optional errors appeared during query executions
-    links (Optional[list]): List of links available from api
     """
+
     channels: List[BasicChannelOut] = []
-    errors: Optional[Any] = None
-    links: Optional[list] = None
+
+
+# Circular import exception prevention
+from registered_channel.registered_channel_model import RegisteredChannelOut
+
+ChannelOut.update_forward_refs()

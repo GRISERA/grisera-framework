@@ -22,7 +22,8 @@ class TestTimeSeriesRouterDelete(unittest.TestCase):
 
     @mock.patch.object(TimeSeriesServiceGraphDB, 'delete_time_series')
     def test_delete_time_series_with_error(self, delete_time_series_mock):
-        delete_time_series_mock.return_value = TimeSeriesOut(id=1, type="Epoch", source="cos", errors={'errors': ['test']})
+        delete_time_series_mock.return_value = TimeSeriesOut(id=1, type="Epoch", source="cos",
+                                                             errors={'errors': ['test']})
         response = Response()
         time_series_id = 1
         time_series_router = TimeSeriesRouter()
