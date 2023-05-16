@@ -49,12 +49,12 @@ class RoleRouter:
 
     @router.get("/models/{model_id}/instances/{instance_label}/reversed_roles", tags=["role"],
                 response_model=None)
-    async def get_reversed_roles(self, model_id: int, instance_name: str, response: Response):
+    async def get_reversed_roles(self, model_id: int, instance_label: str, response: Response):
         """
                 Return a list of reverse roles for given instance and in the given model
                 Return 404 when model with the given id does not exist
         """
-        role_out = self.role_service.get_reversed_roles(model_id, instance_name)
+        role_out = self.role_service.get_reversed_roles(model_id, instance_label)
 
         if role_out.errors is not None:
             response.status_code = 404
@@ -65,12 +65,12 @@ class RoleRouter:
 
     @router.get("/models/{model_id}/instances/{instance_label}/roles", tags=["role"],
                 response_model=None)
-    async def get_roles(self, model_id: int, instance_name: str, response: Response):
+    async def get_roles(self, model_id: int, instance_label: str, response: Response):
         """
                 Return a list of roles for given instance and in the given model
                 Return 404 when model with the given id does not exist
         """
-        role_out = self.role_service.get_roles(model_id, instance_name)
+        role_out = self.role_service.get_roles(model_id, instance_label)
 
         if role_out.errors is not None:
             response.status_code = 404
