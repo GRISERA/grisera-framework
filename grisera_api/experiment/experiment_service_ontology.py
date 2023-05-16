@@ -1,6 +1,5 @@
 from experiment.experiment_model import ExperimentIn, ExperimentOut
 from experiment.experiment_service import ExperimentService
-from models.not_found_model import NotFoundByIdModel
 from ontology_api_service import OntologyApiService
 
 
