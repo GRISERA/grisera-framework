@@ -13,6 +13,9 @@ class ExperimentServiceOntology(ExperimentService):
     """
     ontology_api_service = OntologyApiService()
 
+    def get_experiment(self, experiment_id):
+        pass
+
     def save_experiment(self, experiment: ExperimentIn):
         """
         Send request to ontology api to add new experiment
@@ -50,16 +53,16 @@ class ExperimentServiceOntology(ExperimentService):
         model_id = 1
         get_response = self.get_experiment(experiment_id)
 
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
+        if get_response["errors"] is not None:
+            return ExperimentOut(**experiment.dict(), errors=get_response["errors"])
 
         self.ontology_api_service.delete_roles(model_id, experiment.experiment_name)
 
         for prop in experiment.additional_properties:
             response = self.ontology_api_service.add_role(model_id, prop.key, experiment.experiment_name, prop.value)
 
-        experiment_result = {'id': experiment_id, 'relations': get_response.relations,
-                             'reversed_relations': get_response.reversed_relations}
+        experiment_result = {'relations': [],
+                             'reversed_relations': []}
         experiment_result.update(experiment.dict())
 
         return ExperimentOut(**experiment_result)
