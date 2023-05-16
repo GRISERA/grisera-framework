@@ -38,12 +38,13 @@ class ExperimentServiceOntology(ExperimentService):
 
         return ExperimentOut(**experiment.dict())
 
-    def get_experiment(self, experiment_label: Union[int, str]):
+    def get_experiment(self, experiment_label: Union[int, str], depth: int = 0):
         """
         Send request to ontology api to get given experiment
 
         Args:
             experiment_label (int | str): label of experiment
+            depth (int) : only for compatibility with graph_api, always set to 0
 
         Returns:
             Result of request as experiment object
