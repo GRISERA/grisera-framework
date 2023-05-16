@@ -50,6 +50,20 @@ class OntologyApiService:
         request_body = {"name": instance_label}
         return self.post(f"/models/{model_id}/classes/{class_name}/instances", request_body)
 
+    def add_role(self, model_id, role, instance_label, value):
+        """
+        Send a request to add role of the instance to Ontology API
+        Args:
+            model_id (int): ID of the model to which the instance is to be added
+            instance_label (str): Label of instance
+            value (int | str): Value of this relationship
+            role (str): Name of property
+
+        Returns: Request result
+        """
+        request_body = {"role": role, "instance_name": instance_label, "value": value}
+        return self.post(f"/models/{model_id}/roles", request_body)
+
     def get_instance(self, model_id, class_name, instance_label):
         """
         Send a request to get an instance from Ontology API
@@ -85,3 +99,4 @@ class OntologyApiService:
         """
         url_part = f"/models/{model_id}/instances/{experiment_label}/reversed_roles"
         return self.get(url_part, {})
+
