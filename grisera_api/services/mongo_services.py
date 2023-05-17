@@ -10,7 +10,7 @@ from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 from arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
 from channel.channel_service_mongodb import ChannelServiceMongoDB
 from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
-from life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
+from life_activity.life_activity_service_mongodb import LifeActivityServiceMongoDB
 from measure.measure_service_graphdb import MeasureServiceGraphDB
 from measure_name.measure_name_service_graphdb import MeasureNameServiceGraphDB
 from modality.modality_service_mongodb import ModalityServiceMongoDB
@@ -59,6 +59,7 @@ class MongoServiceFactory(ServiceFactory):
         self.registered_data_service = RegisteredDataServiceMongoDB()
         self.observable_information_service = ObservableInformationServiceMongoDB()
         self.modality_service = ModalityServiceMongoDB()
+        self.life_activity_service = LifeActivityServiceMongoDB()
 
         self.channel_service.registered_channel_service = (
             self.registered_channel_service
@@ -83,11 +84,19 @@ class MongoServiceFactory(ServiceFactory):
         )
 
         self.observable_information_service.recording_service = self.recording_service
-        self.observable_information_service.life_activity_service = None
+        self.observable_information_service.life_activity_service = (
+            self.life_activity_service
+        )
         self.observable_information_service.modality_service = self.modality_service
         self.observable_information_service.time_series_service = None
 
-        self.modality_service.observable_information_service = self.observable_information_service
+        self.modality_service.observable_information_service = (
+            self.observable_information_service
+        )
+
+        self.life_activity_service.observable_information_service = (
+            self.observable_information_service
+        )
 
     def get_activity_service(self) -> ActivityService:
         return ActivityServiceGraphDB()
@@ -108,7 +117,7 @@ class MongoServiceFactory(ServiceFactory):
         return ExperimentServiceGraphDB()
 
     def get_life_activity_service(self) -> LifeActivityService:
-        return LifeActivityServiceGraphDB()
+        return self.life_activity_service
 
     def get_measure_service(self) -> MeasureService:
         return MeasureServiceGraphDB()

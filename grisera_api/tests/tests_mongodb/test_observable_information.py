@@ -1,5 +1,6 @@
 import mongomock
 
+from life_activity.life_activity_model import LifeActivityIn
 from modality.modality_model import ModalityIn
 from observable_information.observable_information_model import ObservableInformationIn
 from tests.tests_mongodb.utils import MongoTestCase
@@ -14,15 +15,19 @@ class TestMongoRegisteredData(MongoTestCase):
         recording = RecordingIn()
         if not save:
             return recording
-        service = Services().recording_service()
-        return service.save_recording(recording)
-    
+        return Services().recording_service().save_recording(recording)
+
     def generate_modality(self, save: bool):
         modality = ModalityIn(modality="A modality")
         if not save:
             return modality
-        service = Services().modality_service()
-        return service.save_modality(modality)
+        return Services().modality_service().save_modality(modality)
+
+    def generate_life_activity(self, save: bool):
+        life_activity = LifeActivityIn(life_activity="movement")
+        if not save:
+            return life_activity
+        return Services().life_activity_service().save_life_activity(life_activity)
 
     @mongomock.patch(servers=((mongo_api_host, mongo_api_port),))
     def test_create(self):
@@ -66,7 +71,12 @@ class TestMongoRegisteredData(MongoTestCase):
 
         recording = self.generate_recording(save=True)
         modality = self.generate_modality(save=True)
-        observable_information = ObservableInformationIn(recording_id=recording.id, modality_id=modality.id)
+        life_activity = self.generate_life_activity(save=True)
+        observable_information = ObservableInformationIn(
+            recording_id=recording.id,
+            modality_id=modality.id,
+            life_activity_id=life_activity.id,
+        )
         created_oi = service.save_observable_information(observable_information)
 
         fetched_oi = service.get_observable_information(created_oi.id, depth=1)
@@ -74,3 +84,7 @@ class TestMongoRegisteredData(MongoTestCase):
         self.assertEqual(fetched_oi.recording.id, recording.id)
         self.assertEqual(fetched_oi.modality.id, modality.id)
         self.assertEqual(fetched_oi.modality.modality, modality.modality)
+        self.assertEqual(fetched_oi.life_activity.id, life_activity.id)
+        self.assertEqual(
+            fetched_oi.life_activity.life_activity, life_activity.life_activity
+        )

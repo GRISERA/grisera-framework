@@ -270,9 +270,9 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
                 id=observable_information.id,
                 errors={"errors": "observable information not found"},
             )
-        observable_informations = recording[Collections.OBSERVABLE_INFORMATION]
-        del observable_informations[to_remove_index]
-        self.update(recording_id, ObservableInformationIn(**recording))
+        del recording[Collections.OBSERVABLE_INFORMATION][to_remove_index]
+
+        self.update(recording_id, RecordingOut(**recording))
         return observable_information
 
     def _add_related_documents(self, recording: dict, depth: int, source: str):

@@ -74,18 +74,17 @@ class ObservableInformationServiceMongoDB(
                 errors={"errors": "given modality does not exist"}
             )
 
-        # TODO uncomment once life_activity service is ready
-        # related_life_activity = self.life_activity_service.get_life_activity(
-        #     observable_information.life_activity_id
-        # )
-        # related_life_activity_exists = related_life_activity is not NotFoundByIdModel
-        # if (
-        #     observable_information.life_activity_id is not None
-        #     and not related_life_activity_exists
-        # ):
-        #     return ObservableInformationOut(
-        #         errors={"errors": "given life activity does not exist"}
-        #     )
+        related_life_activity = self.life_activity_service.get_life_activity(
+            observable_information.life_activity_id
+        )
+        related_life_activity_exists = related_life_activity is not NotFoundByIdModel
+        if (
+            observable_information.life_activity_id is not None
+            and not related_life_activity_exists
+        ):
+            return ObservableInformationOut(
+                errors={"errors": "given life activity does not exist"}
+            )
 
         return self.recording_service.add_observable_information(observable_information)
 
@@ -271,8 +270,15 @@ class ObservableInformationServiceMongoDB(
     def _add_related_life_activities(
         self, observable_information: dict, depth: int, source: str
     ):
-        pass
-        # TODO add when life_activities service is ready
+        has_related_la = observable_information["life_activity_id"] is not None
+        if source != Collections.LIFE_ACTIVITY and has_related_la:
+            observable_information[
+                "life_activity"
+            ] = self.life_activity_service.get_single_dict(
+                observable_information["life_activity_id"],
+                depth=depth - 1,
+                source=Collections.OBSERVABLE_INFORMATION,
+            )
 
     def _add_related_time_series(
         self, observable_information: dict, depth: int, source: str
