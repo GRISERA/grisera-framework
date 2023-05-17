@@ -1,11 +1,10 @@
 import mongomock
 
+from modality.modality_model import ModalityIn
 from observable_information.observable_information_model import ObservableInformationIn
-from registered_channel.registered_channel_model import RegisteredChannelIn
 from tests.tests_mongodb.utils import MongoTestCase
 from models.not_found_model import NotFoundByIdModel
 from services import Services
-from registered_data.registered_data_model import RegisteredDataIn
 from mongo_service.mongodb_api_config import mongo_api_host, mongo_api_port
 from recording.recording_model import RecordingIn
 
@@ -17,6 +16,13 @@ class TestMongoRegisteredData(MongoTestCase):
             return recording
         service = Services().recording_service()
         return service.save_recording(recording)
+    
+    def generate_modality(self, save: bool):
+        modality = ModalityIn(modality="A modality")
+        if not save:
+            return modality
+        service = Services().modality_service()
+        return service.save_modality(modality)
 
     @mongomock.patch(servers=((mongo_api_host, mongo_api_port),))
     def test_create(self):
@@ -59,9 +65,12 @@ class TestMongoRegisteredData(MongoTestCase):
         service = Services().observable_information_service()
 
         recording = self.generate_recording(save=True)
-        observable_information = ObservableInformationIn(recording_id=recording.id)
+        modality = self.generate_modality(save=True)
+        observable_information = ObservableInformationIn(recording_id=recording.id, modality_id=modality.id)
         created_oi = service.save_observable_information(observable_information)
 
         fetched_oi = service.get_observable_information(created_oi.id, depth=1)
         self.assertFalse(type(fetched_oi) is NotFoundByIdModel)
         self.assertEqual(fetched_oi.recording.id, recording.id)
+        self.assertEqual(fetched_oi.modality.id, modality.id)
+        self.assertEqual(fetched_oi.modality.modality, modality.modality)

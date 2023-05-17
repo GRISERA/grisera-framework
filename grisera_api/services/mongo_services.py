@@ -13,7 +13,7 @@ from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
 from life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
 from measure.measure_service_graphdb import MeasureServiceGraphDB
 from measure_name.measure_name_service_graphdb import MeasureNameServiceGraphDB
-from modality.modality_service_graphdb import ModalityServiceGraphDB
+from modality.modality_service_mongodb import ModalityServiceMongoDB
 from participant.participant_service_graphdb import ParticipantServiceGraphDB
 from participant_state.participant_state_service_graphdb import (
     ParticipantStateServiceGraphDB,
@@ -58,6 +58,7 @@ class MongoServiceFactory(ServiceFactory):
         self.registered_channel_service = RegisteredChannelServiceMongoDB()
         self.registered_data_service = RegisteredDataServiceMongoDB()
         self.observable_information_service = ObservableInformationServiceMongoDB()
+        self.modality_service = ModalityServiceMongoDB()
 
         self.channel_service.registered_channel_service = (
             self.registered_channel_service
@@ -83,8 +84,10 @@ class MongoServiceFactory(ServiceFactory):
 
         self.observable_information_service.recording_service = self.recording_service
         self.observable_information_service.life_activity_service = None
-        self.observable_information_service.modality_service = None
+        self.observable_information_service.modality_service = self.modality_service
         self.observable_information_service.time_series_service = None
+
+        self.modality_service.observable_information_service = self.observable_information_service
 
     def get_activity_service(self) -> ActivityService:
         return ActivityServiceGraphDB()
@@ -114,7 +117,7 @@ class MongoServiceFactory(ServiceFactory):
         return MeasureNameServiceGraphDB()
 
     def get_modality_service(self) -> ModalityService:
-        return ModalityServiceGraphDB()
+        return self.modality_service
 
     def get_observable_information_service(self) -> ObservableInformationService:
         return self.observable_information_service

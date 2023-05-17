@@ -62,18 +62,17 @@ class ObservableInformationServiceMongoDB(
                 errors={"errors": "given recording does not exist"}
             )
 
-        # TODO uncomment once modality service is ready
-        # related_modality = self.modality_service.get_modality(
-        #     observable_information.modality_id
-        # )
-        # related_modality_exists = related_modality is not NotFoundByIdModel
-        # if (
-        #     observable_information.modality_id is not None
-        #     and not related_modality_exists
-        # ):
-        #     return ObservableInformationOut(
-        #         errors={"errors": "given modality does not exist"}
-        #     )
+        related_modality = self.modality_service.get_modality(
+            observable_information.modality_id
+        )
+        related_modality_exists = related_modality is not NotFoundByIdModel
+        if (
+            observable_information.modality_id is not None
+            and not related_modality_exists
+        ):
+            return ObservableInformationOut(
+                errors={"errors": "given modality does not exist"}
+            )
 
         # TODO uncomment once life_activity service is ready
         # related_life_activity = self.life_activity_service.get_life_activity(
@@ -261,8 +260,13 @@ class ObservableInformationServiceMongoDB(
     def _add_related_modalities(
         self, observable_information: dict, depth: int, source: str
     ):
-        pass
-        # TODO add when modalities service is ready
+        has_related_modality = observable_information["modality_id"] is not None
+        if source != Collections.MODALITY and has_related_modality:
+            observable_information["modality"] = self.modality_service.get_single_dict(
+                observable_information["modality_id"],
+                depth=depth - 1,
+                source=Collections.OBSERVABLE_INFORMATION,
+            )
 
     def _add_related_life_activities(
         self, observable_information: dict, depth: int, source: str
