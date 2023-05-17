@@ -99,7 +99,7 @@ class ObservableInformationServiceMongoDB(
         """
         recording_query = {
             f"{Collections.OBSERVABLE_INFORMATION}.{field}": value
-            for field, value in query
+            for field, value in query.items()
         }
         recording_result = self.recording_service.get_multiple(
             recording_query,
@@ -279,7 +279,8 @@ class ObservableInformationServiceMongoDB(
     @staticmethod
     def _get_recording_projection(query):
         return {
-            Collections.OBSERVABLE_INFORMATION: {"$elemMatch": query},
+            "observable_informations": {"$elemMatch": query},
+            "observable_informations": 1,
             "additional_properties": 1,
             "participation_id": 1,
             "registered_channel_id": 1,

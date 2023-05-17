@@ -23,7 +23,6 @@ class TestMongoRegisteredData(MongoTestCase):
         recording = RecordingIn()
         created_recording = service.save_recording(recording)
         fetched_recording = service.get_recording(created_recording.id)
-        print(fetched_recording)
         self.assertFalse(type(fetched_recording) is NotFoundByIdModel)
 
     @mongomock.patch(servers=((mongo_api_host, mongo_api_port),))

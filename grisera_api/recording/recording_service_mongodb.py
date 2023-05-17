@@ -84,7 +84,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         """
         results_dict = self.get_multiple(query)
         results = [BasicRecordingOut(**result) for result in results_dict]
-        return RecordingsOut(registered_channels=results)
+        return RecordingsOut(recordings=results)
 
     def get_recording(
         self, recording_id: Union[str, int], depth: int = 0, source: str = ""
