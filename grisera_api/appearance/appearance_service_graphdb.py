@@ -18,7 +18,6 @@ class AppearanceServiceGraphDB(AppearanceService):
     """
     graph_api_service = GraphApiService()
 
-
     def __init__(self):
         self.participant_state_service: ParticipantStateService = None
 
@@ -29,11 +28,12 @@ class AppearanceServiceGraphDB(AppearanceService):
 
         Args:
             appearance (AppearanceIn): Appearance to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as appearance state object
         """
-        node_response = self.graph_api_service.create_node("Appearance",dataset_name)
+        node_response = self.graph_api_service.create_node("Appearance", dataset_name)
 
         if node_response["errors"] is not None:
             return AppearanceOcclusionOut(glasses=appearance.glasses, beard=appearance.beard,
@@ -55,6 +55,7 @@ class AppearanceServiceGraphDB(AppearanceService):
 
         Args:
             appearance (AppearanceIn): Appearance to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as appearance state object
@@ -81,7 +82,6 @@ class AppearanceServiceGraphDB(AppearanceService):
         return AppearanceSomatotypeOut(ectomorph=appearance.ectomorph, endomorph=appearance.endomorph,
                                        mesomorph=appearance.mesomorph, id=appearance_id)
 
-
     def get_appearance(self, appearance_id: Union[int, str], dataset_name: str, depth: int = 0):
 
         """
@@ -90,14 +90,13 @@ class AppearanceServiceGraphDB(AppearanceService):
         Args:
             depth: (int): specifies how many related entities will be traversed to create the response
             appearance_id (int | str): identity of appearance
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as appearance object
         """
 
-
-        get_response = self.graph_api_service.get_node(appearance_id,dataset_name)
-
+        get_response = self.graph_api_service.get_node(appearance_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=appearance_id, errors=get_response["errors"])
@@ -107,11 +106,10 @@ class AppearanceServiceGraphDB(AppearanceService):
         appearance = create_stub_from_response(get_response, properties=['ectomorph', 'endomorph', 'mesomorph',
                                                                          'glasses', 'moustache', 'beard'])
 
-
         if depth != 0:
             appearance["participant_states"] = []
 
-            relations_response = self.graph_api_service.get_node_relationships(appearance_id,dataset_name)
+            relations_response = self.graph_api_service.get_node_relationships(appearance_id, dataset_name)
 
             for relation in relations_response["relationships"]:
                 if relation["end_node"] == appearance_id & relation["name"] == "hasAppearance":
@@ -144,13 +142,13 @@ class AppearanceServiceGraphDB(AppearanceService):
 
         return AppearancesOut(appearances=appearances)
 
-
     def delete_appearance(self, appearance_id: Union[int, str], dataset_name: str):
         """
         Send request to graph api to delete given appearance
 
         Args:
             appearance_id (int | str): identity of appearance
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as appearance object
@@ -162,14 +160,15 @@ class AppearanceServiceGraphDB(AppearanceService):
         self.graph_api_service.delete_node(appearance_id, dataset_name)
         return get_response
 
-
-    def update_appearance_occlusion(self, appearance_id: Union[int, str], appearance: AppearanceOcclusionIn, dataset_name: str):
+    def update_appearance_occlusion(self, appearance_id: Union[int, str], appearance: AppearanceOcclusionIn,
+                                    dataset_name: str):
         """
         Send request to graph api to update given appearance occlusion model
 
         Args:
             appearance_id (int | str): identity of appearance
             appearance (AppearanceOcclusionIn): Properties to update
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as appearance object
@@ -187,14 +186,15 @@ class AppearanceServiceGraphDB(AppearanceService):
         appearance_response.update(appearance)
         return AppearanceOcclusionOut(**appearance_response)
 
-
-    def update_appearance_somatotype(self, appearance_id: Union[int, str], appearance: AppearanceSomatotypeIn, dataset_name: str):
+    def update_appearance_somatotype(self, appearance_id: Union[int, str], appearance: AppearanceSomatotypeIn,
+                                     dataset_name: str):
         """
         Send request to graph api to update given appearance somatotype model
 
         Args:
             appearance_id (int | str): identity of appearance
             appearance (AppearanceSomatotypeIn): Properties to update
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as appearance object

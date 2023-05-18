@@ -27,6 +27,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
 
         Args:
             registered_data (RegisteredDataIn): Registered data to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as registered data object
@@ -37,7 +38,8 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
             return RegisteredDataOut(**registered_data.dict(), errors=node_response["errors"])
 
         registered_data_id = node_response["id"]
-        properties_response = self.graph_api_service.create_properties(registered_data_id, registered_data, dataset_name)
+        properties_response = self.graph_api_service.create_properties(registered_data_id, registered_data,
+                                                                       dataset_name)
         if properties_response["errors"] is not None:
             return RegisteredDataOut(**registered_data.dict(), errors=properties_response["errors"])
 
@@ -46,6 +48,9 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
     def get_registered_data_nodes(self, dataset_name: str):
         """
         Send request to graph api to get registered_data_nodes
+
+        Args:
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as list of registered_data_nodes objects
@@ -66,13 +71,14 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
 
         return RegisteredDataNodesOut(registered_data_nodes=registered_data_nodes)
 
-    def get_registered_data(self, registered_data_id: Union[int, str], dataset_name : str, depth: int = 0):
+    def get_registered_data(self, registered_data_id: Union[int, str], dataset_name: str, depth: int = 0):
         """
         Send request to graph api to get given registered data
 
         Args:
             depth: (int): specifies how many related entities will be traversed to create the response
             registered_data_id (int | str): identity of registered data
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as registered data object
@@ -100,12 +106,13 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         else:
             return BasicRegisteredDataOut(**registered_data)
 
-    def delete_registered_data(self, registered_data_id: Union[int, str], dataset_name : str):
+    def delete_registered_data(self, registered_data_id: Union[int, str], dataset_name: str):
         """
         Send request to graph api to delete given registered data
 
         Args:
             registered_data_id (int | str): identity of registered data
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as registered data object
@@ -118,13 +125,15 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         self.graph_api_service.delete_node(registered_data_id, dataset_name)
         return get_response
 
-    def update_registered_data(self, registered_data_id: Union[int, str], registered_data: RegisteredDataIn, dataset_name : str):
+    def update_registered_data(self, registered_data_id: Union[int, str], registered_data: RegisteredDataIn,
+                               dataset_name: str):
         """
         Send request to graph api to update given registered data
 
         Args:
             registered_data_id (int | str): identity of registered data
             registered_data (RegisteredDataIn): Properties to update
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as registered data object

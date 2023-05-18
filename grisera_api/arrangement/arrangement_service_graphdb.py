@@ -17,7 +17,6 @@ class ArrangementServiceGraphDB(ArrangementService):
     """
     graph_api_service = GraphApiService()
 
-
     def __init__(self):
         self.activity_execution_service: ActivityExecutionService = None
 
@@ -77,7 +76,6 @@ class ArrangementServiceGraphDB(ArrangementService):
 
         return ArrangementsOut(arrangements=arrangements)
 
-
     def get_arrangement(self, arrangement_id: Union[int, str], dataset_name: str, depth: int = 0):
         """
         Send request to graph api to get given arrangement
@@ -98,7 +96,6 @@ class ArrangementServiceGraphDB(ArrangementService):
 
         arrangement = create_stub_from_response(get_response, properties=['arrangement_type', 'arrangement_distance'])
 
-
         if depth != 0:
             arrangement["activity_executions"] = []
             relations_response = self.graph_api_service.get_node_relationships(arrangement_id, dataset_name)
@@ -113,7 +110,7 @@ class ArrangementServiceGraphDB(ArrangementService):
 
     def delete_arrangement(self, arrangement_id: int, dataset_name: str):
         """
-        Send request to graph api to get given arrangement
+        Send request to graph api to delete given arrangement
         Args:
             arrangement_id (int): Id of arrangement
             dataset_name (str): name of dataset
@@ -150,4 +147,3 @@ class ArrangementServiceGraphDB(ArrangementService):
         arrangement_result.update(get_response.dict())
 
         return ArrangementOut(**arrangement_result)
-

@@ -17,7 +17,6 @@ class ChannelServiceGraphDB(ChannelService):
     """
     graph_api_service = GraphApiService()
 
-
     def __init__(self):
         self.registered_channel_service: RegisteredChannelService = None
 
@@ -27,6 +26,7 @@ class ChannelServiceGraphDB(ChannelService):
 
         Args:
             channel (ChannelIn): Channel to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as channel object
@@ -47,6 +47,9 @@ class ChannelServiceGraphDB(ChannelService):
         """
         Send request to graph api to get all channels
 
+        Args:
+            dataset_name (str): name of dataset
+
         Returns:
             Result of request as list of channel objects
         """
@@ -63,15 +66,15 @@ class ChannelServiceGraphDB(ChannelService):
         Send request to graph api to get given channel
 
         Args:
-        channel_id (int | str): identity of channel
-        depth: (int): specifies how many related entities will be traversed to create the response
+            channel_id (int | str): identity of channel
+            depth: (int): specifies how many related entities will be traversed to create the response
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as channel object
         """
 
-
-        get_response = self.graph_api_service.get_node(channel_id,dataset_name)
+        get_response = self.graph_api_service.get_node(channel_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=channel_id, errors=get_response["errors"])
@@ -83,8 +86,7 @@ class ChannelServiceGraphDB(ChannelService):
         if depth != 0:
             channel["registered_channels"] = []
 
-
-            relations_response = self.graph_api_service.get_node_relationships(channel_id,dataset_name)
+            relations_response = self.graph_api_service.get_node_relationships(channel_id, dataset_name)
 
             for relation in relations_response["relationships"]:
                 if relation["end_node"] == channel_id & relation["name"] == "hasChannel":

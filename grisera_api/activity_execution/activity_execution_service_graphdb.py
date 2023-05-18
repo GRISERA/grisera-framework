@@ -36,6 +36,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
 
         Args:
             activity_execution (ActivityExecutionIn): Activity execution to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as activity execution object
@@ -43,21 +44,21 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
 
         node_response = self.graph_api_service.create_node("Activity Execution", dataset_name)
 
-
         if node_response["errors"] is not None:
             return ActivityExecutionOut(**activity_execution.dict(), errors=node_response["errors"])
 
         activity_execution_id = node_response["id"]
 
         if activity_execution.activity_id is not None and \
-                type(self.activity_service.get_activity(activity_execution.activity_id, dataset_name)) is not NotFoundByIdModel:
+                type(self.activity_service.get_activity(activity_execution.activity_id, dataset_name)) is not \
+                NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=activity_execution_id,
                                                         end_node=activity_execution.activity_id,
                                                         name="hasActivity",
                                                         dataset_name=dataset_name)
 
         if activity_execution.arrangement_id is not None and \
-                type(self.arrangement_service.get_arrangement(activity_execution.arrangement_id,dataset_name)) \
+                type(self.arrangement_service.get_arrangement(activity_execution.arrangement_id, dataset_name)) \
                 is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=activity_execution_id,
                                                         end_node=activity_execution.arrangement_id,
@@ -73,12 +74,13 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         """
         Send request to graph api to get activity executions
 
+        Args:
+            dataset_name (str): name of dataset
         Returns:
             Result of request as list of activity executions objects
         """
 
         get_response = self.graph_api_service.get_nodes("Activity Execution", dataset_name)
-
 
         activity_executions = []
         for activity_execution_node in get_response["nodes"]:
@@ -90,7 +92,6 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
 
         return ActivityExecutionsOut(activity_executions=activity_executions)
 
-
     def get_activity_execution(self, activity_execution_id: Union[int, str], dataset_name: str, depth: int = 0):
 
         """
@@ -99,6 +100,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         Args:
             depth (int): specifies how many related entities will be traversed to create the response
             activity_execution_id (int | str): identity of activity execution
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as activity execution object
@@ -112,14 +114,12 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
 
         activity_execution = create_stub_from_response(get_response)
 
-
         if depth != 0:
             activity_execution["participations"] = []
             activity_execution['experiments'] = []
             activity_execution['arrangements'] = []
             activity_execution["activity"] = None
-            relations_response = self.graph_api_service.get_node_relationships(activity_execution_id,dataset_name)
-
+            relations_response = self.graph_api_service.get_node_relationships(activity_execution_id, dataset_name)
 
             for relation in relations_response["relationships"]:
                 if relation["end_node"] == activity_execution_id & relation["name"] == "hasScenario":
@@ -144,13 +144,13 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         else:
             return BasicActivityExecutionOut(**activity_execution)
 
-
     def delete_activity_execution(self, activity_execution_id: Union[int, str], dataset_name: str):
 
         """
         Send request to graph api to delete given activity execution
         Args:
             activity_execution_id (int | str): identity of activity execution
+            dataset_name (str): name of dataset
         Returns:
             Result of request as activity execution object
         """
@@ -162,15 +162,15 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         self.graph_api_service.delete_node(activity_execution_id, dataset_name)
         return get_response
 
-
     def update_activity_execution(self, activity_execution_id: Union[int, str],
                                   activity_execution: ActivityExecutionPropertyIn, dataset_name: str):
 
         """
-        Send request to graph api to update given participant state
+        Send request to graph api to update given activity execution
         Args:
-            activity_execution_id (int | str): identity of participant state
+            activity_execution_id (int | str): identity of activity execution
             activity_execution (ActivityExecutionPropertyIn): Properties to update
+            dataset_name (str): name of dataset
         Returns:
             Result of request as participant state object
         """
@@ -179,14 +179,13 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node_properties(activity_execution_id,dataset_name)
-        self.graph_api_service.create_properties(activity_execution_id, activity_execution,dataset_name)
+        self.graph_api_service.delete_node_properties(activity_execution_id, dataset_name)
+        self.graph_api_service.create_properties(activity_execution_id, activity_execution, dataset_name)
 
         activity_execution_result = {"id": activity_execution_id}
         activity_execution_result.update(activity_execution.dict())
 
         return ActivityExecutionOut(**activity_execution_result)
-
 
     def update_activity_execution_relationships(self, activity_execution_id: Union[int, str],
                                                 activity_execution: ActivityExecutionRelationIn, dataset_name: str):
@@ -196,6 +195,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
         Args:
             activity_execution_id (int | str): identity of activity execution
             activity_execution (ActivityExecutionIn): Relationships to update
+            dataset_name (str): name of dataset
         Returns:
             Result of request as activity execution object
         """
@@ -217,7 +217,4 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
                                                         end_node=activity_execution.arrangement_id,
                                                         name="hasArrangement",
                                                         dataset_name=dataset_name)
-
-
-        return self.get_activity_execution(activity_execution_id,dataset_name, 0)
-
+        return self.get_activity_execution(activity_execution_id, dataset_name, 0)

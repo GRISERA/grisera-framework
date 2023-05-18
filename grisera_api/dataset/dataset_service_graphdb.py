@@ -15,10 +15,10 @@ class DatasetServiceGraphDB(DatasetService):
 
     def save_dataset(self, dataset_name: str):
         """
-        Send request to database by its API to create new dataset
+        Creates new dataset
 
         Args:
-            dataset_name (str): Name of the dataset to be created
+            dataset_name (str): name of dataset to create
 
         Returns:
             Result of request as dataset object
@@ -32,15 +32,15 @@ class DatasetServiceGraphDB(DatasetService):
 
         return DatasetOut(name_hash=response["name_hash"], name_by_user=response["name_by_user"])
 
-    def get_dataset(self, dataset_name):
+    def get_dataset(self, dataset_name: str):
         """
-        Send request to database by its API to acquire dataset with particular name
+        Get dataset by name
 
         Args:
-            dataset_name (string): Name of the searched dataset
+            dataset_name (str): name of dataset
 
         Returns:
-            Acquired dataset in DatasetOut model
+            Result of request as dataset object
         """
         get_response = self.graph_api_service.get_dataset(dataset_name)
 
@@ -53,10 +53,10 @@ class DatasetServiceGraphDB(DatasetService):
 
     def get_datasets(self):
         """
-        Send request to database by its API to acquire all nodes with given label
+        Get all datasets
 
         Returns:
-            List of acquired nodes in NodesOut model
+            Result of request as list of dataset objects
         """
         get_response = self.graph_api_service.get_datasets()
 
@@ -70,20 +70,20 @@ class DatasetServiceGraphDB(DatasetService):
 
         return DatasetsOut(datasets=result.datasets)
 
-    def delete_dataset(self, database_name_looked_for: str):
+    def delete_dataset(self, dataset_name: str):
         """
-        Send request to graph api to delete given dataset
+        Delete given dataset
 
         Args:
-        database_name (str): Name of a dataset
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as dataset object
         """
-        delete_response = self.get_dataset(database_name_looked_for)
+        delete_response = self.get_dataset(dataset_name)
 
         if type(delete_response) is NotFoundByIdModel:
             return delete_response
 
-        self.graph_api_service.delete_dataset(database_name_looked_for)
+        self.graph_api_service.delete_dataset(dataset_name)
         return delete_response

@@ -17,16 +17,16 @@ class ParticipantServiceGraphDB(ParticipantService):
     """
     graph_api_service = GraphApiService()
 
-
     def __init__(self):
         self.participant_state_service: ParticipantStateService = None
 
-    def save_participant(self, participant: ParticipantIn,dataset_name: str):
+    def save_participant(self, participant: ParticipantIn, dataset_name: str):
         """
         Send request to graph api to create new participant
 
         Args:
             participant (ParticipantIn): Participant to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as participant object
@@ -47,6 +47,9 @@ class ParticipantServiceGraphDB(ParticipantService):
         """
         Send request to graph api to get participants
 
+        Args:
+            dataset_name (str): name of dataset
+
         Returns:
             Result of request as list of participants objects
         """
@@ -66,14 +69,14 @@ class ParticipantServiceGraphDB(ParticipantService):
 
         return ParticipantsOut(participants=participants)
 
-
-    def get_participant(self, participant_id: Union[int, str],dataset_name: str, depth: int = 0):
+    def get_participant(self, participant_id: Union[int, str], dataset_name: str, depth: int = 0):
         """
         Send request to graph api to get given participant
 
         Args:
             depth: (int): specifies how many related entities will be traversed to create the response
             participant_id (int | str): identity of participant
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as participant object
@@ -87,10 +90,9 @@ class ParticipantServiceGraphDB(ParticipantService):
 
         participant = create_stub_from_response(get_response, properties=['name', 'date_of_birth', 'sex', 'disorder'])
 
-
         if depth != 0:
             participant["participant_states"] = []
-            relations_response = self.graph_api_service.get_node_relationships(participant_id,dataset_name)
+            relations_response = self.graph_api_service.get_node_relationships(participant_id, dataset_name)
 
             for relation in relations_response["relationships"]:
                 if relation["start_node"] == participant_id & relation["name"] == "hasParticipantState":
@@ -102,13 +104,13 @@ class ParticipantServiceGraphDB(ParticipantService):
         else:
             return BasicParticipantOut(**participant)
 
-
-    def delete_participant(self, participant_id: Union[int, str],dataset_name: str):
+    def delete_participant(self, participant_id: Union[int, str], dataset_name: str):
         """
         Send request to graph api to delete given participant
 
         Args:
             participant_id (int): Id of participant
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as participant object
@@ -121,7 +123,6 @@ class ParticipantServiceGraphDB(ParticipantService):
         self.graph_api_service.delete_node(participant_id, dataset_name)
         return get_response
 
-
     def update_participant(self, participant_id: Union[int, str], participant: ParticipantIn, dataset_name: str):
         """
         Send request to graph api to update given participant
@@ -129,6 +130,7 @@ class ParticipantServiceGraphDB(ParticipantService):
         Args:
             participant_id (int | str): Id of participant
             participant (ParticipantIn): Properties to update
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as participant object

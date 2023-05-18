@@ -9,5 +9,5 @@ database = {
     "name": "neo4j",
     "commit_path": "/db/{database_name}/tx/commit",
     "user": "neo4j",
-    "passwd": "griseragrisera",
+    "passwd": "grisera",
 }

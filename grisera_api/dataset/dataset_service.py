@@ -13,51 +13,48 @@ class DatasetService:
     """
     graph_api_service = GraphApiService()
 
-    def save_dataset(self, dataset_name_to_create: str):
+    def save_dataset(self, dataset_name: str):
         """
-        Send request to database by its API to create new relationship
+        Creates new dataset
 
         Args:
-            relationship (-): Relationship to be added to database
+            dataset_name (str): name of dataset to create
 
         Returns:
-            Result of request as relationship object
+            Result of request as dataset object
         """
 
         raise Exception("save_database not implemented yet")
 
-    def get_datasets(self, dataset_name):
+    def get_datasets(self, dataset_name: str):
         """
-        Send request to database by its API to acquire all nodes with given label
-
-        Args:
-            database_name (string): Name of the database
+        Get all datasets
 
         Returns:
-            List of acquired nodes in NodesOut model
+            Result of request as list of dataset objects
         """
         raise Exception("get_datasets not implemented yet")
     
     def get_dataset(self, dataset_name: str):
         """
-        Send request to graph api to get given experiment
+        Get dataset by name
 
         Args:
-        database_name (str): name of dataset
+            dataset_name (str): name of dataset
 
         Returns:
-            Result of request as experiment object
+            Result of request as dataset object
         """
         raise Exception("get_dataset not implemented yet")
     
     def delete_dataset(self, dataset_name: str):
         """
-        Send request to graph api to delete given experiment
+        Delete given dataset
 
         Args:
-        database_name (str): name of dataset
+            dataset_name (str): name of dataset
 
         Returns:
-            Result of request as experiment object
+            Result of request as dataset object
         """
         raise Exception("delete_dataset not implemented yet")

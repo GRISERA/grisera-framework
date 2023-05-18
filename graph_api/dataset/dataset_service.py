@@ -83,19 +83,6 @@ class DatasetService:
         Returns:
             List of acquired nodes in NodesOut model
         """
-        # found = self.db.dataset_exists(name_hash)
-        #
-        # if not found:
-        #     return DatasetOut(errors="Dataset not found")
-        #
-        # # get the alias from the DB
-        # get_aliases_response = self.db.get_aliases_from_database(name_hash)
-        # name_by_user = ""
-        # for row in get_aliases_response["results"][0]["data"]:
-        #     if "row" in row:
-        #         if "name_by_user" in row['row'][0]:
-        #             name_by_user = row['row'][0]['name_by_user']
-        # return DatasetOut(name_hash=name_hash, name_by_user=name_by_user)
 
         response = self.db.get_aliases_from_database(name_hash)
 

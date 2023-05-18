@@ -17,7 +17,6 @@ class MeasureNameServiceGraphDB(MeasureNameService):
     """
     graph_api_service = GraphApiService()
 
-
     def __init__(self):
         self.measure_service: MeasureService = None
 
@@ -51,7 +50,6 @@ class MeasureNameServiceGraphDB(MeasureNameService):
         Args:
             dataset_name (str): name of dataset
 
-
         Returns:
             Result of request as list of measure name objects
         """
@@ -67,8 +65,7 @@ class MeasureNameServiceGraphDB(MeasureNameService):
 
         return MeasureNamesOut(measure_names=measure_names)
 
-
-    def get_measure_name(self, measure_name_id: Union[int, str],dataset_name: str, depth: int = 0):
+    def get_measure_name(self, measure_name_id: Union[int, str], dataset_name: str, depth: int = 0):
         """
         Send request to graph api to get given measure name
 
@@ -88,16 +85,14 @@ class MeasureNameServiceGraphDB(MeasureNameService):
 
         measure_name = create_stub_from_response(get_response, properties=['name', 'type'])
 
-
         if depth != 0:
             measure_name["measures"] = []
-            relations_response = self.graph_api_service.get_node_relationships(measure_name_id,dataset_name)
+            relations_response = self.graph_api_service.get_node_relationships(measure_name_id, dataset_name)
 
             for relation in relations_response["relationships"]:
                 if relation["end_node"] == measure_name_id & relation["name"] == "hasMeasureName":
                     measure_name['measures'].append(self.measure_service.
                                                     get_measure(relation["start_node"], depth - 1))
-
 
             return MeasureNameOut(**measure_name)
         else:
@@ -105,7 +100,7 @@ class MeasureNameServiceGraphDB(MeasureNameService):
 
     def delete_measure_name(self, measure_name_id: int, dataset_name: str):
         """
-        Send request to graph api to get given measure_name
+        Send request to graph api to delete given measure_name
         Args:
             measure_name_id (int): Id of measure_name
             dataset_name (str): name of dataset
@@ -142,4 +137,3 @@ class MeasureNameServiceGraphDB(MeasureNameService):
         measure_name_result.update(get_response.dict())
 
         return MeasureNameOut(**measure_name_result)
-

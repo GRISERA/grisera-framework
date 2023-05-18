@@ -17,7 +17,6 @@ class ExperimentServiceGraphDB(ExperimentService):
     """
     graph_api_service = GraphApiService()
 
-
     def __init__(self):
         self.activity_execution_service: ActivityExecutionService = None
 
@@ -27,6 +26,7 @@ class ExperimentServiceGraphDB(ExperimentService):
 
         Args:
             experiment (ExperimentIn): Experiment to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as experiment object
@@ -47,12 +47,13 @@ class ExperimentServiceGraphDB(ExperimentService):
         """
         Send request to graph api to get experiments
 
+        Args:
+             dataset_name (str): name of dataset
+
         Returns:
             Result of request as list of experiments objects
         """
         get_response = self.graph_api_service.get_nodes("Experiment", dataset_name)
-
-
 
         experiments = []
 
@@ -63,11 +64,10 @@ class ExperimentServiceGraphDB(ExperimentService):
                     properties[property["key"]] = property["value"]
                 else:
                     properties['additional_properties'].append({'key': property['key'], 'value': property['value']})
-            experiment = BasicExperimentOut(**properties)  # TODO fix the error
+            experiment = BasicExperimentOut(**properties)
             experiments.append(experiment)
 
         return ExperimentsOut(experiments=experiments)
-
 
     def get_experiment(self, experiment_id: Union[int, str], dataset_name: str, depth: int = 0):
         """
@@ -76,13 +76,13 @@ class ExperimentServiceGraphDB(ExperimentService):
         Args:
             experiment_id (int | str): identity of experiment
             depth: (int): specifies how many related entities will be traversed to create the response
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as experiment object
         """
 
-
-        get_response = self.graph_api_service.get_node(experiment_id,dataset_name)
+        get_response = self.graph_api_service.get_node(experiment_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=experiment_id, errors=get_response["errors"])
@@ -91,11 +91,10 @@ class ExperimentServiceGraphDB(ExperimentService):
 
         experiment = create_stub_from_response(get_response, properties=['experiment_name'])
 
-
         if depth != 0:
             experiment["activity_executions"] = []
 
-            relations_response = self.graph_api_service.get_node_relationships(experiment_id,dataset_name)
+            relations_response = self.graph_api_service.get_node_relationships(experiment_id, dataset_name)
 
             for relation in relations_response["relationships"]:
                 if relation["start_node"] == experiment_id & relation["name"] == "hasScenario":
@@ -111,7 +110,8 @@ class ExperimentServiceGraphDB(ExperimentService):
         Send request to graph api to delete given experiment
 
         Args:
-        experiment_id (int): Id of experiment
+            experiment_id (int): Id of experiment
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as experiment object
@@ -129,8 +129,9 @@ class ExperimentServiceGraphDB(ExperimentService):
         Send request to graph api to update given experiment
 
         Args:
-        experiment_id (int): Id of experiment
-        experiment (ExperimentIn): Properties to update
+            experiment_id (int): Id of experiment
+            experiment (ExperimentIn): Properties to update
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as experiment object

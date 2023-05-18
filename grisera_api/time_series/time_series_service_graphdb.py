@@ -31,6 +31,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
 
         Args:
             time_series (TimeSeriesIn): Time series to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as time series object
@@ -65,6 +66,10 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         """
         Send request to graph api to get time series nodes
 
+        Args:
+            dataset_name (str): name of dataset
+            params (QueryParams): Get parameters
+
         Returns:
             Result of request as list of time series nodes objects
         """
@@ -84,8 +89,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
 
         return TimeSeriesNodesOut(time_series_nodes=time_series_nodes)
 
-
-    def get_time_series(self, time_series_id: Union[int, str],dataset_name: str, depth: int = 0,
+    def get_time_series(self, time_series_id: Union[int, str], dataset_name: str, depth: int = 0,
                         signal_min_value: Optional[int] = None,
                         signal_max_value: Optional[int] = None):
         """
@@ -96,6 +100,7 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
             depth: (int): specifies how many related entities will be traversed to create the response
             signal_min_value (Optional[int]): Filter signal values by min value
             signal_max_value (Optional[int]): Filter signal values by max value
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as time series object
@@ -109,12 +114,11 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
 
         time_series = create_stub_from_response(get_response, properties=['type', 'source'])
 
-
         if depth != 0:
             time_series["observable_informations"] = []
             time_series["measure"] = None
 
-            relations_response = self.graph_api_service.get_node_relationships(time_series_id,dataset_name)
+            relations_response = self.graph_api_service.get_node_relationships(time_series_id, dataset_name)
 
             for relation in relations_response["relationships"]:
                 if relation["start_node"] == time_series_id & relation["name"] == "hasObservableInformation":
@@ -129,12 +133,13 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         else:
             return BasicTimeSeriesOut(**time_series)
 
-    def delete_time_series(self, time_series_id: Union[int, str],dataset_name: str):
+    def delete_time_series(self, time_series_id: Union[int, str], dataset_name: str):
         """
         Send request to graph api to delete given time series
 
         Args:
             time_series_id (int | str): identity of time series
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as time series object
@@ -147,14 +152,14 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         self.graph_api_service.delete_node(time_series_id, dataset_name)
         return get_response
 
-
-    def update_time_series(self, time_series_id: Union[int, str], time_series: TimeSeriesPropertyIn,dataset_name: str):
+    def update_time_series(self, time_series_id: Union[int, str], time_series: TimeSeriesPropertyIn, dataset_name: str):
         """
         Send request to graph api to update given time series
 
         Args:
             time_series_id (int | str): identity of time series
             time_series (TimeSeriesPropertyIn): Properties to update
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as time series object
@@ -175,15 +180,15 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
 
         return BasicTimeSeriesOut(**time_series_result)
 
-
     def update_time_series_relationships(self, time_series_id: Union[int, str],
-                                         time_series: TimeSeriesRelationIn,dataset_name: str):
+                                         time_series: TimeSeriesRelationIn, dataset_name: str):
         """
         Send request to graph api to update given time series
 
         Args:
             time_series_id (int | str): identity of time series
             time_series (TimeSeriesRelationIn): Relationships to update
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as time series object

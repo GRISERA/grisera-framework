@@ -17,11 +17,10 @@ class ActivityServiceGraphDB(ActivityService):
     """
     graph_api_service = GraphApiService()
 
-
     def __init__(self):
         self.activity_execution_service: ActivityExecutionService = None
 
-    def save_activity(self, activity: ActivityIn,dataset_name: str):
+    def save_activity(self, activity: ActivityIn, dataset_name: str):
 
         """
         Send request to graph api to create new activity
@@ -64,8 +63,7 @@ class ActivityServiceGraphDB(ActivityService):
 
         return ActivitiesOut(activities=activities)
 
-
-    def get_activity(self, activity_id: Union[int, str],dataset_name: str, depth: int = 0):
+    def get_activity(self, activity_id: Union[int, str], dataset_name: str, depth: int = 0):
         """
         Send request to graph api to get given activity
         Args:
@@ -89,7 +87,6 @@ class ActivityServiceGraphDB(ActivityService):
             activity['activity_executions'] = []
             relations_response = self.graph_api_service.get_node_relationships(activity_id, dataset_name)
 
-
             for relation in relations_response["relationships"]:
                 if relation["end_node"] == str(activity_id) and relation["name"] == "hasActivity":
                     activity['activity_executions']. \
@@ -102,7 +99,7 @@ class ActivityServiceGraphDB(ActivityService):
 
     def delete_activity(self, activity_id: int, dataset_name: str):
         """
-        Send request to graph api to get given activity
+        Send request to graph api to delete given activity
         Args:
             activity_id (int): Id of activity
             dataset_name (str): name of dataset

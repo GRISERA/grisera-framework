@@ -18,7 +18,6 @@ class PersonalityServiceGraphDB(PersonalityService):
     """
     graph_api_service = GraphApiService()
 
-
     def __init__(self):
         self.participant_state_service: ParticipantStateService = None
 
@@ -28,6 +27,7 @@ class PersonalityServiceGraphDB(PersonalityService):
 
         Args:
             personality (PersonalityBigFiveIn): Personality big five to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as personality big five object
@@ -49,6 +49,7 @@ class PersonalityServiceGraphDB(PersonalityService):
 
         Args:
             personality (PersonalityPanasIn): Personality to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as personality panas object
@@ -62,7 +63,6 @@ class PersonalityServiceGraphDB(PersonalityService):
 
         return PersonalityPanasOut(**personality.dict(), id=personality_id)
 
-
     def get_personality(self, personality_id: Union[int, str], dataset_name: str, depth: int = 0):
 
         """
@@ -71,6 +71,7 @@ class PersonalityServiceGraphDB(PersonalityService):
         Args:
             depth: (int): specifies how many related entities will be traversed to create the response
             personality_id (int | str): identity of personality
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as personality object
@@ -107,6 +108,9 @@ class PersonalityServiceGraphDB(PersonalityService):
         """
         Send request to graph api to get personalities
 
+        Args:
+            dataset_name (str): name of dataset
+
         Returns:
             Result of request as list of personalities objects
         """
@@ -123,13 +127,13 @@ class PersonalityServiceGraphDB(PersonalityService):
 
         return PersonalitiesOut(personalities=personalities)
 
-
     def delete_personality(self, personality_id: Union[int, str], dataset_name: str):
         """
         Send request to graph api to delete given personality
 
         Args:
             personality_id (int | str): identity of personality
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as personality object
@@ -141,14 +145,15 @@ class PersonalityServiceGraphDB(PersonalityService):
         self.graph_api_service.delete_node(personality_id, dataset_name)
         return get_response
 
-
-    def update_personality_big_five(self, personality_id: Union[int, str], personality: PersonalityBigFiveIn, dataset_name: str):
+    def update_personality_big_five(self, personality_id: Union[int, str], personality: PersonalityBigFiveIn,
+                                    dataset_name: str):
         """
         Send request to graph api to update given personality big five model
 
         Args:
             personality_id (int | str): identity of personality
             personality (PersonalityBigFiveIn): Properties to update
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as personality object
@@ -169,13 +174,15 @@ class PersonalityServiceGraphDB(PersonalityService):
         personality_response.update(personality)
         return BasicPersonalityBigFiveOut(**personality_response)
 
-    def update_personality_panas(self, personality_id: Union[int, str], personality: PersonalityPanasIn, dataset_name: str):
+    def update_personality_panas(self, personality_id: Union[int, str], personality: PersonalityPanasIn,
+                                 dataset_name: str):
         """
         Send request to graph api to update given personality panas model
 
         Args:
             personality_id (int | str): identity of personality
             personality (PersonalityPanasIn): Properties to update
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as personality object

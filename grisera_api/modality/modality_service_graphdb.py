@@ -17,16 +17,16 @@ class ModalityServiceGraphDB(ModalityService):
     """
     graph_api_service = GraphApiService()
 
-
     def __init__(self):
         self.observable_information_service: ObservableInformationService = None
 
-    def save_modality(self, modality: ModalityIn,dataset_name: str):
+    def save_modality(self, modality: ModalityIn, dataset_name: str):
         """
         Send request to graph api to create new modality
 
         Args:
             modality (ModalityIn): Modality to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as modality object
@@ -49,6 +49,9 @@ class ModalityServiceGraphDB(ModalityService):
         """
         Send request to graph api to get all modalities
 
+        Args:
+            dataset_name (str): name of dataset
+
         Returns:
             Result of request as list of modality objects
         """
@@ -58,14 +61,14 @@ class ModalityServiceGraphDB(ModalityService):
 
         return ModalitiesOut(modalities=modalities)
 
-
-    def get_modality(self, modality_id: Union[int, str],dataset_name: str, depth: int = 0):
+    def get_modality(self, modality_id: Union[int, str], dataset_name: str, depth: int = 0):
         """
         Send request to graph api to get given modality
 
         Args:
             depth: (int): specifies how many related entities will be traversed to create the response
             modality_id (int | str): identity of modality
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as modality object
@@ -79,10 +82,9 @@ class ModalityServiceGraphDB(ModalityService):
 
         modality = create_stub_from_response(get_response, properties=['modality'])
 
-
         if depth != 0:
             modality["observable_informations"] = []
-            relations_response = self.graph_api_service.get_node_relationships(modality_id,dataset_name)
+            relations_response = self.graph_api_service.get_node_relationships(modality_id, dataset_name)
 
             for relation in relations_response["relationships"]:
                 if relation["end_node"] == modality_id & relation["name"] == "hasModality":

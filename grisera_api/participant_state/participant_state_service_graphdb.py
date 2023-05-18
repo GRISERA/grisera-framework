@@ -36,13 +36,13 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
 
         Args:
             participant_state (ParticipantStateIn): Participant state to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as participant state object
         """
 
-        node_response = self.graph_api_service.create_node("Participant State",dataset_name)
-
+        node_response = self.graph_api_service.create_node("Participant State", dataset_name)
 
         if node_response["errors"] is not None:
             return ParticipantStateOut(**participant_state.dict(), errors=node_response["errors"])
@@ -73,7 +73,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
 
         participant_state.participant_id = None
         participant_state.personality_ids = participant_state.appearance_ids = None
-        self.graph_api_service.create_properties(participant_state_id, participant_state,dataset_name)
+        self.graph_api_service.create_properties(participant_state_id, participant_state, dataset_name)
 
         return self.get_participant_state(participant_state_id, dataset_name)
 
@@ -100,14 +100,14 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
 
         return ParticipantStatesOut(participant_states=participant_states)
 
-
-    def get_participant_state(self, participant_state_id: Union[int, str],dataset_name: str, depth: int = 0):
+    def get_participant_state(self, participant_state_id: Union[int, str], dataset_name: str, depth: int = 0):
         """
         Send request to graph api to get given participant state
 
         Args:
             depth: (int): specifies how many related entities will be traversed to create the response
             participant_state_id (int | str): identity of participant state
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as participant state object
@@ -155,6 +155,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
 
         Args:
             participant_state_id (int | str): Id of participant state
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as participant state object
@@ -167,7 +168,6 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         self.graph_api_service.delete_node(participant_state_id, dataset_name)
         return get_response
 
-
     def update_participant_state(self, participant_state_id: Union[int, str],
                                  participant_state: ParticipantStatePropertyIn,
                                  dataset_name: str):
@@ -178,6 +178,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         Args:
             participant_state_id (int): Id of participant state
             participant_state (ParticipantStatePropertyIn): Properties to update
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as participant state object
@@ -204,6 +205,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         Args:
             participant_state_id (int | str): identity of participant state
             participant_state (ParticipantStateRelationIn): Relationships to update
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as participant state object

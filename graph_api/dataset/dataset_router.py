@@ -59,7 +59,7 @@ class DatasetRouter:
     @router.get("/datasets", tags=["datasets"], response_model=DatasetsOut)
     async def get_datasets(self, response: Response):
         """
-        Get all datasets by name
+        Get all datasets
         """
         datasets = self.dataset_service.get_datasets()
         if datasets.errors is not None:

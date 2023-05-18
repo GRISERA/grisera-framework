@@ -31,7 +31,8 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         time_series_id = result.id
 
         errors = self.save_signal_values(time_series.signal_values, time_series_id,
-                                         self.get_experiment_id(time_series_id, dataset_name), time_series.type, dataset_name)
+                                         self.get_experiment_id(time_series_id, dataset_name), time_series.type,
+                                         dataset_name)
         if errors is not None:
             return TimeSeriesOut(**time_series.dict(), errors=errors)
 
@@ -67,12 +68,15 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         result = self.save_time_series(new_time_series, dataset_name)
 
         for index, time_series_id in enumerate(time_series_transformation.source_time_series_ids):
-            relationship = self.graph_api_service.create_relationships(result.id, time_series_id, "transformedFrom", dataset_name)
+            relationship = self.graph_api_service.create_relationships(result.id, time_series_id, "transformedFrom",
+                                                                       dataset_name)
             self.graph_api_service.create_relationship_properties(relationship["id"],
                                                                   TimeSeriesTransformationRelationshipIn(
                                                                       additional_properties=[
-                                                                          {'key': 'order', 'value': index + 1}]), dataset_name)
-        assert len(new_signal_values_id_mapping) == len(result.signal_values), "transformation signal values mapping does not have correct length"
+                                                                          {'key': 'order', 'value': index + 1}]),
+                                                                  dataset_name)
+        assert len(new_signal_values_id_mapping) == len(result.signal_values), \
+            "transformation signal values mapping does not have correct length"
         for signal_value_ids, new_signal_value in zip(new_signal_values_id_mapping, result.signal_values):
             new_signal_value_id = new_signal_value["signal_value"]["id"]
             for index, old_signal_value_id in enumerate(signal_value_ids):
@@ -81,7 +85,8 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 self.graph_api_service.create_relationship_properties(relationship["id"],
                                                                       TimeSeriesTransformationRelationshipIn(
                                                                           additional_properties=[
-                                                                              {'key': 'order', 'value': index + 1}]), dataset_name)
+                                                                              {'key': 'order', 'value': index + 1}]),
+                                                                      dataset_name)
         return result
 
     def get_experiment_id(self, time_series_id: int, dataset_name: str):
@@ -173,7 +178,8 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         previous_timestamp_timestamp_relation_id = None
         while timestamp is not None and int(get_node_property(timestamp, "timestamp")) < timestamp_value:
             previous_timestamp_id = timestamp["id"]
-            timestamp, previous_timestamp_timestamp_relation_id = self.get_neighbour_node(timestamp["id"], "next", dataset_name)
+            timestamp, previous_timestamp_timestamp_relation_id = self.get_neighbour_node(timestamp["id"], "next",
+                                                                                          dataset_name)
 
         if timestamp is None or int(get_node_property(timestamp, "timestamp")) != timestamp_value:
             new_timestamp_node = self.graph_api_service.create_node("Timestamp", dataset_name)
@@ -185,7 +191,8 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
 
             timestamp_properties_response = self.graph_api_service.create_properties(new_timestamp_id,
                                                                                      TimestampNodesIn(
-                                                                                         timestamp=timestamp_value), dataset_name)
+                                                                                         timestamp=timestamp_value),
+                                                                                     dataset_name)
             if timestamp_properties_response["errors"] is not None:
                 return timestamp_properties_response
 
@@ -203,7 +210,8 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             return self.graph_api_service.get_node(new_timestamp_id, dataset_name)
         return timestamp
 
-    def create_signal_value(self, signal_value: SignalValueNodesIn, previous_signal_value_node, time_series_id: int, dataset_name: str):
+    def create_signal_value(self, signal_value: SignalValueNodesIn, previous_signal_value_node, time_series_id: int,
+                            dataset_name: str):
         signal_value_node_response = self.graph_api_service.create_node("Signal Value", dataset_name)
 
         if signal_value_node_response["errors"] is not None:
@@ -240,7 +248,8 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 return current_signal_value_node
 
             current_timestamp = self.get_or_create_timestamp_node(
-                signal_value.timestamp if timestamp_type == Type.timestamp else signal_value.start_timestamp, timestamp, dataset_name)
+                signal_value.timestamp if timestamp_type == Type.timestamp else signal_value.start_timestamp, timestamp,
+                dataset_name)
 
             if current_timestamp["errors"] is not None:
                 return current_timestamp["errors"]
@@ -263,7 +272,8 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                 self.graph_api_service.create_relationships(start_node=current_timestamp["id"],
                                                             end_node=current_signal_value_node["id"],
                                                             name="startInSec")
-                current_timestamp = self.get_or_create_timestamp_node(signal_value.end_timestamp, current_timestamp, dataset_name)
+                current_timestamp = self.get_or_create_timestamp_node(signal_value.end_timestamp, current_timestamp,
+                                                                      dataset_name)
 
                 if current_timestamp["errors"] is not None:
                     return current_timestamp["errors"]
@@ -448,6 +458,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         Send request to graph api to get time series nodes
         Args:
             dataset_name (str): name of dataset
+            params (QueryParams): Get parameters
         Returns:
             Result of request as list of time series nodes objects
         """

@@ -40,7 +40,6 @@ class DatabaseService:
             Result of request      
         """
 
-        # self.database_url = replace_db_name(self.database_url, database_name)
         commit_body = {
             "statements": [{"statement": statement}]
         }
@@ -349,7 +348,7 @@ class DatabaseService:
         }
         return self.post(commit_body, database_name)
 
-    def replace_string_between_two_substring(self, original_string, delimiter_before, delimiter_after,
+    def replace_string_between_two_substrings(self, original_string, delimiter_before, delimiter_after,
                                              replacement_string):
         """
         Replace the substring in the original string with the replacement string.
@@ -377,10 +376,7 @@ class DatabaseService:
         Returns:
             The url with new database name.
         """
-        # url = "http://host.docker.internal:7474/db/dba/tx/commit"
-        # new_database_name = 'DATABASE_NAME'
-        new_url = self.replace_string_between_two_substring(current_url, '/db/', '/tx', database_name)
-        # new_url = "http://host.docker.internal:7474/db/DATABASE_NAME/tx/commit"
+        new_url = self.replace_string_between_two_substrings(current_url, '/db/', '/tx', database_name)
         return new_url
 
     def create_dataset(self, name_hash):
@@ -444,27 +440,6 @@ class DatabaseService:
         statement = "show databases"
         return self.post_statement(statement, dataset_name)
 
-    # def dataset_exists(self, dataset_name):
-    #     """
-    #     Check whether dataset with given name exists
-    #
-    #     Args:
-    #         dataset_name (string): dataset name to be checked
-    #
-    #     Returns:
-    #         True if exists, otherwise false
-    #     """
-    #     show_databases_statement = "show databases"
-    #     database_name = "neo4j"  # database to ask the server
-    #
-    #     response = self.post_statement(show_databases_statement, database_name)
-    #
-    #     for db in response['results'][0]['data']:
-    #         db_name_in_system = db['row'][0]
-    #         if dataset_name == db_name_in_system:
-    #             return True
-    #     return False
-
     def get_dataset(self, dataset_name):
         """
         Get dataset with given name
@@ -475,15 +450,8 @@ class DatabaseService:
         Returns:
             Result of request
         """
-        show_databases_statement = "show databases"
-        database_name = "neo4j"  # database to ask the server
         response = self.get_aliases_from_database(dataset_name)
         return response
-        # return self.post_statement(show_databases_statement, database_name)
-        # for db in response['results'][0]['data']:
-        #     db_name_in_system = db['row'][0]
-        #     if dataset_name == db_name_in_system:
-        #         return DatasetOut()
 
     def delete_dataset(self, dataset_name):
         """

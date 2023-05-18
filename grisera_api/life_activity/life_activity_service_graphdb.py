@@ -17,7 +17,6 @@ class LifeActivityServiceGraphDB(LifeActivityService):
     """
     graph_api_service = GraphApiService()
 
-
     def __init__(self):
         self.observable_information_service: ObservableInformationService = None
 
@@ -28,14 +27,13 @@ class LifeActivityServiceGraphDB(LifeActivityService):
 
         Args:
             life_activity (LifeActivityIn): Life activity to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as life activity object
         """
 
-
         node_response = self.graph_api_service.create_node("Life Activity", dataset_name)
-
 
         if node_response["errors"] is not None:
             return LifeActivityOut(life_activity=life_activity.life_activity, errors=node_response["errors"])
@@ -52,6 +50,8 @@ class LifeActivityServiceGraphDB(LifeActivityService):
         """
         Send request to graph api to get all life activities
 
+        Args:
+            dataset_name (str): name of dataset
         Returns:
             Result of request as list of life activity objects
         """
@@ -66,7 +66,6 @@ class LifeActivityServiceGraphDB(LifeActivityService):
 
         return LifeActivitiesOut(life_activities=life_activities)
 
-
     def get_life_activity(self, life_activity_id: Union[int, str], dataset_name: str, depth: int = 0):
         """
         Send request to graph api to get given life activity
@@ -74,6 +73,7 @@ class LifeActivityServiceGraphDB(LifeActivityService):
         Args:
             life_activity_id (int | str): identity of life activity
             depth: (int): specifies how many related entities will be traversed to create the response
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as life activity object
@@ -86,7 +86,6 @@ class LifeActivityServiceGraphDB(LifeActivityService):
             return NotFoundByIdModel(id=life_activity_id, errors="Node not found.")
 
         life_activity = create_stub_from_response(get_response, properties=['life_activity'])
-
 
         if depth != 0:
             life_activity["observable_informations"] = []
