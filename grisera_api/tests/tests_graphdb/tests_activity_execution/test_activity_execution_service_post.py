@@ -52,10 +52,10 @@ class TestActivityExecutionServicePost(unittest.TestCase):
         result = activity_execution_service.save_activity_execution(activity_execution_in, dataset_name)
 
         self.assertEqual(result, activity_execution_out)
-        create_node_mock.assert_called_once_with('Activity Execution', dataset_name)
+        create_node_mock.assert_called_once_with('`Activity Execution`', dataset_name)
         create_relationships_mock.assert_has_calls([
-            mock.call(start_node=id_node, end_node=activity_id, name='hasActivity',dataset_name=dataset_name),
-            mock.call(start_node=id_node, end_node=arrangement_id, name='hasArrangement',dataset_name=dataset_name)
+            mock.call(start_node=id_node, end_node=activity_id, name='hasActivity', dataset_name=dataset_name),
+            mock.call(start_node=id_node, end_node=arrangement_id, name='hasArrangement', dataset_name=dataset_name)
         ])
         create_properties_mock.assert_has_calls([mock.call(id_node, activity_execution_in, dataset_name)])
 
@@ -119,5 +119,5 @@ class TestActivityExecutionServicePost(unittest.TestCase):
 
         self.assertEqual(result, ActivityExecutionOut(errors=['error']))
 
-        create_node_mock.assert_called_once_with('Activity Execution',dataset_name)
+        create_node_mock.assert_called_once_with('`Activity Execution`', dataset_name)
 

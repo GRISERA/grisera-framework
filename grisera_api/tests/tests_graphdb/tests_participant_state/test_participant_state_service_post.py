@@ -83,4 +83,4 @@ class TestParticipantStateServicePost(unittest.TestCase):
         result = participant_state_service.save_participant_state(participant_state, dataset_name)
 
         self.assertEqual(result, ParticipantStateOut(age=5, errors=['error']))
-        create_node_mock.assert_called_once_with('Participant State', dataset_name)
+        create_node_mock.assert_called_once_with('`Participant State`', dataset_name)

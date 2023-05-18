@@ -92,7 +92,7 @@ class TestLifeActivityServiceGet(unittest.TestCase):
         result = life_activity_service.get_life_activities(dataset_name)
 
         self.assertEqual(result, life_activities)
-        get_nodes_mock.assert_called_once_with("Life Activity", dataset_name)
+        get_nodes_mock.assert_called_once_with("`Life Activity`", dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_life_activities_empty(self, get_nodes_mock):
@@ -104,4 +104,4 @@ class TestLifeActivityServiceGet(unittest.TestCase):
         result = life_activity_service.get_life_activities(dataset_name)
 
         self.assertEqual(result, life_activities)
-        get_nodes_mock.assert_called_once_with("Life Activity", dataset_name)
+        get_nodes_mock.assert_called_once_with("`Life Activity`", dataset_name)

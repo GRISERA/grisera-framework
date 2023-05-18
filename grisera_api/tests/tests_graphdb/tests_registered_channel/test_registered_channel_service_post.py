@@ -40,7 +40,7 @@ class TestRegisteredChannelServicePost(unittest.TestCase):
         result = registered_channel_service.save_registered_channel(registered_channel_in, dataset_name)
 
         self.assertEqual(result, registered_channel_out)
-        create_node_mock.assert_called_once_with('Registered Channel', dataset_name)
+        create_node_mock.assert_called_once_with('`Registered Channel`', dataset_name)
         create_relationships_mock.assert_has_calls([
             mock.call(start_node=id_node, end_node=2, name='hasChannel',dataset_name=dataset_name),
             mock.call(start_node=id_node, end_node=3, name='hasRegisteredData',dataset_name=dataset_name)
@@ -101,4 +101,4 @@ class TestRegisteredChannelServicePost(unittest.TestCase):
         result = registered_channel_service.save_registered_channel(registered_channel, dataset_name)
 
         self.assertEqual(result, RegisteredChannelOut(errors=['error']))
-        create_node_mock.assert_called_once_with('Registered Channel', dataset_name)
+        create_node_mock.assert_called_once_with('`Registered Channel`', dataset_name)

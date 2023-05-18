@@ -93,7 +93,7 @@ class TestRegisteredDataServiceGet(unittest.TestCase):
         result = registered_data_service.get_registered_data_nodes(dataset_name)
 
         self.assertEqual(result, registered_data_nodes)
-        get_nodes_mock.assert_called_once_with("Registered Data", dataset_name)
+        get_nodes_mock.assert_called_once_with("`Registered Data`", dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_registered_data_nodes_empty(self, get_nodes_mock):
@@ -105,4 +105,4 @@ class TestRegisteredDataServiceGet(unittest.TestCase):
         result = registered_data_service.get_registered_data_nodes(dataset_name)
 
         self.assertEqual(result, registered_data_nodes)
-        get_nodes_mock.assert_called_once_with("Registered Data", dataset_name)
+        get_nodes_mock.assert_called_once_with("`Registered Data`", dataset_name)

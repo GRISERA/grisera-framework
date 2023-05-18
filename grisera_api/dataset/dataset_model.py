@@ -1,5 +1,6 @@
 from typing import Optional, Any, List
 from pydantic import BaseModel
+from models.base_model_out import BaseModelOut
 
 
 class DatasetIn(BaseModel):
@@ -15,7 +16,7 @@ class DatasetIn(BaseModel):
     name_by_user: Optional[str] = None
 
 
-class BasicDatasetOut(BaseModel):
+class BasicDatasetOut(DatasetIn):
     """
         Model of dataset
 
@@ -25,7 +26,7 @@ class BasicDatasetOut(BaseModel):
     name_hash: str = None
 
 
-class DatasetOut(BasicDatasetOut):
+class DatasetOut(BaseModelOut):
     """
         Model of dataset to send to client as a result of request
 

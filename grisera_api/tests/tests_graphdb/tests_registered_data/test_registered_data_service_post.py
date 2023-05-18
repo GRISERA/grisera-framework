@@ -23,7 +23,7 @@ class TestRegisteredDataServicePost(unittest.TestCase):
         result = registered_data_service.save_registered_data(registered_data, dataset_name)
 
         self.assertEqual(result, RegisteredDataOut(source='url', id=id_node, additional_properties=additional_properties))
-        create_node_mock.assert_called_once_with('Registered Data', dataset_name)
+        create_node_mock.assert_called_once_with('`Registered Data`', dataset_name)
         create_properties_mock.assert_called_once_with(id_node, registered_data, dataset_name)
 
     @mock.patch.object(GraphApiService, 'create_node')
@@ -37,7 +37,7 @@ class TestRegisteredDataServicePost(unittest.TestCase):
         result = registered_data_service.save_registered_data(registered_data, dataset_name)
 
         self.assertEqual(result, RegisteredDataOut(source='url', errors=['error']))
-        create_node_mock.assert_called_once_with('Registered Data', dataset_name)
+        create_node_mock.assert_called_once_with('`Registered Data`', dataset_name)
 
     @mock.patch.object(GraphApiService, 'create_node')
     @mock.patch.object(GraphApiService, 'create_properties')
@@ -52,5 +52,5 @@ class TestRegisteredDataServicePost(unittest.TestCase):
         result = registered_data_service.save_registered_data(registered_data, dataset_name)
 
         self.assertEqual(result, RegisteredDataOut(source='url', errors=['error']))
-        create_node_mock.assert_called_once_with('Registered Data', dataset_name)
+        create_node_mock.assert_called_once_with('`Registered Data`', dataset_name)
         create_properties_mock.assert_called_once_with(id_node, registered_data, dataset_name)
