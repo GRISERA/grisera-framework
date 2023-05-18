@@ -27,7 +27,7 @@ class TestActivityExecutionServiceGet(unittest.TestCase):
 
         self.assertEqual(result, activity_execution)
 
-        get_node_mock.assert_called_once_with(id_node,dataset_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_activity_execution_without_label(self, get_node_mock):
@@ -76,7 +76,7 @@ class TestActivityExecutionServiceGet(unittest.TestCase):
 
         self.assertEqual(result, activity_executions)
 
-        get_nodes_mock.assert_called_once_with("Activity Execution",dataset_name)
+        get_nodes_mock.assert_called_once_with("`Activity Execution`", dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_activity_executions_empty(self, get_nodes_mock):
@@ -88,5 +88,4 @@ class TestActivityExecutionServiceGet(unittest.TestCase):
         result = activity_executions_service.get_activity_executions(dataset_name)
 
         self.assertEqual(result, activity_executions)
-        get_nodes_mock.assert_called_once_with("Activity Execution",dataset_name)
-
+        get_nodes_mock.assert_called_once_with("`Activity Execution`", dataset_name)

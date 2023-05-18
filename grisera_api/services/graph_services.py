@@ -4,6 +4,7 @@ from activity_execution.activity_execution_service_graphdb import ActivityExecut
 from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 from arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
 from channel.channel_service_graphdb import ChannelServiceGraphDB
+from dataset.dataset_service_graphdb import DatasetServiceGraphDB
 from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
 from life_activity.life_activity_service_graphdb import LifeActivityServiceGraphDB
 from measure.measure_service_graphdb import MeasureServiceGraphDB
@@ -24,6 +25,7 @@ from activity_execution.activity_execution_service import ActivityExecutionServi
 from appearance.appearance_service import AppearanceService
 from arrangement.arrangement_service import ArrangementService
 from channel.channel_service import ChannelService
+from dataset.dataset_service import DatasetService
 from experiment.experiment_service import ExperimentService
 from life_activity.life_activity_service import LifeActivityService
 from measure.measure_service import MeasureService
@@ -49,6 +51,7 @@ class GraphServiceFactory(ServiceFactory):
         self.appearance_service = AppearanceServiceGraphDB()
         self.arrangement_service = ArrangementServiceGraphDB()
         self.channel_service = ChannelServiceGraphDB()
+        self.dataset_service = DatasetServiceGraphDB()
         self.experiment_service = ExperimentServiceGraphDB()
         self.life_activity_service = LifeActivityServiceGraphDB()
         self.measure_service = MeasureServiceGraphDB()
@@ -79,6 +82,8 @@ class GraphServiceFactory(ServiceFactory):
         self.arrangement_service.activity_execution_service = self.activity_execution_service
 
         self.channel_service.registered_channel_service = self.registered_channel_service
+
+        self.dataset_service.dataset_service = self.dataset_service
 
         self.experiment_service.activity_execution_service = self.activity_execution_service
 
@@ -142,6 +147,9 @@ class GraphServiceFactory(ServiceFactory):
 
     def get_channel_service(self) -> ChannelService:
         return self.channel_service
+
+    def get_dataset_service(self) -> DatasetService:
+        return self.dataset_service
 
     def get_experiment_service(self) -> ExperimentService:
         return self.experiment_service

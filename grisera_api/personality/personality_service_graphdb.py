@@ -34,8 +34,8 @@ class PersonalityServiceGraphDB(PersonalityService):
         """
 
         if not 0 <= personality.agreeableness <= 1 or not 0 <= personality.conscientiousness <= 1 or \
-           not 0 <= personality.extroversion <= 1 or not 0 <= personality.neuroticism <= 1 or \
-           not 0 <= personality.openess <= 1:
+                not 0 <= personality.extroversion <= 1 or not 0 <= personality.neuroticism <= 1 or \
+                not 0 <= personality.openess <= 1:
             return PersonalityBigFiveOut(**personality.dict(), errors="Value not between 0 and 1")
 
         node_response = self.graph_api_service.create_node("Personality", dataset_name)
@@ -77,7 +77,9 @@ class PersonalityServiceGraphDB(PersonalityService):
             Result of request as personality object
         """
         get_response = self.graph_api_service.get_node(personality_id, dataset_name)
-
+        
+        print("get_response in get_personality: {}".format(get_response))
+        
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=personality_id, errors=get_response["errors"])
         if get_response["labels"][0] != "Personality":
@@ -159,8 +161,8 @@ class PersonalityServiceGraphDB(PersonalityService):
             Result of request as personality object
         """
         if not 0 <= personality.agreeableness <= 1 or not 0 <= personality.conscientiousness <= 1 or \
-           not 0 <= personality.extroversion <= 1 or not 0 <= personality.neuroticism <= 1 or \
-           not 0 <= personality.openess <= 1:
+                not 0 <= personality.extroversion <= 1 or not 0 <= personality.neuroticism <= 1 or \
+                not 0 <= personality.openess <= 1:
             return BasicPersonalityBigFiveOut(**personality.dict(), errors="Value not between 0 and 1")
 
         get_response = self.get_personality(personality_id, dataset_name)

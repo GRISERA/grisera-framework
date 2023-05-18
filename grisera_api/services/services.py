@@ -12,6 +12,7 @@ from activity_execution.activity_execution_service import ActivityExecutionServi
 from appearance.appearance_service import AppearanceService
 from arrangement.arrangement_service import ArrangementService
 from channel.channel_service import ChannelService
+from dataset.dataset_service import DatasetService
 from experiment.experiment_service import ExperimentService
 from life_activity.life_activity_service import LifeActivityService
 from measure.measure_service import MeasureService
@@ -74,6 +75,9 @@ class Services:
 
     def channel_service(self) -> ChannelService:
         return self.service_factory.get_channel_service()
+
+    def dataset_service(self) -> DatasetService:
+        return self.service_factory.get_dataset_service()
 
     def experiment_service(self) -> ExperimentService:
         return self.service_factory.get_experiment_service()

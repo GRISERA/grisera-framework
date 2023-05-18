@@ -43,7 +43,7 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
             Result of request as observable information object
         """
 
-        node_response = self.graph_api_service.create_node("Observable Information", dataset_name)
+        node_response = self.graph_api_service.create_node("`Observable Information`",dataset_name)
 
         if node_response["errors"] is not None:
             return ObservableInformationOut(errors=node_response["errors"])
