@@ -34,7 +34,7 @@ class LifeActivityServiceGraphDB(LifeActivityService):
         """
 
 
-        node_response = self.graph_api_service.create_node("Life Activity", dataset_name)
+        node_response = self.graph_api_service.create_node("`Life Activity`", dataset_name)
 
 
         if node_response["errors"] is not None:
@@ -56,7 +56,7 @@ class LifeActivityServiceGraphDB(LifeActivityService):
             Result of request as list of life activity objects
         """
 
-        get_response = self.graph_api_service.get_nodes("Life Activity", dataset_name)
+        get_response = self.graph_api_service.get_nodes("`Life Activity`", dataset_name)
 
         if get_response["errors"] is not None:
             return LifeActivitiesOut(errors=get_response["errors"])

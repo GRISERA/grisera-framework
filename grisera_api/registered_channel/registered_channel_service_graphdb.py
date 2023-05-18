@@ -37,7 +37,7 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
         Returns:
             Result of request as registered channel object
         """
-        node_response = self.graph_api_service.create_node("Registered Channel", dataset_name)
+        node_response = self.graph_api_service.create_node("`Registered Channel`", dataset_name)
 
         if node_response["errors"] is not None:
             return RegisteredChannelOut(errors=node_response["errors"])

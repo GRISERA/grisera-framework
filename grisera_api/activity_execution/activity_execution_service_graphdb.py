@@ -41,7 +41,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
             Result of request as activity execution object
         """
 
-        node_response = self.graph_api_service.create_node("Activity Execution", dataset_name)
+        node_response = self.graph_api_service.create_node("`Activity Execution`", dataset_name)
 
 
         if node_response["errors"] is not None:
@@ -77,7 +77,7 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
             Result of request as list of activity executions objects
         """
 
-        get_response = self.graph_api_service.get_nodes("Activity Execution", dataset_name)
+        get_response = self.graph_api_service.get_nodes("`Activity Execution`", dataset_name)
 
 
         activity_executions = []

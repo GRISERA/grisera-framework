@@ -5,6 +5,7 @@ from activity_execution.activity_execution_service import ActivityExecutionServi
 from appearance.appearance_service import AppearanceService
 from arrangement.arrangement_service import ArrangementService
 from channel.channel_service import ChannelService
+from dataset.dataset_service import DatasetService
 from experiment.experiment_service import ExperimentService
 from life_activity.life_activity_service import LifeActivityService
 from measure.measure_service import MeasureService
@@ -42,6 +43,10 @@ class ServiceFactory(ABC):
 
     @abstractmethod
     def get_channel_service(self) -> ChannelService:
+        pass
+
+    @abstractmethod
+    def get_dataset_service(self) -> DatasetService:
         pass
 
     @abstractmethod

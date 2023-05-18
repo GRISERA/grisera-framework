@@ -94,7 +94,7 @@ class PersonalityRouter:
         response.
         """
 
-        get_response = self.personality_service.get_personality(personality_id,dataset_name, depth)
+        get_response = self.personality_service.get_personality(personality_id, dataset_name, depth)
 
         if get_response.errors is not None:
             response.status_code = 404

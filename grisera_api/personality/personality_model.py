@@ -1,6 +1,5 @@
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Any
 from enum import Enum
-
 from pydantic import BaseModel
 
 from models.base_model_out import BaseModelOut
@@ -30,6 +29,8 @@ class PersonalityBigFiveIn(BaseModel):
     extroversion: float
     neuroticism: float
     openess: float
+    errors: Optional[Any] = None
+    links: Optional[list] = None
 
 
 class BasicPersonalityBigFiveOut(PersonalityBigFiveIn):
@@ -66,7 +67,8 @@ class PersonalityPanasIn(BaseModel):
 
     negative_affect: float
     positive_affect: float
-
+    errors: Optional[Any] = None
+    links: Optional[list] = None
 
 class BasicPersonalityPanasOut(PersonalityPanasIn):
     """
@@ -102,6 +104,8 @@ class PersonalitiesOut(BaseModelOut):
     personalities: List[
         Union[BasicPersonalityBigFiveOut, BasicPersonalityPanasOut]
     ] = []
+    errors: Optional[Any] = None
+    links: Optional[list] = None
 
 
 # Circular import exception prevention

@@ -31,7 +31,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         Returns:
             Result of request as registered data object
         """
-        node_response = self.graph_api_service.create_node("Registered Data", dataset_name)
+        node_response = self.graph_api_service.create_node("`Registered Data`", dataset_name)
 
         if node_response["errors"] is not None:
             return RegisteredDataOut(**registered_data.dict(), errors=node_response["errors"])
@@ -50,7 +50,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         Returns:
             Result of request as list of registered_data_nodes objects
         """
-        get_response = self.graph_api_service.get_nodes("Registered Data", dataset_name)
+        get_response = self.graph_api_service.get_nodes("`Registered Data`", dataset_name)
 
         registered_data_nodes = []
 
