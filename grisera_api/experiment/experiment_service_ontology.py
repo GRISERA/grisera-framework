@@ -57,11 +57,23 @@ class ExperimentServiceOntology(ExperimentService):
 
         self.ontology_api_service.delete_roles(model_id, experiment.experiment_name)
 
+        new_additional_properties = []
+
+        errors = None
+
         for prop in experiment.additional_properties:
             response = self.ontology_api_service.add_role(model_id, prop.key, experiment.experiment_name, prop.value)
+            if response["errors"] is not None:
+                errors = f"[{prop.key} : {prop.value}]:" + response["errors"]
+                break
+            else:
+                new_additional_properties.append(prop)
 
-        experiment_result = {'relations': [],
-                             'reversed_relations': []}
+        experiment_result = {'activity_executions': []}
         experiment_result.update(experiment.dict())
+        experiment_result.update({'additional_properties': new_additional_properties})
 
-        return ExperimentOut(**experiment_result)
+        if errors is None:
+            return ExperimentOut(**experiment_result)
+        else:
+            return ExperimentOut(**experiment_result, errors=errors)
