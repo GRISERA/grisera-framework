@@ -54,7 +54,7 @@ class InstanceService:
         return InstanceModelOut(
             errors="Instance with label " + str(instance_label) + " not found in Model " + str(model_id))
 
-    def delete_instance(self,model_id: int, class_name: str, instance_label: str):
+    def delete_instance(self, model_id: int, class_name: str, instance_label: str):
         """
                         Delete instance with a given label
         """
