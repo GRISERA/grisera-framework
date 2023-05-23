@@ -8,11 +8,13 @@ from experiment.experiment_service_ontology import ExperimentServiceOntology
 
 class TestExperimentServicePost(unittest.TestCase):
 
+    @mock.patch.object(OntologyApiService, 'add_role')
     @mock.patch.object(OntologyApiService, 'add_instance')
-    def test_save_experiment_without_error(self, add_instance_mock):
+    def test_save_experiment_without_error(self, add_instance_mock, add_role_mock):
         model_id = 1
         experiment_name = "test"
-        add_instance_mock.return_value = {'label': experiment_name, 'errors': None }
+        add_instance_mock.return_value = {'label': experiment_name, 'errors': None}
+        add_role_mock.return_value = {'errors': None}
         additional_properties = [PropertyIn(key='test', value='test')]
         experiment = ExperimentIn(experiment_name=experiment_name, additional_properties=additional_properties)
         experiment_service = ExperimentServiceOntology()
@@ -21,6 +23,7 @@ class TestExperimentServicePost(unittest.TestCase):
 
         self.assertEqual(result, ExperimentOut(experiment_name="test", additional_properties=additional_properties))
         add_instance_mock.assert_called_once_with(model_id, 'Experiment', 'test')
+        add_role_mock.assert_called_once_with(model_id, 'test', 'test', 'test')
 
     @mock.patch.object(OntologyApiService, 'add_instance')
     def test_save_experiment_with_error(self, add_instance_mock):
