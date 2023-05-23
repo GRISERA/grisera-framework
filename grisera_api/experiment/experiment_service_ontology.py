@@ -50,3 +50,18 @@ class ExperimentServiceOntology(ExperimentService):
             return ExperimentOut(**experiment.dict())
         else:
             return ExperimentOut(**experiment.dict(), errors=errors)
+          
+    def delete_experiment(self, experiment_id: str):
+        """
+        Send request to ontology api to delete an experiment
+        Args:
+
+        Returns:
+             Result of request as experiment object
+        """
+        model_id = 1
+        instance_label = experiment_id
+        response = self.ontology_api_service.delete_instance(model_id, "Experiment", instance_label)
+        if response["errors"] is not None:
+            return ExperimentOut(experiment_name=instance_label, errors=response["errors"])
+        return ExperimentOut(experiment_name=response["label"])       
