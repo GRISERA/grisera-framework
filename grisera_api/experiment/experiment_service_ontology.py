@@ -52,8 +52,8 @@ class ExperimentServiceOntology(ExperimentService):
         model_id = 1
         get_response = self.get_experiment(experiment_id)
 
-        if get_response["errors"] is not None:
-            return ExperimentOut(**experiment.dict(), errors=get_response["errors"])
+        if get_response.dict()["errors"] is not None:
+            return ExperimentOut(**experiment.dict(), errors=get_response.dict()["errors"])
 
         self.ontology_api_service.delete_roles(model_id, experiment.experiment_name)
 

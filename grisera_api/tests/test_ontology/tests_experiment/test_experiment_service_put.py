@@ -16,7 +16,8 @@ class TestExperimentServicePut(unittest.TestCase):
         experiment_name = "test"
         delete_roles_mock.return_value = {'errors': None}
         add_role_mock.return_value = {'errors': None}
-        get_experiment_mock.return_value = {'experiment_name': experiment_name, 'activity_executions': [], 'errors': None}
+        get_experiment_mock.return_value = ExperimentOut(experiment_name=experiment_name, additional_properties=[],
+                                                         activity_executions=[], errors=None)
 
         additional_properties = [PropertyIn(key='test', value='test')]
         experiment = ExperimentIn(experiment_name=experiment_name, additional_properties=additional_properties)
@@ -24,7 +25,8 @@ class TestExperimentServicePut(unittest.TestCase):
 
         result = experiment_service.update_experiment(experiment_name, experiment)
 
-        self.assertEqual(result, ExperimentOut(activity_executions=[], experiment_name=experiment_name, additional_properties=additional_properties))
+        self.assertEqual(result, ExperimentOut(activity_executions=[], experiment_name=experiment_name,
+                                               additional_properties=additional_properties))
 
         add_role_mock.assert_called_once_with(model_id, 'test', 'test', 'test')
         delete_roles_mock.assert_called_once_with(model_id, 'test')
@@ -34,7 +36,8 @@ class TestExperimentServicePut(unittest.TestCase):
     def test_update_experiment_with_error(self, get_experiment_mock):
         model_id = 1
         experiment_name = "test"
-        get_experiment_mock.return_value = {'experiment_name': experiment_name, 'activity_executions': [], 'errors': 'error'}
+        get_experiment_mock.return_value = ExperimentOut(experiment_name=experiment_name, additional_properties=[],
+                                                         activity_executions=[], errors='error')
 
         additional_properties = [PropertyIn(key='test', value='test')]
         experiment = ExperimentIn(experiment_name=experiment_name, additional_properties=additional_properties)
@@ -42,6 +45,7 @@ class TestExperimentServicePut(unittest.TestCase):
 
         result = experiment_service.update_experiment(experiment_name, experiment)
 
-        self.assertEqual(result, ExperimentOut(experiment_name=experiment_name, additional_properties=additional_properties, errors='error'))
+        self.assertEqual(result, ExperimentOut(experiment_name=experiment_name,
+                                               additional_properties=additional_properties, errors='error'))
 
         get_experiment_mock.assert_called_once_with(experiment_name)
