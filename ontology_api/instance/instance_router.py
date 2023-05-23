@@ -65,7 +65,7 @@ class InstanceRouter:
         """
                 Delete instance with a given label.
 
-                Return 422 when a model with given model_id does not exist
+                Return 404 when a model with given model_id does not exist
                 or class with given class_name does not exist in model or instance with given label does not exist.
         """
         instance_out = self.instance_service.delete_instance(model_id, class_name, instance_label)
