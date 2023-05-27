@@ -12,7 +12,8 @@ class TestExperimentRouterDelete(unittest.TestCase):
     def test_delete_experiment_without_error(self, delete_experiment_mock):
         experiment_id = 1
         delete_experiment_mock.return_value = ExperimentOut(experiment_name="test", id=experiment_id,
-                                                            additional_properties=[PropertyIn(key="test", value="test")])
+                                                            additional_properties=[
+                                                                PropertyIn(key="test", value="test")])
         response = Response()
         experiment_router = ExperimentRouter()
 

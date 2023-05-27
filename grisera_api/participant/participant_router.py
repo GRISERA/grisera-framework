@@ -3,8 +3,11 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
 from typing import Union
-from participant.participant_model import ParticipantIn, ParticipantOut, ParticipantsOut
-from participant.participant_service import ParticipantService
+from participant.participant_model import (
+    ParticipantIn,
+    ParticipantOut,
+    ParticipantsOut,
+)
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 
@@ -54,14 +57,20 @@ class ParticipantRouter:
 
         return get_response
 
-    @router.get("/participants/{participant_id}", tags=["participants"],
-                response_model=Union[ParticipantOut, NotFoundByIdModel])
-    async def get_participant(self, participant_id: int, response: Response):
+    @router.get(
+        "/participants/{participant_id}",
+        tags=["participants"],
+        response_model=Union[ParticipantOut, NotFoundByIdModel],
+    )
+    async def get_participant(
+        self, participant_id: Union[str, int], response: Response, depth: int=0
+    ):
         """
-        Get participant from database
+        Get participant from database. Depth attribute specifies how many models will be traversed to create the
+        response.
         """
 
-        get_response = self.participant_service.get_participant(participant_id)
+        get_response = self.participant_service.get_participant(participant_id, depth)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -70,9 +79,14 @@ class ParticipantRouter:
 
         return get_response
 
-    @router.delete("/participants/{participant_id}", tags=["participants"],
-                   response_model=Union[ParticipantOut, NotFoundByIdModel])
-    async def delete_participant(self, participant_id: int, response: Response):
+    @router.delete(
+        "/participants/{participant_id}",
+        tags=["participants"],
+        response_model=Union[ParticipantOut, NotFoundByIdModel],
+    )
+    async def delete_participant(
+        self, participant_id: Union[int, str], response: Response
+    ):
         """
         Delete participant from database
         """
@@ -85,13 +99,23 @@ class ParticipantRouter:
 
         return get_response
 
-    @router.put("/participants/{participant_id}", tags=["participants"],
-                response_model=Union[ParticipantOut, NotFoundByIdModel])
-    async def update_participant(self, participant_id: int, participant: ParticipantIn, response: Response):
+    @router.put(
+        "/participants/{participant_id}",
+        tags=["participants"],
+        response_model=Union[ParticipantOut, NotFoundByIdModel],
+    )
+    async def update_participant(
+        self,
+        participant_id: Union[int, str],
+        participant: ParticipantIn,
+        response: Response,
+    ):
         """
         Update participant model in database
         """
-        update_response = self.participant_service.update_participant(participant_id, participant)
+        update_response = self.participant_service.update_participant(
+            participant_id, participant
+        )
         if update_response.errors is not None:
             response.status_code = 404
 

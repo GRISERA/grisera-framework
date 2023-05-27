@@ -1,11 +1,6 @@
-from graph_api_service import GraphApiService
-from observable_information.observable_information_model import ObservableInformationIn, ObservableInformationOut, \
-    BasicObservableInformationOut, ObservableInformationsOut
-from modality.modality_service import ModalityService
-from life_activity.life_activity_service import LifeActivityService
-from recording.recording_service import RecordingService
-from models.not_found_model import NotFoundByIdModel
-from models.relation_information_model import RelationInformation
+from typing import Union
+
+from observable_information.observable_information_model import ObservableInformationIn
 
 
 class ObservableInformationService:
@@ -34,32 +29,33 @@ class ObservableInformationService:
         """
         raise Exception("get_observable_informations not implemented yet")
 
-    def get_observable_information(self, observable_information_id: int):
+    def get_observable_information(self, observable_information_id: Union[int, str], depth: int = 0):
         """
         Send request to graph api to get given observable information
         Args:
-            observable_information_id (int): Id of observable information
+            depth: (int): specifies how many related entities will be traversed to create the response
+            observable_information_id (int | str): identity of observable information
         Returns:
             Result of request as observable information object
         """
         raise Exception("get_observable_information not implemented yet")
 
-    def delete_observable_information(self, observable_information_id: int):
+    def delete_observable_information(self, observable_information_id: Union[int, str]):
         """
         Send request to graph api to delete given observable information
         Args:
-            observable_information_id (int): Id of observable information
+            observable_information_id (int | str): identity of observable information
         Returns:
             Result of request as observable information object
         """
         raise Exception("delete_observable_information not implemented yet")
 
-    def update_observable_information_relationships(self, observable_information_id: int,
+    def update_observable_information_relationships(self, observable_information_id: Union[int, str],
                                                     observable_information: ObservableInformationIn):
         """
         Send request to graph api to update given observable information
         Args:
-            observable_information_id (int): Id of observable information
+            observable_information_id (int | str): identity of observable information
             observable_information (ObservableInformationIn): Relationships to update
         Returns:
             Result of request as observable information object

@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Union, Optional, List
 
 from starlette.datastructures import QueryParams
 
@@ -48,14 +48,15 @@ class TimeSeriesService:
         """
         raise Exception("get_time_series_nodes not implemented yet")
 
-    def get_time_series(self, time_series_id: int,
+    def get_time_series(self, time_series_id: Union[int, str], depth: int = 0,
                         signal_min_value: Optional[float] = None,
                         signal_max_value: Optional[float] = None):
         """
         Send request to graph api to get given time series
 
         Args:
-            time_series_id (int): Id of time series
+            time_series_id (int | str): identity of time series
+            depth: (int): specifies how many related entities will be traversed to create the response
             signal_min_value (Optional[float]): Filter signal values by min value
             signal_max_value (Optional[float]): Filter signal values by max value
 
@@ -64,36 +65,36 @@ class TimeSeriesService:
         """
         raise Exception("get_time_series not implemented yet")
 
-    def get_time_series_multidimensional(self, time_series_ids: List[int]):
+    def get_time_series_multidimensional(self, time_series_ids: List[Union[int, str]]):
         """
         Send request to graph api to get given time series
 
         Args:
-            time_series_ids (List[int]): Ids of the time series
+            time_series_ids (List[int | str]): Ids of the time series
 
         Returns:
             Result of request as time series object
         """
         raise Exception("get_time_series_multidimensional not implemented yet")
 
-    def delete_time_series(self, time_series_id: int):
+    def delete_time_series(self, time_series_id: Union[int, str]):
         """
         Send request to graph api to delete given time series
 
         Args:
-            time_series_id (int): Id of time series
+            time_series_id (int | str): identity of time series
 
         Returns:
             Result of request as time series object
         """
         raise Exception("delete_time_series not implemented yet")
 
-    def update_time_series(self, time_series_id: int, time_series: TimeSeriesPropertyIn):
+    def update_time_series(self, time_series_id: Union[int, str], time_series: TimeSeriesPropertyIn):
         """
         Send request to graph api to update given time series
 
         Args:
-            time_series_id (int): Id of time series
+            time_series_id (int | str): identity of time series
             time_series (TimeSeriesPropertyIn): Properties to update
 
         Returns:
@@ -101,13 +102,13 @@ class TimeSeriesService:
         """
         raise Exception("update_time_series not implemented yet")
 
-    def update_time_series_relationships(self, time_series_id: int,
-                                               time_series: TimeSeriesRelationIn):
+    def update_time_series_relationships(self, time_series_id: Union[int, str],
+                                         time_series: TimeSeriesRelationIn):
         """
         Send request to graph api to update given time series
 
         Args:
-            time_series_id (int): Id of time series
+            time_series_id (int | str): identity of time series
             time_series (TimeSeriesRelationIn): Relationships to update
 
         Returns:

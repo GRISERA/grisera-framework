@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from property.property_model import PropertyIn
-from time_series.helpers import get_node_property, get_additional_parameter
+from time_series.ts_helpers import get_node_property, get_additional_parameter
 from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, Type, SignalIn, TransformationType, \
     SignalValueNodesIn
 from time_series.transformation.TimeSeriesTransformation import TimeSeriesTransformation

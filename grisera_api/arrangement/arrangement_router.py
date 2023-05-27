@@ -3,10 +3,12 @@ from typing import Union
 from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
-
-from arrangement.arrangement_model import ArrangementIn, ArrangementOut, ArrangementsOut
-from arrangement.arrangement_service import ArrangementService
 from hateoas import get_links
+from arrangement.arrangement_model import (
+    ArrangementIn,
+    ArrangementOut,
+    ArrangementsOut,
+)
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 
@@ -40,13 +42,19 @@ class ArrangementRouter:
 
         return create_response
 
-    @router.get("/arrangements/{arrangement_id}", tags=["arrangements"],
-                response_model=Union[ArrangementOut, NotFoundByIdModel])
-    async def get_arrangement(self, arrangement_id: int, response: Response):
+    @router.get(
+        "/arrangements/{arrangement_id}",
+        tags=["arrangements"],
+        response_model=Union[ArrangementOut, NotFoundByIdModel],
+    )
+    async def get_arrangement(
+        self, arrangement_id: Union[int, str], response: Response, depth: int = 0
+    ):
         """
-        Get arrangement from database
+        Get arrangement from database. Depth attribute specifies how many models will be traversed to create the
+        response.
         """
-        get_response = self.arrangement_service.get_arrangement(arrangement_id)
+        get_response = self.arrangement_service.get_arrangement(arrangement_id, depth)
         if get_response.errors is not None:
             response.status_code = 404
 

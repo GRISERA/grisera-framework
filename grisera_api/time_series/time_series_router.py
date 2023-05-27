@@ -6,11 +6,18 @@ from fastapi_utils.inferring_router import InferringRouter
 from starlette.requests import Request
 
 from hateoas import get_links
+from time_series.time_series_model import (
+    TimeSeriesIn,
+    TimeSeriesNodesOut,
+    TimeSeriesOut,
+    TimeSeriesPropertyIn,
+    TimeSeriesRelationIn,
+    TimeSeriesTransformationIn,
+    TimeSeriesMultidimensionalOut
+)
+from time_series.time_series_service import TimeSeriesService
 from models.not_found_model import NotFoundByIdModel
 from services import Services
-from time_series.time_series_model import TimeSeriesIn, TimeSeriesNodesOut, TimeSeriesOut, \
-    TimeSeriesPropertyIn, TimeSeriesRelationIn, TimeSeriesTransformationIn, TimeSeriesMultidimensionalOut
-from time_series.time_series_service import TimeSeriesService
 
 router = InferringRouter()
 
@@ -115,18 +122,24 @@ class TimeSeriesRouter:
 
         return get_response
 
-    @router.get("/time_series/{time_series_id}", tags=["time series"],
-                response_model=Union[TimeSeriesOut, NotFoundByIdModel])
-    async def get_time_series(self, time_series_id: int, response: Response,
-                              signal_min_value: Optional[float] = None,
-                              signal_max_value: Optional[float] = None):
+    @router.get(
+        "/time_series/{time_series_id}",
+        tags=["time series"],
+        response_model=Union[TimeSeriesOut, NotFoundByIdModel],
+    )
+    async def get_time_series(
+        self, time_series_id: Union[int, str], depth: int, response: Response,
+        signal_min_value: Optional[float] = None,
+        signal_max_value: Optional[float] = None
+    ):
         """
-        Get time series by id from database with signal values.
+        Get time series by id from database with signal values. Depth attribute specifies how many models will be traversed to create the
+        response.
 
         Signal values will be filtered using minimum and maximum value if present.
         """
 
-        get_response = self.time_series_service.get_time_series(time_series_id, signal_min_value, signal_max_value)
+        get_response = self.time_series_service.get_time_series(time_series_id, depth, signal_min_value, signal_max_value)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -158,9 +171,14 @@ class TimeSeriesRouter:
 
         return get_response
 
-    @router.delete("/time_series/{time_series_id}", tags=["time series"],
-                   response_model=Union[TimeSeriesOut, NotFoundByIdModel])
-    async def delete_time_series(self, time_series_id: int, response: Response):
+    @router.delete(
+        "/time_series/{time_series_id}",
+        tags=["time series"],
+        response_model=Union[TimeSeriesOut, NotFoundByIdModel],
+    )
+    async def delete_time_series(
+        self, time_series_id: Union[int, str], response: Response
+    ):
         """
         Delete time series by id from database with all signal values.
         """
@@ -173,13 +191,23 @@ class TimeSeriesRouter:
 
         return get_response
 
-    @router.put("/time_series/{time_series_id}", tags=["time series"],
-                response_model=Union[TimeSeriesOut, NotFoundByIdModel])
-    async def update_time_series(self, time_series_id: int, time_series: TimeSeriesPropertyIn, response: Response):
+    @router.put(
+        "/time_series/{time_series_id}",
+        tags=["time series"],
+        response_model=Union[TimeSeriesOut, NotFoundByIdModel],
+    )
+    async def update_time_series(
+        self,
+        time_series_id: Union[int, str],
+        time_series: TimeSeriesPropertyIn,
+        response: Response,
+    ):
         """
         Update time series model in database
         """
-        update_response = self.time_series_service.update_time_series(time_series_id, time_series)
+        update_response = self.time_series_service.update_time_series(
+            time_series_id, time_series
+        )
         if update_response.errors is not None:
             response.status_code = 404
 
@@ -188,14 +216,23 @@ class TimeSeriesRouter:
 
         return update_response
 
-    @router.put("/time_series/{time_series_id}/relationships", tags=["time series"],
-                response_model=Union[TimeSeriesOut, NotFoundByIdModel])
-    async def update_time_series_relationships(self, time_series_id: int, time_series: TimeSeriesRelationIn,
-                                               response: Response):
+    @router.put(
+        "/time_series/{time_series_id}/relationships",
+        tags=["time series"],
+        response_model=Union[TimeSeriesOut, NotFoundByIdModel],
+    )
+    async def update_time_series_relationships(
+        self,
+        time_series_id: Union[int, str],
+        time_series: TimeSeriesRelationIn,
+        response: Response,
+    ):
         """
         Update time series relations in database
         """
-        update_response = self.time_series_service.update_time_series_relationships(time_series_id, time_series)
+        update_response = self.time_series_service.update_time_series_relationships(
+            time_series_id, time_series
+        )
         if update_response.errors is not None:
             response.status_code = 404
 

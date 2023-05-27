@@ -3,10 +3,12 @@ from typing import Union
 from fastapi import Response
 from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
-
 from hateoas import get_links
-from measure_name.measure_name_model import MeasureNameIn, MeasureNameOut, MeasureNamesOut
-from measure_name.measure_name_service import MeasureNameService
+from measure_name.measure_name_model import (
+    MeasureNameIn,
+    MeasureNameOut,
+    MeasureNamesOut,
+)
 from models.not_found_model import NotFoundByIdModel
 from services import Services
 
@@ -40,13 +42,21 @@ class MeasureNameRouter:
 
         return create_response
 
-    @router.get("/measure_names/{measure_name_id}", tags=["measure names"],
-                response_model=Union[MeasureNameOut, NotFoundByIdModel])
-    async def get_measure_name(self, measure_name_id: int, response: Response):
+    @router.get(
+        "/measure_names/{measure_name_id}",
+        tags=["measure names"],
+        response_model=Union[MeasureNameOut, NotFoundByIdModel],
+    )
+    async def get_measure_name(
+        self, measure_name_id: Union[int, str], response: Response, depth: int = 0
+    ):
         """
-        Get measure name from database
+        Get measure name from database. Depth attribute specifies how many models will be traversed to create the
+        response.
         """
-        get_response = self.measure_name_service.get_measure_name(measure_name_id)
+        get_response = self.measure_name_service.get_measure_name(
+            measure_name_id, depth
+        )
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -55,7 +65,9 @@ class MeasureNameRouter:
 
         return get_response
 
-    @router.get("/measure_names", tags=["measure names"], response_model=MeasureNamesOut)
+    @router.get(
+        "/measure_names", tags=["measure names"], response_model=MeasureNamesOut
+    )
     async def get_measure_names(self, response: Response):
         """
         Get measure names from database

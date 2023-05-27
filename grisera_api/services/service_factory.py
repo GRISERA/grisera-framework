@@ -21,7 +21,8 @@ from registered_data.registered_data_service import RegisteredDataService
 from scenario.scenario_service import ScenarioService
 from time_series.time_series_service import TimeSeriesService
 
-class ServiceFactory(ABC):    
+
+class ServiceFactory(ABC):
 
     @abstractmethod
     def get_activity_service(self) -> ActivityService:

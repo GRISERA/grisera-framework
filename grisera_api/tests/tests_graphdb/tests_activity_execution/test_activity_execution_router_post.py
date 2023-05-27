@@ -3,8 +3,6 @@ import unittest
 import unittest.mock as mock
 
 from activity_execution.activity_execution_service_graphdb import ActivityExecutionServiceGraphDB
-from participant.participant_model import ParticipantIn
-from activity_execution.activity_execution_model import *
 from activity_execution.activity_execution_router import *
 
 
@@ -14,7 +12,7 @@ class TestActivityExecutionRouterPost(unittest.TestCase):
     def test_create_activity_execution_without_error(self, save_activity_execution_mock):
         save_activity_execution_mock.return_value = ActivityExecutionOut(id=1)
         response = Response()
-        activity_execution = ActivityExecutionPropertyIn()
+        activity_execution = ActivityExecutionIn()
         activity_execution_router = ActivityExecutionRouter()
 
         result = asyncio.run(activity_execution_router.create_activity_execution(activity_execution, response))
@@ -27,7 +25,7 @@ class TestActivityExecutionRouterPost(unittest.TestCase):
     def test_create_activity_execution_with_error(self, save_activity_execution_mock):
         save_activity_execution_mock.return_value = ActivityExecutionOut(errors={'errors': ['test']})
         response = Response()
-        activity_execution = ActivityExecutionPropertyIn()
+        activity_execution = ActivityExecutionIn()
         activity_execution_router = ActivityExecutionRouter()
 
         result = asyncio.run(activity_execution_router.create_activity_execution(activity_execution, response))

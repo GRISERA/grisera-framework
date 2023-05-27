@@ -17,7 +17,8 @@ class TestParticipationRouterPost(unittest.TestCase):
 
         result = asyncio.run(participation_router.create_participation(participation, response))
 
-        self.assertEqual(result, ParticipationOut(activity_execution_id=2, participant_state_id=3, id=1, links=get_links(router)))
+        self.assertEqual(result, ParticipationOut(activity_execution_id=2, participant_state_id=3, id=1,
+                                                  links=get_links(router)))
         save_participation_mock.assert_called_once_with(participation)
         self.assertEqual(response.status_code, 200)
 
