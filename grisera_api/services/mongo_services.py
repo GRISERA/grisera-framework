@@ -26,7 +26,7 @@ from registered_channel.registered_channel_service_mongodb import (
 )
 from registered_data.registered_data_service_mongodb import RegisteredDataServiceMongoDB
 from scenario.scenario_service_graphdb import ScenarioServiceGraphDB
-from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
+from time_series.time_series_service_mongodb import TimeSeriesServiceMongoDB
 from activity.activity_service import ActivityService
 from activity_execution.activity_execution_service import ActivityExecutionService
 from appearance.appearance_service import AppearanceService
@@ -60,6 +60,7 @@ class MongoServiceFactory(ServiceFactory):
         self.observable_information_service = ObservableInformationServiceMongoDB()
         self.modality_service = ModalityServiceMongoDB()
         self.life_activity_service = LifeActivityServiceMongoDB()
+        self.time_series_service = TimeSeriesServiceMongoDB()
 
         self.channel_service.registered_channel_service = (
             self.registered_channel_service
@@ -95,6 +96,10 @@ class MongoServiceFactory(ServiceFactory):
         )
 
         self.life_activity_service.observable_information_service = (
+            self.observable_information_service
+        )
+
+        self.time_series_service.observable_information_service = (
             self.observable_information_service
         )
 
@@ -156,4 +161,4 @@ class MongoServiceFactory(ServiceFactory):
         return ScenarioServiceGraphDB()
 
     def get_time_series_service(self) -> TimeSeriesService:
-        return TimeSeriesServiceGraphDB()
+        return self.time_series_service

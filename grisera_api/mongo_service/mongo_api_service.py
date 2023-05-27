@@ -2,7 +2,9 @@ from typing import Union
 from pydantic import BaseModel
 import pymongo
 from bson import ObjectId
+from datetime import datetime
 
+from time_series.time_series_model import TimeSeriesIn
 from models.not_found_model import NotFoundByIdModel
 from mongo_service.collection_mapping import get_collection_name
 from mongo_service.mongodb_api_config import mongo_api_address, mongo_database_name
@@ -15,6 +17,8 @@ class MongoApiService:
 
     MONGO_ID_FIELD = "_id"
     MODEL_ID_FIELD = "id"
+    TIMESTAMP_FIELD = "timestamp"
+    METADATA_FIELD = "metadata"
 
     def __init__(self):
         """
@@ -95,6 +99,26 @@ class MongoApiService:
         collection_name = get_collection_name(type(object_to_delete))
         self.db[collection_name].delete_one({self.MONGO_ID_FIELD: id})
         return id
+
+    def create_time_series(self, time_series_in: TimeSeriesIn):
+        collection_name = get_collection_name(type(time_series_in))
+        signal_values = time_series_in.signal_values
+        time_series_in.signal_values = (
+            []
+        )  # avoid necessary parsing of signal values to dict
+        time_series_dict = time_series_in.dict()
+        time_series_dict.pop("signal_values")
+        metadata = time_series_dict
+        self._fix_input_ids(metadata)
+        inserted_documents = [
+            {
+                self.TIMESTAMP_FIELD: datetime.utcfromtimestamp(signal.timestamp),
+                self.METADATA_FIELD: metadata,
+                **signal.signal_value.dict(),
+            }
+            for signal in signal_values
+        ]
+        return self.db[collection_name].insert_many(inserted_documents)
 
     def _update_mongo_input_id(self, mongo_input: dict):
         """

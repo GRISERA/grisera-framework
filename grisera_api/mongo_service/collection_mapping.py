@@ -73,7 +73,7 @@ class Collections(str, Enum):
     REGISTERED_CHANNEL = "registered_channels"
     REGISTERED_DATA = "registered_data"
     SCENARIO = "scenarios"
-    TIME_SERIES = "time_series"
+    TIME_SERIES = "TimeSeries"
 
 
 SUPERCLASSES_TO_COLLECTION_NAMES = {
