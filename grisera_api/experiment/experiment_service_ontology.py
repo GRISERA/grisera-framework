@@ -33,9 +33,21 @@ class ExperimentServiceOntology(ExperimentService):
         if instance_response_experiment["errors"] is not None:
             return ExperimentOut(**experiment.dict(), errors=instance_response_experiment["errors"])
 
+        new_additional_properties = []
+
+        errors = None
+
+        for prop in experiment.additional_properties:
+            response = self.ontology_api_service.add_role(model_id, prop.key, experiment.experiment_name, prop.value)
+            if response["errors"] is not None:
+                errors = f"[{prop.key} : {prop.value}]:" + response["errors"]
+                break
+            else:
+                new_additional_properties.append(prop)
+
         experiment_label = instance_response_experiment["label"]
         experiment.__dict__.update({'experiment_name': experiment_label})
-
+        experiment.__dict__.update({'additional_properties': new_additional_properties})
         return ExperimentOut(**experiment.dict())
 
     def get_experiment(self, experiment_label: Union[int, str], depth: int = 0):
@@ -63,11 +75,10 @@ class ExperimentServiceOntology(ExperimentService):
                                  errors=roles_response_experiment["errors"])
         relations = []
         for prop in roles_response_experiment['roles']:
-
             relations.append(RelationInformation(value=prop['value'], second_node_id=0, relation_id=0,
                                                  name=prop['role']))
 
-        reversed_roles_response_experiment = self.ontology_api_service.\
+        reversed_roles_response_experiment = self.ontology_api_service. \
             get_reversed_roles(model_id, experiment_label)
         if reversed_roles_response_experiment["errors"] is not None:
             return ExperimentOut(ExperimentIn(experiment_name=experiment_label),
@@ -80,4 +91,20 @@ class ExperimentServiceOntology(ExperimentService):
         experiment_result = {'experiment_name': experiment_label, 'additional_properties': [], 'relations': relations,
                              'reversed_relations': reversed_relations}
 
-        return ExperimentOut(**experiment_result)
+        return ExperimentOut(**experiment_result.dict())
+
+
+    def delete_experiment(self, experiment_id: str):
+        """
+        Send request to ontology api to delete an experiment
+        Args:
+
+        Returns:
+             Result of request as experiment object
+        """
+        model_id = 1
+        instance_label = experiment_id
+        response = self.ontology_api_service.delete_instance(model_id, "Experiment", instance_label)
+        if response["errors"] is not None:
+            return ExperimentOut(experiment_name=instance_label, errors=response["errors"])
+        return ExperimentOut(experiment_name=response["label"])
