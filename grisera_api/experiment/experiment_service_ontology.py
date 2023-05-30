@@ -2,7 +2,7 @@ from typing import Union
 
 from experiment.experiment_model import ExperimentIn, ExperimentOut
 from experiment.experiment_service import ExperimentService
-from models.relation_information_model import RelationInformation
+from activity_execution.activity_execution_model import ActivityExecutionOut
 from ontology_api_service import OntologyApiService
 
 
@@ -48,7 +48,10 @@ class ExperimentServiceOntology(ExperimentService):
         experiment_label = instance_response_experiment["label"]
         experiment.__dict__.update({'experiment_name': experiment_label})
         experiment.__dict__.update({'additional_properties': new_additional_properties})
-        return ExperimentOut(**experiment.dict())
+        if errors is None:
+            return ExperimentOut(**experiment.dict())
+        else:
+            return ExperimentOut(**experiment.dict(), errors=errors)
 
     def get_experiment(self, experiment_label: Union[int, str], depth: int = 0):
         """
@@ -62,37 +65,29 @@ class ExperimentServiceOntology(ExperimentService):
             Result of request as experiment object
         """
         model_id = 1
+
         instance_response_experiment = self.ontology_api_service.get_instance(model_id=model_id,
                                                                               class_name="Experiment",
                                                                               instance_label=experiment_label)
         if instance_response_experiment["errors"] is not None:
-            return ExperimentOut(ExperimentIn(experiment_name=experiment_label),
-                                 errors=instance_response_experiment["errors"])
+            experiment_result = {'experiment_name': experiment_label, 'errors': instance_response_experiment["errors"]}
+            return ExperimentOut(**experiment_result)
 
         roles_response_experiment = self.ontology_api_service.get_roles(model_id, experiment_label)
         if roles_response_experiment["errors"] is not None:
             return ExperimentOut(ExperimentIn(experiment_label),
                                  errors=roles_response_experiment["errors"])
-        relations = []
+
+        a = None
         for prop in roles_response_experiment['roles']:
-            relations.append(RelationInformation(value=prop['value'], second_node_id=0, relation_id=0,
-                                                 name=prop['role']))
+            if prop['role'] == 'hasScenario' and prop['instance_name'] == experiment_label:
+                activity_execution_dictionary = {'id': prop['value']}
+                a = ActivityExecutionOut(**activity_execution_dictionary)
 
-        reversed_roles_response_experiment = self.ontology_api_service. \
-            get_reversed_roles(model_id, experiment_label)
-        if reversed_roles_response_experiment["errors"] is not None:
-            return ExperimentOut(ExperimentIn(experiment_name=experiment_label),
-                                 errors=reversed_roles_response_experiment["errors"])
-        reversed_relations = []
-        for prop in roles_response_experiment['roles']:
-            reversed_relations.append(
-                RelationInformation(value=prop['instance_name'], second_node_id=0, relation_id=0, name=prop['role']))
-
-        experiment_result = {'experiment_name': experiment_label, 'additional_properties': [], 'relations': relations,
-                             'reversed_relations': reversed_relations}
-
-        return ExperimentOut(**experiment_result.dict())
-
+        experiment_result = {'id': experiment_label,
+                             'experiment_name': experiment_label,
+                             'activity_executions': a}
+        return ExperimentOut(**experiment_result)
 
     def delete_experiment(self, experiment_id: str):
         """

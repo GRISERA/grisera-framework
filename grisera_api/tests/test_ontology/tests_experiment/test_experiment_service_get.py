@@ -1,33 +1,52 @@
 import unittest
-from unittest import mock
-from experiment.experiment_model import ExperimentIn, ExperimentOut, PropertyIn
-from models.relation_information_model import RelationInformation
+from unittest.mock import Mock
+
+from experiment.experiment_model import ExperimentIn, ExperimentOut
+from activity_execution.activity_execution_model import ActivityExecutionOut
 from ontology_api_service import OntologyApiService
 from experiment.experiment_service_ontology import ExperimentServiceOntology
 
 
-class TestExperimentServiceGet(unittest.TestCase):
-    @mock.patch.object(OntologyApiService, 'get_reversed_roles')
-    @mock.patch.object(OntologyApiService, 'get_roles')
-    @mock.patch.object(OntologyApiService, 'get_instance')
-    def test_get_experiment_without_error(self, get_instance_mock, get_roles_mock, get_reversed_roles_mock):
-        model_id = 1
-        class_name = "Experiment"
-        role = "test"
-        value = "test"
-        instance_label = "test"
-        return_list = [RelationInformation(value="test", second_node_id=0, relation_id=0, name="test")]
-        get_instance_mock.return_value = {'label': instance_label, 'errors': None}
-        get_roles_mock.return_value = {'roles': [{'role': role, 'instance_name': instance_label, 'value': value}],
-                                       'errors': None}
-        get_reversed_roles_mock.return_value = {'roles': [{'role': role, 'instance_name': value,
-                                                           'value': instance_label}], 'errors': None}
-        additional_properties = [PropertyIn(key='test', value='test')]
+class ExperimentServiceOntologyTestCase(unittest.TestCase):
+    def test_get_experiment_with_valid_label(self):
+        ontology_api_service = Mock(spec=OntologyApiService)
         experiment_service = ExperimentServiceOntology()
-        result = experiment_service.get_experiment(instance_label)
-        self.assertEqual(result, ExperimentOut(experiment_name=instance_label, additional_properties=[],
-                                               relations=return_list, reversed_relations=return_list))
-        get_instance_mock.assert_called_once_with(model_id=model_id, class_name=class_name,
-                                                  instance_label=instance_label)
-        get_roles_mock.assert_called_once_with(model_id, instance_label)
-        get_reversed_roles_mock.assert_called_once_with(model_id, instance_label)
+        experiment_service.ontology_api_service = ontology_api_service
+        instance_response = {"errors": None, "instance_name": "e1"}
+        roles_response = {"errors": None, "roles": [{
+                    "role": "hasScenario",
+                    "value": "ae1",
+                    "instance_name": "e1"}]}
+        ontology_api_service.get_instance.return_value = instance_response
+        ontology_api_service.get_roles.return_value = roles_response
+        result = experiment_service.get_experiment("e1")
+        self.assertIsInstance(result, ExperimentOut)
+        self.assertEqual(result.id, "e1")
+        self.assertEqual(result.experiment_name, "e1")
+        self.assertIsInstance(result.activity_executions, ActivityExecutionOut)
+        self.assertEqual(result.activity_executions.id, "ae1")
+        ontology_api_service.get_instance.assert_called_once_with(
+            model_id=1,
+            class_name="Experiment",
+            instance_label="e1"
+        )
+
+    def test_get_experiment_with_invalid_label(self):
+        ontology_api_service = Mock(spec=OntologyApiService)
+        experiment_service = ExperimentServiceOntology()
+        experiment_service.ontology_api_service = ontology_api_service
+        instance_response = {
+            "errors": "Experiment not found",
+        }
+        ontology_api_service.get_instance.return_value = instance_response
+        result = experiment_service.get_experiment("e2")
+        self.assertIsInstance(result, ExperimentOut)
+        self.assertEqual(result.id, None)
+        self.assertEqual(result.experiment_name, "e2")
+        self.assertEqual(result.errors, "Experiment not found")
+
+        ontology_api_service.get_instance.assert_called_once_with(
+            model_id=1,
+            class_name="Experiment",
+            instance_label="e2"
+        )
