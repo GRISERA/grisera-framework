@@ -1,7 +1,7 @@
 from typing import Optional, Union, List
 
 from pydantic import BaseModel
-
+from activity_execution.activity_execution_model import ActivityExecutionOut
 from property.property_model import PropertyIn
 from models.base_model_out import BaseModelOut
 
@@ -38,7 +38,7 @@ class ExperimentOut(BasicExperimentOut, BaseModelOut):
     activity_executions (Optional[ActivityExecutionOut]): activity_executions related to this experiment
     """
 
-    activity_executions: "Optional[ActivityExecutionOut]"
+    activity_executions: Optional[ActivityExecutionOut]
 
 
 class ExperimentsOut(BaseModelOut):
