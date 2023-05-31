@@ -283,8 +283,14 @@ class ObservableInformationServiceMongoDB(
     def _add_related_time_series(
         self, observable_information: dict, depth: int, source: str
     ):
-        pass
-        # TODO add when time series service is ready
+        if source != Collections.TIME_SERIES:
+            observable_information[
+                "timeSeries"
+            ] = self.time_series_service.get_time_series_for_observable_information(
+                observable_information_id=observable_information["id"],
+                depth=depth - 1,
+                source=Collections.OBSERVABLE_INFORMATION,
+            )
 
     @staticmethod
     def _get_recording_projection(query):

@@ -2,11 +2,15 @@ from typing import Union
 from pydantic import BaseModel
 import pymongo
 from bson import ObjectId
-from datetime import datetime
+from datetime import datetime, timezone
 
-from time_series.time_series_model import TimeSeriesIn
+from time_series.time_series_model import (
+    SignalIn,
+    SignalValueNodesIn,
+    TimeSeriesIn,
+)
 from models.not_found_model import NotFoundByIdModel
-from mongo_service.collection_mapping import get_collection_name
+from mongo_service.collection_mapping import get_collection_name, Collections
 from mongo_service.mongodb_api_config import mongo_api_address, mongo_database_name
 
 
@@ -101,24 +105,52 @@ class MongoApiService:
         return id
 
     def create_time_series(self, time_series_in: TimeSeriesIn):
-        collection_name = get_collection_name(type(time_series_in))
-        signal_values = time_series_in.signal_values
-        time_series_in.signal_values = (
-            []
-        )  # avoid necessary parsing of signal values to dict
-        time_series_dict = time_series_in.dict()
-        time_series_dict.pop("signal_values")
-        metadata = time_series_dict
-        self._fix_input_ids(metadata)
-        inserted_documents = [
-            {
-                self.TIMESTAMP_FIELD: datetime.utcfromtimestamp(signal.timestamp),
-                self.METADATA_FIELD: metadata,
-                **signal.signal_value.dict(),
-            }
-            for signal in signal_values
+        collection_name = Collections.TIME_SERIES
+        self._create_ts_collection_if_missing(collection_name)
+        ts_id = ObjectId()
+        ts_documents = self._time_series_into_documents(time_series_in, ts_id)
+        self.db[collection_name].insert_many(ts_documents)
+        return ts_id
+
+    def get_time_series(
+        self,
+        ts_id: Union[str, int],
+        signal_min_value: int = None,
+        signal_max_value: int = None,
+    ):
+        """
+        Return dict with single time series data
+        """
+        collection_name = Collections.TIME_SERIES
+        query = self._create_ts_query(ts_id, signal_min_value, signal_max_value)
+        time_series_documents = list(self.db[collection_name].find(query))
+        return self._time_series_documents_to_dict(time_series_documents)
+
+    def get_many_time_series(self, query={}):
+        self._fix_input_ids(query)
+        ts_documents = self._get_many_ts(query)
+        return [
+            self._time_series_documents_to_dict(ts_document["value"])
+            for ts_document in ts_documents
         ]
-        return self.db[collection_name].insert_many(inserted_documents)
+
+    def update_time_series_metadata(
+        self, fields_to_update: dict, time_series_id: Union[int, str]
+    ):
+        ts_id = ObjectId(time_series_id)
+        query = {f"{self.METADATA_FIELD}.id": ts_id}
+        update_dict = {
+            f"{self.METADATA_FIELD}.{field}": value
+            for field, value in fields_to_update.items()
+        }
+        return self.db[Collections.TIME_SERIES].update_many(
+            filter=query, update={"$set": update_dict}
+        )
+
+    def delete_time_series(self, time_series_id: Union[int, str]):
+        ts_id = ObjectId(time_series_id)
+        query = {f"{self.METADATA_FIELD}.id": ts_id}
+        return self.db[Collections.TIME_SERIES].delete_many(filter=query)
 
     def _update_mongo_input_id(self, mongo_input: dict):
         """
@@ -189,3 +221,94 @@ class MongoApiService:
                     self._mongo_object_deep_iterate(list_elem, func)
             else:
                 mongo_object[field] = func(field, mongo_object[field])
+
+    def _create_ts_collection_if_missing(self, collection_name: str):
+        if collection_name not in self.db.list_collection_names():
+            self.db.create_collection(
+                collection_name,
+                timeseries={
+                    "timeField": self.TIMESTAMP_FIELD,
+                    "metaField": self.METADATA_FIELD,
+                },
+            )
+
+    def _time_series_into_documents(
+        self, time_series_in: TimeSeriesIn, time_series_id: ObjectId
+    ):
+        signal_values = time_series_in.signal_values
+
+        time_series_in.signal_values = []  # avoid unnecessary parsing of signal values
+        metadata = self._get_time_series_metadata(time_series_in, time_series_id)
+        return [
+            {
+                self.TIMESTAMP_FIELD: datetime.fromtimestamp(
+                    signal.timestamp, tz=timezone.utc
+                ),
+                self.METADATA_FIELD: metadata,
+                **signal.signal_value.dict(),
+            }
+            for signal in signal_values
+        ]
+
+    def _get_time_series_metadata(
+        self, time_series_in: TimeSeriesIn, time_series_id: ObjectId
+    ):
+        time_series_dict = time_series_in.dict()
+        time_series_dict.pop("signal_values")
+        metadata = time_series_dict
+
+        self._fix_input_ids(metadata)
+        metadata["id"] = time_series_id
+        return metadata
+
+    def _time_series_documents_to_dict(self, ts_documents: list[dict]):
+        """
+        Convert documents from single time series to BasicTimeSeriesOut
+        """
+        if len(ts_documents) == 0:
+            return []
+        signal_values = [
+            self._signal_from_ts_document(document) for document in ts_documents
+        ]
+        result = {
+            "signal_values": signal_values,
+            **ts_documents[0][self.METADATA_FIELD],
+        }
+        self._fix_output_ids(result)
+        return result
+
+    def _signal_from_ts_document(self, document):
+        return SignalIn(
+            timestamp=document[self.TIMESTAMP_FIELD]
+            .replace(tzinfo=timezone.utc)
+            .timestamp(),
+            signal_value=SignalValueNodesIn(
+                value=document["value"],
+                additional_properties=document["additional_properties"],
+            ),
+        )
+
+    def _create_ts_query(
+        self,
+        ts_id: Union[str, int],
+        signal_min_value: int = None,
+        signal_max_value: int = None,
+    ):
+        query = {f"{self.METADATA_FIELD}.id": ObjectId(ts_id)}
+
+        value_query = {}
+        if signal_min_value is not None:
+            value_query["$gte"] = signal_min_value
+        if signal_max_value is not None:
+            value_query["$lte"] = signal_max_value
+        if len(value_query) > 0:
+            query["value"] = value_query
+
+        return query
+
+    def _get_many_ts(self, query={}):
+        aggregation = [
+            {"$match": query},
+            {"$group": {"_id": "$metadata.id", "value": {"$push": "$$ROOT"}}},
+        ]
+        return self.db[Collections.TIME_SERIES].aggregate(aggregation)
