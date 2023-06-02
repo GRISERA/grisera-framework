@@ -1,4 +1,4 @@
-from owlready2 import get_ontology, locstr
+from owlready2 import get_ontology, locstr,destroy_entity
 from model.model_model import ModelOut
 from instance.instance_model import MinimalInstanceModelIn, FullInstanceModelOut
 from instance.instance_model import MinimalModelOut as InstanceModelOut
@@ -53,3 +53,28 @@ class InstanceService:
         onto.destroy()
         return InstanceModelOut(
             errors="Instance with label " + str(instance_label) + " not found in Model " + str(model_id))
+
+    def delete_instance(self, model_id: int, class_name: str, instance_label: str):
+        """
+                        Delete instance with a given label
+        """
+        onto = self.model_service.load_ontology(model_id)
+        if onto is None:
+            return InstanceModelOut(errors="Model with id " + str(model_id) + " not found")
+        owl_class = onto[class_name]
+        if owl_class is None:
+            onto.destroy()
+            return InstanceModelOut(errors="Class named " + str(class_name) + " not found in Model " + str(model_id))
+
+        instance = onto.search_one(is_a=owl_class,label=instance_label)
+        if instance is None:
+            onto.destroy()
+            return InstanceModelOut(
+                errors="Instance with label " + str(instance_label) + " not found in Model " + str(model_id))
+        else:
+            instance_id = instance.name
+            destroy_entity(instance)
+            self.model_service.update_ontology(model_id, onto)
+            return FullInstanceModelOut(instance_id=instance_id, label=instance_label)
+
+
