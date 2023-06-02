@@ -26,7 +26,7 @@ class BasicDatasetOut(DatasetIn):
     name_hash: str = None
 
 
-class DatasetOut(BaseModelOut):
+class DatasetOut(BasicDatasetOut, BaseModelOut):
     """
         Model of dataset to send to client as a result of request
 
@@ -36,11 +36,9 @@ class DatasetOut(BaseModelOut):
             links (Optional[list): Hateoas implementation
     """
     name_by_user: Optional[str] = None
-    errors: Optional[Any] = None
-    links: Optional[list] = None
 
 
-class DatasetsOut(BaseModel):
+class DatasetsOut(BaseModelOut):
     """
     Model of list of datasets
 
@@ -50,6 +48,4 @@ class DatasetsOut(BaseModel):
         links (Optional[list): Hateoas implementation
     """
     datasets: Optional[List[BasicDatasetOut]] = None
-    errors: Optional[Any] = None
-    links: Optional[List] = None
 
