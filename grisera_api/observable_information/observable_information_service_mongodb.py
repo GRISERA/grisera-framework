@@ -25,7 +25,6 @@ class ObservableInformationServiceMongoDB(
     recording_service (RecordingService): Service used to communicate with Recording
     modality_service (ModalityService): Service used to communicate with Modality
     life_activity_service (LifeActivityService): Service used to communicate with Life Activity
-    recording_service (RecordingService): Service used to communicate with Recording
     model_out_class (Type[BaseModel]): Out class of the model, used by GenericMongoServiceMixin
     """
 
@@ -99,7 +98,7 @@ class ObservableInformationServiceMongoDB(
             f"{Collections.OBSERVABLE_INFORMATION}.{field}": value
             for field, value in query.items()
         }
-        recording_result = self.recording_service.get_multiple(
+        recording_results = self.recording_service.get_multiple(
             recording_query,
             depth=depth - 1,
             source=Collections.OBSERVABLE_INFORMATION,
@@ -107,7 +106,7 @@ class ObservableInformationServiceMongoDB(
         )
 
         result = []
-        for recording_result in recording_result:
+        for recording_result in recording_results:
             observable_informations = recording_result["observable_informations"]
             del recording_result["observable_informations"]
             for observable_information in observable_informations:
@@ -252,8 +251,8 @@ class ObservableInformationServiceMongoDB(
     def _add_recording(
         self, observable_information: dict, depth: int, source: str, recording: dict
     ):
-        """Recording has already added related documents"""
-        if source != "recording":
+        """Recording has already been added related documents"""
+        if source != Collections.RECORDING:
             observable_information["recording"] = recording
 
     def _add_related_modalities(

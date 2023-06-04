@@ -1,5 +1,4 @@
-from ast import List
-from typing import Union, Optional
+from typing import Union, Optional, List
 
 from starlette.datastructures import QueryParams
 

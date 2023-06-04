@@ -222,7 +222,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
             observable_information_dict (dict): new version of observable information
 
         Returns:
-            Removed observable information
+            Updated observable information
         """
         recording_id = observable_information_dict["recording_id"]
         recording = self.get_single_dict(recording_id)
@@ -254,7 +254,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         Remove observable information from recording. Observable information is embedded in related recording.
 
         Args:
-            observable_information (ObservableInformationIn): observable information to add
+            observable_information (ObservableInformationOut): observable information to remove
 
         Returns:
             Removed observable information
