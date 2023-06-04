@@ -124,6 +124,11 @@ class MongoApiService:
         collection_name = Collections.TIME_SERIES
         query = self._create_ts_query(ts_id, signal_min_value, signal_max_value)
         time_series_documents = list(self.db[collection_name].find(query))
+        if len(time_series_documents) == 0:
+            return NotFoundByIdModel(
+                id=ts_id,
+                errors={"errors": "time series not found"},
+            )
         return self._time_series_documents_to_dict(time_series_documents)
 
     def get_many_time_series(self, query={}):
@@ -146,6 +151,18 @@ class MongoApiService:
         return self.db[Collections.TIME_SERIES].update_many(
             filter=query, update={"$set": update_dict}
         )
+
+    def update_time_series_properties(
+        self, new_time_series: dict, time_series_id: Union[int, str]
+    ):
+        existing_ts = self.get_time_series(time_series_id)
+        new_time_series["observable_information_id"] = existing_ts[
+            "observable_information_id"
+        ]
+        new_time_series["measure_id"] = existing_ts["measure_id"]
+
+        self._replace_ts(new_time_series, time_series_id)
+        return new_time_series
 
     def delete_time_series(self, time_series_id: Union[int, str]):
         ts_id = ObjectId(time_series_id)
@@ -265,8 +282,6 @@ class MongoApiService:
         """
         Convert documents from single time series to BasicTimeSeriesOut
         """
-        if len(ts_documents) == 0:
-            return []
         signal_values = [
             self._signal_from_ts_document(document) for document in ts_documents
         ]
@@ -312,3 +327,9 @@ class MongoApiService:
             {"$group": {"_id": "$metadata.id", "value": {"$push": "$$ROOT"}}},
         ]
         return self.db[Collections.TIME_SERIES].aggregate(aggregation)
+
+    def _replace_ts(self, new_time_series: dict, time_series_id: Union[int, str]):
+        with self.client.start_session() as session:
+            with session.start_transaction():
+                self.delete_time_series(time_series_id)
+                self.create_time_series(TimeSeriesIn(**new_time_series))
