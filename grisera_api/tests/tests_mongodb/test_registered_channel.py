@@ -58,8 +58,8 @@ class TestMongoRegisteredData(MongoTestCase):
         created_rc = service.save_registered_channel(rc)
 
         new_related_channel = self.generate_channel()
-        updated_rc = self.generate_registered_channel(new_related_channel)
-        service.update_registered_channel_relationships(created_rc.id, updated_rc)
+        rc.channel_id = new_related_channel.id
+        service.update_registered_channel_relationships(created_rc.id, rc)
         fetched_rc = service.get_registered_channel(created_rc.id)
 
         self.assertEqual(fetched_rc.channel_id, new_related_channel.id)

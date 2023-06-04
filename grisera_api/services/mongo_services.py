@@ -11,8 +11,8 @@ from arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
 from channel.channel_service_mongodb import ChannelServiceMongoDB
 from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
 from life_activity.life_activity_service_mongodb import LifeActivityServiceMongoDB
-from measure.measure_service_graphdb import MeasureServiceGraphDB
-from measure_name.measure_name_service_graphdb import MeasureNameServiceGraphDB
+from measure.measure_service_mongodb import MeasureServiceMongoDB
+from measure_name.measure_name_service_mongodb import MeasureNameServiceMongoDB
 from modality.modality_service_mongodb import ModalityServiceMongoDB
 from participant.participant_service_graphdb import ParticipantServiceGraphDB
 from participant_state.participant_state_service_graphdb import (
@@ -61,6 +61,8 @@ class MongoServiceFactory(ServiceFactory):
         self.modality_service = ModalityServiceMongoDB()
         self.life_activity_service = LifeActivityServiceMongoDB()
         self.time_series_service = TimeSeriesServiceMongoDB()
+        self.measure_service = MeasureServiceMongoDB()
+        self.measure_name_service = MeasureNameServiceMongoDB()
 
         self.channel_service.registered_channel_service = (
             self.registered_channel_service
@@ -102,6 +104,12 @@ class MongoServiceFactory(ServiceFactory):
         self.time_series_service.observable_information_service = (
             self.observable_information_service
         )
+        self.time_series_service.measure_service = self.measure_service
+
+        self.measure_service.time_series_service = self.time_series_service
+        self.measure_service.measure_name_service = self.measure_name_service
+
+        self.measure_name_service.measure_service = self.measure_service
 
     def get_activity_service(self) -> ActivityService:
         return ActivityServiceGraphDB()
@@ -125,10 +133,10 @@ class MongoServiceFactory(ServiceFactory):
         return self.life_activity_service
 
     def get_measure_service(self) -> MeasureService:
-        return MeasureServiceGraphDB()
+        return self.measure_service
 
     def get_measure_name_service(self) -> MeasureNameService:
-        return MeasureNameServiceGraphDB()
+        return self.measure_name_service
 
     def get_modality_service(self) -> ModalityService:
         return self.modality_service
