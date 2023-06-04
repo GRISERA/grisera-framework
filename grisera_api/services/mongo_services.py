@@ -14,9 +14,9 @@ from life_activity.life_activity_service_mongodb import LifeActivityServiceMongo
 from measure.measure_service_mongodb import MeasureServiceMongoDB
 from measure_name.measure_name_service_mongodb import MeasureNameServiceMongoDB
 from modality.modality_service_mongodb import ModalityServiceMongoDB
-from participant.participant_service_graphdb import ParticipantServiceGraphDB
-from participant_state.participant_state_service_graphdb import (
-    ParticipantStateServiceGraphDB,
+from participant.participant_service_mongodb import ParticipantServiceMongoDB
+from participant_state.participant_state_service_mongodb import (
+    ParticipantStateServiceMongoDB,
 )
 from participation.participation_service_mongodb import ParticipationServiceMongoDB
 from personality.personality_service_graphdb import PersonalityServiceGraphDB
@@ -64,6 +64,8 @@ class MongoServiceFactory(ServiceFactory):
         self.measure_service = MeasureServiceMongoDB()
         self.measure_name_service = MeasureNameServiceMongoDB()
         self.participation_service = ParticipationServiceMongoDB()
+        self.participant_service = ParticipantService()
+        self.participant_state_service = ParticipantStateService()
 
         self.channel_service.registered_channel_service = (
             self.registered_channel_service
@@ -116,7 +118,20 @@ class MongoServiceFactory(ServiceFactory):
 
         self.participation_service.recording_service = self.recording_service
         self.participation_service.activity_execution_service = None
-        self.participation_service.participant_state_service = None
+        self.participation_service.participant_state_service = (
+            self.participant_state_service
+        )
+
+        self.participant_service.participant_state_service = (
+            self.participant_state_service
+        )
+
+        self.participant_state_service.participant_service = self.participant_service
+        self.participant_state_service.appearance_service = None
+        self.participant_state_service.personality_service = None
+        self.participant_state_service.participation_service = (
+            self.participation_service
+        )
 
     def get_activity_service(self) -> ActivityService:
         return ActivityServiceGraphDB()
@@ -152,13 +167,13 @@ class MongoServiceFactory(ServiceFactory):
         return self.observable_information_service
 
     def get_participant_service(self) -> ParticipantService:
-        return ParticipantServiceGraphDB()
+        return self.participant_service
 
     def get_participant_state_service(self) -> ParticipantStateService:
-        return ParticipantStateServiceGraphDB()
+        return self.participant_state_service
 
     def get_participation_service(self) -> ParticipationService:
-        return ParticipationServiceGraphDB()
+        return self.participation_service
 
     def get_personality_service(self) -> PersonalityService:
         return PersonalityServiceGraphDB()
