@@ -1,3 +1,4 @@
+from ast import List
 from typing import Union, Optional
 
 from starlette.datastructures import QueryParams
@@ -13,9 +14,13 @@ from time_series.time_series_model import (
     TimeSeriesOut,
     TimeSeriesIn,
     TimeSeriesRelationIn,
+    TimeSeriesTransformationIn,
 )
 from models.not_found_model import NotFoundByIdModel
 from time_series.time_series_service import TimeSeriesService
+from time_series.transformation.TimeSeriesTransformationFactory import (
+    TimeSeriesTransformationFactory,
+)
 
 
 class TimeSeriesServiceMongoDB(TimeSeriesService):
@@ -44,20 +49,17 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
         Returns:
             Result of request as time series object
         """
-
-        related_oi = self.observable_information_service.get_observable_information(
-            time_series.observable_information_id
-        )
-        related_oi_exists = related_oi is not NotFoundByIdModel
-        if time_series.observable_information_id is not None and not related_oi_exists:
+        if not self._check_related_observable_informations(
+            time_series.observable_information_ids
+        ):
             return TimeSeriesOut(
                 errors={"errors": "given observable information does not exist"}
             )
 
-        # related_measure = self.measure_service.get_measure(time_series.measure_id)
-        # related_measure_exists = related_measure is not NotFoundByIdModel
-        # if time_series.measure_id is not None and not related_measure_exists:
-        #     return TimeSeriesOut(errors={"errors": "given measure does not exist"})
+        related_measure = self.measure_service.get_measure(time_series.measure_id)
+        related_measure_exists = related_measure is not NotFoundByIdModel
+        if time_series.measure_id is not None and not related_measure_exists:
+            return TimeSeriesOut(errors={"errors": "given measure does not exist"})
 
         created_ts_id = self.mongo_api_service.create_time_series(
             time_series_in=time_series
@@ -109,7 +111,7 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
             signal_max_value=signal_max_value,
         )
         self._add_related_documents(time_series, depth, source)
-        return time_series
+        return TimeSeriesOut(**time_series)
 
     def delete_time_series(self, time_series_id: Union[int, str]):
         """
@@ -162,24 +164,57 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        related_oi = self.observable_information_service.get_observable_information(
-            time_series.observable_information_id
-        )
-        related_oi_exists = related_oi is not NotFoundByIdModel
-        if time_series.observable_information_id is not None and not related_oi_exists:
+        if not self._check_related_observable_informations(
+            time_series.observable_information_ids
+        ):
             return TimeSeriesOut(
                 errors={"errors": "given observable information does not exist"}
             )
 
-        # related_measure = self.measure_service.get_measure(time_series.measure_id)
-        # related_measure_exists = related_measure is not NotFoundByIdModel
-        # if time_series.measure_id is not None and not related_measure_exists:
-        #     return TimeSeriesOut(errors={"errors": "given measure does not exist"})
+        related_measure = self.measure_service.get_measure(time_series.measure_id)
+        related_measure_exists = related_measure is not NotFoundByIdModel
+        if time_series.measure_id is not None and not related_measure_exists:
+            return TimeSeriesOut(errors={"errors": "given measure does not exist"})
 
         self.mongo_api_service.update_time_series_metadata(
             time_series.dict(), time_series_id
         )
         return self.get_time_series(time_series_id)
+
+    def transform_time_series(
+        self, time_series_transformation: TimeSeriesTransformationIn
+    ):
+        """
+        Send request to graph api to create new transformed time series
+
+        Args:
+            time_series_transformation (TimeSeriesTransformationIn): Time series transformation parameters
+
+        Returns:
+            Result of request as time series object
+        """
+        source_time_series = []
+        for time_series_id in time_series_transformation.source_time_series_ids:
+            time_series = self.get_time_series(time_series_id)
+            if time_series.errors is not None:
+                return time_series
+            source_time_series.append(time_series)
+        try:
+            new_time_series, new_signal_values_id_mapping = (
+                TimeSeriesTransformationFactory()
+                .get_transformation(time_series_transformation.name)
+                .transform(
+                    source_time_series, time_series_transformation.additional_properties
+                )
+            )
+        except Exception as e:
+            return TimeSeriesNodesOut(errors=str(e))
+        new_time_series.measure_id = time_series_transformation.destination_measure_id
+        new_time_series.observable_information_ids = (
+            time_series_transformation.destination_observable_information_ids
+        )
+
+        result = self.save_time_series(new_time_series)
 
     def get_time_series_for_observable_information(
         self,
@@ -187,7 +222,7 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
         depth: int = 0,
         source: str = "",
     ):
-        query = {"metadata.observable_information_id": observable_information_id}
+        query = {"metadata.observable_information_ids": observable_information_id}
         return self.get_multiple(query, depth, source)
 
     def _add_related_documents(self, time_series: dict, depth: int, source: str):
@@ -199,12 +234,24 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
         pass
 
     def _add_observable_informations(self, time_series: dict, depth: int, source: str):
-        has_related_oi = time_series["observable_information_id"] is not None
-        if source != Collections.OBSERVABLE_INFORMATION and has_related_oi:
-            time_series["observable_informations"] = [
-                self.observable_information_service.get_single_dict(
-                    time_series["observable_information_id"],
-                    depth=depth - 1,
-                    source=Collections.TIME_SERIES,
-                )
-            ]
+        if time_series["observable_information_ids"] is None:
+            return
+        if source != Collections.OBSERVABLE_INFORMATION:
+            time_series[
+                "observable_informations"
+            ] = self.observable_information_service.get_multiple(
+                {"id": {"$in": time_series["observable_information_ids"]}},
+                depth=depth - 1,
+                source=Collections.TIME_SERIES,
+            )
+
+    def _check_related_observable_informations(self, observable_information_ids: List):
+        existing_observable_informations = (
+            self.observable_information_service.get_multiple(
+                query={"id": {"$in": observable_information_ids}},
+            )
+        )
+        all_given_oi_extist = len(existing_observable_informations) == len(
+            observable_information_ids
+        )
+        return all_given_oi_extist
