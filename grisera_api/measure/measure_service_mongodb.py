@@ -75,8 +75,6 @@ class MeasureServiceMongoDB(MeasureService, GenericMongoServiceMixin):
             measure_id (int | str): identity of measure
             depth: (int): specifies how many related entities will be traversed to create the response
             source (str): internal argument for mongo services, used to tell the direction of model fetching.
-                i.e. if for this service, if source="recording", it means that this method was invoked
-                from recording service, so recording model will not be fetched, as it is already in response.
 
         Returns:
             Result of request as measure object

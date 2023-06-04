@@ -22,6 +22,7 @@ class RegisteredChannelServiceMongoDB(
     Object to handle logic of registered channels requests
 
     Attributes:
+    mongo_api_service (MongoApiService): Service used to communicate with Mongo API
     channel_service (ChannelServiceMongoDB): Service to send channel requests
     registered_data_service (RegisteredDataServiceMongoDB): Service to send registered data requests
     recording_service (RecordingServiceMongoDB): Service to send recording requests

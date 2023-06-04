@@ -26,7 +26,7 @@ class TestMongoRegisteredData(MongoTestCase):
         self.assertFalse(type(fetched_recording) is NotFoundByIdModel)
 
     @mongomock.patch(servers=((mongo_api_host, mongo_api_port),))
-    def test_update(self):
+    def test_update_relationships(self):
         service = Services().recording_service()
 
         related_rc = self.generate_registered_channel(save=True)
@@ -34,8 +34,8 @@ class TestMongoRegisteredData(MongoTestCase):
         created_recording = service.save_recording(recording)
 
         new_related_rc = self.generate_registered_channel(save=True)
-        recording.registered_channel_id = new_related_rc.id
-        service.update_recording(created_recording.id, recording)
+        created_recording.registered_channel_id = new_related_rc.id
+        service.update_recording_relationships(created_recording.id, created_recording)
         fetched_recording = service.get_recording(created_recording.id)
         self.assertEqual(fetched_recording.registered_channel_id, new_related_rc.id)
 

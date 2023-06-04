@@ -18,7 +18,7 @@ from participant.participant_service_graphdb import ParticipantServiceGraphDB
 from participant_state.participant_state_service_graphdb import (
     ParticipantStateServiceGraphDB,
 )
-from participation.participation_service_graphdb import ParticipationServiceGraphDB
+from participation.participation_service_mongodb import ParticipationServiceMongoDB
 from personality.personality_service_graphdb import PersonalityServiceGraphDB
 from recording.recording_service_mongodb import RecordingServiceMongoDB
 from registered_channel.registered_channel_service_mongodb import (
@@ -63,6 +63,7 @@ class MongoServiceFactory(ServiceFactory):
         self.time_series_service = TimeSeriesServiceMongoDB()
         self.measure_service = MeasureServiceMongoDB()
         self.measure_name_service = MeasureNameServiceMongoDB()
+        self.participation_service = ParticipationServiceMongoDB()
 
         self.channel_service.registered_channel_service = (
             self.registered_channel_service
@@ -71,7 +72,7 @@ class MongoServiceFactory(ServiceFactory):
         self.recording_service.observable_information_service = (
             self.observable_information_service
         )
-        self.recording_service.participation_service = None
+        self.recording_service.participation_service = self.participation_service
         self.recording_service.registered_channel_service = (
             self.registered_channel_service
         )
@@ -91,7 +92,9 @@ class MongoServiceFactory(ServiceFactory):
             self.life_activity_service
         )
         self.observable_information_service.modality_service = self.modality_service
-        self.observable_information_service.time_series_service = None
+        self.observable_information_service.time_series_service = (
+            self.time_series_service
+        )
 
         self.modality_service.observable_information_service = (
             self.observable_information_service
@@ -110,6 +113,10 @@ class MongoServiceFactory(ServiceFactory):
         self.measure_service.measure_name_service = self.measure_name_service
 
         self.measure_name_service.measure_service = self.measure_service
+
+        self.participation_service.recording_service = self.recording_service
+        self.participation_service.activity_execution_service = None
+        self.participation_service.participant_state_service = None
 
     def get_activity_service(self) -> ActivityService:
         return ActivityServiceGraphDB()

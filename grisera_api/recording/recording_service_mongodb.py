@@ -54,8 +54,9 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         Returns:
             Result of request as recording object
         """
-        # TODO update when participation service is ready
-        participation = NotFoundByIdModel()
+        participation = self.participation_service.get_participation(
+            recording.participation_id
+        )
         participation_exists = participation is not NotFoundByIdModel
         if recording.participation_id is not None and not participation_exists:
             return RecordingOut(errors={"errors": "given participation does not exist"})
@@ -122,7 +123,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         self, recording_id: Union[str, int], recording: RecordingPropertyIn
     ):
         """
-        Send request to mongo api to update given participant state
+        Send request to mongo api to update given recording
 
         Args:
             recording_id (Union[str, int]): Id of participant state
@@ -131,7 +132,11 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         Returns:
             Result of request as participant state object
         """
-        return self.update(recording_id, recording)
+        existing_recording = self.get_recording(recording_id)
+        new_recording = RecordingOut(**recording.dict())
+        new_recording.participation_id = existing_recording.participation_id
+        new_recording.registered_channel_id = existing_recording.registered_channel_id
+        return self.update(recording_id, new_recording)
 
     def update_recording_relationships(
         self, recording_id: Union[str, int], recording: RecordingIn
@@ -151,8 +156,10 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         if type(existing_recording) is NotFoundByIdModel:
             return existing_recording
 
-        related_registered_channel = self.registered_channel_service.get_channel(
-            recording.registered_channel_id
+        related_registered_channel = (
+            self.registered_channel_service.get_registered_channel(
+                recording.registered_channel_id
+            )
         )
         related_registered_channel_exists = (
             type(related_registered_channel) is not NotFoundByIdModel
