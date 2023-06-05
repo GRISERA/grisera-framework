@@ -16,7 +16,7 @@ class ActivityServiceOntology(ActivityService):
 
     def save_activity(self, activity: ActivityIn):
         """
-        Send request to graph api to create new activity
+        Send request to ontology api to create new activity
 
         Args:
             activity (ActivityIn): Activity to be added
@@ -25,9 +25,11 @@ class ActivityServiceOntology(ActivityService):
             Result of request as activity object
         """
         model_id = 1
-        instance_response_activity = self.ontology_api_service.add_instance(model_id, "Activity", "test")
+        instance_response_activity = self.ontology_api_service.add_instance(model_id, "Activity",
+                                                                            activity.activity_name)
         if instance_response_activity["errors"] is not None:
             return ActivityOut(**activity.dict(), errors=instance_response_activity["errors"])
+
         activity_label = instance_response_activity["label"]
         activity.__dict__.update({'activity_name': activity_label})
         return ActivityOut(**activity.dict())
