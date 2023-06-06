@@ -110,3 +110,25 @@ class OntologyApiService:
         Returns: Request result
         """
         return self.get(f"/models/{model_id}/classes/{class_name}/instances/{instance_label}", {})
+
+    def get_roles(self, model_id, experiment_label):
+        """
+        Send a GET request to get roles from Ontology API
+        Args:
+            model_id (int): id of the model
+            experiment_label (str): label of experiment
+        Returns: Request result
+        """
+        url_part = f"/models/{model_id}/instances/{experiment_label}/roles"
+        return self.get(url_part, {})
+
+    def get_reversed_roles(self, model_id, experiment_label):
+        """
+        Send a GET request to get reversed roles from Ontology API
+        Args:
+            model_id (int): id of the model
+            experiment_label (str): label of experiment
+        Returns: Request result
+        """
+        url_part = f"/models/{model_id}/instances/{experiment_label}/reversed_roles"
+        return self.get(url_part, {})
