@@ -1,5 +1,8 @@
+from typing import Union
+
 from experiment.experiment_model import ExperimentIn, ExperimentOut
 from experiment.experiment_service import ExperimentService
+from activity_execution.activity_execution_model import ActivityExecutionOut
 from ontology_api_service import OntologyApiService
 
 
@@ -12,9 +15,39 @@ class ExperimentServiceOntology(ExperimentService):
     """
     ontology_api_service = OntologyApiService()
 
-    def get_experiment(self, experiment_id):
-        pass
+    def get_experiment(self, experiment_label: Union[int, str], depth: int = 0):
+        """
+        Send request to ontology api to get given experiment
+        Args:
+            experiment_label (int | str): label of experiment
+            depth (int) : only for compatibility with graph_api, always set to 0
+        Returns:
+            Result of request as experiment object
+        """
+        model_id = 1
 
+        instance_response_experiment = self.ontology_api_service.get_instance(model_id=model_id,
+                                                                              class_name="Experiment",
+                                                                              instance_label=experiment_label)
+        if instance_response_experiment["errors"] is not None:
+            experiment_result = {'experiment_name': experiment_label, 'errors': instance_response_experiment["errors"]}
+            return ExperimentOut(**experiment_result)
+
+        roles_response_experiment = self.ontology_api_service.get_roles(model_id, experiment_label)
+        if roles_response_experiment["errors"] is not None:
+            return ExperimentOut(ExperimentIn(experiment_label),
+                                 errors=roles_response_experiment["errors"])
+
+        a = None
+        for prop in roles_response_experiment['roles']:
+            if prop['role'] == 'hasScenario' and prop['instance_name'] == experiment_label:
+                activity_execution_dictionary = {'id': prop['value']}
+                a = ActivityExecutionOut(**activity_execution_dictionary)
+
+        experiment_result = {'id': experiment_label,
+                             'experiment_name': experiment_label,
+                             'activity_executions': a}
+        return ExperimentOut(**experiment_result)
     def save_experiment(self, experiment: ExperimentIn):
         """
         Send request to ontology api to add new experiment
