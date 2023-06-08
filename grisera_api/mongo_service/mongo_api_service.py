@@ -169,6 +169,9 @@ class MongoApiService:
         query = {f"{self.METADATA_FIELD}.id": ts_id}
         return self.db[Collections.TIME_SERIES].delete_many(filter=query)
 
+    def get_id_in_query(self, id_list):
+        return {"$in": [ObjectId(id) for id in id_list]}
+
     def _update_mongo_input_id(self, mongo_input: dict):
         """
         Mongo documents id fields are '_id' while models fields are 'id'. Here id field is

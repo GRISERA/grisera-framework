@@ -10,7 +10,7 @@ from mongo_service.mongodb_api_config import mongo_api_host, mongo_api_port
 from recording.recording_model import RecordingIn
 
 
-class TestMongoRegisteredData(MongoTestCase):
+class TestMongoOservableInformation(MongoTestCase):
     def generate_recording(self, save: bool):
         recording = RecordingIn()
         if not save:

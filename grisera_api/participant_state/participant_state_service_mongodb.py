@@ -232,7 +232,7 @@ class ParticipantStateServiceMongoDB(ParticipantStateService, GenericMongoServic
         if personality_ids is None:
             return True
         existing_personalities = self.personality_service.get_multiple(
-            query={"id": {"$in": personality_ids}},
+            query={"id": self.mongo_api_service.get_id_in_query(personality_ids)},
         )
         all_given_personalities_extist = len(existing_personalities) == len(
             personality_ids
@@ -243,7 +243,7 @@ class ParticipantStateServiceMongoDB(ParticipantStateService, GenericMongoServic
         if appearance_ids is None:
             return True
         existing_appearances = self.appearance_service.get_multiple(
-            query={"id": {"$in": appearance_ids}},
+            query={"id": self.mongo_api_service.get_id_in_query(appearance_ids)},
         )
         all_given_appearances_extist = len(existing_appearances) == len(appearance_ids)
         return all_given_appearances_extist
@@ -281,26 +281,34 @@ class ParticipantStateServiceMongoDB(ParticipantStateService, GenericMongoServic
                 source=Collections.PARTICIPANT_STATE,
             )
 
-    def _add_related_appearances(self, participant_state: dict, depth: int, source: str)
+    def _add_related_appearances(
+        self, participant_state: dict, depth: int, source: str
+    ):
         if participant_state["appearance_ids"] is None:
             return
         if source != Collections.APPEARANCE:
-            participant_state[
-                "appearances"
-            ] = self.appearance_service.get_multiple(
-                {"id": {"$in": participant_state["appearance_ids"]}},
+            participant_state["appearances"] = self.appearance_service.get_multiple(
+                {
+                    "id": self.mongo_api_service.get_id_in_query(
+                        participant_state["appearance_ids"]
+                    )
+                },
                 depth=depth - 1,
                 source=Collections.PARTICIPANT_STATE,
             )
 
-    def _add_related_personalities(self, participant_state: dict, depth: int, source: str)
+    def _add_related_personalities(
+        self, participant_state: dict, depth: int, source: str
+    ):
         if participant_state["personality_ids"] is None:
             return
         if source != Collections.PERSONALITY:
-            participant_state[
-                "personalities"
-            ] = self.personality_service.get_multiple(
-                {"id": {"$in": participant_state["personality_ids"]}},
+            participant_state["personalities"] = self.personality_service.get_multiple(
+                {
+                    "id": self.mongo_api_service.get_id_in_query(
+                        participant_state["personality_ids"]
+                    )
+                },
                 depth=depth - 1,
                 source=Collections.PARTICIPANT_STATE,
             )

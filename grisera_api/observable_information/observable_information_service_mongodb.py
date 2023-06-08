@@ -100,11 +100,10 @@ class ObservableInformationServiceMongoDB(
         }
         recording_results = self.recording_service.get_multiple(
             recording_query,
-            depth=depth - 1,
+            depth=0,
             source=Collections.OBSERVABLE_INFORMATION,
             projection=self._get_recording_projection(query),
         )
-
         result = []
         for recording_result in recording_results:
             observable_informations = recording_result["observable_informations"]
@@ -112,7 +111,7 @@ class ObservableInformationServiceMongoDB(
             for observable_information in observable_informations:
                 self._add_related_documents(
                     observable_information,
-                    depth - 1,
+                    depth,
                     source,
                     recording_result,
                 )
@@ -242,6 +241,7 @@ class ObservableInformationServiceMongoDB(
         recording: dict,
     ):
         """Recording is taken from previous get query"""
+        print("oi depth ", depth)
         if depth > 0:
             self._add_related_time_series(observable_information, depth, source)
             self._add_related_modalities(observable_information, depth, source)

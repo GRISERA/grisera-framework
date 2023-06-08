@@ -51,14 +51,14 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
         if not self._check_related_observable_informations(
             time_series.observable_information_ids
         ):
-            return TimeSeriesOut(
+            return NotFoundByIdModel(
                 errors={"errors": "given observable information does not exist"}
             )
 
         related_measure = self.measure_service.get_measure(time_series.measure_id)
         related_measure_exists = related_measure is not NotFoundByIdModel
         if time_series.measure_id is not None and not related_measure_exists:
-            return TimeSeriesOut(errors={"errors": "given measure does not exist"})
+            return NotFoundByIdModel(errors={"errors": "given measure does not exist"})
 
         created_ts_id = self.mongo_api_service.create_time_series(
             time_series_in=time_series
@@ -225,12 +225,19 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
         return self.get_multiple(query, depth, source)
 
     def _add_related_documents(self, time_series: dict, depth: int, source: str):
+        print("ts_depth", depth)
         if depth > 0:
             self._add_mesure(time_series, depth, source)
             self._add_observable_informations(time_series, depth, source)
 
     def _add_mesure(self, time_series: dict, depth: int, source: str):
-        pass
+        has_related_measure = time_series["measure_id"] is not None
+        if source != Collections.MEASURE and has_related_measure:
+            time_series["measure"] = self.measure_service.get_single_dict(
+                time_series["measure_id"],
+                depth=depth - 1,
+                source=Collections.TIME_SERIES,
+            )
 
     def _add_observable_informations(self, time_series: dict, depth: int, source: str):
         if time_series["observable_information_ids"] is None:
@@ -239,7 +246,11 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
             time_series[
                 "observable_informations"
             ] = self.observable_information_service.get_multiple(
-                {"id": {"$in": time_series["observable_information_ids"]}},
+                {
+                    "id": self.mongo_api_service.get_id_in_query(
+                        time_series["observable_information_ids"]
+                    )
+                },
                 depth=depth - 1,
                 source=Collections.TIME_SERIES,
             )
@@ -247,7 +258,11 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
     def _check_related_observable_informations(self, observable_information_ids: List):
         existing_observable_informations = (
             self.observable_information_service.get_multiple(
-                query={"id": {"$in": observable_information_ids}},
+                query={
+                    "id": self.mongo_api_service.get_id_in_query(
+                        observable_information_ids
+                    )
+                },
             )
         )
         all_given_oi_extist = len(existing_observable_informations) == len(
