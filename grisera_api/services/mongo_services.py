@@ -1,6 +1,8 @@
+from appearance.appearance_service_mongodb import AppearanceServiceMongoDB
 from observable_information.observable_information_service_mongodb import (
     ObservableInformationServiceMongoDB,
 )
+from personality.personality_service_mongodb import PersonalityServiceMongoDB
 from services.service_factory import ServiceFactory
 from activity.activity_service_graphdb import ActivityServiceGraphDB
 from activity_execution.activity_execution_service_graphdb import (
@@ -64,74 +66,30 @@ class MongoServiceFactory(ServiceFactory):
         self.measure_service = MeasureServiceMongoDB()
         self.measure_name_service = MeasureNameServiceMongoDB()
         self.participation_service = ParticipationServiceMongoDB()
-        self.participant_service = ParticipantService()
-        self.participant_state_service = ParticipantStateService()
+        self.participant_service = ParticipantServiceMongoDB()
+        self.participant_state_service = ParticipantStateServiceMongoDB()
+        self.appearance_service = AppearanceServiceMongoDB()
+        self.personality_service = PersonalityServiceMongoDB()
 
-        self.channel_service.registered_channel_service = (
-            self.registered_channel_service
-        )
+        service_pairs = [
+            ("registered_channel", "channel"),
+            ("registered_channel", "registered_data"),
+            ("registered_channel", "recording"),
+            ("observable_information", "recording"),
+            ("observable_information", "time_series"),
+            ("observable_information", "life_activity"),
+            ("observable_information", "modality"),
+            ("measure", "time_series"),
+            ("measure", "measure_name"),
+            ("participation", "recording"),
+            ("participant_state", "participation"),
+            ("participant_state", "participant"),
+            ("participant_state", "appearance"),
+            ("participant_state", "personality"),
+        ]
 
-        self.recording_service.observable_information_service = (
-            self.observable_information_service
-        )
-        self.recording_service.participation_service = self.participation_service
-        self.recording_service.registered_channel_service = (
-            self.registered_channel_service
-        )
-
-        self.registered_channel_service.channel_service = self.channel_service
-        self.registered_channel_service.registered_data_service = (
-            self.registered_data_service
-        )
-        self.registered_channel_service.recording_service = self.recording_service
-
-        self.registered_data_service.registered_channel_service = (
-            self.registered_channel_service
-        )
-
-        self.observable_information_service.recording_service = self.recording_service
-        self.observable_information_service.life_activity_service = (
-            self.life_activity_service
-        )
-        self.observable_information_service.modality_service = self.modality_service
-        self.observable_information_service.time_series_service = (
-            self.time_series_service
-        )
-
-        self.modality_service.observable_information_service = (
-            self.observable_information_service
-        )
-
-        self.life_activity_service.observable_information_service = (
-            self.observable_information_service
-        )
-
-        self.time_series_service.observable_information_service = (
-            self.observable_information_service
-        )
-        self.time_series_service.measure_service = self.measure_service
-
-        self.measure_service.time_series_service = self.time_series_service
-        self.measure_service.measure_name_service = self.measure_name_service
-
-        self.measure_name_service.measure_service = self.measure_service
-
-        self.participation_service.recording_service = self.recording_service
-        self.participation_service.activity_execution_service = None
-        self.participation_service.participant_state_service = (
-            self.participant_state_service
-        )
-
-        self.participant_service.participant_state_service = (
-            self.participant_state_service
-        )
-
-        self.participant_state_service.participant_service = self.participant_service
-        self.participant_state_service.appearance_service = None
-        self.participant_state_service.personality_service = None
-        self.participant_state_service.participation_service = (
-            self.participation_service
-        )
+        for first_service_name, second_service_name in service_pairs:
+            self._pair_services(first_service_name, second_service_name)
 
     def get_activity_service(self) -> ActivityService:
         return ActivityServiceGraphDB()
@@ -140,7 +98,7 @@ class MongoServiceFactory(ServiceFactory):
         return ActivityExecutionServiceGraphDB()
 
     def get_appearance_service(self) -> AppearanceService:
-        return AppearanceServiceGraphDB()
+        return self.appearance_service
 
     def get_arrangement_service(self) -> ArrangementService:
         return ArrangementServiceGraphDB()
@@ -176,7 +134,7 @@ class MongoServiceFactory(ServiceFactory):
         return self.participation_service
 
     def get_personality_service(self) -> PersonalityService:
-        return PersonalityServiceGraphDB()
+        return self.personality_service
 
     def get_recording_service(self) -> RecordingService:
         return self.recording_service
@@ -192,3 +150,26 @@ class MongoServiceFactory(ServiceFactory):
 
     def get_time_series_service(self) -> TimeSeriesService:
         return self.time_series_service
+
+    def _pair_services(
+        self, first_service_collection_name: str, second_service_collection_name: str
+    ):
+        """
+        Take collection names and their references to each other. For example:
+        self._paid_services('channel', 'registered_channel')
+        is equivalent to:
+        self.channel_service.registered_channel_service = (
+            self.registered_channel_service
+        )
+        self.registered_channel_service.channel_service = (
+            self.channel_service
+        )
+        """
+        first_service_attr = f"{first_service_collection_name}_service"
+        second_service_attr = f"{second_service_collection_name}_service"
+
+        first_service = getattr(self, first_service_attr)
+        second_service = getattr(self, second_service_attr)
+
+        setattr(first_service, second_service_attr, second_service)
+        setattr(second_service, first_service_attr, first_service)

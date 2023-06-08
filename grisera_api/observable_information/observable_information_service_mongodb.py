@@ -51,7 +51,6 @@ class ObservableInformationServiceMongoDB(
         Returns:
             Result of request as observable information object
         """
-
         related_recording = self.recording_service.get_recording(
             observable_information.recording_id
         )
@@ -241,7 +240,6 @@ class ObservableInformationServiceMongoDB(
         recording: dict,
     ):
         """Recording is taken from previous get query"""
-        print("oi depth ", depth)
         if depth > 0:
             self._add_related_time_series(observable_information, depth, source)
             self._add_related_modalities(observable_information, depth, source)

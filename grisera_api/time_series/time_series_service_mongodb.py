@@ -225,7 +225,6 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
         return self.get_multiple(query, depth, source)
 
     def _add_related_documents(self, time_series: dict, depth: int, source: str):
-        print("ts_depth", depth)
         if depth > 0:
             self._add_mesure(time_series, depth, source)
             self._add_observable_informations(time_series, depth, source)
