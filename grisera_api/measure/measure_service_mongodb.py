@@ -13,6 +13,7 @@ from measure.measure_model import (
 from measure.measure_service import MeasureService
 from measure_name.measure_name_service import MeasureNameService
 from models.not_found_model import NotFoundByIdModel
+from mongo_service.collection_mapping import Collections
 from mongo_service.mongo_api_service import MongoApiService
 from mongo_service.service_mixins import GenericMongoServiceMixin
 from time_series.time_series_service import TimeSeriesService
@@ -144,3 +145,25 @@ class MeasureServiceMongoDB(MeasureService, GenericMongoServiceMixin):
             existing_measure,
         )
         return existing_measure
+
+    def _add_related_documents(self, measure: dict, depth: int, source: str):
+        if depth > 0:
+            self._add_related_time_series(measure, depth, source)
+            self._add_related_measure_name(measure, depth, source)
+
+    def _add_related_time_series(self, measure: dict, depth: int, source: str):
+        if source != Collections.TIME_SERIES:
+            measure["time_series"] = self.time_series_service.get_multiple(
+                {"measure_id": measure["id"]},
+                depth=depth - 1,
+                source=Collections.MEASURE,
+            )
+
+    def _add_related_measure_name(self, measure: dict, depth: int, source: str):
+        has_related_measure_name = measure["measure_name_id"] is not None
+        if source != Collections.MEASURE_NAME and has_related_measure_name:
+            measure["measure_name"] = self.measure_name_service.get_single_dict(
+                measure["measure_name_id"],
+                depth=depth - 1,
+                source=Collections.MEASURE,
+            )

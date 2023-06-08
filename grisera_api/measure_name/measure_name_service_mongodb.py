@@ -52,7 +52,7 @@ class MeasureNameServiceMongoDB(MeasureNameService, GenericMongoServiceMixin):
         """
         result_dict = self.get_multiple()
         results = [BasicMeasureNameOut(**result) for result in result_dict]
-        return MeasureNamesOut(registered_data_nodes=results)
+        return MeasureNamesOut(measure_names=results)
 
     def get_measure_name(
         self, measure_name_id: Union[int, str], depth: int = 0, source: str = ""
