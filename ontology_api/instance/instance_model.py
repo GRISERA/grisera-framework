@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Any
+from typing import Optional, Any, List
 
 
 class MinimalInstanceModelIn(BaseModel):
@@ -21,3 +21,10 @@ class MinimalModelOut(BaseModel):
 
 class FullInstanceModelOut(MinimalModelOut):
     instance_id: Optional[str]
+
+class InstancesModelOut(BaseModel):
+    model_id: Optional[int]
+    class_name: Optional[str]
+    links: Optional[str]
+    errors: Optional[str]
+    instances: Optional[List[dict]]
