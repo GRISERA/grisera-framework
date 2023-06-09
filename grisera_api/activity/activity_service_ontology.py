@@ -1,5 +1,6 @@
 from typing import Union
 
+
 from activity.activity_model import ActivityIn, ActivityOut, Activity
 from activity.activity_service import ActivityService
 from ontology_api_service import OntologyApiService
@@ -60,6 +61,7 @@ class ActivityServiceOntology(ActivityService):
             return ActivityOut(**activity.dict())
         else:
             return ActivityOut(**activity.dict(), errors=errors)
+
 
     def get_activities(self):
         super().get_activities()
