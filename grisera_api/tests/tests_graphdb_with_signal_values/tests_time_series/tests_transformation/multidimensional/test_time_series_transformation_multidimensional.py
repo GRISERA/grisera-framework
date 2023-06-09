@@ -1,13 +1,13 @@
 import unittest
 
-from time_series.time_series_model import TimeSeriesOut, Type, TimeSeriesMultidimensionalOut
+from signal_series.signal_series_model import SignalSeriesOut, Type, SignalSeriesMultidimensionalOut
 from time_series.transformation.multidimensional.TimeSeriesTransformationMultidimensional import \
     TimeSeriesTransformationMultidimensional
 
 
 class TestTimeSeriesTransformationMultidimensional(unittest.TestCase):
     time_series_timestamp = [
-        TimeSeriesOut(
+        SignalSeriesOut(
             type=Type.timestamp,
             signal_values=[
                 {
@@ -37,7 +37,7 @@ class TestTimeSeriesTransformationMultidimensional(unittest.TestCase):
                         {'key': 'timestamp', 'value': '3'}]}
                 }
             ]),
-        TimeSeriesOut(
+        SignalSeriesOut(
             type=Type.timestamp,
             signal_values=[
                 {
@@ -61,7 +61,7 @@ class TestTimeSeriesTransformationMultidimensional(unittest.TestCase):
                         {'key': 'timestamp', 'value': '3'}]}
                 }
             ]),
-        TimeSeriesOut(
+        SignalSeriesOut(
             type=Type.timestamp,
             signal_values=[
                 {
@@ -88,7 +88,7 @@ class TestTimeSeriesTransformationMultidimensional(unittest.TestCase):
     ]
 
     time_series_epoch = [
-        TimeSeriesOut(
+        SignalSeriesOut(
             type=Type.epoch,
             signal_values=[
                 {
@@ -108,7 +108,7 @@ class TestTimeSeriesTransformationMultidimensional(unittest.TestCase):
                     ]}
                 }
             ]),
-        TimeSeriesOut(
+        SignalSeriesOut(
             type=Type.epoch,
             signal_values=[
                 {
@@ -145,7 +145,7 @@ class TestTimeSeriesTransformationMultidimensional(unittest.TestCase):
         result = time_series_transformation.transform(self.time_series_timestamp)
 
         self.assertEqual(
-            TimeSeriesMultidimensionalOut(
+            SignalSeriesMultidimensionalOut(
                 signal_values=[
                     {
                         'timestamp': {'labels': ['Timestamp'], 'id': 1,
@@ -172,7 +172,7 @@ class TestTimeSeriesTransformationMultidimensional(unittest.TestCase):
         result = time_series_transformation.transform(self.time_series_epoch)
 
         self.assertEqual(
-            TimeSeriesMultidimensionalOut(
+            SignalSeriesMultidimensionalOut(
                 signal_values=[
                     {
                         'timestamp': {'labels': ['Timestamp'], 'id': 1,

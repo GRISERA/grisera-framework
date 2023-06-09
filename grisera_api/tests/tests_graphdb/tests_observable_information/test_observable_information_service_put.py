@@ -14,7 +14,7 @@ from observable_information.observable_information_service_graphdb import \
 from graph_api_service import GraphApiService
 from recording.recording_model import BasicRecordingOut
 from recording.recording_service_graphdb import RecordingServiceGraphDB
-from time_series.time_series_model import BasicTimeSeriesOut
+from signal_series.signal_series_model import BasicSignalSeriesOut
 
 
 class TestObservableInformationServicePut(unittest.TestCase):
@@ -96,7 +96,7 @@ class TestObservableInformationServicePut(unittest.TestCase):
     #                                   "errors": None, 'links': None}
     #     observable_information_in = ObservableInformationIn(modality_id=15, life_activity_id=19)
     #     observable_information_out = ObservableInformationOut(id=id_node, recording=BasicRecordingOut(**{id: 16}),
-    #                                                           timeSeries=[BasicTimeSeriesOut(**{id: 19})],
+    #                                                           timeSeries=[BasicSignalSeriesOut(**{id: 19})],
     #                                                           modality=BasicModalityOut(**{id: 15}),
     #                                                           lifeActivity=BasicActivityOut(**{id: 17}))
     #     calls = [mock.call(1)]

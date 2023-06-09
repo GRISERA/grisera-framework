@@ -37,9 +37,9 @@ from registered_channel.registered_channel_model import (
 )
 from registered_data.registered_data_model import RegisteredDataIn
 from scenario.scenario_model import ScenarioIn
-from time_series.time_series_model import (
-    TimeSeriesPropertyIn,
-    TimeSeriesRelationIn,
+from signal_series.signal_series_model import (
+    SignalSeriesPropertyIn,
+    SignalSeriesRelationIn,
 )
 from enum import Enum
 
@@ -104,8 +104,8 @@ SUPERCLASSES_TO_COLLECTION_NAMES = {
     RegisteredChannelIn: Collections.REGISTERED_CHANNEL,
     RegisteredDataIn: Collections.REGISTERED_DATA,
     ScenarioIn: Collections.SCENARIO,
-    TimeSeriesPropertyIn: Collections.TIME_SERIES,
-    TimeSeriesRelationIn: Collections.TIME_SERIES,
+    SignalSeriesPropertyIn: Collections.TIME_SERIES,
+    SignalSeriesRelationIn: Collections.TIME_SERIES,
 }
 
 

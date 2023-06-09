@@ -1,35 +1,36 @@
 from typing import Union, Optional, List
 
 from starlette.datastructures import QueryParams
+from signal_series.signal_series_service import SignalSeriesService
 
-from time_series.time_series_model import TimeSeriesPropertyIn, TimeSeriesIn, TimeSeriesRelationIn, \
-    TimeSeriesTransformationIn
+from signal_series.signal_series_model import SignalSeriesPropertyIn, SignalSeriesIn, SignalSeriesRelationIn, \
+    SignalSeriesTransformationIn
 
 
-class TimeSeriesService:
+class TimeSeriesService(SignalSeriesService):
     """
     Abstract class to handle logic of time series requests
 
     """
 
-    def save_time_series(self, time_series: TimeSeriesIn):
+    def save_time_series(self, time_series: SignalSeriesIn):
         """
         Send request to graph api to create new time series
 
         Args:
-            time_series (TimeSeriesIn): Time series to be added
+            time_series (SignalSeriesIn): Time series to be added
 
         Returns:
             Result of request as time series object
         """
         raise Exception("save_time_series not implemented yet")
 
-    def transform_time_series(self, time_series_transformation: TimeSeriesTransformationIn):
+    def transform_time_series(self, time_series_transformation: SignalSeriesTransformationIn):
         """
         Send request to graph api to create new transformed time series
 
         Args:
-            time_series_transformation (TimeSeriesTransformationIn): Time series transformation parameters
+            time_series_transformation (SignalSeriesTransformationIn): Time series transformation parameters
 
         Returns:
             Result of request as time series object
@@ -89,13 +90,13 @@ class TimeSeriesService:
         """
         raise Exception("delete_time_series not implemented yet")
 
-    def update_time_series(self, time_series_id: Union[int, str], time_series: TimeSeriesPropertyIn):
+    def update_time_series(self, time_series_id: Union[int, str], time_series: SignalSeriesPropertyIn):
         """
         Send request to graph api to update given time series
 
         Args:
             time_series_id (int | str): identity of time series
-            time_series (TimeSeriesPropertyIn): Properties to update
+            time_series (SignalSeriesPropertyIn): Properties to update
 
         Returns:
             Result of request as time series object
@@ -103,13 +104,13 @@ class TimeSeriesService:
         raise Exception("update_time_series not implemented yet")
 
     def update_time_series_relationships(self, time_series_id: Union[int, str],
-                                         time_series: TimeSeriesRelationIn):
+                                         time_series: SignalSeriesRelationIn):
         """
         Send request to graph api to update given time series
 
         Args:
             time_series_id (int | str): identity of time series
-            time_series (TimeSeriesRelationIn): Relationships to update
+            time_series (SignalSeriesRelationIn): Relationships to update
 
         Returns:
             Result of request as time series object

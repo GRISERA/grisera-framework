@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from property.property_model import PropertyIn
-from time_series.time_series_model import TimeSeriesOut
+from signal_series.signal_series_model import SignalSeriesOut
 
 
 class TimeSeriesTransformation:
@@ -10,12 +10,12 @@ class TimeSeriesTransformation:
 
     """
 
-    def transform(self, time_series: List[TimeSeriesOut], additional_properties: Optional[List[PropertyIn]]):
+    def transform(self, time_series: List[SignalSeriesOut], additional_properties: Optional[List[PropertyIn]]):
         """
         Transform time series data
 
         Args:
-            time_series (List[TimeSeriesOut]): Time series to be transformed
+            time_series (List[SignalSeriesOut]): Time series to be transformed
             additional_properties (Optional[List[PropertyIn]]): Transformation parameters
 
         Returns:

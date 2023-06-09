@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 
 from graph_api_service import GraphApiService
-from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, Type, SignalIn, TimestampNodesIn, \
+from signal_series.signal_series_model import SignalSeriesOut, SignalSeriesIn, Type, SignalIn, StampNodesIn, \
     SignalValueNodesIn
 from time_series.time_series_service_graphdb_with_signal_values import \
     TimeSeriesServiceGraphDBWithSignalValues
@@ -68,7 +68,7 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
         self.assertEqual(node, result)
 
         self.assertEqual([mock.call('Timestamp')], create_node_mock.call_args_list)
-        self.assertEqual([mock.call(50, TimestampNodesIn(timestamp=100))], create_properties_mock.call_args_list)
+        self.assertEqual([mock.call(50, StampNodesIn(timestamp=100))], create_properties_mock.call_args_list)
         self.assertEqual([mock.call(50)], get_node_mock.call_args_list)
         create_relationships_mock.assert_not_called()
         delete_relationship_mock.assert_not_called()
@@ -116,7 +116,7 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
         self.assertEqual(node, result)
 
         self.assertEqual([mock.call('Timestamp')], create_node_mock.call_args_list)
-        self.assertEqual([mock.call(50, TimestampNodesIn(timestamp=100))], create_properties_mock.call_args_list)
+        self.assertEqual([mock.call(50, StampNodesIn(timestamp=100))], create_properties_mock.call_args_list)
         self.assertEqual([mock.call(50)], get_node_mock.call_args_list)
         self.assertEqual([mock.call(start_node=50, end_node=80, name='next')], create_relationships_mock.call_args_list)
         delete_relationship_mock.assert_not_called()
@@ -146,7 +146,7 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
         self.assertEqual(node, result)
 
         self.assertEqual([mock.call('Timestamp')], create_node_mock.call_args_list)
-        self.assertEqual([mock.call(50, TimestampNodesIn(timestamp=100))], create_properties_mock.call_args_list)
+        self.assertEqual([mock.call(50, StampNodesIn(timestamp=100))], create_properties_mock.call_args_list)
         self.assertEqual([mock.call(50)], get_node_mock.call_args_list)
         self.assertEqual([mock.call(start_node=10, end_node=50, name='next')], create_relationships_mock.call_args_list)
         delete_relationship_mock.assert_not_called()
@@ -187,7 +187,7 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
         self.assertEqual(node, result)
 
         self.assertEqual([mock.call('Timestamp')], create_node_mock.call_args_list)
-        self.assertEqual([mock.call(50, TimestampNodesIn(timestamp=100))], create_properties_mock.call_args_list)
+        self.assertEqual([mock.call(50, StampNodesIn(timestamp=100))], create_properties_mock.call_args_list)
 
         self.assertEqual([
             mock.call(70),
@@ -292,12 +292,12 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
     def test_save_time_series_with_node_error(self, create_node_mock):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
-        time_series = TimeSeriesIn(type="Epoch", source="cos", observable_information_id=1, measure_id=2)
+        time_series = SignalSeriesIn(type="Epoch", source="cos", observable_information_id=1, measure_id=2)
         time_series_service = TimeSeriesServiceGraphDBWithSignalValues()
 
         result = time_series_service.save_time_series(time_series)
 
-        self.assertEqual(result, TimeSeriesOut(type="Epoch", source="cos", errors=['error']))
+        self.assertEqual(result, SignalSeriesOut(type="Epoch", source="cos", errors=['error']))
         create_node_mock.assert_called_once_with('Time Series')
 
     @mock.patch.object(GraphApiService, 'get_nodes_by_query')

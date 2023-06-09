@@ -6,7 +6,7 @@ from measure.measure_model import BasicMeasureOut
 from models.not_found_model import NotFoundByIdModel
 from observable_information.observable_information_model import BasicObservableInformationOut
 from property.property_model import PropertyIn
-from time_series.time_series_model import TimeSeriesOut, TimeSeriesNodesOut, BasicTimeSeriesOut
+from signal_series.signal_series_model import SignalSeriesOut, SignalSeriesNodesOut, BasicSignalSeriesOut
 from time_series.time_series_service_graphdb_with_signal_values import TimeSeriesServiceGraphDBWithSignalValues
 
 
@@ -40,7 +40,7 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
              "name": "hasMeasure", "id": 0,
              "properties": None}]}
         additional_properties = [PropertyIn(key='test', value='test2')]
-        time_series = BasicTimeSeriesOut(id=1, type="Timestamp", source="cos",
+        time_series = BasicSignalSeriesOut(id=1, type="Timestamp", source="cos",
                                     signal_values=[
                                         {
                                             'signal_value': {'labels': ['Signal Value'], 'id': 2,
@@ -97,11 +97,11 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
             ],
             'errors': []
         }
-        time_series_one = BasicTimeSeriesOut(id=2, type="Timestamp", additional_properties=[
+        time_series_one = BasicSignalSeriesOut(id=2, type="Timestamp", additional_properties=[
             PropertyIn(key='value', value='test1')])
-        time_series_two = BasicTimeSeriesOut(id=4, type="Timestamp", additional_properties=[
+        time_series_two = BasicSignalSeriesOut(id=4, type="Timestamp", additional_properties=[
             PropertyIn(key='value', value='test2')])
-        time_series_nodes = TimeSeriesNodesOut(time_series_nodes=[time_series_one, time_series_two])
+        time_series_nodes = SignalSeriesNodesOut(time_series_nodes=[time_series_one, time_series_two])
         time_series_nodes_service = TimeSeriesServiceGraphDBWithSignalValues()
 
         result = time_series_nodes_service.get_time_series_nodes({"participant_date_of_birth": "2023-01-11"})

@@ -6,7 +6,7 @@ from requests import Response
 
 from activity_execution.activity_execution_model import ActivityExecutionIn
 from graph_api_service import GraphApiService
-from time_series.time_series_model import TimeSeriesTransformationRelationshipIn
+from signal_series.signal_series_model import SignalSeriesTransformationRelationshipIn
 
 
 class DatabaseServiceTestCase(unittest.TestCase):
@@ -141,7 +141,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
     def test_create_relationship_properties(self, post_mock):
         post_mock.return_value = self.response_content
         relationship_id = 1
-        relationship_model = TimeSeriesTransformationRelationshipIn(
+        relationship_model = SignalSeriesTransformationRelationshipIn(
             additional_properties=[{'key': 'test', 'value': '1234'}])
 
         result = self.graph_api_service.create_relationship_properties(relationship_id, relationship_model)

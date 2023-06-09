@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from property.property_model import PropertyIn
 from time_series.ts_helpers import get_node_property, get_additional_parameter
-from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, SignalIn, Type, TransformationType, \
+from signal_series.signal_series_model import SignalSeriesOut, SignalSeriesIn, SignalIn, Type, TransformationType, \
     SignalValueNodesIn
 from time_series.transformation.TimeSeriesTransformation import TimeSeriesTransformation
 
@@ -13,7 +13,7 @@ class TimeSeriesTransformationQuadrants(TimeSeriesTransformation):
 
     """
 
-    def transform(self, time_series: List[TimeSeriesOut], additional_properties: Optional[List[PropertyIn]]):
+    def transform(self, time_series: List[SignalSeriesOut], additional_properties: Optional[List[PropertyIn]]):
         """
         Transform time series data.
 
@@ -21,7 +21,7 @@ class TimeSeriesTransformationQuadrants(TimeSeriesTransformation):
         This transformation will ignore all signal values which timestamps will not be equal.
 
         Args:
-            time_series (List[TimeSeriesOut]): Time series to be transformed
+            time_series (List[SignalSeriesOut]): Time series to be transformed
             additional_properties (Optional[List[PropertyIn]]): Transformation parameters
 
         Returns:
@@ -79,7 +79,7 @@ class TimeSeriesTransformationQuadrants(TimeSeriesTransformation):
                     time_series[1].signal_values[current_signal_value_y_index]["signal_value"]["id"]
                 ])
 
-        return TimeSeriesIn(type=time_series[0].type,
+        return SignalSeriesIn(type=time_series[0].type,
                             additional_properties=additional_properties,
                             signal_values=new_signal_values
                             ), new_signal_values_id_mapping

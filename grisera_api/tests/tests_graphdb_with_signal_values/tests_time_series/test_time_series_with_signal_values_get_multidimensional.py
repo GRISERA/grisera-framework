@@ -1,13 +1,13 @@
 import unittest
 
-from time_series.time_series_model import TimeSeriesOut, Type, \
-    TimeSeriesMultidimensionalOut
+from signal_series.signal_series_model import SignalSeriesOut, Type, \
+    SignalSeriesMultidimensionalOut
 from time_series.time_series_service_graphdb_with_signal_values import TimeSeriesServiceGraphDBWithSignalValues
 
 
 class TestTimeSeriesWithSignalValuesServiceGetMultidimensional(unittest.TestCase):
     def test_get_time_series_multidimensional_without_errors(self):
-        result_timeseries = TimeSeriesMultidimensionalOut(
+        result_timeseries = SignalSeriesMultidimensionalOut(
             type=Type.timestamp,
             signal_values=[
                 {
@@ -36,14 +36,14 @@ class TestTimeSeriesWithSignalValuesServiceGetMultidimensional(unittest.TestCase
                 }
             ],
             time_series=[
-                TimeSeriesOut(type=Type.timestamp, id=60),
-                TimeSeriesOut(type=Type.timestamp, id=61)
+                SignalSeriesOut(type=Type.timestamp, id=60),
+                SignalSeriesOut(type=Type.timestamp, id=61)
             ]
         )
 
         def get_time_series_side_effect(time_series_id: int):
             if time_series_id == 60:
-                return TimeSeriesOut(
+                return SignalSeriesOut(
                     id=time_series_id,
                     type=Type.timestamp,
                     signal_values=[
@@ -65,7 +65,7 @@ class TestTimeSeriesWithSignalValuesServiceGetMultidimensional(unittest.TestCase
                         }
                     ])
             elif time_series_id == 61:
-                return TimeSeriesOut(
+                return SignalSeriesOut(
                     id=time_series_id,
                     type=Type.timestamp,
                     signal_values=[

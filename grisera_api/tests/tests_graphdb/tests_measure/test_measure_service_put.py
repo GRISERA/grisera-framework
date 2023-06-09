@@ -7,7 +7,7 @@ from models.not_found_model import *
 
 from measure.measure_service_graphdb import MeasureServiceGraphDB
 from graph_api_service import GraphApiService
-from time_series.time_series_model import BasicTimeSeriesOut
+from signal_series.signal_series_model import BasicSignalSeriesOut
 
 
 class TestMeasureServicePut(unittest.TestCase):
@@ -59,7 +59,7 @@ class TestMeasureServicePut(unittest.TestCase):
         #                                   "errors": None, 'links': None}
         #     measure_in = MeasurePropertyIn(datatype="Test", range="Unknown", unit="cm", id=id_node)
         #     measure_out = MeasureOut(datatype="Test", range="Unknown", unit="cm", id=id_node,
-        #                              time_series=[BasicTimeSeriesOut(**{id: 15})],
+        #                              time_series=[BasicSignalSeriesOut(**{id: 15})],
         #                              measure_name=BasicMeasureNameOut(**{id: 15}))
         #     calls = [mock.call(1)]
         #     measure_service = MeasureServiceGraphDB()

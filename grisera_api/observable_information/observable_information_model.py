@@ -37,13 +37,13 @@ class ObservableInformationOut(BasicObservableInformationOut, BaseModelOut):
 
     Attributes:
     recording (Optional[RecordingOut]): recording related to this observable information
-    timeSeries (Optional[List[TimeSeriesOut]]): list of time series related to this observable information
+    timeSeries (Optional[List[SignalSeriesOut]]): list of time series related to this observable information
     modality (Optional[ModalityOut]): modality related to this observable information
     life_activity (Optional[LifeActivityOut]): life activity related to this observable information
     """
 
     recording: "Optional[RecordingOut]"
-    timeSeries: "Optional[List[TimeSeriesOut]]"
+    timeSeries: "Optional[List[SignalSeriesOut]]"
     modality: "Optional[ModalityOut]"
     life_activity: "Optional[LifeActivityOut]"
 
@@ -63,6 +63,6 @@ class ObservableInformationsOut(BaseModelOut):
 from life_activity.life_activity_model import LifeActivityOut
 from modality.modality_model import ModalityOut
 from recording.recording_model import RecordingOut
-from time_series.time_series_model import TimeSeriesOut
+from signal_series.signal_series_model import SignalSeriesOut
 
 ObservableInformationOut.update_forward_refs()

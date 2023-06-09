@@ -6,14 +6,14 @@ from fastapi_utils.inferring_router import InferringRouter
 from starlette.requests import Request
 
 from hateoas import get_links
-from time_series.time_series_model import (
-    TimeSeriesIn,
-    TimeSeriesNodesOut,
-    TimeSeriesOut,
-    TimeSeriesPropertyIn,
-    TimeSeriesRelationIn,
-    TimeSeriesTransformationIn,
-    TimeSeriesMultidimensionalOut
+from signal_series.signal_series_model import (
+    SignalSeriesIn,
+    SignalSeriesNodesOut,
+    SignalSeriesOut,
+    SignalSeriesPropertyIn,
+    SignalSeriesRelationIn,
+    SignalSeriesTransformationIn,
+    SignalSeriesMultidimensionalOut
 )
 from time_series.time_series_service import TimeSeriesService
 from models.not_found_model import NotFoundByIdModel
@@ -34,8 +34,8 @@ class TimeSeriesRouter:
     def __init__(self):
         self.time_series_service = Services().time_series_service()
 
-    @router.post("/time_series", tags=["time series"], response_model=TimeSeriesOut)
-    async def create_time_series(self, time_series: TimeSeriesIn, response: Response):
+    @router.post("/time_series", tags=["time series"], response_model=SignalSeriesOut)
+    async def create_time_series(self, time_series: SignalSeriesIn, response: Response):
         """
         Create time series in database
 
@@ -54,8 +54,8 @@ class TimeSeriesRouter:
         return create_response
 
     @router.post("/time_series/transformation", tags=["time series"],
-                 response_model=Union[TimeSeriesOut, NotFoundByIdModel])
-    async def transform_time_series(self, time_series_transformation: TimeSeriesTransformationIn, response: Response):
+                 response_model=Union[SignalSeriesOut, NotFoundByIdModel])
+    async def transform_time_series(self, time_series_transformation: SignalSeriesTransformationIn, response: Response):
         """
         Create new transformed time series in database
 
@@ -82,7 +82,7 @@ class TimeSeriesRouter:
 
         return create_response
 
-    @router.get("/time_series", tags=["time series"], response_model=TimeSeriesNodesOut)
+    @router.get("/time_series", tags=["time series"], response_model=SignalSeriesNodesOut)
     async def get_time_series_nodes(self, response: Response, request: Request,
                                     entityname_property_name: Optional[str] = None,
                                     experiment_id: Optional[int] = None,
@@ -125,7 +125,7 @@ class TimeSeriesRouter:
     @router.get(
         "/time_series/{time_series_id}",
         tags=["time series"],
-        response_model=Union[TimeSeriesOut, NotFoundByIdModel],
+        response_model=Union[SignalSeriesOut, NotFoundByIdModel],
     )
     async def get_time_series(
         self, time_series_id: Union[int, str], depth: int, response: Response,
@@ -149,7 +149,7 @@ class TimeSeriesRouter:
         return get_response
 
     @router.get("/time_series/multidimensional/{time_series_ids}", tags=["time series"],
-                response_model=Union[TimeSeriesMultidimensionalOut, NotFoundByIdModel])
+                response_model=Union[SignalSeriesMultidimensionalOut, NotFoundByIdModel])
     async def get_time_series_multidimensional(self, time_series_ids: str, response: Response):
         """
         Get multidimensional time series by ids from database with signal values.
@@ -160,7 +160,7 @@ class TimeSeriesRouter:
             ids = [int(time_series_id.strip()) for time_series_id in time_series_ids.split(",")]
         except ValueError:
             response.status_code = 422
-            return TimeSeriesMultidimensionalOut(errors="Ids must be integers")
+            return SignalSeriesMultidimensionalOut(errors="Ids must be integers")
 
         get_response = self.time_series_service.get_time_series_multidimensional(ids)
         if get_response.errors is not None:
@@ -174,7 +174,7 @@ class TimeSeriesRouter:
     @router.delete(
         "/time_series/{time_series_id}",
         tags=["time series"],
-        response_model=Union[TimeSeriesOut, NotFoundByIdModel],
+        response_model=Union[SignalSeriesOut, NotFoundByIdModel],
     )
     async def delete_time_series(
         self, time_series_id: Union[int, str], response: Response
@@ -194,12 +194,12 @@ class TimeSeriesRouter:
     @router.put(
         "/time_series/{time_series_id}",
         tags=["time series"],
-        response_model=Union[TimeSeriesOut, NotFoundByIdModel],
+        response_model=Union[SignalSeriesOut, NotFoundByIdModel],
     )
     async def update_time_series(
         self,
         time_series_id: Union[int, str],
-        time_series: TimeSeriesPropertyIn,
+        time_series: SignalSeriesPropertyIn,
         response: Response,
     ):
         """
@@ -219,12 +219,12 @@ class TimeSeriesRouter:
     @router.put(
         "/time_series/{time_series_id}/relationships",
         tags=["time series"],
-        response_model=Union[TimeSeriesOut, NotFoundByIdModel],
+        response_model=Union[SignalSeriesOut, NotFoundByIdModel],
     )
     async def update_time_series_relationships(
         self,
         time_series_id: Union[int, str],
-        time_series: TimeSeriesRelationIn,
+        time_series: SignalSeriesRelationIn,
         response: Response,
     ):
         """

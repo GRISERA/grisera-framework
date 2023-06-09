@@ -3,7 +3,7 @@ import unittest.mock as mock
 
 from graph_api_service import GraphApiService
 from models.not_found_model import *
-from time_series.time_series_model import *
+from signal_series.signal_series_model import *
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 from time_series.time_series_service_graphdb_with_signal_values import TimeSeriesServiceGraphDBWithSignalValues
 
@@ -16,7 +16,7 @@ class TestTimeSeriesWithSignalValuesServiceDelete(unittest.TestCase):
     @mock.patch.object(TimeSeriesServiceGraphDB, 'delete_time_series')
     def test_delete_time_series_without_error(self, delete_time_series_mock, create_relationships_mock,
                                               get_node_relationships_mock, delete_node_mock):
-        time_series = TimeSeriesOut(id=10, type="Timestamp", source="cos",
+        time_series = SignalSeriesOut(id=10, type="Timestamp", source="cos",
                                     signal_values=[
                                         {
                                             'signal_value': {'labels': ['Signal Value'], 'id': 2,

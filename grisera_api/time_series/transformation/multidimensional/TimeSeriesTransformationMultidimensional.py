@@ -1,7 +1,7 @@
 from typing import List
 
 from time_series.ts_helpers import get_node_property
-from time_series.time_series_model import TimeSeriesOut, Type, TimeSeriesMultidimensionalOut
+from signal_series.signal_series_model import SignalSeriesOut, Type, SignalSeriesMultidimensionalOut
 
 
 class TimeSeriesTransformationMultidimensional:
@@ -10,7 +10,7 @@ class TimeSeriesTransformationMultidimensional:
 
     """
 
-    def transform(self, time_series: List[TimeSeriesOut]):
+    def transform(self, time_series: List[SignalSeriesOut]):
         """
         Transform time series data.
 
@@ -18,7 +18,7 @@ class TimeSeriesTransformationMultidimensional:
         This transformation will ignore all signal values which timestamps will not be equal.
 
         Args:
-            time_series (List[TimeSeriesOut]): Time series to be transformed
+            time_series (List[SignalSeriesOut]): Time series to be transformed
 
         Returns:
             New time series object
@@ -64,4 +64,4 @@ class TimeSeriesTransformationMultidimensional:
                     "signal_values": signal_values
                 })
 
-        return TimeSeriesMultidimensionalOut(type=time_series[0].type, signal_values=new_signal_values)
+        return SignalSeriesMultidimensionalOut(type=time_series[0].type, signal_values=new_signal_values)

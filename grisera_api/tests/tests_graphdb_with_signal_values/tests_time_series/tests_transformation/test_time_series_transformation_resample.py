@@ -1,13 +1,13 @@
 import unittest
 
 from property.property_model import PropertyIn
-from time_series.time_series_model import TimeSeriesOut, Type, TimeSeriesIn, SignalIn, SignalValueNodesIn
+from signal_series.signal_series_model import SignalSeriesOut, Type, SignalSeriesIn, SignalIn, SignalValueNodesIn
 from time_series.transformation.TimeSeriesTransformationResample import TimeSeriesTransformationResample
 
 
 class TestTimeSeriesTransformationResample(unittest.TestCase):
     time_series_timestamp = [
-        TimeSeriesOut(
+        SignalSeriesOut(
             type=Type.timestamp,
             signal_values=[
                 {
@@ -48,7 +48,7 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
     ]
 
     time_series_epoch = [
-        TimeSeriesOut(
+        SignalSeriesOut(
             type=Type.epoch,
             signal_values=[
                 {
@@ -94,7 +94,7 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
 
         self.assertEqual(
             (
-                TimeSeriesIn(
+                SignalSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
                         SignalIn(timestamp=0, signal_value=SignalValueNodesIn(value='10')),
@@ -123,7 +123,7 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
 
         self.assertEqual(
             (
-                TimeSeriesIn(
+                SignalSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
                         SignalIn(timestamp=3, signal_value=SignalValueNodesIn(value='20')),
@@ -150,7 +150,7 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
 
         self.assertEqual(
             (
-                TimeSeriesIn(
+                SignalSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
                         SignalIn(timestamp=0, signal_value=SignalValueNodesIn(value='10')),
@@ -182,7 +182,7 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
 
         self.assertEqual(
             (
-                TimeSeriesIn(
+                SignalSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
                         SignalIn(timestamp=6, signal_value=SignalValueNodesIn(value='20')),

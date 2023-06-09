@@ -3,8 +3,8 @@ from unittest import mock
 
 from graph_api_service import GraphApiService
 from property.property_model import PropertyIn
-from time_series.time_series_model import TimeSeriesOut, TimeSeriesTransformationIn, TimeSeriesIn, Type, \
-    TimeSeriesTransformationRelationshipIn
+from signal_series.signal_series_model import SignalSeriesOut, SignalSeriesTransformationIn, SignalSeriesIn, Type, \
+    SignalSeriesTransformationRelationshipIn
 from time_series.time_series_service_graphdb_with_signal_values import TimeSeriesServiceGraphDBWithSignalValues
 
 
@@ -12,7 +12,7 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'create_relationships')
     @mock.patch.object(GraphApiService, 'create_relationship_properties')
     def test_transform_time_series_without_errors(self, create_relationship_properties_mock, create_relationships_mock):
-        transformation = TimeSeriesTransformationIn(
+        transformation = SignalSeriesTransformationIn(
             name="quadrants",
             source_time_series_ids=[60, 61],
             destination_observable_information_id=102,
@@ -22,7 +22,7 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
                 PropertyIn(key="origin_y", value=10)
             ]
         )
-        result_timeseries = TimeSeriesOut(
+        result_timeseries = SignalSeriesOut(
             id=50,
             type=Type.timestamp,
             observable_information_id=102,
@@ -51,7 +51,7 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
 
         def get_time_series_side_effect(time_series_id: int):
             if time_series_id == 60:
-                return TimeSeriesOut(
+                return SignalSeriesOut(
                     id=time_series_id,
                     type=Type.timestamp,
                     signal_values=[
@@ -73,7 +73,7 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
                         }
                     ])
             elif time_series_id == 61:
-                return TimeSeriesOut(
+                return SignalSeriesOut(
                     id=time_series_id,
                     type=Type.timestamp,
                     signal_values=[
@@ -97,7 +97,7 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
             else:
                 return None
 
-        def save_time_series_side_effect(time_series: TimeSeriesIn):
+        def save_time_series_side_effect(time_series: SignalSeriesIn):
             return result_timeseries
 
         def create_relationships_side_effect(id_from: int, id_to: int, name: str):
@@ -120,16 +120,16 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
             mock.call(24, 14, 'basedOn')
         ], create_relationships_mock.call_args_list)
         self.assertEqual([
-            mock.call(5060, TimeSeriesTransformationRelationshipIn(
+            mock.call(5060, SignalSeriesTransformationRelationshipIn(
                 additional_properties=[PropertyIn(key='order', value='1')])),
-            mock.call(5061, TimeSeriesTransformationRelationshipIn(
+            mock.call(5061, SignalSeriesTransformationRelationshipIn(
                 additional_properties=[PropertyIn(key='order', value='2')])),
-            mock.call(2202, TimeSeriesTransformationRelationshipIn(
+            mock.call(2202, SignalSeriesTransformationRelationshipIn(
                 additional_properties=[PropertyIn(key='order', value='1')])),
-            mock.call(2212, TimeSeriesTransformationRelationshipIn(
+            mock.call(2212, SignalSeriesTransformationRelationshipIn(
                 additional_properties=[PropertyIn(key='order', value='2')])),
-            mock.call(2404, TimeSeriesTransformationRelationshipIn(
+            mock.call(2404, SignalSeriesTransformationRelationshipIn(
                 additional_properties=[PropertyIn(key='order', value='1')])),
-            mock.call(2414, TimeSeriesTransformationRelationshipIn(
+            mock.call(2414, SignalSeriesTransformationRelationshipIn(
                 additional_properties=[PropertyIn(key='order', value='2')]))
         ], create_relationship_properties_mock.call_args_list)

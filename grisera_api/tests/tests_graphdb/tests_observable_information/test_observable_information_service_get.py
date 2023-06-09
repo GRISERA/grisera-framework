@@ -13,7 +13,7 @@ from observable_information.observable_information_service_graphdb import \
     ObservableInformationServiceGraphDB
 from recording.recording_model import BasicRecordingOut
 from recording.recording_service_graphdb import RecordingServiceGraphDB
-from time_series.time_series_model import BasicTimeSeriesOut
+from signal_series.signal_series_model import BasicSignalSeriesOut
 
 
 class TestObservableInformationServiceGet(unittest.TestCase):

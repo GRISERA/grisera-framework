@@ -1,5 +1,5 @@
-from time_series.time_series_service import TimeSeriesService
+from signal_series.signal_series_service_ontology import SignalSeriesServiceOntology
 
 
-class TimeSeriesServiceOntology(TimeSeriesService):
+class TimeSeriesServiceOntology(SignalSeriesServiceOntology):
     pass

@@ -5,7 +5,7 @@ from graph_api_service import GraphApiService
 from measure.measure_service_graphdb import MeasureServiceGraphDB
 from observable_information.observable_information_model import BasicObservableInformationOut
 from observable_information.observable_information_service_graphdb import ObservableInformationServiceGraphDB
-from time_series.time_series_model import *
+from signal_series.signal_series_model import *
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 
 
@@ -36,8 +36,8 @@ class TestTimeSeriesServicePost(unittest.TestCase):
         create_properties_mock.return_value = {'id': id_node, 'errors': None, 'links': None}
         create_relationships_mock.return_value = {'start_node': 1, 'end_node': 2,
                                                   'name': 'hasMeasure', 'errors': None}
-        time_series_in = TimeSeriesIn(id=1, type="Epoch", source="cos", observable_information_id=2, measure_id=3)
-        time_series_out = BasicTimeSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[])
+        time_series_in = SignalSeriesIn(id=1, type="Epoch", source="cos", observable_information_id=2, measure_id=3)
+        time_series_out = BasicSignalSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[])
         calls = [mock.call(end_node=3, start_node=1, name="hasMeasure")]
 
         time_series_service = TimeSeriesServiceGraphDB()
@@ -80,8 +80,8 @@ class TestTimeSeriesServicePost(unittest.TestCase):
     #     create_properties_mock.return_value = {'id': id_node, 'errors': None, 'links': None}
     #     create_relationships_mock.return_value = {'start_node': 1, 'end_node': 2,
     #                                               'name': 'hasMeasure', 'errors': None}
-    #     time_series_in = TimeSeriesIn(id=1, type="Epoch", source="cos", observable_information_id=2, measure_id=3)
-    #     time_series_out = TimeSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[],
+    #     time_series_in = SignalSeriesIn(id=1, type="Epoch", source="cos", observable_information_id=2, measure_id=3)
+    #     time_series_out = SignalSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[],
     #                                     observable_informations=[BasicObservableInformationOut(**{id: 19})],
     #                                     measure=BasicMeasureOut(**{id: 15}))
     #     calls = [mock.call(end_node=3, start_node=1, name="hasMeasure")]
@@ -98,10 +98,10 @@ class TestTimeSeriesServicePost(unittest.TestCase):
     def test_save_time_series_with_node_error(self, create_node_mock):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
-        time_series = TimeSeriesIn(type="Epoch", source="cos", observable_information_id=1, measure_id=2)
+        time_series = SignalSeriesIn(type="Epoch", source="cos", observable_information_id=1, measure_id=2)
         time_series_service = TimeSeriesServiceGraphDB()
 
         result = time_series_service.save_time_series(time_series)
 
-        self.assertEqual(result, TimeSeriesOut(type="Epoch", source="cos", errors=['error']))
+        self.assertEqual(result, SignalSeriesOut(type="Epoch", source="cos", errors=['error']))
         create_node_mock.assert_called_once_with('Time Series')

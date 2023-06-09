@@ -3,7 +3,7 @@ import unittest.mock as mock
 
 from measure.measure_model import BasicMeasureOut
 from observable_information.observable_information_model import BasicObservableInformationOut
-from time_series.time_series_model import *
+from signal_series.signal_series_model import *
 from models.not_found_model import *
 
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
@@ -20,7 +20,7 @@ class TestTimeSeriesServiceGet(unittest.TestCase):
                                                      {'key': 'source', 'value': "cos"},
                                                      {'key': 'test', 'value': 'test2'}],
                                       "errors": None, 'links': None}
-        time_series = BasicTimeSeriesOut(id=1, type="Epoch", source="cos",
+        time_series = BasicSignalSeriesOut(id=1, type="Epoch", source="cos",
                                          additional_properties=[{'key': 'test', 'value': 'test2'}])
         time_series_service = TimeSeriesServiceGraphDB()
 
@@ -45,7 +45,7 @@ class TestTimeSeriesServiceGet(unittest.TestCase):
     #         {"start_node": id_node, "end_node": 15,
     #          "name": "hasMeasure", "id": 0,
     #          "properties": None}]}
-    #     time_series = TimeSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[],
+    #     time_series = SignalSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[],
     #                                 observable_informations=[BasicObservableInformationOut(**{id: 19})],
     #                                 measure=BasicMeasureOut(**{id: 15}))
     #     time_series_service = TimeSeriesServiceGraphDB()
@@ -91,11 +91,11 @@ class TestTimeSeriesServiceGet(unittest.TestCase):
                                                   'properties': [{'key': 'type', 'value': "Epoch"},
                                                                  {'key': 'source', 'value': "cos"},
                                                                  {'key': 'test2', 'value': 'test3'}]}]}
-        time_series_one = BasicTimeSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[
+        time_series_one = BasicSignalSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[
             PropertyIn(key='test', value='test')])
-        time_series_two = BasicTimeSeriesOut(id=2, type="Epoch", source="cos", additional_properties=[
+        time_series_two = BasicSignalSeriesOut(id=2, type="Epoch", source="cos", additional_properties=[
             PropertyIn(key='test2', value='test3')])
-        time_series_nodes = TimeSeriesNodesOut(time_series_nodes=[time_series_one, time_series_two])
+        time_series_nodes = SignalSeriesNodesOut(time_series_nodes=[time_series_one, time_series_two])
         time_series_nodes_service = TimeSeriesServiceGraphDB()
 
         result = time_series_nodes_service.get_time_series_nodes()
@@ -106,7 +106,7 @@ class TestTimeSeriesServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_time_series_nodes_empty(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': []}
-        time_series_nodes = TimeSeriesNodesOut(time_series=[])
+        time_series_nodes = SignalSeriesNodesOut(time_series=[])
         time_series_nodes_service = TimeSeriesServiceGraphDB()
 
         result = time_series_nodes_service.get_time_series_nodes()

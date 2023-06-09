@@ -3,7 +3,7 @@ import unittest.mock as mock
 
 from measure.measure_model import BasicMeasureOut
 from observable_information.observable_information_model import BasicObservableInformationOut
-from time_series.time_series_model import *
+from signal_series.signal_series_model import *
 from models.not_found_model import *
 
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
@@ -27,8 +27,8 @@ class TestTimeSeriesServicePut(unittest.TestCase):
                                                      {'key': 'identifier', 'value': 5}],
                                       "errors": None, 'links': None}
         additional_properties = [PropertyIn(key='identifier', value=5)]
-        time_series_in = TimeSeriesPropertyIn(type="Epoch", source="cos", additional_properties=additional_properties)
-        time_series_out = BasicTimeSeriesOut(id=1, type="Epoch", source="cos", additional_properties=additional_properties)
+        time_series_in = SignalSeriesPropertyIn(type="Epoch", source="cos", additional_properties=additional_properties)
+        time_series_out = BasicSignalSeriesOut(id=1, type="Epoch", source="cos", additional_properties=additional_properties)
         calls = [mock.call(1)]
         time_series_service = TimeSeriesServiceGraphDB()
 
@@ -60,9 +60,9 @@ class TestTimeSeriesServicePut(unittest.TestCase):
         #                                                  {'key': 'identifier', 'value': 5}],
         #                                   "errors": None, 'links': None}
         #     additional_properties = [PropertyIn(key='identifier', value=5)]
-        #     time_series_in = TimeSeriesPropertyIn(type="Epoch", source="cos",
+        #     time_series_in = SignalSeriesPropertyIn(type="Epoch", source="cos",
         #                                           additional_properties=additional_properties)
-        #     time_series_out = TimeSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[],
+        #     time_series_out = SignalSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[],
         #                                     observable_informations=[BasicObservableInformationOut(**{id: 19})],
         #                                     measure=BasicMeasureOut(**{id: 15}))
         #     calls = [mock.call(1)]
@@ -82,7 +82,7 @@ class TestTimeSeriesServicePut(unittest.TestCase):
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         additional_properties = [PropertyIn(key='identifier', value=5)]
-        time_series_in = TimeSeriesPropertyIn(type="Epoch", source="cos", additional_properties=additional_properties)
+        time_series_in = SignalSeriesPropertyIn(type="Epoch", source="cos", additional_properties=additional_properties)
         time_series_service = TimeSeriesServiceGraphDB()
 
         result = time_series_service.update_time_series(id_node, time_series_in)
@@ -96,7 +96,7 @@ class TestTimeSeriesServicePut(unittest.TestCase):
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         additional_properties = [PropertyIn(key='identifier', value=5)]
-        time_series_in = TimeSeriesPropertyIn(type="Epoch", source="cos", id=id_node,
+        time_series_in = SignalSeriesPropertyIn(type="Epoch", source="cos", id=id_node,
                                               additional_properties=additional_properties)
         time_series_service = TimeSeriesServiceGraphDB()
 

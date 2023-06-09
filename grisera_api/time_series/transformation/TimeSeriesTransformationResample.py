@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from property.property_model import PropertyIn
 from time_series.ts_helpers import get_node_property, get_additional_parameter
-from time_series.time_series_model import TimeSeriesOut, TimeSeriesIn, Type, SignalIn, TransformationType, \
+from signal_series.signal_series_model import SignalSeriesOut, SignalSeriesIn, Type, SignalIn, TransformationType, \
     SignalValueNodesIn
 from time_series.transformation.TimeSeriesTransformation import TimeSeriesTransformation
 
@@ -13,7 +13,7 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
 
     """
 
-    def transform(self, time_series: List[TimeSeriesOut], additional_properties: Optional[List[PropertyIn]]):
+    def transform(self, time_series: List[SignalSeriesOut], additional_properties: Optional[List[PropertyIn]]):
         """
         Transform time series data.
 
@@ -21,7 +21,7 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
         This transformation will find the nearest signal value including values in the future.
 
         Args:
-            time_series (List[TimeSeriesOut]): Time series to be transformed
+            time_series (List[SignalSeriesOut]): Time series to be transformed
             additional_properties (Optional[List[PropertyIn]]): Transformation parameters
 
         Returns:
@@ -77,7 +77,7 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
                     [time_series[0].signal_values[new_signal_value_index]["signal_value"]["id"]])
                 current_time += period
 
-        return TimeSeriesIn(type=Type.timestamp,
+        return SignalSeriesIn(type=Type.timestamp,
                             additional_properties=additional_properties,
                             signal_values=new_signal_values
                             ), new_signal_values_id_mapping

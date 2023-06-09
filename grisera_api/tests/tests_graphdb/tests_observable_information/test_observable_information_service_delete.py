@@ -9,7 +9,7 @@ from observable_information.observable_information_model import *
 from observable_information.observable_information_service_graphdb import \
     ObservableInformationServiceGraphDB
 from recording.recording_model import BasicRecordingOut
-from time_series.time_series_model import BasicTimeSeriesOut
+from signal_series.signal_series_model import BasicSignalSeriesOut
 
 
 class TestObservableInformationServiceDelete(unittest.TestCase):
@@ -57,7 +57,7 @@ class TestObservableInformationServiceDelete(unittest.TestCase):
     #          "properties": None},
     #     ]}
     #     observable_information = ObservableInformationOut(id=id_node, recording=BasicRecordingOut(**{id: 16}),
-    #                                                       timeSeries=[BasicTimeSeriesOut(**{id: 19})],
+    #                                                       timeSeries=[BasicSignalSeriesOut(**{id: 19})],
     #                                                       modality=BasicModalityOut(**{id: 15}),
     #                                                       lifeActivity=BasicActivityOut(**{id: 17}))
     #     observable_information_service = ObservableInformationServiceGraphDB()

@@ -53,11 +53,11 @@ class MeasureOut(BasicMeasureOut, BaseModelOut):
     Model of measure with relations to send to client as a result of request
 
     Attributes:
-    time_series (Optional[List[TimeSeriesOut]]): list of time series related to this measure
+    time_series (Optional[List[SignalSeriesOut]]): list of time series related to this measure
     measure_name (Optional[MeasureNameOut]): measure name related to this measure
     """
 
-    time_series: "Optional[List[TimeSeriesOut]]"
+    time_series: "Optional[List[SignalSeriesOut]]"
     measure_name: "Optional[MeasureNameOut]"
 
 
@@ -74,6 +74,6 @@ class MeasuresOut(BaseModelOut):
 
 # Circular import exception prevention
 from measure_name.measure_name_model import MeasureNameOut
-from time_series.time_series_model import TimeSeriesOut
+from signal_series.signal_series_model import SignalSeriesOut
 
 MeasureOut.update_forward_refs()

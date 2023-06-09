@@ -6,7 +6,7 @@ from measure.measure_model import *
 from measure.measure_service_graphdb import MeasureServiceGraphDB
 from measure_name.measure_name_model import BasicMeasureNameOut
 from models.not_found_model import *
-from time_series.time_series_model import BasicTimeSeriesOut
+from signal_series.signal_series_model import BasicSignalSeriesOut
 
 
 class TestMeasureServiceDelete(unittest.TestCase):
@@ -48,7 +48,7 @@ class TestMeasureServiceDelete(unittest.TestCase):
     #          "name": "hasMeasureName", "id": 0,
     #          "properties": None}]}
     #     measure = MeasureOut(datatype="Test", range="Unknown", unit="cm", id=id_node,
-    #                          time_series=[BasicTimeSeriesOut(**{id: 15})], measure_name=BasicMeasureNameOut(**{id: 15}))
+    #                          time_series=[BasicSignalSeriesOut(**{id: 15})], measure_name=BasicMeasureNameOut(**{id: 15}))
     #     measure_service = MeasureServiceGraphDB()
     #
     #     result = measure_service.delete_measure(id_node)

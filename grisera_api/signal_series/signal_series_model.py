@@ -15,13 +15,14 @@ class TransformationType(str, Enum):
     QUADRANTS = "quadrants"
 
 
-class TimestampNodesIn(BaseModel):
+class StampNodesIn(BaseModel):
     """
     Model of timestamp node
     Attributes:
         timestamp (int): Timestamp of signal measure in milliseconds
     """
-    timestamp: int
+    timestamp: Optional[int]
+    frequencystamp: Optional[int]
 
 
 class SignalValueNodesIn(BaseModel):
@@ -47,6 +48,7 @@ class SignalIn(BaseModel):
     timestamp: Optional[int]
     start_timestamp: Optional[int]
     end_timestamp: Optional[int]
+    frequencystamp: Optional[int]
     signal_value: SignalValueNodesIn
 
 
@@ -64,9 +66,10 @@ class Type(str, Enum):
     irregularly_spaced = "Irregularly spaced"
     regularly_spaced = "Regularly spaced"
     timestamp = "Timestamp"
+    frequencystamp = "Frequencystamp"
 
 
-class TimeSeriesPropertyIn(BaseModel):
+class SignalSeriesPropertyIn(BaseModel):
     """
     Model of time series to acquire from client
 
@@ -82,7 +85,7 @@ class TimeSeriesPropertyIn(BaseModel):
     additional_properties: Optional[List[PropertyIn]]
 
 
-class TimeSeriesTransformationIn(BaseModel):
+class SignalSeriesTransformationIn(BaseModel):
     """
     Model of time series transformation to acquire from client
 
@@ -100,7 +103,7 @@ class TimeSeriesTransformationIn(BaseModel):
     additional_properties: Optional[List[PropertyIn]]
 
 
-class TimeSeriesTransformationRelationshipIn(BaseModel):
+class SignalSeriesTransformationRelationshipIn(BaseModel):
     """
     Model of time series transformation relationship
 
@@ -110,7 +113,7 @@ class TimeSeriesTransformationRelationshipIn(BaseModel):
     additional_properties: Optional[List[PropertyIn]]
 
 
-class TimeSeriesRelationIn(BaseModel):
+class SignalSeriesRelationIn(BaseModel):
     """
     Model of time series relations to acquire from client
 
@@ -122,13 +125,13 @@ class TimeSeriesRelationIn(BaseModel):
     measure_id: Optional[Union[int, str]]
 
 
-class SignalSeriesIn(TimeSeriesPropertyIn, TimeSeriesRelationIn):
+class SignalSeriesIn(SignalSeriesPropertyIn, SignalSeriesRelationIn):
     """
     Full model of time series to acquire from client
     """
 
 
-class BasicTimeSeriesOut(TimeSeriesPropertyIn, BaseModelOut):
+class BasicSignalSeriesOut(SignalSeriesPropertyIn, BaseModelOut):
     """
     Basic model of time series
 
@@ -141,7 +144,7 @@ class BasicTimeSeriesOut(TimeSeriesPropertyIn, BaseModelOut):
     signal_values: list = []
 
 
-class TimeSeriesOut(BasicTimeSeriesOut, BaseModelOut):
+class SignalSeriesOut(BasicSignalSeriesOut, BaseModelOut):
     """
     Model of time series with relations to send to client as a result of request
 
@@ -161,10 +164,10 @@ class SignalSeriesMultidimensionalOut(BaseModelOut):
 
     Attributes:
         signal_values (list): List of signal values
-        time_series (List[TimeSeriesOut]): Time series nodes from database
+        time_series (List[SignalSeriesOut]): Time series nodes from database
     """
     signal_values: list = []
-    time_series: List[TimeSeriesOut] = []
+    time_series: List[SignalSeriesOut] = []
 
 
 class SignalSeriesNodesOut(BaseModelOut):
@@ -172,13 +175,13 @@ class SignalSeriesNodesOut(BaseModelOut):
     Model of time series nodes to send to client as a result of request
 
     Attributes:
-        time_series_nodes (List[BasicTimeSeriesOut]): Time series nodes from database
+        time_series_nodes (List[BasicSignalSeriesOut]): Time series nodes from database
     """
-    time_series_nodes: List[BasicTimeSeriesOut] = []
+    time_series_nodes: List[BasicSignalSeriesOut] = []
 
 
 # Circular import exception prevention
 from measure.measure_model import MeasureOut
 from observable_information.observable_information_model import ObservableInformationOut
 
-TimeSeriesOut.update_forward_refs()
+SignalSeriesOut.update_forward_refs()

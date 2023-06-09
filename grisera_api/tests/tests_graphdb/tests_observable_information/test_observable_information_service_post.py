@@ -103,7 +103,7 @@ class TestObservableInformationServicePost(unittest.TestCase):
 #
 #     observable_information_in = ObservableInformationIn(modality_id=2, life_activity_id=3)
 #     observable_information_out = ObservableInformationOut(id=id_node, recording=BasicRecordingOut(**{id: 16}),
-#                                                           timeSeries=[BasicTimeSeriesOut(**{id: 19})],
+#                                                           timeSeries=[BasicSignalSeriesOut(**{id: 19})],
 #                                                           modality=BasicModalityOut(**{id: 15}),
 #                                                           lifeActivity=BasicActivityOut(**{id: 17}))
 #     calls = [mock.call(2), mock.call(3), mock.call(1)]

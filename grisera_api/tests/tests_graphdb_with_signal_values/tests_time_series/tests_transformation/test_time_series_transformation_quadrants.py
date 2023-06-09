@@ -1,13 +1,13 @@
 import unittest
 
 from property.property_model import PropertyIn
-from time_series.time_series_model import TimeSeriesOut, Type, TimeSeriesIn, SignalIn, SignalValueNodesIn
+from signal_series.signal_series_model import SignalSeriesOut, Type, SignalSeriesIn, SignalIn, SignalValueNodesIn
 from time_series.transformation.TimeSeriesTransformationQuadrants import TimeSeriesTransformationQuadrants
 
 
 class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
     time_series_timestamp = [
-        TimeSeriesOut(
+        SignalSeriesOut(
             type=Type.timestamp,
             signal_values=[
                 {
@@ -44,7 +44,7 @@ class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
                         {'key': 'timestamp', 'value': '4'}]}
                 }
             ]),
-        TimeSeriesOut(
+        SignalSeriesOut(
             type=Type.timestamp,
             signal_values=[
                 {
@@ -85,7 +85,7 @@ class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
     ]
 
     time_series_epoch = [
-        TimeSeriesOut(
+        SignalSeriesOut(
             type=Type.epoch,
             signal_values=[
                 {
@@ -105,7 +105,7 @@ class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
                     ]}
                 }
             ]),
-        TimeSeriesOut(
+        SignalSeriesOut(
             type=Type.epoch,
             signal_values=[
                 {
@@ -136,7 +136,7 @@ class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
 
         self.assertEqual(
             (
-                TimeSeriesIn(
+                SignalSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
                         SignalIn(timestamp='0', signal_value=SignalValueNodesIn(value='1')),
@@ -163,7 +163,7 @@ class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
 
         self.assertEqual(
             (
-                TimeSeriesIn(
+                SignalSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
                         SignalIn(timestamp='0', signal_value=SignalValueNodesIn(value='1')),
@@ -189,7 +189,7 @@ class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
 
         self.assertEqual(
             (
-                TimeSeriesIn(
+                SignalSeriesIn(
                     type=Type.epoch,
                     signal_values=[
                         SignalIn(start_timestamp='1', end_timestamp='4', signal_value=SignalValueNodesIn(value='1')),
@@ -214,7 +214,7 @@ class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
 
         self.assertEqual(
             (
-                TimeSeriesIn(
+                SignalSeriesIn(
                     type=Type.epoch,
                     signal_values=[
                         SignalIn(start_timestamp='1', end_timestamp='4', signal_value=SignalValueNodesIn(value='2')),
