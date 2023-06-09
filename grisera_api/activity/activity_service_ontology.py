@@ -1,6 +1,6 @@
 from typing import Union
 
-from activity.activity_model import ActivityIn, ActivityOut
+from activity.activity_model import ActivityIn, ActivityOut, Activity
 from activity.activity_service import ActivityService
 from ontology_api_service import OntologyApiService
 
@@ -25,7 +25,17 @@ class ActivityServiceOntology(ActivityService):
             Result of request as activity object
         """
         model_id = 1
-        instance_response_activity = self.ontology_api_service.add_instance(model_id, "Activity",
+        class_name = ""
+        if activity.activity == Activity.individual:
+            class_name = "IndividualActivity"
+        elif activity.activity == Activity.group:
+            class_name = "GroupActivity"
+        elif activity.activity == Activity.two_people:
+            class_name = "TwoPersonsActivity"
+        else:
+            return ActivityOut(**activity.dict(), errors=f"Wrong type of activity: {activity.activity}")
+
+        instance_response_activity = self.ontology_api_service.add_instance(model_id, class_name,
                                                                             activity.activity_name)
         if instance_response_activity["errors"] is not None:
             return ActivityOut(**activity.dict(), errors=instance_response_activity["errors"])
