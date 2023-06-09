@@ -120,3 +120,37 @@ class InstanceServiceTestCase(unittest.TestCase):
 
         self.assertEqual(result.instance_id, instance_id)
         os.remove("database" + os.path.sep + f"{model_id}.owl")
+
+    def test_get_instances_without_error(self):
+        instance_service = InstanceService()
+        model_id = 1
+        onto = get_ontology("https://road.affectivese.org/documentation/owlAC.owl").load()
+        ps1 = onto["ParticipantState"]("ps1")
+        p = onto["Participant"]("p")
+        ps1.hasParticipant = p
+        ps1.age = 23
+        ps2 = onto["ParticipantState"]("ps2")
+        onto.save(file="database" + os.path.sep + f"{model_id}.owl", format="rdfxml")
+        onto.destroy()
+
+        result = instance_service.get_instances(1, "ParticipantState")
+        self.assertIsNone(result.errors)
+        self.assertEqual(len(result.instances), 2)
+        os.remove("database" + os.path.sep + f"{model_id}.owl")
+
+    def test_get_instances_model_not_found(self):
+        instance_service = InstanceService()
+        model_id = 1
+        result = instance_service.get_instances(model_id, "Experiment")
+        self.assertEqual(result.errors, f"Model with id {str(model_id)} not found")
+
+    def test_get_instances_class_not_found(self):
+        instance_service = InstanceService()
+        model_id = 1
+        onto = get_ontology("https://road.affectivese.org/documentation/owlAC.owl").load()
+        onto.save(file="database" + os.path.sep + f"{model_id}.owl", format="rdfxml")
+        onto.destroy()
+        result = instance_service.get_instances(model_id, "Fly")
+        self.assertEqual(result.errors, f"Class named Fly not found in Model {model_id}")
+        os.remove("database" + os.path.sep + f"{model_id}.owl")
+
