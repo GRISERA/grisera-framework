@@ -1,5 +1,6 @@
 import os
 from enum import Enum
+from services.mongo_services import MongoServiceFactory
 
 from services.service_factory import ServiceFactory
 from services.graph_services import (
@@ -57,6 +58,8 @@ class Services:
             return GraphWithSignalValuesServiceFactory()
         elif self.persistence_type == PersistenceTypes.ONTOLOGY:
             return OntologyServiceFactory()
+        elif self.persistence_type == PersistenceTypes.MONGODB:
+            return MongoServiceFactory()
         else:
             return ServiceFactory()
 

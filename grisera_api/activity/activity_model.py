@@ -40,8 +40,10 @@ class ActivityIn(ActivityPropertyIn):
     """
     Model of activity
 
+    Attributes:
+    activity_name (Optional[int | str]): Name of activity
     """
-
+    activity_name: Optional[Union[int, str]]
 
 class BasicActivityOut(ActivityIn):
     """
