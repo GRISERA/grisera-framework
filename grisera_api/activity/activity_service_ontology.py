@@ -40,9 +40,26 @@ class ActivityServiceOntology(ActivityService):
         if instance_response_activity["errors"] is not None:
             return ActivityOut(**activity.dict(), errors=instance_response_activity["errors"])
 
-        activity_label = instance_response_activity["label"]
-        activity.__dict__.update({'activity_name': activity_label})
-        return ActivityOut(**activity.dict())
+        new_additional_properties = []
+
+        errors = None
+
+        for prop in activity.additional_properties:
+            response = self.ontology_api_service.add_role(model_id, prop.key, activity.activity_name, prop.value)
+            if response["errors"] is not None:
+                errors = f"[{prop.key} : {prop.value}]:" + response["errors"]
+                break
+            else:
+                new_additional_properties.append(prop)
+
+        experiment_label = instance_response_activity["label"]
+        activity.__dict__.update({'experiment_name': experiment_label})
+        activity.__dict__.update({'additional_properties': new_additional_properties})
+
+        if errors is None:
+            return ActivityOut(**activity.dict())
+        else:
+            return ActivityOut(**activity.dict(), errors=errors)
 
     def get_activities(self):
         super().get_activities()
