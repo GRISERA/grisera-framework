@@ -320,7 +320,7 @@ class RecordingServiceMongoDB(RecordingService, GenericMongoServiceMixin):
         if source != Collections.OBSERVABLE_INFORMATION and has_observable_informations:
             for oi in recording[Collections.OBSERVABLE_INFORMATION]:
                 self.observable_information_service._add_related_documents(
-                    oi, depth - 2, Collections.RECORDING, recording
+                    oi, depth - 1, Collections.RECORDING, recording
                 )
 
     def _get_observable_information_index_from_recording(

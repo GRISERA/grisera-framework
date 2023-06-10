@@ -222,5 +222,5 @@ class ParticipantServiceMongoDB(ParticipantService, GenericMongoServiceMixin):
         if source != Collections.PARTICIPANT_STATE and has_partcipant_states:
             for ps in participant[Collections.PARTICIPANT_STATE]:
                 self.participant_state_service._add_related_documents(
-                    ps, depth - 2, Collections.PARTICIPANT, participant
+                    ps, depth - 1, Collections.PARTICIPANT, participant
                 )
