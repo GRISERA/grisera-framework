@@ -99,7 +99,7 @@ class ObservableInformationServiceMongoDB(
         }
         recording_results = self.recording_service.get_multiple(
             recording_query,
-            depth=0,
+            depth=depth - 1,
             source=Collections.OBSERVABLE_INFORMATION,
             projection=self._get_recording_projection(query),
         )

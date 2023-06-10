@@ -4,7 +4,7 @@ from activity_execution.activity_execution_model import (
     ActivityExecutionRelationIn,
 )
 from appearance.appearance_model import (
-    AppearanceOcclusionIn,
+    AppearanceOcclusionOut,
     AppearanceSomatotypeOut,
 )
 from arrangement.arrangement_model import ArrangementIn
@@ -73,14 +73,14 @@ class Collections(str, Enum):
     REGISTERED_CHANNEL = "registered_channels"
     REGISTERED_DATA = "registered_data"
     SCENARIO = "scenarios"
-    TIME_SERIES = "TimeSeries"
+    TIME_SERIES = "timeSeries"
 
 
 SUPERCLASSES_TO_COLLECTION_NAMES = {
     ActivityIn: Collections.ACTIVITY,
     ActivityExecutionPropertyIn: Collections.ACTIVITY_EXECUTION,
     ActivityExecutionRelationIn: Collections.ACTIVITY_EXECUTION,
-    AppearanceOcclusionIn: Collections.APPEARANCE,
+    AppearanceOcclusionOut: Collections.APPEARANCE,
     AppearanceSomatotypeOut: Collections.APPEARANCE,
     ArrangementIn: Collections.ARRANGEMENT,
     ChannelIn: Collections.CHANNEL,
