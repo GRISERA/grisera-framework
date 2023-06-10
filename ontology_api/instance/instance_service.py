@@ -1,4 +1,4 @@
-from owlready2 import get_ontology, locstr,destroy_entity
+from owlready2 import get_ontology, locstr, destroy_entity, ObjectPropertyClass, DataPropertyClass
 from model.model_model import ModelOut
 from instance.instance_model import MinimalInstanceModelIn, FullInstanceModelOut, InstancesModelOut
 from instance.instance_model import MinimalModelOut as InstanceModelOut
@@ -72,7 +72,10 @@ class InstanceService:
             instance_roles = []
             for prop in instance.get_properties():
                 for value in prop[instance]:
-                    instance_roles.append({'role': prop.name, 'value': value})
+                    if isinstance(prop, ObjectPropertyClass):
+                        instance_roles.append({'role': prop.name, 'value': value.name})
+                    elif isinstance(prop, DataPropertyClass):
+                        instance_roles.append({'role': prop.name, 'value': value})
             instances.append({'instance_name': instance_name, 'properties': instance_roles})
         onto.destroy()
         return InstancesModelOut(model_id=model_id, class_name=class_name, instances=instances)
