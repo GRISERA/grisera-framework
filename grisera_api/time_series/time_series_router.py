@@ -44,7 +44,7 @@ class TimeSeriesRouter:
         - timestamps within one time series should be unique (for Timestamp type) and disjoint (for Epoch type)
         """
 
-        create_response = self.time_series_service.save_time_series(time_series)
+        create_response = self.time_series_service.save_signal_series(time_series)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -55,7 +55,7 @@ class TimeSeriesRouter:
 
     @router.post("/time_series/transformation", tags=["time series"],
                  response_model=Union[SignalSeriesOut, NotFoundByIdModel])
-    async def transform_time_series(self, time_series_transformation: SignalSeriesTransformationIn, response: Response):
+    async def transform_signal_series(self, time_series_transformation: SignalSeriesTransformationIn, response: Response):
         """
         Create new transformed time series in database
 
@@ -73,7 +73,7 @@ class TimeSeriesRouter:
         To read about the implementation details go to TimeSeriesTransformation docstring documentation.
         """
 
-        create_response = self.time_series_service.transform_time_series(time_series_transformation)
+        create_response = self.time_series_service.transform_signal_series(time_series_transformation)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -83,7 +83,7 @@ class TimeSeriesRouter:
         return create_response
 
     @router.get("/time_series", tags=["time series"], response_model=SignalSeriesNodesOut)
-    async def get_time_series_nodes(self, response: Response, request: Request,
+    async def get_signal_series_nodes(self, response: Response, request: Request,
                                     entityname_property_name: Optional[str] = None,
                                     experiment_id: Optional[int] = None,
                                     participant_id: Optional[int] = None,
@@ -115,7 +115,7 @@ class TimeSeriesRouter:
         - registereddata
         """
 
-        get_response = self.time_series_service.get_time_series_nodes(request.query_params)
+        get_response = self.time_series_service.get_signal_series_nodes(request.query_params)
 
         # add links from hateoas
         get_response.links = get_links(router)
@@ -127,7 +127,7 @@ class TimeSeriesRouter:
         tags=["time series"],
         response_model=Union[SignalSeriesOut, NotFoundByIdModel],
     )
-    async def get_time_series(
+    async def get_signal_series(
         self, time_series_id: Union[int, str], depth: int, response: Response,
         signal_min_value: Optional[int] = None,
         signal_max_value: Optional[int] = None
@@ -139,7 +139,7 @@ class TimeSeriesRouter:
         Signal values will be filtered using minimum and maximum value if present.
         """
 
-        get_response = self.time_series_service.get_time_series(time_series_id, depth, signal_min_value, signal_max_value)
+        get_response = self.time_series_service.get_signal_series(time_series_id, depth, signal_min_value, signal_max_value)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -150,7 +150,7 @@ class TimeSeriesRouter:
 
     @router.get("/time_series/multidimensional/{time_series_ids}", tags=["time series"],
                 response_model=Union[SignalSeriesMultidimensionalOut, NotFoundByIdModel])
-    async def get_time_series_multidimensional(self, time_series_ids: str, response: Response):
+    async def get_signal_series_multidimensional(self, time_series_ids: str, response: Response):
         """
         Get multidimensional time series by ids from database with signal values.
 
@@ -162,7 +162,7 @@ class TimeSeriesRouter:
             response.status_code = 422
             return SignalSeriesMultidimensionalOut(errors="Ids must be integers")
 
-        get_response = self.time_series_service.get_time_series_multidimensional(ids)
+        get_response = self.time_series_service.get_signal_series_multidimensional(ids)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -176,13 +176,13 @@ class TimeSeriesRouter:
         tags=["time series"],
         response_model=Union[SignalSeriesOut, NotFoundByIdModel],
     )
-    async def delete_time_series(
+    async def delete_signal_series(
         self, time_series_id: Union[int, str], response: Response
     ):
         """
         Delete time series by id from database with all signal values.
         """
-        get_response = self.time_series_service.delete_time_series(time_series_id)
+        get_response = self.time_series_service.delete_signal_series(time_series_id)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -196,7 +196,7 @@ class TimeSeriesRouter:
         tags=["time series"],
         response_model=Union[SignalSeriesOut, NotFoundByIdModel],
     )
-    async def update_time_series(
+    async def update_signal_series(
         self,
         time_series_id: Union[int, str],
         time_series: SignalSeriesPropertyIn,
@@ -205,7 +205,7 @@ class TimeSeriesRouter:
         """
         Update time series model in database
         """
-        update_response = self.time_series_service.update_time_series(
+        update_response = self.time_series_service.update_signal_series(
             time_series_id, time_series
         )
         if update_response.errors is not None:
@@ -221,7 +221,7 @@ class TimeSeriesRouter:
         tags=["time series"],
         response_model=Union[SignalSeriesOut, NotFoundByIdModel],
     )
-    async def update_time_series_relationships(
+    async def update_signal_series_relationships(
         self,
         time_series_id: Union[int, str],
         time_series: SignalSeriesRelationIn,
@@ -230,7 +230,7 @@ class TimeSeriesRouter:
         """
         Update time series relations in database
         """
-        update_response = self.time_series_service.update_time_series_relationships(
+        update_response = self.time_series_service.update_signal_series_relationships(
             time_series_id, time_series
         )
         if update_response.errors is not None:

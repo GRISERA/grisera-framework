@@ -128,7 +128,7 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
                             if relation["end_node"] == observable_information_id & \
                                     relation["name"] == "hasObservableInformation":
                                 observable_information['timeSeries'].append(self.time_series_service.
-                                                                            get_time_series(relation["start_node"],
+                                                                            get_signal_series(relation["start_node"],
                                                                                             depth - 1))
 
             return ObservableInformationOut(**observable_information)

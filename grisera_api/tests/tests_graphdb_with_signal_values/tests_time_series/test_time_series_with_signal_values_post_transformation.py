@@ -11,7 +11,7 @@ from time_series.time_series_service_graphdb_with_signal_values import TimeSerie
 class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'create_relationships')
     @mock.patch.object(GraphApiService, 'create_relationship_properties')
-    def test_transform_time_series_without_errors(self, create_relationship_properties_mock, create_relationships_mock):
+    def test_transform_signal_series_without_errors(self, create_relationship_properties_mock, create_relationships_mock):
         transformation = SignalSeriesTransformationIn(
             name="quadrants",
             source_time_series_ids=[60, 61],
@@ -49,7 +49,7 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
             ]
         )
 
-        def get_time_series_side_effect(time_series_id: int):
+        def get_signal_series_side_effect(time_series_id: int):
             if time_series_id == 60:
                 return SignalSeriesOut(
                     id=time_series_id,
@@ -97,7 +97,7 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
             else:
                 return None
 
-        def save_time_series_side_effect(time_series: SignalSeriesIn):
+        def save_signal_series_side_effect(time_series: SignalSeriesIn):
             return result_timeseries
 
         def create_relationships_side_effect(id_from: int, id_to: int, name: str):
@@ -106,9 +106,9 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
         create_relationships_mock.side_effect = create_relationships_side_effect
 
         time_series_service = TimeSeriesServiceGraphDBWithSignalValues()
-        time_series_service.get_time_series = get_time_series_side_effect
-        time_series_service.save_time_series = save_time_series_side_effect
-        result = time_series_service.transform_time_series(transformation)
+        time_series_service.get_signal_series = get_signal_series_side_effect
+        time_series_service.save_signal_series = save_signal_series_side_effect
+        result = time_series_service.transform_signal_series(transformation)
 
         self.assertEqual(result_timeseries, result)
         self.assertEqual([

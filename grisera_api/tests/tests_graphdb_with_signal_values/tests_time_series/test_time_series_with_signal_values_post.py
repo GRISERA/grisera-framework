@@ -289,13 +289,13 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
                          get_or_create_timestamp_node_mock.call_args_list)
 
     @mock.patch.object(GraphApiService, 'create_node')
-    def test_save_time_series_with_node_error(self, create_node_mock):
+    def test_save_signal_series_with_node_error(self, create_node_mock):
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         time_series = SignalSeriesIn(type="Epoch", source="cos", observable_information_id=1, measure_id=2)
         time_series_service = TimeSeriesServiceGraphDBWithSignalValues()
 
-        result = time_series_service.save_time_series(time_series)
+        result = time_series_service.save_signal_series(time_series)
 
         self.assertEqual(result, SignalSeriesOut(type="Epoch", source="cos", errors=['error']))
         create_node_mock.assert_called_once_with('Time Series')

@@ -24,7 +24,7 @@ class TimeSeriesServiceGraphDB(SignalSeriesServiceGraphDB):
     def __init__(self):
         super().__init__("Time Series")
 
-    def save_time_series(self, time_series: SignalSeriesIn):
+    def save_signal_series(self, time_series: SignalSeriesIn):
         """
         Send request to graph api to create new time series
 
@@ -34,18 +34,18 @@ class TimeSeriesServiceGraphDB(SignalSeriesServiceGraphDB):
         Returns:
             Result of request as time series object
         """
-        return super().save_time_series(time_series)
+        return super().save_signal_series(time_series)
 
-    def get_time_series_nodes(self, params: QueryParams = None):
+    def get_signal_series_nodes(self, params: QueryParams = None):
         """
         Send request to graph api to get time series nodes
 
         Returns:
             Result of request as list of time series nodes objects
         """
-        return super().get_time_series_nodes(params)
+        return super().get_signal_series_nodes(params)
 
-    def get_time_series(self, time_series_id: Union[int, str], depth: int = 0,
+    def get_signal_series(self, time_series_id: Union[int, str], depth: int = 0,
                         signal_min_value: Optional[int] = None,
                         signal_max_value: Optional[int] = None):
         """
@@ -60,9 +60,9 @@ class TimeSeriesServiceGraphDB(SignalSeriesServiceGraphDB):
         Returns:
             Result of request as time series object
         """
-        return super().get_time_series(time_series_id,depth, signal_min_value, signal_max_value)
+        return super().get_signal_series(time_series_id,depth, signal_min_value, signal_max_value)
 
-    def delete_time_series(self, time_series_id: Union[int, str]):
+    def delete_signal_series(self, time_series_id: Union[int, str]):
         """
         Send request to graph api to delete given time series
 
@@ -72,9 +72,9 @@ class TimeSeriesServiceGraphDB(SignalSeriesServiceGraphDB):
         Returns:
             Result of request as time series object
         """
-        return super().delete_time_series(time_series_id)
+        return super().delete_signal_series(time_series_id)
 
-    def update_time_series(self, time_series_id: Union[int, str], time_series: SignalSeriesPropertyIn):
+    def update_signal_series(self, time_series_id: Union[int, str], time_series: SignalSeriesPropertyIn):
         """
         Send request to graph api to update given time series
 
@@ -85,9 +85,9 @@ class TimeSeriesServiceGraphDB(SignalSeriesServiceGraphDB):
         Returns:
             Result of request as time series object
         """
-        return super().update_time_series(time_series_id, time_series)
+        return super().update_signal_series(time_series_id, time_series)
 
-    def update_time_series_relationships(self, time_series_id: Union[int, str],
+    def update_signal_series_relationships(self, time_series_id: Union[int, str],
                                          time_series: SignalSeriesRelationIn):
         """
         Send request to graph api to update given time series
@@ -99,4 +99,4 @@ class TimeSeriesServiceGraphDB(SignalSeriesServiceGraphDB):
         Returns:
             Result of request as time series object
         """
-        return super().update_time_series_relationships(time_series_id, time_series)
+        return super().update_signal_series_relationships(time_series_id, time_series)

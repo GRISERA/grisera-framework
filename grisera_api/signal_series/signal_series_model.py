@@ -13,6 +13,7 @@ class TransformationType(str, Enum):
     """
     RESAMPLE_NEAREST = "resample_nearest"
     QUADRANTS = "quadrants"
+    FOURIER = "fourier"
 
 
 class StampNodesIn(BaseModel):

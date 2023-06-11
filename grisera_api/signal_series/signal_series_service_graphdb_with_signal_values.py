@@ -15,10 +15,13 @@ from time_series.transformation.multidimensional.TimeSeriesTransformationMultidi
 
 class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
 
-    def __init__(self, graphdb_serivce):
+    def __init__(self, graphdb_serivce,property_stamp_name,label_stamp_name,signal_series_type):
         self.graphdb_service = graphdb_serivce
+        self.property_stamp_name = property_stamp_name
+        self.label_stamp_name = label_stamp_name
+        self.signal_series_type = signal_series_type
 
-    def save_time_series(self, time_series: SignalSeriesIn):
+    def save_signal_series(self, time_series: SignalSeriesIn):
         """
         Send request to graph api to create new time series
         Args:
@@ -26,7 +29,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         Returns:
             Result of request as time series object
         """
-        result = self.graphdb_service.save_time_series(time_series)
+        result = self.graphdb_service.save_signal_series(time_series)
         if result.errors is not None:
             return result
 
@@ -41,7 +44,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
 
         return result
 
-    def transform_time_series(self, time_series_transformation: SignalSeriesTransformationIn):
+    def transform_signal_series(self, time_series_transformation: SignalSeriesTransformationIn):
         """
         Send request to graph api to create new transformed time series
 
@@ -53,7 +56,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         """
         source_time_series = []
         for time_series_id in time_series_transformation.source_time_series_ids:
-            time_series = self.get_time_series(time_series_id)
+            time_series = self.get_signal_series(time_series_id)
             if time_series.errors is not None:
                 return time_series
             source_time_series.append(time_series)
@@ -66,7 +69,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         new_time_series.measure_id = time_series_transformation.destination_measure_id
         new_time_series.observable_information_id = time_series_transformation.destination_observable_information_id
 
-        result = self.save_time_series(new_time_series)
+        result = self.save_signal_series(new_time_series)
 
         for index, time_series_id in enumerate(time_series_transformation.source_time_series_ids):
             relationship = self.graph_api_service.create_relationships(result.id, time_series_id, "transformedFrom")
@@ -92,7 +95,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
             "nodes": [
                 {
                     "id": time_series_id,
-                    "label": "Time Series"
+                    "label": self.signal_series_type
                 },
                 {
                     "label": "Observable Information"
@@ -169,17 +172,18 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
                 return get_response, relation_id
         return None, None
 
+
     def get_or_create_timestamp_node(self, timestamp_value: int, timestamp):
         if timestamp_value is None:
-            return {"errors": "Timestamp value is None. Please check time series type."}
+            return {"errors": "" + self.label_stamp_name + "value is None. Please check "+ self.signal_series_type +  "type."}
         previous_timestamp_id = None
         previous_timestamp_timestamp_relation_id = None
-        while timestamp is not None and int(get_node_property(timestamp, "timestamp")) < timestamp_value:
+        while timestamp is not None and int(get_node_property(timestamp, self.property_stamp_name)) < timestamp_value:
             previous_timestamp_id = timestamp["id"]
             timestamp, previous_timestamp_timestamp_relation_id = self.get_neighbour_node(timestamp["id"], "next")
 
-        if timestamp is None or int(get_node_property(timestamp, "timestamp")) != timestamp_value:
-            new_timestamp_node = self.graph_api_service.create_node("Timestamp")
+        if timestamp is None or int(get_node_property(timestamp, self.property_stamp_name)) != timestamp_value:
+            new_timestamp_node = self.graph_api_service.create_node(self.label_stamp_name)
 
             if new_timestamp_node["errors"] is not None:
                 return new_timestamp_node
@@ -187,8 +191,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
             new_timestamp_id = new_timestamp_node["id"]
 
             timestamp_properties_response = self.graph_api_service.create_properties(new_timestamp_id,
-                                                                                     StampNodesIn(
-                                                                                         timestamp=timestamp_value))
+                                                                                     self.get_stamp_nodes_in(timestamp_value))
             if timestamp_properties_response["errors"] is not None:
                 return timestamp_properties_response
 
@@ -228,6 +231,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
 
         return signal_value_node_response
 
+
     def save_signal_values(self, signal_values: List[SignalIn], time_series_id: int, experiment_id: int,
                            timestamp_type: Type):
 
@@ -241,16 +245,15 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
 
             if current_signal_value_node["errors"] is not None:
                 return current_signal_value_node
-########################################################################################################################
-            current_timestamp = self.get_or_create_timestamp_node(
-                signal_value.timestamp if timestamp_type == Type.timestamp else signal_value.start_timestamp, timestamp)
+            
+            current_timestamp = self.get_current_stamp(timestamp_type,signal_value,timestamp)
 
             if current_timestamp["errors"] is not None:
                 return current_timestamp["errors"]
 
             if signal_value_node is None and (
-                    timestamp is None or int(get_node_property(current_timestamp, "timestamp")) < int(
-                    get_node_property(timestamp, "timestamp"))):
+                    timestamp is None or int(get_node_property(current_timestamp, self.property_stamp_name)) < int(
+                    get_node_property(timestamp, self.property_stamp_name))):
                 if experiment_timestamp_relation_id is not None:
                     self.graph_api_service.delete_relationship(experiment_timestamp_relation_id)
                 if experiment_id is not None:
@@ -258,28 +261,15 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
                                                                 end_node=current_timestamp["id"],
                                                                 name="takes")
 
-            if timestamp_type == Type.timestamp:
-                self.graph_api_service.create_relationships(start_node=current_timestamp["id"],
-                                                            end_node=current_signal_value_node["id"],
-                                                            name="inSec")
-            else:
-                self.graph_api_service.create_relationships(start_node=current_timestamp["id"],
-                                                            end_node=current_signal_value_node["id"],
-                                                            name="startInSec")
-                current_timestamp = self.get_or_create_timestamp_node(signal_value.end_timestamp, current_timestamp)
-
-                if current_timestamp["errors"] is not None:
-                    return current_timestamp["errors"]
-
-                self.graph_api_service.create_relationships(start_node=current_timestamp["id"],
-                                                            end_node=current_signal_value_node["id"],
-                                                            name="endInSec")
+            current_timestamp = self.create_relation_nodes(timestamp_type,current_signal_value_node,signal_value,current_timestamp)
+            if current_timestamp["errors"] is not None:
+                return current_timestamp["errors"]
 
             timestamp = current_timestamp
             signal_value_node = current_signal_value_node
         return None
 
-    def get_time_series(self, time_series_id: Union[int, str], depth: int = 0,
+    def get_signal_series(self, time_series_id: Union[int, str], depth: int = 0,
                         signal_min_value: Optional[int] = None,
                         signal_max_value: Optional[int] = None):
         """
@@ -292,13 +282,13 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         Returns:
             Result of request as time series object
         """
-        time_series = self.graphdb_service.get_time_series(time_series_id, depth)
+        time_series = self.graphdb_service.get_signal_series(time_series_id, depth)
         if time_series.errors is None:
             time_series.signal_values = self.get_signal_values(time_series_id, time_series.type,
                                                                signal_min_value, signal_max_value)
         return time_series
 
-    def get_time_series_multidimensional(self, time_series_ids: List[Union[int, str]]):
+    def get_signal_series_multidimensional(self, time_series_ids: List[Union[int, str]]):
         """
         Send request to graph api to get given time series
         Args:
@@ -308,7 +298,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         """
         source_time_series = []
         for time_series_id in time_series_ids:
-            time_series = self.get_time_series(time_series_id)
+            time_series = self.get_signal_series(time_series_id)
             if time_series.errors is not None:
                 return time_series
             source_time_series.append(time_series)
@@ -334,116 +324,9 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         Returns:
             Array of signal value objects
         """
+        raise Exception("get_signal_values not implemented yet")
 
-        parameters = []
-        if signal_min_value is not None:
-            parameters.append({
-                "key": "value",
-                "operator": "greater",
-                "value": signal_min_value
-            })
-        if signal_max_value is not None:
-            parameters.append({
-                "key": "value",
-                "operator": "less",
-                "value": signal_max_value
-            })
-        query_timestamp = {
-            "nodes": [
-                {
-                    "id": time_series_id,
-                    "label": "Time Series"
-                },
-                {
-                    "label": "Signal Value"
-                },
-                {
-                    "label": "Signal Value",
-                    "result": True,
-                    "parameters": parameters
-                },
-                {
-                    "label": "Timestamp",
-                    "result": True
-                }
-            ],
-            "relations": [
-                {
-                    "begin_node_index": 0,
-                    "end_node_index": 1,
-                    "label": "hasSignal"
-                },
-                {
-                    "begin_node_index": 1,
-                    "end_node_index": 2,
-                    "label": "next",
-                    "min_count": 0
-                },
-                {
-                    "begin_node_index": 3,
-                    "end_node_index": 2,
-                    "label": "inSec"
-                }
-            ]
-        }
-        query_epoch = {
-            "nodes": [
-                {
-                    "id": time_series_id,
-                    "label": "Time Series"
-                },
-                {
-                    "label": "Signal Value"
-                },
-                {
-                    "label": "Signal Value",
-                    "result": True,
-                    "parameters": parameters
-                },
-                {
-                    "label": "Timestamp",
-                    "result": True
-                },
-                {
-                    "label": "Timestamp",
-                    "result": True
-                }
-            ],
-            "relations": [
-                {
-                    "begin_node_index": 0,
-                    "end_node_index": 1,
-                    "label": "hasSignal"
-                },
-                {
-                    "begin_node_index": 1,
-                    "end_node_index": 2,
-                    "label": "next",
-                    "min_count": 0
-                },
-                {
-                    "begin_node_index": 3,
-                    "end_node_index": 2,
-                    "label": "startInSec"
-                },
-                {
-                    "begin_node_index": 4,
-                    "end_node_index": 2,
-                    "label": "endInSec"
-                }
-            ]
-        }
-        response = self.graph_api_service.get_nodes_by_query(
-            query_timestamp if time_series_type == Type.timestamp.value else query_epoch)
-        signal_values = []
-        for row in response["rows"]:
-            if time_series_type == Type.timestamp:
-                signal_values.append({'signal_value': row[0], 'timestamp': row[1]})
-            else:
-                signal_values.append({'signal_value': row[0], 'start_timestamp': row[1], 'end_timestamp': row[2]})
-        return signal_values
-
-    def get_time_series_nodes(self, params: QueryParams = None):
+    def get_signal_series_nodes(self, params: QueryParams = None):
         """
         Send request to graph api to get time series nodes
 
@@ -453,7 +336,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         query = {
             "nodes": [
                 {
-                    "label": "Time Series",
+                    "label": self.signal_series_type,
                     "result": True
                 },
             ],
@@ -593,7 +476,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
 
         return SignalSeriesNodesOut(time_series_nodes=time_series_nodes)
 
-    def delete_time_series(self, time_series_id: int):
+    def delete_signal_series(self, time_series_id: int):
         """
         Send request to graph api to delete given time series
 
@@ -603,37 +486,13 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         Returns:
             Result of request as time series object
         """
-        get_response = self.graphdb_service.delete_time_series(time_series_id)
-
-        if type(get_response) is NotFoundByIdModel:
-            return get_response
-
-        timestamp_ids_to_analyze = []
-        for signal_value in get_response.signal_values:
-            self.graph_api_service.delete_node(signal_value["signal_value"]["id"])
-            if get_response.type == Type.timestamp.value:
-                timestamp_ids_to_analyze.append(signal_value["timestamp"]["id"])
-            else:
-                timestamp_ids_to_analyze.append(signal_value["start_timestamp"]["id"])
-                timestamp_ids_to_analyze.append(signal_value["end_timestamp"]["id"])
-        for timestamp_id in timestamp_ids_to_analyze:
-            neighbour_signal_a_id, _ = self.get_neighbour_node_id(timestamp_id, "inSec")
-            neighbour_signal_b_id, _ = self.get_neighbour_node_id(timestamp_id, "startInSec")
-            neighbour_signal_c_id, _ = self.get_neighbour_node_id(timestamp_id, "endInSec")
-            if neighbour_signal_a_id is None and neighbour_signal_b_id is None and neighbour_signal_c_id is None:
-                next_timestamp_id, _ = self.get_neighbour_node_id(timestamp_id, "next")
-                previous_timestamp_id, _ = self.get_neighbour_node_id(timestamp_id, "next", False)
-                previous_experiment_id, _ = self.get_neighbour_node_id(timestamp_id, "takes", False)
-
-                self.graph_api_service.delete_node(timestamp_id)
-
-                if next_timestamp_id is not None:
-                    if previous_experiment_id is not None:
-                        self.graph_api_service.create_relationships(start_node=previous_experiment_id,
-                                                                    end_node=next_timestamp_id,
-                                                                    name="takes")
-                    elif previous_timestamp_id is not None:
-                        self.graph_api_service.create_relationships(start_node=previous_timestamp_id,
-                                                                    end_node=next_timestamp_id,
-                                                                    name="next")
-        return get_response
+        raise Exception("delete_signal_series not implemented yet")
+    
+    def get_stamp_nodes_in(self,timestamp_value):
+        raise Exception("get_stamp_nodes_in not implemented yet")
+    
+    def get_current_stamp(self,timestamp_type,signal_value,timestamp):
+        raise Exception("get_current_stamp not implemented yet")
+    
+    def create_relation_nodes(self,timestamp_type,current_signal_value_node,signal_value,current_timestamp):
+        raise Exception("create_relation_nodes not implemented yet")

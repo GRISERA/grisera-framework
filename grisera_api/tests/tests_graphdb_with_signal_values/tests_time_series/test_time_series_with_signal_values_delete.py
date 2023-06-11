@@ -13,8 +13,8 @@ class TestTimeSeriesWithSignalValuesServiceDelete(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'delete_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     @mock.patch.object(GraphApiService, 'create_relationships')
-    @mock.patch.object(TimeSeriesServiceGraphDB, 'delete_time_series')
-    def test_delete_time_series_without_error(self, delete_time_series_mock, create_relationships_mock,
+    @mock.patch.object(TimeSeriesServiceGraphDB, 'delete_signal_series')
+    def test_delete_signal_series_without_error(self, delete_signal_series_mock, create_relationships_mock,
                                               get_node_relationships_mock, delete_node_mock):
         time_series = SignalSeriesOut(id=10, type="Timestamp", source="cos",
                                     signal_values=[
@@ -46,7 +46,7 @@ class TestTimeSeriesWithSignalValuesServiceDelete(unittest.TestCase):
                                                 {'key': 'timestamp', 'value': '400'}]}
                                         }
                                     ])
-        delete_time_series_mock.return_value = time_series
+        delete_signal_series_mock.return_value = time_series
 
         def get_node_relationships_side_effect(*args):
             if args[0] == 1:
@@ -91,7 +91,7 @@ class TestTimeSeriesWithSignalValuesServiceDelete(unittest.TestCase):
         get_node_relationships_mock.side_effect = get_node_relationships_side_effect
         time_series_service = TimeSeriesServiceGraphDBWithSignalValues()
 
-        result = time_series_service.delete_time_series(10)
+        result = time_series_service.delete_signal_series(10)
 
         self.assertEqual(time_series, result)
         self.assertEqual([
@@ -108,13 +108,13 @@ class TestTimeSeriesWithSignalValuesServiceDelete(unittest.TestCase):
         ], create_relationships_mock.call_args_list)
 
     @mock.patch.object(GraphApiService, 'get_node')
-    def test_delete_time_series_with_error(self, get_node_mock):
+    def test_delete_signal_series_with_error(self, get_node_mock):
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         time_series_service = TimeSeriesServiceGraphDBWithSignalValues()
 
-        result = time_series_service.delete_time_series(id_node)
+        result = time_series_service.delete_signal_series(id_node)
 
         self.assertEqual(not_found, result)
         get_node_mock.assert_called_once_with(id_node)

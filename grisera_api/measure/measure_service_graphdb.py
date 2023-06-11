@@ -106,7 +106,7 @@ class MeasureServiceGraphDB(MeasureService):
                                                                                          depth - 1)
                 else:
                     if relation["end_node"] == measure_id & relation["name"] == "hasMeasure":
-                        measure['time_series'].append(self.time_series_service.get_time_series(relation["start_node"],
+                        measure['time_series'].append(self.time_series_service.get_signal_series(relation["start_node"],
                                                                                                depth - 1))
 
             return MeasureOut(**measure)

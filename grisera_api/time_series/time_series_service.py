@@ -13,7 +13,7 @@ class TimeSeriesService(SignalSeriesService):
 
     """
 
-    def save_time_series(self, time_series: SignalSeriesIn):
+    def save_signal_series(self, time_series: SignalSeriesIn):
         """
         Send request to graph api to create new time series
 
@@ -23,9 +23,9 @@ class TimeSeriesService(SignalSeriesService):
         Returns:
             Result of request as time series object
         """
-        raise Exception("save_time_series not implemented yet")
+        raise Exception("save_signal_series not implemented yet")
 
-    def transform_time_series(self, time_series_transformation: SignalSeriesTransformationIn):
+    def transform_signal_series(self, time_series_transformation: SignalSeriesTransformationIn):
         """
         Send request to graph api to create new transformed time series
 
@@ -35,9 +35,9 @@ class TimeSeriesService(SignalSeriesService):
         Returns:
             Result of request as time series object
         """
-        raise Exception("transform_time_series not implemented yet")
+        raise Exception("transform_signal_series not implemented yet")
 
-    def get_time_series_nodes(self, params: QueryParams = None):
+    def get_signal_series_nodes(self, params: QueryParams = None):
         """
         Send request to graph api to get time series nodes
 
@@ -47,9 +47,9 @@ class TimeSeriesService(SignalSeriesService):
         Returns:
             Result of request as list of time series nodes objects
         """
-        raise Exception("get_time_series_nodes not implemented yet")
+        raise Exception("get_signal_series_nodes not implemented yet")
 
-    def get_time_series(self, time_series_id: Union[int, str], depth: int = 0,
+    def get_signal_series(self, time_series_id: Union[int, str], depth: int = 0,
                         signal_min_value: Optional[int] = None,
                         signal_max_value: Optional[int] = None):
         """
@@ -64,9 +64,9 @@ class TimeSeriesService(SignalSeriesService):
         Returns:
             Result of request as time series object
         """
-        raise Exception("get_time_series not implemented yet")
+        raise Exception("get_signal_series not implemented yet")
 
-    def get_time_series_multidimensional(self, time_series_ids: List[Union[int, str]]):
+    def get_signal_series_multidimensional(self, time_series_ids: List[Union[int, str]]):
         """
         Send request to graph api to get given time series
 
@@ -76,9 +76,9 @@ class TimeSeriesService(SignalSeriesService):
         Returns:
             Result of request as time series object
         """
-        raise Exception("get_time_series_multidimensional not implemented yet")
+        raise Exception("get_signal_series_multidimensional not implemented yet")
 
-    def delete_time_series(self, time_series_id: Union[int, str]):
+    def delete_signal_series(self, time_series_id: Union[int, str]):
         """
         Send request to graph api to delete given time series
 
@@ -88,9 +88,9 @@ class TimeSeriesService(SignalSeriesService):
         Returns:
             Result of request as time series object
         """
-        raise Exception("delete_time_series not implemented yet")
+        raise Exception("delete_signal_series not implemented yet")
 
-    def update_time_series(self, time_series_id: Union[int, str], time_series: SignalSeriesPropertyIn):
+    def update_signal_series(self, time_series_id: Union[int, str], time_series: SignalSeriesPropertyIn):
         """
         Send request to graph api to update given time series
 
@@ -101,9 +101,9 @@ class TimeSeriesService(SignalSeriesService):
         Returns:
             Result of request as time series object
         """
-        raise Exception("update_time_series not implemented yet")
+        raise Exception("update_signal_series not implemented yet")
 
-    def update_time_series_relationships(self, time_series_id: Union[int, str],
+    def update_signal_series_relationships(self, time_series_id: Union[int, str],
                                          time_series: SignalSeriesRelationIn):
         """
         Send request to graph api to update given time series
@@ -115,4 +115,4 @@ class TimeSeriesService(SignalSeriesService):
         Returns:
             Result of request as time series object
         """
-        raise Exception("update_time_series_relationships not implemented yet")
+        raise Exception("update_signal_series_relationships not implemented yet")

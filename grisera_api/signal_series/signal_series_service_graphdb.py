@@ -27,7 +27,7 @@ class SignalSeriesServiceGraphDB(SignalSeriesService):
         self.signal_series_type_name = signal_series_type_name
 
 
-    def save_time_series(self, time_series: SignalSeriesIn):
+    def save_signal_series(self, time_series: SignalSeriesIn):
         """
         Send request to graph api to create new time series
 
@@ -59,9 +59,9 @@ class SignalSeriesServiceGraphDB(SignalSeriesService):
         time_series.observable_information_id = time_series.measure_id = None
         self.graph_api_service.create_properties(time_series_id, time_series)
 
-        return self.get_time_series(time_series_id)
+        return self.get_signal_series(time_series_id)
 
-    def get_time_series_nodes(self, params: QueryParams = None):
+    def get_signal_series_nodes(self, params: QueryParams = None):
         """
         Send request to graph api to get time series nodes
 
@@ -84,7 +84,7 @@ class SignalSeriesServiceGraphDB(SignalSeriesService):
 
         return SignalSeriesNodesOut(time_series_nodes=time_series_nodes)
 
-    def get_time_series(self, time_series_id: Union[int, str], depth: int = 0,
+    def get_signal_series(self, time_series_id: Union[int, str], depth: int = 0,
                         signal_min_value: Optional[int] = None,
                         signal_max_value: Optional[int] = None):
         """
@@ -128,7 +128,7 @@ class SignalSeriesServiceGraphDB(SignalSeriesService):
         else:
             return BasicSignalSeriesOut(**time_series)
 
-    def delete_time_series(self, time_series_id: Union[int, str]):
+    def delete_signal_series(self, time_series_id: Union[int, str]):
         """
         Send request to graph api to delete given time series
 
@@ -138,7 +138,7 @@ class SignalSeriesServiceGraphDB(SignalSeriesService):
         Returns:
             Result of request as time series object
         """
-        get_response = self.get_time_series(time_series_id)
+        get_response = self.get_signal_series(time_series_id)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
@@ -146,7 +146,7 @@ class SignalSeriesServiceGraphDB(SignalSeriesService):
         self.graph_api_service.delete_node(time_series_id)
         return get_response
 
-    def update_time_series(self, time_series_id: Union[int, str], time_series: SignalSeriesPropertyIn):
+    def update_signal_series(self, time_series_id: Union[int, str], time_series: SignalSeriesPropertyIn):
         """
         Send request to graph api to update given time series
 
@@ -157,7 +157,7 @@ class SignalSeriesServiceGraphDB(SignalSeriesService):
         Returns:
             Result of request as time series object
         """
-        get_response = self.get_time_series(time_series_id)
+        get_response = self.get_signal_series(time_series_id)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
@@ -173,7 +173,7 @@ class SignalSeriesServiceGraphDB(SignalSeriesService):
 
         return BasicSignalSeriesOut(**time_series_result)
 
-    def update_time_series_relationships(self, time_series_id: Union[int, str],
+    def update_signal_series_relationships(self, time_series_id: Union[int, str],
                                          time_series: SignalSeriesRelationIn):
         """
         Send request to graph api to update given time series
@@ -185,7 +185,7 @@ class SignalSeriesServiceGraphDB(SignalSeriesService):
         Returns:
             Result of request as time series object
         """
-        get_response = self.get_time_series(time_series_id)
+        get_response = self.get_signal_series(time_series_id)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
@@ -202,4 +202,4 @@ class SignalSeriesServiceGraphDB(SignalSeriesService):
                                                         end_node=time_series.measure_id,
                                                         name="hasMeasure")
 
-        return self.get_time_series(time_series_id)
+        return self.get_signal_series(time_series_id)
