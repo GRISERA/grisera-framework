@@ -10,7 +10,7 @@ from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 class TestTimeSeriesRouterPostTransformation(unittest.TestCase):
     transformation = SignalSeriesTransformationIn(
         name="quadrants",
-        source_time_series_ids=[60, 61],
+        source_signal_series_ids=[60, 61],
         destination_observable_information_id=102,
         destination_measure_id=103,
         additional_properties=[

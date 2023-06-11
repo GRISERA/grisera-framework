@@ -18,9 +18,10 @@ class TransformationType(str, Enum):
 
 class StampNodesIn(BaseModel):
     """
-    Model of timestamp node
+    Model of stamp node
     Attributes:
         timestamp (int): Timestamp of signal measure in milliseconds
+        frequencystamp (int): Frequency of signal measure in Hz
     """
     timestamp: Optional[int]
     frequencystamp: Optional[int]
@@ -55,13 +56,14 @@ class SignalIn(BaseModel):
 
 class Type(str, Enum):
     """
-    Types of time series
+    Types of signal series
 
     Attributes:
         epoch (str): Epoch signal
         irregularly_spaced (str): Irregularly spaced signal
         regularly_spaced (str): Regularly spaced signal
         timestamp (str): Timestamp signal
+        frequencystamp (str): Frequencystamp signal
     """
     epoch = "Epoch"
     irregularly_spaced = "Irregularly spaced"
@@ -72,11 +74,11 @@ class Type(str, Enum):
 
 class SignalSeriesPropertyIn(BaseModel):
     """
-    Model of time series to acquire from client
+    Model of signal series to acquire from client
 
     Attributes:
         type (Type): Type of the signal
-        source (str): TimeSeries source
+        source (str): SignalSeries source
         signal_values (List[SignalIn]): list of signals
         additional_properties (Optional[List[PropertyIn]]): Additional properties for signal
     """
@@ -88,17 +90,17 @@ class SignalSeriesPropertyIn(BaseModel):
 
 class SignalSeriesTransformationIn(BaseModel):
     """
-    Model of time series transformation to acquire from client
+    Model of signal series transformation to acquire from client
 
     Attributes:
         name (TransformationType): Name of the transformation
-        source_time_series_ids (List[int]): Ids of source time series
+        source_signal_series_ids (List[int]): Ids of source signal series
         destination_observable_information_id (Optional[int]): Id of destination observable information
         destination_measure_id (Optional[int]): Id of destination measure
         additional_properties (Optional[List[PropertyIn]]): Additional properties for transformation
     """
     name: TransformationType
-    source_time_series_ids: List[int]
+    source_signal_series_ids: List[int]
     destination_observable_information_id: Optional[int]
     destination_measure_id: Optional[int]
     additional_properties: Optional[List[PropertyIn]]
@@ -106,7 +108,7 @@ class SignalSeriesTransformationIn(BaseModel):
 
 class SignalSeriesTransformationRelationshipIn(BaseModel):
     """
-    Model of time series transformation relationship
+    Model of signal series transformation relationship
 
     Attributes:
         additional_properties (Optional[List[PropertyIn]]): Additional properties for transformation
@@ -116,7 +118,7 @@ class SignalSeriesTransformationRelationshipIn(BaseModel):
 
 class SignalSeriesRelationIn(BaseModel):
     """
-    Model of time series relations to acquire from client
+    Model of signal series relations to acquire from client
 
     Attributes:
         observable_information_id (Optional[Union[int, str]]): Id of observable information
@@ -128,16 +130,16 @@ class SignalSeriesRelationIn(BaseModel):
 
 class SignalSeriesIn(SignalSeriesPropertyIn, SignalSeriesRelationIn):
     """
-    Full model of time series to acquire from client
+    Full model of signal series to acquire from client
     """
 
 
 class BasicSignalSeriesOut(SignalSeriesPropertyIn, BaseModelOut):
     """
-    Basic model of time series
+    Basic model of signal series
 
     Attributes:
-    id (Optional[Union[int, str]]): Id of time series returned from api
+    id (Optional[Union[int, str]]): Id of signal series returned from api
     signal_values (list): list of signals
     """
 
@@ -147,12 +149,12 @@ class BasicSignalSeriesOut(SignalSeriesPropertyIn, BaseModelOut):
 
 class SignalSeriesOut(BasicSignalSeriesOut, BaseModelOut):
     """
-    Model of time series with relations to send to client as a result of request
+    Model of signal series with relations to send to client as a result of request
 
     Attributes:
         observable_informations (Optional[List[ObservableInformationOut]]): List of observable informations related to
-            this time series
-        measure (Optional[MeasureOut]): measure related to this time series
+            this signal series
+        measure (Optional[MeasureOut]): measure related to this signal series
     """
 
     observable_informations: "Optional[List[ObservableInformationOut]]"
@@ -161,24 +163,24 @@ class SignalSeriesOut(BasicSignalSeriesOut, BaseModelOut):
 
 class SignalSeriesMultidimensionalOut(BaseModelOut):
     """
-    Model of time multidimensional series to send to client as a result of request
+    Model of signal multidimensional series to send to client as a result of request
 
     Attributes:
         signal_values (list): List of signal values
-        time_series (List[SignalSeriesOut]): Time series nodes from database
+        signal_series (List[SignalSeriesOut]): signal series nodes from database
     """
     signal_values: list = []
-    time_series: List[SignalSeriesOut] = []
+    signal_series: List[SignalSeriesOut] = []
 
 
 class SignalSeriesNodesOut(BaseModelOut):
     """
-    Model of time series nodes to send to client as a result of request
+    Model of signal series nodes to send to client as a result of request
 
     Attributes:
-        time_series_nodes (List[BasicSignalSeriesOut]): Time series nodes from database
+        signal_series_nodes (List[BasicSignalSeriesOut]): signal series nodes from database
     """
-    time_series_nodes: List[BasicSignalSeriesOut] = []
+    signal_series_nodes: List[BasicSignalSeriesOut] = []
 
 
 # Circular import exception prevention

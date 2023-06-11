@@ -14,7 +14,7 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
     def test_transform_signal_series_without_errors(self, create_relationship_properties_mock, create_relationships_mock):
         transformation = SignalSeriesTransformationIn(
             name="quadrants",
-            source_time_series_ids=[60, 61],
+            source_signal_series_ids=[60, 61],
             destination_observable_information_id=102,
             destination_measure_id=103,
             additional_properties=[

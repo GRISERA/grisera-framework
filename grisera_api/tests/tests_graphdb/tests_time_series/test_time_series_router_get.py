@@ -50,7 +50,7 @@ class TestTimeSeriesRouterGet(unittest.TestCase):
 
     @mock.patch.object(TimeSeriesServiceGraphDB, 'get_signal_series_nodes')
     def test_get_signal_series_nodes_without_error(self, get_signal_series_nodes_mock):
-        get_signal_series_nodes_mock.return_value = SignalSeriesNodesOut(time_series_nodes=[
+        get_signal_series_nodes_mock.return_value = SignalSeriesNodesOut(signal_series_nodes=[
             SignalSeriesOut(type="Epoch", source="cos"),
             SignalSeriesOut(type="Epoch", source="test")])
         response = Response()
@@ -59,7 +59,7 @@ class TestTimeSeriesRouterGet(unittest.TestCase):
         result = asyncio.run(
             time_series_router.get_signal_series_nodes(response, TestRequest(query_params={"abc": "def"})))
 
-        self.assertEqual(result, SignalSeriesNodesOut(time_series_nodes=[
+        self.assertEqual(result, SignalSeriesNodesOut(signal_series_nodes=[
             SignalSeriesOut(type="Epoch", source="cos"),
             SignalSeriesOut(type="Epoch", source="test")],
             links=get_links(router)))

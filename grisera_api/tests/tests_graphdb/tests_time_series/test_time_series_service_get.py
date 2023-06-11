@@ -95,7 +95,7 @@ class TestTimeSeriesServiceGet(unittest.TestCase):
             PropertyIn(key='test', value='test')])
         time_series_two = BasicSignalSeriesOut(id=2, type="Epoch", source="cos", additional_properties=[
             PropertyIn(key='test2', value='test3')])
-        time_series_nodes = SignalSeriesNodesOut(time_series_nodes=[time_series_one, time_series_two])
+        time_series_nodes = SignalSeriesNodesOut(signal_series_nodes=[time_series_one, time_series_two])
         time_series_nodes_service = TimeSeriesServiceGraphDB()
 
         result = time_series_nodes_service.get_signal_series_nodes()
@@ -106,7 +106,7 @@ class TestTimeSeriesServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_signal_series_nodes_empty(self, get_nodes_mock):
         get_nodes_mock.return_value = {'nodes': []}
-        time_series_nodes = SignalSeriesNodesOut(time_series=[])
+        time_series_nodes = SignalSeriesNodesOut(signal_series_nodes=[])
         time_series_nodes_service = TimeSeriesServiceGraphDB()
 
         result = time_series_nodes_service.get_signal_series_nodes()

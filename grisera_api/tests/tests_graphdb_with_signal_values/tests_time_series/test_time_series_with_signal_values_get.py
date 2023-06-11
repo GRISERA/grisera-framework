@@ -101,7 +101,7 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
             PropertyIn(key='value', value='test1')])
         time_series_two = BasicSignalSeriesOut(id=4, type="Timestamp", additional_properties=[
             PropertyIn(key='value', value='test2')])
-        time_series_nodes = SignalSeriesNodesOut(time_series_nodes=[time_series_one, time_series_two])
+        time_series_nodes = SignalSeriesNodesOut(signal_series_nodes=[time_series_one, time_series_two])
         time_series_nodes_service = TimeSeriesServiceGraphDBWithSignalValues()
 
         result = time_series_nodes_service.get_signal_series_nodes({"participant_date_of_birth": "2023-01-11"})

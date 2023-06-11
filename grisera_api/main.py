@@ -18,6 +18,7 @@ from personality.personality_router import router as personality_router
 from recording.recording_router import router as recording_router
 from registered_channel.registered_channel_router import router as registered_channel_router
 from time_series.time_series_router import router as time_series_router
+from frequency_domain_series.frequency_domain_series_router import router as frequency_domain_series_router
 from registered_data.registered_data_router import router as registered_data_router
 from scenario.scenario_router import router as scenario_router
 from measure_name.measure_name_router import router as measure_name_router
@@ -50,6 +51,7 @@ app.include_router(registered_channel_router)
 app.include_router(registered_data_router)
 app.include_router(scenario_router)
 app.include_router(time_series_router)
+app.include_router(frequency_domain_series_router)
 
 
 @app.on_event("startup")

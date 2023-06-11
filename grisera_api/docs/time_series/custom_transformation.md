@@ -1,12 +1,12 @@
 # How to create custom transformation
 
-1. Create new class in `grisera_api/time_series/transformation` directory. New class should
+1. Create new class in `grisera_api/signal_series/transformation` directory. New class should
    extend `TimeSeriesTransformation` base class.
-2. Add new `TransformationType` enum value in `grisera_api/time_series/time_series_model.py`. Transformation name enum
+2. Add new `TransformationType` enum value in `grisera_api/signal_series/signal_series_model.py`. Transformation name enum
    value will be used in POST request.
 3. Register new class in `get_transformation` method
-   in `grisera_api/time_series/transformation/TimeSeriesTransformationFactory.py` using new enum value.
-4. Implement `def transform` method. This method should return tuple of new `TimeSeriesIn` object
+   in `grisera_api/signal_series/transformation/TimeSeriesTransformationFactory.py` using new enum value.
+4. Implement `def transform` method. This method should return tuple of new `SignalSeriesIn` object
    and `new_signal_values_id_mapping` list. Each `new_signal_values_id_mapping` value represent list of source signal
    value ids for every new signal value. This mapping is necessary to create `basedOn` relationships between new and
    source signal values. Bellow is simple transformation example implementation.
@@ -18,7 +18,7 @@ class TimeSeriesTransformationMultiplication(TimeSeriesTransformation):
 
     """
 
-    def transform(self, time_series: List[TimeSeriesOut], additional_properties: Optional[List[PropertyIn]]):
+    def transform(self, time_series: List[SignalSeriesOut], additional_properties: Optional[List[PropertyIn]]):
         """
         Transform time series data.
 
@@ -26,7 +26,7 @@ class TimeSeriesTransformationMultiplication(TimeSeriesTransformation):
         If parameter does not exist default value is 10
 
         Args:
-            time_series (List[TimeSeriesOut]): Time series to be transformed
+            time_series (List[SignalSeriesOut]): Time series to be transformed
             additional_properties (Optional[List[PropertyIn]]): Transformation parameters
 
         Returns:
@@ -54,7 +54,7 @@ class TimeSeriesTransformationMultiplication(TimeSeriesTransformation):
                                                   current_signal_value["timestamp"], "end_timestamp"),
                                               ))
             new_signal_values_id_mapping.append([current_signal_value["signal_value"]["id"]])
-        return TimeSeriesIn(type=time_series[0].type,
+        return SignalSeriesIn(type=time_series[0].type,
                             additional_properties=additional_properties,
                             signal_values=new_signal_values
                             ), new_signal_values_id_mapping
@@ -67,7 +67,7 @@ class TimeSeriesTransformationMultiplication(TimeSeriesTransformation):
 ```python
 class TestTimeSeriesTransformationMultiplication(unittest.TestCase):
     time_series_timestamp = [
-        TimeSeriesOut(
+        SignalSeriesOut(
             type=Type.timestamp,
             signal_values=[
                 {
@@ -101,7 +101,7 @@ class TestTimeSeriesTransformationMultiplication(unittest.TestCase):
 
         self.assertEqual(
             (
-                TimeSeriesIn(
+                SignalSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
                         SignalIn(timestamp=0, signal_value=SignalValueNodesIn(value=20)),
