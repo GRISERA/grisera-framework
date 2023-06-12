@@ -2,6 +2,6 @@ fastapi==0.87.0
 uvicorn[standard]
 requests
 fastapi-utils
-owlready2
+owlready2==0.39
 python-multipart
 aiofiles
