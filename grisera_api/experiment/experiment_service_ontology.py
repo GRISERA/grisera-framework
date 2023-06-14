@@ -1,4 +1,4 @@
-from experiment.experiment_model import ExperimentIn, ExperimentOut
+from experiment.experiment_model import ExperimentIn, ExperimentOut, ExperimentsOut
 from experiment.experiment_service import ExperimentService
 from ontology_api_service import OntologyApiService
 
@@ -107,4 +107,24 @@ class ExperimentServiceOntology(ExperimentService):
         response = self.ontology_api_service.delete_instance(model_id, "Experiment", instance_label)
         if response["errors"] is not None:
             return ExperimentOut(experiment_name=instance_label, errors=response["errors"])
-        return ExperimentOut(experiment_name=response["label"])       
+        return ExperimentOut(experiment_name=response["label"])
+
+    def get_experiments(self):
+        """
+        Send request to ontology api to get experiments
+
+        Returns:
+            Result of request as list of experiments objects
+        """
+        model_id = 1
+        response = self.ontology_api_service.get_instances(model_id, "Experiment")
+        if response["errors"] is not None:
+            return ExperimentsOut(errors=response["errors"])
+
+        experiments = []
+        for inst in response["instances"]:
+            instance_name = inst["instance_name"]
+            instance = self.get_experiment(instance_name)
+            experiments.append(instance)
+
+        return ExperimentsOut(experiments=experiments)
