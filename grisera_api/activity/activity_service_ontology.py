@@ -65,5 +65,22 @@ class ActivityServiceOntology(ActivityService):
         super().get_activities()
 
     def get_activity(self, activity_id: Union[int, str], depth: int = 0):
-        super().get_activity(activity_id, depth)
+        # super().get_activity(activity_id, depth)
+        pass
 
+    def delete_activity(self, model_id: int, activity_id: str):
+        """
+        Send request to ontology api to delete an experiment
+        Args:
+            model_id (int): id of the ontology model
+            activity_id (str): id of the activity to be deleted
+        Returns:
+            Result of request as activity object
+        """
+        get_response = self.get_activity(activity_id)
+        if get_response["errors"] is not None:
+            return ActivityOut(id=activity_id, errors=get_response["errors"], activity=get_response["activity"])
+        response = self.ontology_api_service.delete_instance(model_id, "Activity", activity_id)
+        if response["errors"] is not None:
+            return ActivityOut(id=activity_id, errors=response["errors"], activity=get_response["activity"])
+        return ActivityOut(id=response["label"], activity=get_response["activity"])
