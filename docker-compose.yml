@@ -58,7 +58,7 @@ services:
     environment:
       - RDB_HOST=host.docker.internal
       - RDB_PORT=5432
-      - PERSISTENCE_TYPE=4
+      - PERSISTENCE_TYPE=5
       
   ontology_api:
     build: ontology_api
