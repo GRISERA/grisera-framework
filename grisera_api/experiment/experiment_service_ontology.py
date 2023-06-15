@@ -121,10 +121,6 @@ class ExperimentServiceOntology(ExperimentService):
         if response["errors"] is not None:
             return ExperimentsOut(errors=response["errors"])
 
-        experiments = []
-        for inst in response["instances"]:
-            instance_name = inst["instance_name"]
-            instance = self.get_experiment(instance_name)
-            experiments.append(instance)
+        experiments = [self.get_experiment(inst["instance_name"]) for inst in response["instances"]]
 
         return ExperimentsOut(experiments=experiments)
