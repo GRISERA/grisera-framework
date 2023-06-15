@@ -38,15 +38,16 @@ class ExperimentServiceOntology(ExperimentService):
             return ExperimentOut(ExperimentIn(experiment_label),
                                  errors=roles_response_experiment["errors"])
 
-        a = None
+        activity = None
         for prop in roles_response_experiment['roles']:
             if prop['role'] == 'hasScenario' and prop['instance_name'] == experiment_label:
                 activity_execution_dictionary = {'id': prop['value']}
-                a = ActivityExecutionOut(**activity_execution_dictionary)
+                activity = ActivityExecutionOut(**activity_execution_dictionary)
+                break
 
         experiment_result = {'id': experiment_label,
                              'experiment_name': experiment_label,
-                             'activity_executions': a}
+                             'activity_executions': activity}
         return ExperimentOut(**experiment_result)
     def save_experiment(self, experiment: ExperimentIn):
         """
