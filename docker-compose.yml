@@ -48,6 +48,17 @@ services:
       - GRAPH_API_HOST=host.docker.internal
       - GRAPH_API_PORT=18080
       - PERSISTENCE_TYPE=3
+
+  rdb_api:
+    build: grisera_api
+    ports:
+      - "18085:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - RDB_HOST=host.docker.internal
+      - RDB_PORT=5432
+      - PERSISTENCE_TYPE=4
       
   ontology_api:
     build: ontology_api
