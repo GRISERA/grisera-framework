@@ -58,6 +58,22 @@ class InstanceRouter:
 
         return instance_out
 
+    @router.get("/models/{model_id}/classes/{class_name}/instances", tags=["instance"],
+                response_model=None)
+    async def get_instances(self, model_id: int, class_name: str, response: Response):
+        """
+            Return all instances of a given class in the model
+            Return 404 when a model with given model_id does not exist
+            or class with given class_name does not exist in model.
+        """
+        instances_out = self.instance_service.get_instances(model_id, class_name)
+        if instances_out.errors is not None:
+            response.status_code = 404
+
+        instances_out.links = get_links(router)
+
+        return instances_out
+
     @router.delete("/models/{model_id}/classes/{class_name}/instances/{instance_label}", tags=["instance"],
                 response_model=None)
     async def delete_instance(self, model_id: int, class_name: str, instance_label: str, response: Response):
