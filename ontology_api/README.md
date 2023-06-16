@@ -34,8 +34,11 @@ pip install -r requirements.txt
 ## How to start tests?
 
 For run tests you can use PyCharm. Then:
+
 Working directory: ontology_api
+
 Script path: ontology_api\manage.py
+
 Parameters: tests
 
 ## How to run on docker?
@@ -67,7 +70,6 @@ To clean up everything:
 docker rm $(docker ps -a -f status=exited -q)
 docker rmi $(docker images -a -q)
 ```
-Ontology API:
-http://localhost:18082/docs
-Grisera Ontology API:
-http://localhost:18083/docs
+Ontology API: http://localhost:18082/docs
+
+Grisera Ontology API: http://localhost:18083/docs
