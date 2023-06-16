@@ -39,7 +39,7 @@ Working directory: ontology_api
 
 Script path: ontology_api\manage.py
 
-Parameters: tests
+Parameters: test
 
 ## How to run on docker?
 
