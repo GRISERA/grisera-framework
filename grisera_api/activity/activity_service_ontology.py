@@ -84,3 +84,43 @@ class ActivityServiceOntology(ActivityService):
         if response["errors"] is not None:
             return ActivityOut(id=activity_id, errors=response["errors"], activity=get_response["activity"])
         return ActivityOut(id=response["label"], activity=get_response["activity"])
+
+    def update_activity(self, model_id: int, activity: ActivityIn):
+        """
+        Send request to ontology api to update given activity
+        Args:
+            model_id (int): id of the ontology model
+            activity (ActivityIn): Activity to be updated
+        Returns:
+            Result of request as activity object
+        """
+        get_response = self.get_activity(activity.activity_name)
+
+        if get_response.dict()["errors"] is not None:
+            return ActivityOut(**activity.dict(), errors=get_response.dict()["errors"])
+
+        del_roles = self.ontology_api_service.delete_roles(model_id, activity.activity_name)
+
+        if del_roles["errors"] is not None:
+            return ActivityOut(**activity.dict(), errors=del_roles["errors"])
+
+        new_additional_properties = []
+
+        errors = None
+
+        for prop in activity.additional_properties:
+            response = self.ontology_api_service.add_role(model_id, prop.key, activity.activity_name, prop.value)
+            if response["errors"] is not None:
+                errors = f"[{prop.key} : {prop.value}]:" + response["errors"]
+                break
+            else:
+                new_additional_properties.append(prop)
+
+        activity_result = {'activity_executions': []}
+        activity_result.update(activity.dict())
+        activity_result.update({'additional_properties': new_additional_properties})
+
+        if errors is None:
+            return ActivityOut(**activity_result)
+        else:
+            return ActivityOut(**activity_result, errors=errors)
