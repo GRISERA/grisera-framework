@@ -9,6 +9,7 @@ from arrangement.arrangement_model import (
     BasicArrangementOut,
 )
 from mongo_service.service_mixins import GenericMongoServiceMixin
+from mongo_service.collection_mapping import Collections
 
 
 class ArrangementServiceMongoDB(ArrangementService, GenericMongoServiceMixin):
@@ -62,3 +63,13 @@ class ArrangementServiceMongoDB(ArrangementService, GenericMongoServiceMixin):
             Result of request as arrangement object
         """
         return self.get_single(arrangement_id, depth, source)
+
+    def _add_related_documents(self, arrangement: dict, depth: int, source: str):
+        if source != Collections.ACTIVITY_EXECUTION and depth > 0:
+            arrangement[
+                "activity_executions"
+            ] = self.activity_execution_service.get_multiple(
+                {"arrangement_id": arrangement["id"]},
+                depth=depth - 1,
+                source=Collections.ARRANGEMENT,
+            )
