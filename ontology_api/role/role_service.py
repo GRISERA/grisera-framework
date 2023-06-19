@@ -102,7 +102,12 @@ class RoleService:
             return RolesDeletedOut(errors=f"Instance {instance_name} not found")
 
         for r in instance.get_properties():
-            if isinstance(r, ObjectPropertyClass) or isinstance(r, DataPropertyClass):
+            if isinstance(r, ObjectPropertyClass):
+                if FunctionalProperty in r.is_a:
+                    setattr(instance, r.name, None)
+                else:
+                    setattr(instance, r.name, [])
+            elif isinstance(r, DataPropertyClass):
                 setattr(instance, r.name, None)
 
         model_out = self.model_service.update_ontology(model_id, onto)
