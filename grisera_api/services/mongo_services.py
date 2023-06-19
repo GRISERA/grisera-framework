@@ -1,4 +1,9 @@
+from activity.activity_service_ontology import ActivityServiceOntology
+from activity_execution.activity_execution_service_ontology import (
+    ActivityExecutionServiceOntology,
+)
 from appearance.appearance_service_mongodb import AppearanceServiceMongoDB
+from arrangement.arrangement_service_mongodb import ArrangementServiceMongoDB
 from observable_information.observable_information_service_mongodb import (
     ObservableInformationServiceMongoDB,
 )
@@ -8,7 +13,6 @@ from activity.activity_service_graphdb import ActivityServiceGraphDB
 from activity_execution.activity_execution_service_graphdb import (
     ActivityExecutionServiceGraphDB,
 )
-from appearance.appearance_service_graphdb import AppearanceServiceGraphDB
 from arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
 from channel.channel_service_mongodb import ChannelServiceMongoDB
 from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
@@ -21,7 +25,6 @@ from participant_state.participant_state_service_mongodb import (
     ParticipantStateServiceMongoDB,
 )
 from participation.participation_service_mongodb import ParticipationServiceMongoDB
-from personality.personality_service_graphdb import PersonalityServiceGraphDB
 from recording.recording_service_mongodb import RecordingServiceMongoDB
 from registered_channel.registered_channel_service_mongodb import (
     RegisteredChannelServiceMongoDB,
@@ -70,6 +73,9 @@ class MongoServiceFactory(ServiceFactory):
         self.participant_state_service = ParticipantStateServiceMongoDB()
         self.appearance_service = AppearanceServiceMongoDB()
         self.personality_service = PersonalityServiceMongoDB()
+        self.arrangement_service = ArrangementServiceMongoDB()
+        self.activity_execution_service = ActivityExecutionServiceOntology()
+        self.activity_service = ActivityServiceOntology()
 
         service_pairs = [
             ("registered_channel", "channel"),
@@ -86,22 +92,25 @@ class MongoServiceFactory(ServiceFactory):
             ("participant_state", "participant"),
             ("participant_state", "appearance"),
             ("participant_state", "personality"),
+            ("activity_execution", "activity"),
+            ("activity_execution", "arrangement"),
+            ("activity_execution", "participation"),
         ]
 
         for first_service_name, second_service_name in service_pairs:
             self._pair_services(first_service_name, second_service_name)
 
     def get_activity_service(self) -> ActivityService:
-        return ActivityServiceGraphDB()
+        return self.activity_service
 
     def get_activity_execution_service(self) -> ActivityExecutionService:
-        return ActivityExecutionServiceGraphDB()
+        return self.activity_execution_service
 
     def get_appearance_service(self) -> AppearanceService:
         return self.appearance_service
 
     def get_arrangement_service(self) -> ArrangementService:
-        return ArrangementServiceGraphDB()
+        return self.arrangement_service
 
     def get_channel_service(self) -> ChannelService:
         return self.channel_service
