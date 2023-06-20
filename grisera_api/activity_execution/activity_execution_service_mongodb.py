@@ -37,7 +37,6 @@ class ActivityExecutionServiceGraphDB(
         self.activity_service: ActivityService = None
         self.arrangement_service: ArrangementService = None
         self.scenario_service: ScenarioService = None
-        self.experiment_service: ExperimentService = None
         self.participation_service: ParticipationService = None
 
     def save_activity_execution(self, activity_execution: ActivityExecutionIn):
@@ -279,7 +278,18 @@ class ActivityExecutionServiceGraphDB(
     def _add_related_experiments(
         self, activity_execution: dict, depth: int, source: str
     ):
-        pass
+        if depth <= 0 or source == Collections.EXPERIMENT:
+            return
+
+        related_scenarios = self.scenario_service.get_scenario_by_activity_execution(
+            activity_execution["id"], depth=depth, multiple=True
+        )
+        if type(related_scenarios) is NotFoundByIdModel:
+            return
+
+        activity_execution["experiments"] = [
+            scenario.experiment for scenario in related_scenarios
+        ]
 
     def _add_related_participations(
         self, activity_execution: dict, depth: int, source: str
@@ -296,7 +306,15 @@ class ActivityExecutionServiceGraphDB(
     def _add_related_arrangement(
         self, activity_execution: dict, depth: int, source: str
     ):
-        pass
+        has_related_arrangement = activity_execution["arrangement_id"] is not None
+        if source != Collections.ARRANGEMENT and has_related_arrangement:
+            activity_execution[
+                "arrangement"
+            ] = self.arrangement_service.get_single_dict(
+                activity_execution["arrangement_id"],
+                depth=depth - 1,
+                source=Collections.ACTIVITY_EXECUTION,
+            )
 
     def _add_activity(
         self, activity_execution: dict, depth: int, source: str, activity: dict

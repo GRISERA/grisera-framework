@@ -4,18 +4,14 @@ from activity_execution.activity_execution_service_ontology import (
 )
 from appearance.appearance_service_mongodb import AppearanceServiceMongoDB
 from arrangement.arrangement_service_mongodb import ArrangementServiceMongoDB
+from experiment.experiment_service_ontology import ExperimentServiceOntology
 from observable_information.observable_information_service_mongodb import (
     ObservableInformationServiceMongoDB,
 )
 from personality.personality_service_mongodb import PersonalityServiceMongoDB
+from scenario.scenario_service_ontology import ScenarioServiceOntology
 from services.service_factory import ServiceFactory
-from activity.activity_service_graphdb import ActivityServiceGraphDB
-from activity_execution.activity_execution_service_graphdb import (
-    ActivityExecutionServiceGraphDB,
-)
-from arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
 from channel.channel_service_mongodb import ChannelServiceMongoDB
-from experiment.experiment_service_graphdb import ExperimentServiceGraphDB
 from life_activity.life_activity_service_mongodb import LifeActivityServiceMongoDB
 from measure.measure_service_mongodb import MeasureServiceMongoDB
 from measure_name.measure_name_service_mongodb import MeasureNameServiceMongoDB
@@ -30,7 +26,6 @@ from registered_channel.registered_channel_service_mongodb import (
     RegisteredChannelServiceMongoDB,
 )
 from registered_data.registered_data_service_mongodb import RegisteredDataServiceMongoDB
-from scenario.scenario_service_graphdb import ScenarioServiceGraphDB
 from time_series.time_series_service_mongodb import TimeSeriesServiceMongoDB
 from activity.activity_service import ActivityService
 from activity_execution.activity_execution_service import ActivityExecutionService
@@ -76,6 +71,8 @@ class MongoServiceFactory(ServiceFactory):
         self.arrangement_service = ArrangementServiceMongoDB()
         self.activity_execution_service = ActivityExecutionServiceOntology()
         self.activity_service = ActivityServiceOntology()
+        self.experiment_service = ExperimentServiceOntology()
+        self.scenario_service = ScenarioServiceOntology()
 
         service_pairs = [
             ("registered_channel", "channel"),
@@ -95,6 +92,8 @@ class MongoServiceFactory(ServiceFactory):
             ("activity_execution", "activity"),
             ("activity_execution", "arrangement"),
             ("activity_execution", "participation"),
+            ("activity_execution", "scenario"),
+            ("experiment", "scenario"),
         ]
 
         for first_service_name, second_service_name in service_pairs:
@@ -116,7 +115,7 @@ class MongoServiceFactory(ServiceFactory):
         return self.channel_service
 
     def get_experiment_service(self) -> ExperimentService:
-        return ExperimentServiceGraphDB()
+        return self.experiment_service
 
     def get_life_activity_service(self) -> LifeActivityService:
         return self.life_activity_service
@@ -155,7 +154,7 @@ class MongoServiceFactory(ServiceFactory):
         return self.registered_data_service
 
     def get_scenario_service(self) -> ScenarioService:
-        return ScenarioServiceGraphDB()
+        return self.scenario_service
 
     def get_time_series_service(self) -> TimeSeriesService:
         return self.time_series_service

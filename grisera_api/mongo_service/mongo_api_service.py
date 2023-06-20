@@ -33,12 +33,18 @@ class MongoApiService:
 
     def create_document(self, data_in: BaseModel):
         """
-        Create new document. Id fields are converted to ObjectId type.
+        Create new document from model object.
         """
         collection_name = get_collection_name(type(data_in))
         data_as_dict = data_in.dict()
-        self._fix_input_ids(data_as_dict)
-        created_id = self.db[collection_name].insert_one(data_as_dict).inserted_id
+        return self.create_document_from_dict(data_as_dict, collection_name)
+
+    def create_document_from_dict(self, document_dict: dict, collection_name: str):
+        """
+        Create new document from a dictionary. Id fields are converted to ObjectId type.
+        """
+        self._fix_input_ids(document_dict)
+        created_id = self.db[collection_name].insert_one(document_dict).inserted_id
         return str(created_id)
 
     def get_document(self, id: Union[str, int], collection_name: str, *args, **kwargs):
@@ -75,9 +81,9 @@ class MongoApiService:
         """
         collection_name = get_collection_name(type(data_to_update))
         data_as_dict = data_to_update.dict()
-        self._update_document_with_dict(collection_name, id, data_as_dict)
+        self.update_document_with_dict(collection_name, id, data_as_dict)
 
-    def _update_document_with_dict(
+    def update_document_with_dict(
         self, collection_name: str, id: Union[str, int], new_document: dict
     ):
         """
