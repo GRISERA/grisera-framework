@@ -1,6 +1,6 @@
 from typing import Union
 
-from activity.activity_model import ActivityIn, ActivityOut, Activity
+from activity.activity_model import ActivityIn, ActivityOut, Activity, ActivitiesOut
 from activity.activity_service import ActivityService
 from activity_execution.activity_execution_model import ActivityExecutionOut
 from ontology_api_service import OntologyApiService
@@ -63,7 +63,39 @@ class ActivityServiceOntology(ActivityService):
             return ActivityOut(**activity.dict(), errors=errors)
 
     def get_activities(self):
-        super().get_activities()
+        """
+        Send request to ontology api to get activites
+
+        Returns:
+            Result of request as list of activites objects
+        """
+        model_id = 1
+        instances = []
+        errors = []
+        response = self.ontology_api_service.get_instances(model_id, "IndividualActivity")
+        if response["errors"] is None:
+            instances += response["instances"]
+        else:
+            errors.append(response["errors"])
+
+        response = self.ontology_api_service.get_instances(model_id, "TwoPersonsActivity")
+        if response["errors"] is None:
+            instances += response["instances"]
+        else:
+            errors.append(response["errors"])
+
+        response = self.ontology_api_service.get_instances(model_id, "GroupActivity")
+        if response["errors"] is None:
+            instances += response["instances"]
+        else:
+            errors.append(response["errors"])
+
+        if errors:
+            return ActivitiesOut(errors=errors, activities=[])
+
+        activities = [self.get_activity(inst["instance_name"]) for inst in instances]
+
+        return ActivitiesOut(activities=activities)
 
     def get_activity(self, activity_id: Union[int, str], depth: int = 0):
         """
