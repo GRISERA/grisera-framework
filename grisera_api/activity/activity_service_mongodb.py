@@ -25,9 +25,6 @@ from mongo_service.service_mixins import GenericMongoServiceMixin
 class ActivityServiceGraphDB(ActivityService, GenericMongoServiceMixin):
     """
     Object to handle logic of activity requests
-
-    Attributes:
-    graph_api_service (GraphApiService): Service used to communicate with Graph API
     """
 
     def __init__(self):
