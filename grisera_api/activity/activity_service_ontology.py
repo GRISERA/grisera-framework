@@ -2,6 +2,7 @@ from typing import Union
 
 from activity.activity_model import ActivityIn, ActivityOut, Activity
 from activity.activity_service import ActivityService
+from activity_execution.activity_execution_model import ActivityExecutionOut
 from ontology_api_service import OntologyApiService
 
 
@@ -65,8 +66,59 @@ class ActivityServiceOntology(ActivityService):
         super().get_activities()
 
     def get_activity(self, activity_id: Union[int, str], depth: int = 0):
-        # super().get_activity(activity_id, depth)
-        pass
+        """
+        Send request to graph api to get given activity
+        Args:
+            depth(int): specifies how many related entities will be traversed to create the response
+            activity_id (int | str): identity of activity
+        Returns:
+            Result of request as activity object
+        """
+        model_id = 1
+        activity = Activity.individual
+        instance_response_activity = self.ontology_api_service.get_instance(model_id=model_id,
+                                                                            class_name="IndividualActivity",
+                                                                            instance_label=activity_id)
+
+        if instance_response_activity["errors"] is not None:
+            instance_response_activity = self.ontology_api_service.get_instance(model_id=model_id,
+                                                                                class_name="GroupActivity",
+                                                                                instance_label=activity_id)
+            activity = Activity.group
+            if instance_response_activity["errors"] is not None:
+                instance_response_activity = self.ontology_api_service.get_instance(model_id=model_id,
+                                                                                    class_name="TwoPersonsActivity",
+                                                                                    instance_label=activity_id)
+                activity = Activity.two_people
+                if instance_response_activity["errors"] is not None:
+                    activity_result = {'activity_name': activity_id,
+                                       'additional_properties': [],
+                                       'activity': activity,
+                                       'activity_executions': None,
+                                       'errors': instance_response_activity["errors"]}
+                    return ActivityOut(**activity_result)
+
+        reversed_roles_response_activity = self.ontology_api_service.get_reversed_roles(model_id, activity_id)
+        if reversed_roles_response_activity["errors"] is not None:
+            activity_result = {'activity_name': activity_id,
+                               'additional_properties': [],
+                               'activity': activity,
+                               'activity_executions': None,
+                               'errors':reversed_roles_response_activity["errors"]}
+            return ActivityOut(**activity_result)
+
+        activity_executions = []
+        for prop in reversed_roles_response_activity['roles']:
+            if prop['role'] == 'hasActivity' and prop['value'] == activity_id:
+                activity_execution_dictionary = {'id': prop['instance_name']}
+                activity_executions.append(ActivityExecutionOut(**activity_execution_dictionary))
+
+        activity_result = {'activity_name': activity_id,
+                           'additional_properties': [],
+                           'activity': activity,
+                           'activity_executions': activity_executions}
+
+        return ActivityOut(**activity_result)
 
     def delete_activity(self, model_id: int, activity_id: str):
         """
