@@ -13,6 +13,7 @@ class TimestampNodesIn(BaseModel):
     Attributes:
         timestamp (int): Timestamp of signal measure in milliseconds
     """
+
     timestamp: int
 
 
@@ -22,6 +23,7 @@ class SignalValueNodesIn(BaseModel):
     Attributes:
         value (Union[str, float]): Value of signal
     """
+
     value: Union[str, float]
 
 
@@ -34,6 +36,7 @@ class SignalIn(BaseModel):
         end_timestamp (int): Timestamp of end signal measure of type Epoch in milliseconds
         value (SignalValueIn): Value of signal
     """
+
     timestamp: Optional[int]
     start_timestamp: Optional[int]
     end_timestamp: Optional[int]
@@ -50,6 +53,7 @@ class Type(str, Enum):
         regularly_spaced (str): Regularly spaced signal
         timestamp (str): Timestamp signal
     """
+
     epoch = "Epoch"
     irregularly_spaced = "Irregularly spaced"
     regularly_spaced = "Regularly spaced"
@@ -66,6 +70,7 @@ class TimeSeriesPropertyIn(BaseModel):
         signal_values (List[SignalIn]): list of signals
         additional_properties (Optional[List[PropertyIn]]): Additional properties for signal
     """
+
     type: Type
     source: Optional[str]
     signal_values: List[SignalIn] = []
@@ -77,10 +82,11 @@ class TimeSeriesRelationIn(BaseModel):
     Model of time series relations to acquire from client
 
     Attributes:
-        observable_information_id (Optional[int]): Id of observable information
+        observable_information_ids (Optional[List[Union[int, str]]]): Ids of related observable informations
         measure_id (Optional[int]): Id of measure
     """
-    observable_information_id: Optional[int]
+
+    observable_information_ids: Optional[List[Union[int, str]]]
     measure_id: Optional[int]
 
 
@@ -97,6 +103,7 @@ class BasicTimeSeriesOut(TimeSeriesPropertyIn):
     Attributes:
         id (Optional[int]): Id of time series returned from graph api
     """
+
     id: Optional[int]
 
 
@@ -111,6 +118,7 @@ class TimeSeriesOut(BasicTimeSeriesOut):
         errors (Optional[Any]): Optional errors appeared during query executions
         links (Optional[list]): List of links available from api
     """
+
     relations: List[RelationInformation] = []
     reversed_relations: List[RelationInformation] = []
     signal_values: list = []
@@ -127,6 +135,7 @@ class TimeSeriesNodesOut(BaseModel):
         errors (Optional[Any]): Optional errors appeared during query executions
         links (Optional[list]): List of links available from api
     """
+
     time_series_nodes: List[BasicTimeSeriesOut] = []
     errors: Optional[Any] = None
     links: Optional[list] = None
