@@ -23,7 +23,8 @@ class TestArrangementServicePost(unittest.TestCase):
 
         result = arrangement_service.save_arrangement(arrangement)
 
-        self.assertEqual(result, ArrangementOut(id=id_node, arrangement_type='personal two persons', arrangement_distance='intimate zone'))
+        self.assertEqual(result, ArrangementOut(id=id_node, arrangement_type='personal two persons',
+                                                arrangement_distance='intimate zone'))
         create_node_mock.assert_called_once_with('Arrangement')
         create_properties_mock.assert_called_once_with(id_node, arrangement)
 
@@ -36,7 +37,8 @@ class TestArrangementServicePost(unittest.TestCase):
 
         result = arrangement_service.save_arrangement(arrangement)
 
-        self.assertEqual(result, ArrangementOut(arrangement_type='personal two persons', arrangement_distance='intimate zone', errors=['error']))
+        self.assertEqual(result, ArrangementOut(arrangement_type='personal two persons',
+                                                arrangement_distance='intimate zone', errors=['error']))
         create_node_mock.assert_called_once_with('Arrangement')
 
     @mock.patch.object(GraphApiService, 'create_node')
@@ -50,7 +52,8 @@ class TestArrangementServicePost(unittest.TestCase):
 
         result = arrangement_service.save_arrangement(arrangement)
 
-        self.assertEqual(result, ArrangementOut(arrangement_type='personal two persons', arrangement_distance='intimate zone', errors=['error']))
+        self.assertEqual(result, ArrangementOut(arrangement_type='personal two persons',
+                                                arrangement_distance='intimate zone', errors=['error']))
         create_node_mock.assert_called_once_with('Arrangement')
         create_properties_mock.assert_called_once_with(id_node, arrangement)
 

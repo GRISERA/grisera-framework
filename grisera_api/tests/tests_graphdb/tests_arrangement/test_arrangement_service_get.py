@@ -1,6 +1,7 @@
 import unittest
 import unittest.mock as mock
 
+from activity_execution.activity_execution_model import BasicActivityExecutionOut
 from arrangement.arrangement_model import *
 from arrangement.arrangement_service_graphdb import ArrangementServiceGraphDB
 from graph_api_service import GraphApiService
@@ -18,26 +19,36 @@ class TestArrangementServiceGet(unittest.TestCase):
                                                      {'key': 'arrangement_distance', 'value': 'test'},
                                                      {'key': 'test', 'value': 'test'}],
                                       "errors": None, 'links': None}
-        get_node_relationships_mock.return_value = {"relationships": [
-            {"start_node": id_node, "end_node": 19,
-             "name": "testRelation", "id": 0,
-             "properties": None},
-            {"start_node": 15, "end_node": id_node,
-             "name": "testReversedRelation", "id": 0,
-             "properties": None}]}
-        arrangement = ArrangementOut(arrangement_type="test", arrangement_distance="test", id=id_node,
-                                     relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                                    relation_id=0)],
-                                     reversed_relations=[RelationInformation(second_node_id=15,
-                                                                             name="testReversedRelation",
-                                                                             relation_id=0)])
+
+        arrangement = BasicArrangementOut(arrangement_type="test", arrangement_distance="test", id=id_node)
         arrangement_service = ArrangementServiceGraphDB()
 
         result = arrangement_service.get_arrangement(id_node)
 
         self.assertEqual(result, arrangement)
         get_node_mock.assert_called_once_with(id_node)
-        get_node_relationships_mock.assert_called_once_with(id_node)
+
+    # @mock.patch.object(GraphApiService, 'get_node')
+    # @mock.patch.object(GraphApiService, 'get_node_relationships')
+    # def test_get_arrangement_without_error(self, get_node_relationships_mock, get_node_mock):
+    #     id_node = 1
+    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Arrangement'],
+    #                                   'properties': [{'key': 'arrangement_type', 'value': 'test'},
+    #                                                  {'key': 'arrangement_distance', 'value': 'test'},
+    #                                                  {'key': 'test', 'value': 'test'}],
+    #                                   "errors": None, 'links': None}
+    #     get_node_relationships_mock.return_value = {"relationships": [
+    #         {"start_node": 19, "end_node": id_node,
+    #          "name": "hasArrangement", "id": 0,
+    #          "properties": None}]}
+    #     arrangement = ArrangementOut(arrangement_type="test", arrangement_distance="test", id=id_node)
+    #     arrangement_service = ArrangementServiceGraphDB()
+    #
+    #     result = arrangement_service.get_arrangement(id_node)
+    #
+    #     self.assertEqual(result, arrangement)
+    #     get_node_mock.assert_called_once_with(id_node)
+    #     get_node_relationships_mock.assert_called_once_with(id_node)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_arrangement_without_participant_label(self, get_node_mock):

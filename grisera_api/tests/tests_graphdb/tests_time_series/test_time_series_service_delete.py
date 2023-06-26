@@ -1,6 +1,8 @@
 import unittest
 import unittest.mock as mock
 
+from measure.measure_model import BasicMeasureOut
+from observable_information.observable_information_model import BasicObservableInformationOut
 from time_series.time_series_model import *
 from models.not_found_model import *
 
@@ -12,26 +14,13 @@ class TestTimeSeriesServiceDelete(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'delete_node')
     @mock.patch.object(GraphApiService, 'get_node')
-    @mock.patch.object(GraphApiService, 'get_node_relationships')
-    def test_delete_time_series_without_error(self, get_node_relationships_mock, get_node_mock, delete_node_mock):
+    def test_delete_time_series_without_error(self, get_node_mock, delete_node_mock):
         id_node = 1
         delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Time Series'],
                                                                       'properties': [{'key': 'type', 'value': "Epoch"},
                                                                                      {'key': 'source', 'value': "cos"}],
                                                                       "errors": None, 'links': None}
-        get_node_relationships_mock.return_value = {"relationships": [
-                                                    {"start_node": id_node, "end_node": 19,
-                                                     "name": "testRelation", "id": 0,
-                                                     "properties": None},
-                                                    {"start_node": 15, "end_node": id_node,
-                                                     "name": "testReversedRelation", "id": 0,
-                                                     "properties": None}]}
-        time_series = TimeSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[],
-                                                relations=[RelationInformation(second_node_id=19, name="testRelation",
-                                                                               relation_id=0)],
-                                                reversed_relations=[RelationInformation(second_node_id=15,
-                                                                                        name="testReversedRelation",
-                                                                                        relation_id=0)])
+        time_series = BasicTimeSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[])
         time_series_service = TimeSeriesServiceGraphDB()
 
         result = time_series_service.delete_time_series(id_node)
@@ -39,6 +28,33 @@ class TestTimeSeriesServiceDelete(unittest.TestCase):
         self.assertEqual(result, time_series)
         get_node_mock.assert_called_once_with(id_node)
         delete_node_mock.assert_called_once_with(id_node)
+
+    # @mock.patch.object(GraphApiService, 'delete_node')
+    # @mock.patch.object(GraphApiService, 'get_node')
+    # @mock.patch.object(GraphApiService, 'get_node_relationships')
+    # def test_delete_time_series_without_error(self, get_node_relationships_mock, get_node_mock, delete_node_mock):
+    #     id_node = 1
+    #     delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Time Series'],
+    #                                                                   'properties': [{'key': 'type', 'value': "Epoch"},
+    #                                                                                  {'key': 'source', 'value': "cos"}],
+    #                                                                   "errors": None, 'links': None}
+    #     get_node_relationships_mock.return_value = {"relationships": [
+    #         {"start_node": id_node, "end_node": 19,
+    #          "name": "hasObservableInformation", "id": 0,
+    #          "properties": None},
+    #         {"start_node": id_node, "end_node": 15,
+    #          "name": "hasMeasure", "id": 0,
+    #          "properties": None}]}
+    #     time_series = TimeSeriesOut(id=1, type="Epoch", source="cos", additional_properties=[],
+    #                                 observable_informations=[BasicObservableInformationOut(**{id: 19})],
+    #                                 measure=BasicMeasureOut(**{id: 15}))
+    #     time_series_service = TimeSeriesServiceGraphDB()
+    #
+    #     result = time_series_service.delete_time_series(id_node)
+    #
+    #     self.assertEqual(result, time_series)
+    #     get_node_mock.assert_called_once_with(id_node)
+    #     delete_node_mock.assert_called_once_with(id_node)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_delete_time_series_without_label(self, get_node_mock):
