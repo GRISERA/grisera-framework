@@ -42,3 +42,6 @@ class ActivityService:
 
     def delete_activity(self, model_id: int, activity_id: Union[int, str]):
         raise Exception("Reference to an abstract class.")
+
+    def update_activity(self, model_id: int, activity: ActivityIn):
+        raise Exception("Reference to an abstract class.")

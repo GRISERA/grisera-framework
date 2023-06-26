@@ -68,7 +68,7 @@ class ActivityRouter:
         return delete_response
 
     @router.post("/activities", tags=["activities"], response_model=ActivityOut)
-    async def post_activity(self, activity: ActivityIn, response: Response):
+    async def save_activity(self, activity: ActivityIn, response: Response):
         post_response = self.activity_service.save_activity(activity)
 
         if post_response.errors is not None:
@@ -76,3 +76,10 @@ class ActivityRouter:
         post_response.links = get_links(router)
         return post_response
 
+    @router.put("/activities/{model_id}", tags=["activities"], response_model=ActivityOut)
+    async def update_activity(self, model_id: int, activity: ActivityIn, response: Response):
+        put_response = self.activity_service.update_activity(model_id, activity)
+        if put_response.errors is not None:
+            response.status_code = 404
+        put_response.links = get_links(router)
+        return put_response
