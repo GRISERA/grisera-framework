@@ -114,7 +114,7 @@ class ParticipationServiceGraphDB(ParticipationService):
                     else:
                         if relation["end_node"] == participation_id and relation["name"] == "hasParticipation":
                             participation['recordings'].append(
-                                self.recording_service.get_recording(relation["end_node"], depth - 1))
+                                self.recording_service.get_recording(relation["start_node"], depth - 1))
 
             return ParticipationOut(**participation)
         else:

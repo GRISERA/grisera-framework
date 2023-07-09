@@ -94,7 +94,7 @@ class ExperimentServiceGraphDB(ExperimentService):
             for relation in relations_response["relationships"]:
                 if relation["start_node"] == experiment_id and relation["name"] == "hasScenario":
                     experiment['activity_executions'].append(
-                        self.activity_execution_service.get_activity_execution(relation["start_node"], depth - 1))
+                        self.activity_execution_service.get_activity_execution(relation["end_node"], depth - 1))
 
             return ExperimentOut(**experiment)
         else:

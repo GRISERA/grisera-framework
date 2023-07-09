@@ -116,7 +116,7 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
                     else:
                         if relation["start_node"] == registered_channel_id and relation["name"] == "hasRegisteredData":
                             registered_channel["registeredData"] = self.registered_data_service. \
-                                get_registered_data(relation["start_node"], depth - 1)
+                                get_registered_data(relation["end_node"], depth - 1)
 
             return RegisteredChannelOut(**registered_channel)
         else:
