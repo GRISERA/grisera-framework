@@ -90,7 +90,7 @@ class PersonalityServiceGraphDB(PersonalityService):
             relations_response = self.graph_api_service.get_node_relationships(personality_id)
 
             for relation in relations_response["relationships"]:
-                if relation["end_node"] == personality_id & relation["name"] == "hasPersonality":
+                if relation["end_node"] == personality_id and relation["name"] == "hasPersonality":
                     personality["participant_states"].append(
                         self.participant_state_service.get_participant_state(relation["start_node"], depth - 1))
 

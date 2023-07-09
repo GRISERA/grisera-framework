@@ -86,7 +86,7 @@ class LifeActivityServiceGraphDB(LifeActivityService):
             relations_response = self.graph_api_service.get_node_relationships(life_activity_id)
 
             for relation in relations_response["relationships"]:
-                if relation["end_node"] == life_activity_id & relation["name"] == "hasLifeActivity":
+                if relation["end_node"] == life_activity_id and relation["name"] == "hasLifeActivity":
                     life_activity['observable_informations'].append(
                         self.observable_information_service.
                         get_observable_information(relation["start_node"], depth - 1))

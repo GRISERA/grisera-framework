@@ -112,20 +112,20 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
             relations_response = self.graph_api_service.get_node_relationships(observable_information_id)
 
             for relation in relations_response["relationships"]:
-                if relation["start_node"] == observable_information_id & relation["name"] == "hasModality":
+                if relation["start_node"] == observable_information_id and relation["name"] == "hasModality":
                     observable_information['modality'] = self.modality_service.get_modality(relation["end_node"],
                                                                                             depth - 1)
                 else:
-                    if relation["start_node"] == observable_information_id & relation["name"] == "hasRecording":
+                    if relation["start_node"] == observable_information_id and relation["name"] == "hasRecording":
                         observable_information['recording'] = self.recording_service.get_recording(relation["end_node"],
                                                                                                    depth - 1)
                     else:
-                        if relation["start_node"] == observable_information_id & relation["name"] == "hasLifeActivity":
+                        if relation["start_node"] == observable_information_id and relation["name"] == "hasLifeActivity":
                             observable_information['life_activity'] = self.life_activity_service.get_life_activity(
                                 relation["end_node"],
                                 depth - 1)
                         else:
-                            if relation["end_node"] == observable_information_id & \
+                            if relation["end_node"] == observable_information_id and \
                                     relation["name"] == "hasObservableInformation":
                                 observable_information['timeSeries'].append(self.time_series_service.
                                                                             get_time_series(relation["start_node"],

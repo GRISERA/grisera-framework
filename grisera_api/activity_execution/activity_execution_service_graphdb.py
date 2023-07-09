@@ -112,21 +112,21 @@ class ActivityExecutionServiceGraphDB(ActivityExecutionService):
             relations_response = self.graph_api_service.get_node_relationships(activity_execution_id)
 
             for relation in relations_response["relationships"]:
-                if relation["end_node"] == activity_execution_id & relation["name"] == "hasScenario":
+                if relation["end_node"] == activity_execution_id and relation["name"] == "hasScenario":
                     scenario = self.scenario_service.get_scenario_by_activity_execution(relation["start_node"]).__dict__
                     experiment_id = scenario["experiment"]
                     activity_execution['experiments']. \
                         append(self.experiment_service.get_experiment(experiment_id, depth - 1))
                 else:
-                    if relation["start_node"] == activity_execution_id & relation["name"] == "hasActivity":
+                    if relation["start_node"] == activity_execution_id and relation["name"] == "hasActivity":
                         activity_execution['activity'] = \
                             self.activity_service.get_activity(relation["end_node"], depth - 1)
                     else:
-                        if relation["end_node"] == activity_execution_id & relation["name"] == "hasActivityExecution":
+                        if relation["end_node"] == activity_execution_id and relation["name"] == "hasActivityExecution":
                             activity_execution['participations'].append(
                                 self.participation_service.get_participation(relation["start_node"], depth - 1))
                         else:
-                            if relation["start_node"] == activity_execution_id & relation["name"] == "hasArrangement":
+                            if relation["start_node"] == activity_execution_id and relation["name"] == "hasArrangement":
                                 activity_execution['arrangements'].append(self.arrangement_service.get_arrangement(
                                     relation["end_node"], depth - 1))
 

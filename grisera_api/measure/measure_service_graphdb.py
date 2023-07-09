@@ -101,11 +101,11 @@ class MeasureServiceGraphDB(MeasureService):
             relations_response = self.graph_api_service.get_node_relationships(measure_id)
 
             for relation in relations_response["relationships"]:
-                if relation["start_node"] == measure_id & relation["name"] == "hasMeasureName":
+                if relation["start_node"] == measure_id and relation["name"] == "hasMeasureName":
                     measure['measure_name'] = self.measure_name_service.get_measure_name(relation["end_node"],
                                                                                          depth - 1)
                 else:
-                    if relation["end_node"] == measure_id & relation["name"] == "hasMeasure":
+                    if relation["end_node"] == measure_id and relation["name"] == "hasMeasure":
                         measure['time_series'].append(self.time_series_service.get_time_series(relation["start_node"],
                                                                                                depth - 1))
 

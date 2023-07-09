@@ -98,7 +98,7 @@ class ArrangementServiceGraphDB(ArrangementService):
             relations_response = self.graph_api_service.get_node_relationships(arrangement_id)
 
             for relation in relations_response["relationships"]:
-                if relation["end_node"] == arrangement_id & relation["name"] == "hasArrangement":
+                if relation["end_node"] == arrangement_id and relation["name"] == "hasArrangement":
                     arrangement['activity_executions'].append(
                         self.activity_execution_service.get_activity_execution(relation["start_node"], depth - 1))
 

@@ -123,19 +123,19 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
             relations_response = self.graph_api_service.get_node_relationships(participant_state_id)
 
             for relation in relations_response["relationships"]:
-                if relation["start_node"] == participant_state_id & relation["name"] == "hasParticipant":
+                if relation["start_node"] == participant_state_id and relation["name"] == "hasParticipant":
                     participant_state["participant"] = self.participant_service.get_participant(relation["end_node"],
                                                                                                 depth - 1)
                 else:
-                    if relation["end_node"] == participant_state_id & relation["name"] == "hasParticipantState":
+                    if relation["end_node"] == participant_state_id and relation["name"] == "hasParticipantState":
                         participant_state['participations']. \
                             append(self.participation_service.get_participation(relation["start_node"], depth - 1))
                     else:
-                        if relation["start_node"] == participant_state_id & relation["name"] == "hasAppearance":
+                        if relation["start_node"] == participant_state_id and relation["name"] == "hasAppearance":
                             participant_state['appearances'].append(
                                 self.appearance_service.get_appearance(relation["end_node"], depth - 1))
                         else:
-                            if relation["start_node"] == participant_state_id & relation["name"] == "hasPersonality":
+                            if relation["start_node"] == participant_state_id and relation["name"] == "hasPersonality":
                                 participant_state['personalities'].append(self.personality_service.get_personality(
                                     relation["end_node"], depth - 1))
 
