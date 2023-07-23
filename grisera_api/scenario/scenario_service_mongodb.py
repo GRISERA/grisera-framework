@@ -20,7 +20,7 @@ from mongo_service.service_mixins import (
 )
 
 
-class ScenarioServiceGraphDB(ScenarioService, GenericMongoServiceMixin):
+class ScenarioServiceMongoDB(ScenarioService, GenericMongoServiceMixin):
     """
     Object to handle logic of scenarios requests
 

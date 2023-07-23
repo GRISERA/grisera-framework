@@ -17,7 +17,7 @@ from mongo_service.mongo_api_service import MongoApiService
 from scenario.scenario_service import ScenarioService
 
 
-class ExperimentServiceGraphDB(ExperimentService, GenericMongoServiceMixin):
+class ExperimentServiceMongoDB(ExperimentService, GenericMongoServiceMixin):
     """
     Object to handle logic of experiments requests
     """

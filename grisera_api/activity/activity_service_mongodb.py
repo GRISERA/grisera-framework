@@ -22,7 +22,7 @@ from mongo_service.mongo_api_service import MongoApiService
 from mongo_service.service_mixins import GenericMongoServiceMixin
 
 
-class ActivityServiceGraphDB(ActivityService, GenericMongoServiceMixin):
+class ActivityServiceMongoDB(ActivityService, GenericMongoServiceMixin):
     """
     Object to handle logic of activity requests
     """
@@ -30,7 +30,7 @@ class ActivityServiceGraphDB(ActivityService, GenericMongoServiceMixin):
     def __init__(self):
         super().__init__()
         self.mongo_api_service = MongoApiService()
-        self.model_out = ActivityOut
+        self.model_out_class = ActivityOut
         self.activity_execution_service: ActivityExecutionService = None
 
     def save_activity(self, activity: ActivityIn):

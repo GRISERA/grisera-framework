@@ -24,7 +24,7 @@ from experiment.experiment_service import ExperimentService
 from participation.participation_service import ParticipationService
 
 
-class ActivityExecutionServiceGraphDB(
+class ActivityExecutionServiceMongoDB(
     ActivityExecutionService, GenericMongoServiceMixin
 ):
     """

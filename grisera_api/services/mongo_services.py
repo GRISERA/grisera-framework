@@ -1,15 +1,18 @@
-from activity.activity_service_ontology import ActivityServiceOntology
+from activity.activity_service_mongodb import ActivityServiceMongoDB
+from activity_execution.activity_execution_service_mongodb import (
+    ActivityExecutionServiceMongoDB,
+)
 from activity_execution.activity_execution_service_ontology import (
     ActivityExecutionServiceOntology,
 )
 from appearance.appearance_service_mongodb import AppearanceServiceMongoDB
 from arrangement.arrangement_service_mongodb import ArrangementServiceMongoDB
-from experiment.experiment_service_ontology import ExperimentServiceOntology
+from experiment.experiment_service_mongodb import ExperimentServiceMongoDB
 from observable_information.observable_information_service_mongodb import (
     ObservableInformationServiceMongoDB,
 )
 from personality.personality_service_mongodb import PersonalityServiceMongoDB
-from scenario.scenario_service_ontology import ScenarioServiceOntology
+from scenario.scenario_service_mongodb import ScenarioServiceMongoDB
 from services.service_factory import ServiceFactory
 from channel.channel_service_mongodb import ChannelServiceMongoDB
 from life_activity.life_activity_service_mongodb import LifeActivityServiceMongoDB
@@ -69,10 +72,10 @@ class MongoServiceFactory(ServiceFactory):
         self.appearance_service = AppearanceServiceMongoDB()
         self.personality_service = PersonalityServiceMongoDB()
         self.arrangement_service = ArrangementServiceMongoDB()
-        self.activity_execution_service = ActivityExecutionServiceOntology()
-        self.activity_service = ActivityServiceOntology()
-        self.experiment_service = ExperimentServiceOntology()
-        self.scenario_service = ScenarioServiceOntology()
+        self.activity_execution_service = ActivityExecutionServiceMongoDB()
+        self.activity_service = ActivityServiceMongoDB()
+        self.experiment_service = ExperimentServiceMongoDB()
+        self.scenario_service = ScenarioServiceMongoDB()
 
         service_pairs = [
             ("registered_channel", "channel"),
