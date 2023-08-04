@@ -44,7 +44,8 @@ class TimeSeriesRouter:
         - timestamps within one time series should be unique (for Timestamp type) and disjoint (for Epoch type)
         """
 
-        create_response = self.time_series_service.save_signal_series(time_series)
+        create_response = self.time_series_service.save_signal_series(
+            time_series)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -70,10 +71,11 @@ class TimeSeriesRouter:
             - origin_x - X value of the center point of coordinate system (default 0)
             - origin_y - Y value of the center point of coordinate system (default 0)
 
-        To read about the implementation details go to TimeSeriesTransformation docstring documentation.
+        To read about the implementation details go to SignalSeriesTransformation docstring documentation.
         """
 
-        create_response = self.time_series_service.transform_signal_series(time_series_transformation)
+        create_response = self.time_series_service.transform_signal_series(
+            time_series_transformation)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -84,15 +86,15 @@ class TimeSeriesRouter:
 
     @router.get("/time_series", tags=["time series"], response_model=SignalSeriesNodesOut)
     async def get_signal_series_nodes(self, response: Response, request: Request,
-                                    entityname_property_name: Optional[str] = None,
-                                    experiment_id: Optional[int] = None,
-                                    participant_id: Optional[int] = None,
-                                    participant_date_of_birth: Optional[str] = None,
-                                    participant_sex: Optional[str] = None,
-                                    participant_name: Optional[str] = None,
-                                    participantstate_age: Optional[str] = None,
-                                    recording_id: Optional[int] = None,
-                                    recording_source: Optional[str] = None):
+                                      entityname_property_name: Optional[str] = None,
+                                      experiment_id: Optional[int] = None,
+                                      participant_id: Optional[int] = None,
+                                      participant_date_of_birth: Optional[str] = None,
+                                      participant_sex: Optional[str] = None,
+                                      participant_name: Optional[str] = None,
+                                      participantstate_age: Optional[str] = None,
+                                      recording_id: Optional[int] = None,
+                                      recording_source: Optional[str] = None):
         """
         Get time series from database.
 
@@ -115,7 +117,8 @@ class TimeSeriesRouter:
         - registereddata
         """
 
-        get_response = self.time_series_service.get_signal_series_nodes(request.query_params)
+        get_response = self.time_series_service.get_signal_series_nodes(
+            request.query_params)
 
         # add links from hateoas
         get_response.links = get_links(router)
@@ -139,7 +142,8 @@ class TimeSeriesRouter:
         Signal values will be filtered using minimum and maximum value if present.
         """
 
-        get_response = self.time_series_service.get_signal_series(time_series_id, depth, signal_min_value, signal_max_value)
+        get_response = self.time_series_service.get_signal_series(
+            time_series_id, depth, signal_min_value, signal_max_value)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -157,12 +161,14 @@ class TimeSeriesRouter:
         Time series ids is comma separated string.
         """
         try:
-            ids = [int(time_series_id.strip()) for time_series_id in time_series_ids.split(",")]
+            ids = [int(time_series_id.strip())
+                   for time_series_id in time_series_ids.split(",")]
         except ValueError:
             response.status_code = 422
             return SignalSeriesMultidimensionalOut(errors="Ids must be integers")
 
-        get_response = self.time_series_service.get_signal_series_multidimensional(ids)
+        get_response = self.time_series_service.get_signal_series_multidimensional(
+            ids)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -182,7 +188,8 @@ class TimeSeriesRouter:
         """
         Delete time series by id from database with all signal values.
         """
-        get_response = self.time_series_service.delete_signal_series(time_series_id)
+        get_response = self.time_series_service.delete_signal_series(
+            time_series_id)
         if get_response.errors is not None:
             response.status_code = 404
 

@@ -4,45 +4,52 @@ from property.property_model import PropertyIn
 from time_series.ts_helpers import get_node_property, get_additional_parameter
 from signal_series.signal_series_model import SignalSeriesOut, SignalSeriesIn, Type, SignalIn, TransformationType, \
     SignalValueNodesIn
-from time_series.transformation.TimeSeriesTransformation import TimeSeriesTransformation
+from signal_series.transformation.SignalSeriesTransformation import SignalSeriesTransformation
 
 
-class TimeSeriesTransformationResample(TimeSeriesTransformation):
+class SignalSeriesTransformationResample(SignalSeriesTransformation):
     """
-    Class with logic of time series resampling transformation
+    Class with logic of signal series resampling transformation
 
     """
 
     def transform(self, signal_series: List[SignalSeriesOut], additional_properties: Optional[List[PropertyIn]]):
         """
-        Transform time series data.
+        Transform signal series data.
 
         Get signal values with new sampling period.
         This transformation will find the nearest signal value including values in the future.
 
         Args:
-            time_series (List[SignalSeriesOut]): Time series to be transformed
+            signal_series (List[SignalSeriesOut]): Time series to be transformed
             additional_properties (Optional[List[PropertyIn]]): Transformation parameters
 
         Returns:
-            New time series object
+            New signal series object
         """
-        assert len(signal_series) == 1, "Number of time series should equals 1 for resample transformation"
+        assert len(
+            signal_series) == 1, "Number of time series should equals 1 for resample transformation"
         period = get_additional_parameter(additional_properties, "period")
         assert period is not None, "period additional parameter is required"
         period = int(period)
-        begin_timestamp_label = "timestamp" if signal_series[0].type == Type.timestamp else "start_timestamp"
-        end_timestamp_label = "timestamp" if signal_series[0].type == Type.timestamp else "end_timestamp"
-        start_timestamp = get_additional_parameter(additional_properties, "start_timestamp")
-        end_timestamp = get_additional_parameter(additional_properties, "end_timestamp")
+        begin_timestamp_label = "timestamp" if signal_series[
+            0].type == Type.timestamp else "start_timestamp"
+        end_timestamp_label = "timestamp" if signal_series[
+            0].type == Type.timestamp else "end_timestamp"
+        start_timestamp = get_additional_parameter(
+            additional_properties, "start_timestamp")
+        end_timestamp = get_additional_parameter(
+            additional_properties, "end_timestamp")
 
-        start_timestamp = int(start_timestamp) if start_timestamp is not None else 0
+        start_timestamp = int(
+            start_timestamp) if start_timestamp is not None else 0
         end_timestamp = int(end_timestamp) if end_timestamp is not None else (period + int(
             get_node_property(signal_series[0].signal_values[-1]["timestamp"], end_timestamp_label)))
 
         if additional_properties is None:
             additional_properties = []
-        additional_properties.append(PropertyIn(key="transformation_name", value=TransformationType.RESAMPLE_NEAREST))
+        additional_properties.append(PropertyIn(
+            key="transformation_name", value=TransformationType.RESAMPLE_NEAREST))
 
         new_signal_values = []
         new_signal_values_id_mapping = []
@@ -78,6 +85,6 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
                 current_time += period
 
         return SignalSeriesIn(type=Type.timestamp,
-                            additional_properties=additional_properties,
-                            signal_values=new_signal_values
-                            ), new_signal_values_id_mapping
+                              additional_properties=additional_properties,
+                              signal_values=new_signal_values
+                              ), new_signal_values_id_mapping

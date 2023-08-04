@@ -4,7 +4,7 @@ from time_series.ts_helpers import get_node_property
 from signal_series.signal_series_model import SignalSeriesOut, Type, SignalSeriesMultidimensionalOut
 
 
-class TimeSeriesTransformationMultidimensional:
+class SignalSeriesTransformationMultidimensional:
     """
     Class with logic of time series multidimensional transformation
 
@@ -23,7 +23,8 @@ class TimeSeriesTransformationMultidimensional:
         Returns:
             New time series object
         """
-        assert len(time_series) > 0, "Number of time series should be at least 1 for multidimensional transformation"
+        assert len(
+            time_series) > 0, "Number of time series should be at least 1 for multidimensional transformation"
         for i in range(1, len(time_series)):
             assert time_series[0].type == time_series[i].type, "Time series types should be equal"
 
@@ -39,20 +40,20 @@ class TimeSeriesTransformationMultidimensional:
                 # value
                 # If not found, return not existing indexes
                 while current_signal_value_rest_indexes[i] < len(time_series[i].signal_values) and \
-                        int(get_node_property(
-                            time_series[i].signal_values[current_signal_value_rest_indexes[i]]["timestamp"],
-                            timestamp_label)) < int(
-                    get_node_property(current_signal_value_x["timestamp"], timestamp_label)):
+                    int(get_node_property(
+                        time_series[i].signal_values[current_signal_value_rest_indexes[i]]["timestamp"],
+                        timestamp_label)) < int(
+                        get_node_property(current_signal_value_x["timestamp"], timestamp_label)):
                     current_signal_value_rest_indexes[i] += 1
                 # Check if X, Y, Z and other signal timestamps are the same
                 if current_signal_value_rest_indexes[i] < len(time_series[1].signal_values) and \
-                        get_node_property(current_signal_value_x["timestamp"], "timestamp") == get_node_property(
-                    time_series[i].signal_values[current_signal_value_rest_indexes[i]]["timestamp"], "timestamp") and \
-                        get_node_property(current_signal_value_x["timestamp"], "start_timestamp") == get_node_property(
-                    time_series[i].signal_values[current_signal_value_rest_indexes[i]]["timestamp"],
-                    "start_timestamp") and \
-                        get_node_property(current_signal_value_x["timestamp"], "end_timestamp") == get_node_property(
-                    time_series[i].signal_values[current_signal_value_rest_indexes[i]]["timestamp"], "end_timestamp"):
+                    get_node_property(current_signal_value_x["timestamp"], "timestamp") == get_node_property(
+                        time_series[i].signal_values[current_signal_value_rest_indexes[i]]["timestamp"], "timestamp") and \
+                    get_node_property(current_signal_value_x["timestamp"], "start_timestamp") == get_node_property(
+                        time_series[i].signal_values[current_signal_value_rest_indexes[i]]["timestamp"],
+                        "start_timestamp") and \
+                    get_node_property(current_signal_value_x["timestamp"], "end_timestamp") == get_node_property(
+                        time_series[i].signal_values[current_signal_value_rest_indexes[i]]["timestamp"], "end_timestamp"):
                     signal_values.append(
                         time_series[i].signal_values[current_signal_value_rest_indexes[i]]["signal_value"])
                 else:

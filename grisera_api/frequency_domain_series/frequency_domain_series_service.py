@@ -7,7 +7,7 @@ from signal_series.signal_series_model import SignalSeriesPropertyIn, SignalSeri
     SignalSeriesTransformationIn
 
 
-class TimeSeriesService(SignalSeriesService):
+class FrequencyDomainSeriesService(SignalSeriesService):
     """
     Abstract class to handle logic of signal series requests
 

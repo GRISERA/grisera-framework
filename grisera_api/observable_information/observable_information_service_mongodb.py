@@ -36,6 +36,7 @@ class ObservableInformationServiceMongoDB(
         self.life_activity_service = None
         self.modality_service = None
         self.time_series_service = None
+        self.frequency_domain_series_service = None
 
     def save_observable_information(
         self, observable_information: ObservableInformationIn

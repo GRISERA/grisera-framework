@@ -20,6 +20,7 @@ from registered_channel.registered_channel_service import RegisteredChannelServi
 from registered_data.registered_data_service import RegisteredDataService
 from scenario.scenario_service import ScenarioService
 from time_series.time_series_service import TimeSeriesService
+from frequency_domain_series.frequency_domain_series_service import FrequencyDomainSeriesService
 
 
 class ServiceFactory(ABC):
@@ -102,4 +103,8 @@ class ServiceFactory(ABC):
 
     @abstractmethod
     def get_time_series_service(self) -> TimeSeriesService:
+        pass
+
+    @abstractmethod
+    def get_frequency_domain_series_service(self) -> FrequencyDomainSeriesService:
         pass

@@ -2,10 +2,10 @@ import unittest
 
 from property.property_model import PropertyIn
 from signal_series.signal_series_model import SignalSeriesOut, Type, SignalSeriesIn, SignalIn, SignalValueNodesIn
-from time_series.transformation.TimeSeriesTransformationQuadrants import TimeSeriesTransformationQuadrants
+from signal_series.transformation.SignalSeriesTransformationQuadrants import SignalSeriesTransformationQuadrants
 
 
-class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
+class TestSignalSeriesTransformationQuadrants(unittest.TestCase):
     time_series_timestamp = [
         SignalSeriesOut(
             type=Type.timestamp,
@@ -131,21 +131,27 @@ class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
     def test_transform_timestamp(self):
         additional_properties = []
 
-        time_series_transformation = TimeSeriesTransformationQuadrants()
-        result = time_series_transformation.transform(self.time_series_timestamp, additional_properties)
+        time_series_transformation = SignalSeriesTransformationQuadrants()
+        result = time_series_transformation.transform(
+            self.time_series_timestamp, additional_properties)
 
         self.assertEqual(
             (
                 SignalSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
-                        SignalIn(timestamp='0', signal_value=SignalValueNodesIn(value='1')),
-                        SignalIn(timestamp='2', signal_value=SignalValueNodesIn(value='4')),
-                        SignalIn(timestamp='3', signal_value=SignalValueNodesIn(value='2')),
-                        SignalIn(timestamp='4', signal_value=SignalValueNodesIn(value='3'))
+                        SignalIn(timestamp='0',
+                                 signal_value=SignalValueNodesIn(value='1')),
+                        SignalIn(timestamp='2',
+                                 signal_value=SignalValueNodesIn(value='4')),
+                        SignalIn(timestamp='3',
+                                 signal_value=SignalValueNodesIn(value='2')),
+                        SignalIn(timestamp='4',
+                                 signal_value=SignalValueNodesIn(value='3'))
                     ],
                     additional_properties=[
-                        PropertyIn(key='transformation_name', value='quadrants')
+                        PropertyIn(key='transformation_name',
+                                   value='quadrants')
                     ]
                 ),
                 [[2, 12], [4, 14], [6, 16], [8, 18]]
@@ -158,23 +164,29 @@ class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
             PropertyIn(key="origin_y", value="6")
         ]
 
-        time_series_transformation = TimeSeriesTransformationQuadrants()
-        result = time_series_transformation.transform(self.time_series_timestamp, additional_properties)
+        time_series_transformation = SignalSeriesTransformationQuadrants()
+        result = time_series_transformation.transform(
+            self.time_series_timestamp, additional_properties)
 
         self.assertEqual(
             (
                 SignalSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
-                        SignalIn(timestamp='0', signal_value=SignalValueNodesIn(value='1')),
-                        SignalIn(timestamp='2', signal_value=SignalValueNodesIn(value='4')),
-                        SignalIn(timestamp='3', signal_value=SignalValueNodesIn(value='4')),
-                        SignalIn(timestamp='4', signal_value=SignalValueNodesIn(value='3'))
+                        SignalIn(timestamp='0',
+                                 signal_value=SignalValueNodesIn(value='1')),
+                        SignalIn(timestamp='2',
+                                 signal_value=SignalValueNodesIn(value='4')),
+                        SignalIn(timestamp='3',
+                                 signal_value=SignalValueNodesIn(value='4')),
+                        SignalIn(timestamp='4',
+                                 signal_value=SignalValueNodesIn(value='3'))
                     ],
                     additional_properties=[
                         PropertyIn(key="origin_x", value="-6"),
                         PropertyIn(key="origin_y", value="6"),
-                        PropertyIn(key='transformation_name', value='quadrants')
+                        PropertyIn(key='transformation_name',
+                                   value='quadrants')
                     ]
                 ),
                 [[2, 12], [4, 14], [6, 16], [8, 18]]
@@ -184,19 +196,23 @@ class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
     def test_transform_epoch(self):
         additional_properties = []
 
-        time_series_transformation = TimeSeriesTransformationQuadrants()
-        result = time_series_transformation.transform(self.time_series_epoch, additional_properties)
+        time_series_transformation = SignalSeriesTransformationQuadrants()
+        result = time_series_transformation.transform(
+            self.time_series_epoch, additional_properties)
 
         self.assertEqual(
             (
                 SignalSeriesIn(
                     type=Type.epoch,
                     signal_values=[
-                        SignalIn(start_timestamp='1', end_timestamp='4', signal_value=SignalValueNodesIn(value='1')),
-                        SignalIn(start_timestamp='5', end_timestamp='10', signal_value=SignalValueNodesIn(value='4'))
+                        SignalIn(start_timestamp='1', end_timestamp='4',
+                                 signal_value=SignalValueNodesIn(value='1')),
+                        SignalIn(start_timestamp='5', end_timestamp='10',
+                                 signal_value=SignalValueNodesIn(value='4'))
                     ],
                     additional_properties=[
-                        PropertyIn(key='transformation_name', value='quadrants')
+                        PropertyIn(key='transformation_name',
+                                   value='quadrants')
                     ]
                 ),
                 [[2, 12], [4, 14]]
@@ -209,21 +225,25 @@ class TestTimeSeriesTransformationQuadrants(unittest.TestCase):
             PropertyIn(key="origin_y", value="-10")
         ]
 
-        time_series_transformation = TimeSeriesTransformationQuadrants()
-        result = time_series_transformation.transform(self.time_series_epoch, additional_properties)
+        time_series_transformation = SignalSeriesTransformationQuadrants()
+        result = time_series_transformation.transform(
+            self.time_series_epoch, additional_properties)
 
         self.assertEqual(
             (
                 SignalSeriesIn(
                     type=Type.epoch,
                     signal_values=[
-                        SignalIn(start_timestamp='1', end_timestamp='4', signal_value=SignalValueNodesIn(value='2')),
-                        SignalIn(start_timestamp='5', end_timestamp='10', signal_value=SignalValueNodesIn(value='1'))
+                        SignalIn(start_timestamp='1', end_timestamp='4',
+                                 signal_value=SignalValueNodesIn(value='2')),
+                        SignalIn(start_timestamp='5', end_timestamp='10',
+                                 signal_value=SignalValueNodesIn(value='1'))
                     ],
                     additional_properties=[
                         PropertyIn(key="origin_x", value="7"),
                         PropertyIn(key="origin_y", value="-10"),
-                        PropertyIn(key='transformation_name', value='quadrants')
+                        PropertyIn(key='transformation_name',
+                                   value='quadrants')
                     ]
                 ),
                 [[2, 12], [4, 14]]

@@ -2,10 +2,10 @@ import unittest
 
 from property.property_model import PropertyIn
 from signal_series.signal_series_model import SignalSeriesOut, Type, SignalSeriesIn, SignalIn, SignalValueNodesIn
-from time_series.transformation.TimeSeriesTransformationResample import TimeSeriesTransformationResample
+from signal_series.transformation.SignalSeriesTransformationResample import SignalSeriesTransformationResample
 
 
-class TestTimeSeriesTransformationResample(unittest.TestCase):
+class TestSignalSeriesTransformationResample(unittest.TestCase):
     time_series_timestamp = [
         SignalSeriesOut(
             type=Type.timestamp,
@@ -89,22 +89,28 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
     def test_transform_timestamp(self):
         additional_properties = [PropertyIn(key="period", value="10")]
 
-        time_series_transformation = TimeSeriesTransformationResample()
-        result = time_series_transformation.transform(self.time_series_timestamp, additional_properties)
+        time_series_transformation = SignalSeriesTransformationResample()
+        result = time_series_transformation.transform(
+            self.time_series_timestamp, additional_properties)
 
         self.assertEqual(
             (
                 SignalSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
-                        SignalIn(timestamp=0, signal_value=SignalValueNodesIn(value='10')),
-                        SignalIn(timestamp=10, signal_value=SignalValueNodesIn(value='30')),
-                        SignalIn(timestamp=20, signal_value=SignalValueNodesIn(value='40')),
-                        SignalIn(timestamp=30, signal_value=SignalValueNodesIn(value='50'))
+                        SignalIn(
+                            timestamp=0, signal_value=SignalValueNodesIn(value='10')),
+                        SignalIn(timestamp=10,
+                                 signal_value=SignalValueNodesIn(value='30')),
+                        SignalIn(timestamp=20,
+                                 signal_value=SignalValueNodesIn(value='40')),
+                        SignalIn(timestamp=30,
+                                 signal_value=SignalValueNodesIn(value='50'))
                     ],
                     additional_properties=[
                         PropertyIn(key='period', value='10'),
-                        PropertyIn(key='transformation_name', value='resample_nearest')
+                        PropertyIn(key='transformation_name',
+                                   value='resample_nearest')
                     ]
                 ),
                 [[2], [6], [8], [10]]
@@ -118,24 +124,30 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
             PropertyIn(key="end_timestamp", value="23")
         ]
 
-        time_series_transformation = TimeSeriesTransformationResample()
-        result = time_series_transformation.transform(self.time_series_timestamp, additional_properties)
+        time_series_transformation = SignalSeriesTransformationResample()
+        result = time_series_transformation.transform(
+            self.time_series_timestamp, additional_properties)
 
         self.assertEqual(
             (
                 SignalSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
-                        SignalIn(timestamp=3, signal_value=SignalValueNodesIn(value='20')),
-                        SignalIn(timestamp=8, signal_value=SignalValueNodesIn(value='30')),
-                        SignalIn(timestamp=13, signal_value=SignalValueNodesIn(value='40')),
-                        SignalIn(timestamp=18, signal_value=SignalValueNodesIn(value='40'))
+                        SignalIn(
+                            timestamp=3, signal_value=SignalValueNodesIn(value='20')),
+                        SignalIn(
+                            timestamp=8, signal_value=SignalValueNodesIn(value='30')),
+                        SignalIn(timestamp=13,
+                                 signal_value=SignalValueNodesIn(value='40')),
+                        SignalIn(timestamp=18,
+                                 signal_value=SignalValueNodesIn(value='40'))
                     ],
                     additional_properties=[
                         PropertyIn(key="period", value="5"),
                         PropertyIn(key="start_timestamp", value="3"),
                         PropertyIn(key="end_timestamp", value="23"),
-                        PropertyIn(key='transformation_name', value='resample_nearest')
+                        PropertyIn(key='transformation_name',
+                                   value='resample_nearest')
                     ]
                 ),
                 [[4], [6], [8], [8]]
@@ -145,25 +157,34 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
     def test_transform_epoch(self):
         additional_properties = [PropertyIn(key="period", value="5")]
 
-        time_series_transformation = TimeSeriesTransformationResample()
-        result = time_series_transformation.transform(self.time_series_epoch, additional_properties)
+        time_series_transformation = SignalSeriesTransformationResample()
+        result = time_series_transformation.transform(
+            self.time_series_epoch, additional_properties)
 
         self.assertEqual(
             (
                 SignalSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
-                        SignalIn(timestamp=0, signal_value=SignalValueNodesIn(value='10')),
-                        SignalIn(timestamp=5, signal_value=SignalValueNodesIn(value='10')),
-                        SignalIn(timestamp=10, signal_value=SignalValueNodesIn(value='20')),
-                        SignalIn(timestamp=15, signal_value=SignalValueNodesIn(value='20')),
-                        SignalIn(timestamp=20, signal_value=SignalValueNodesIn(value='30')),
-                        SignalIn(timestamp=25, signal_value=SignalValueNodesIn(value='40')),
-                        SignalIn(timestamp=30, signal_value=SignalValueNodesIn(value='40'))
+                        SignalIn(
+                            timestamp=0, signal_value=SignalValueNodesIn(value='10')),
+                        SignalIn(
+                            timestamp=5, signal_value=SignalValueNodesIn(value='10')),
+                        SignalIn(timestamp=10,
+                                 signal_value=SignalValueNodesIn(value='20')),
+                        SignalIn(timestamp=15,
+                                 signal_value=SignalValueNodesIn(value='20')),
+                        SignalIn(timestamp=20,
+                                 signal_value=SignalValueNodesIn(value='30')),
+                        SignalIn(timestamp=25,
+                                 signal_value=SignalValueNodesIn(value='40')),
+                        SignalIn(timestamp=30,
+                                 signal_value=SignalValueNodesIn(value='40'))
                     ],
                     additional_properties=[
                         PropertyIn(key='period', value='5'),
-                        PropertyIn(key='transformation_name', value='resample_nearest')
+                        PropertyIn(key='transformation_name',
+                                   value='resample_nearest')
                     ]
                 ),
                 [[2], [2], [4], [4], [6], [8], [8]]
@@ -177,23 +198,28 @@ class TestTimeSeriesTransformationResample(unittest.TestCase):
             PropertyIn(key="end_timestamp", value="36")
         ]
 
-        time_series_transformation = TimeSeriesTransformationResample()
-        result = time_series_transformation.transform(self.time_series_epoch, additional_properties)
+        time_series_transformation = SignalSeriesTransformationResample()
+        result = time_series_transformation.transform(
+            self.time_series_epoch, additional_properties)
 
         self.assertEqual(
             (
                 SignalSeriesIn(
                     type=Type.timestamp,
                     signal_values=[
-                        SignalIn(timestamp=6, signal_value=SignalValueNodesIn(value='20')),
-                        SignalIn(timestamp=16, signal_value=SignalValueNodesIn(value='20')),
-                        SignalIn(timestamp=26, signal_value=SignalValueNodesIn(value='40'))
+                        SignalIn(
+                            timestamp=6, signal_value=SignalValueNodesIn(value='20')),
+                        SignalIn(timestamp=16,
+                                 signal_value=SignalValueNodesIn(value='20')),
+                        SignalIn(timestamp=26,
+                                 signal_value=SignalValueNodesIn(value='40'))
                     ],
                     additional_properties=[
                         PropertyIn(key="period", value="10"),
                         PropertyIn(key="start_timestamp", value="6"),
                         PropertyIn(key="end_timestamp", value="36"),
-                        PropertyIn(key='transformation_name', value='resample_nearest')
+                        PropertyIn(key='transformation_name',
+                                   value='resample_nearest')
                     ]
                 ),
                 [[4], [4], [8]]

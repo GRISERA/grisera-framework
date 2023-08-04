@@ -8,6 +8,7 @@ from measure.measure_service import MeasureService
 from measure_name.measure_name_service import MeasureNameService
 from models.not_found_model import NotFoundByIdModel
 from time_series.time_series_service import TimeSeriesService
+from frequency_domain_series.frequency_domain_series_service import FrequencyDomainSeriesService
 
 
 class MeasureServiceGraphDB(MeasureService):
@@ -23,6 +24,7 @@ class MeasureServiceGraphDB(MeasureService):
     def __init__(self):
         self.measure_name_service: MeasureNameService = None
         self.time_series_service: TimeSeriesService = None
+        self.frequency_domain_series_service: FrequencyDomainSeriesService = None
 
     def save_measure(self, measure: MeasureIn):
         """
@@ -93,12 +95,14 @@ class MeasureServiceGraphDB(MeasureService):
         if get_response["labels"][0] != "Measure":
             return NotFoundByIdModel(id=measure_id, errors="Node not found.")
 
-        measure = create_stub_from_response(get_response, properties=['datatype', 'range', 'unit'])
+        measure = create_stub_from_response(
+            get_response, properties=['datatype', 'range', 'unit'])
 
         if depth != 0:
             measure["time_series"] = []
             measure["measure_name"] = None
-            relations_response = self.graph_api_service.get_node_relationships(measure_id)
+            relations_response = self.graph_api_service.get_node_relationships(
+                measure_id)
 
             for relation in relations_response["relationships"]:
                 if relation["start_node"] == measure_id & relation["name"] == "hasMeasureName":
@@ -107,7 +111,7 @@ class MeasureServiceGraphDB(MeasureService):
                 else:
                     if relation["end_node"] == measure_id & relation["name"] == "hasMeasure":
                         measure['time_series'].append(self.time_series_service.get_signal_series(relation["start_node"],
-                                                                                               depth - 1))
+                                                                                                 depth - 1))
 
             return MeasureOut(**measure)
         else:

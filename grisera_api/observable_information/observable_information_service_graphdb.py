@@ -10,6 +10,7 @@ from observable_information.observable_information_service import ObservableInfo
 from models.not_found_model import NotFoundByIdModel
 from recording.recording_service import RecordingService
 from time_series.time_series_service import TimeSeriesService
+from frequency_domain_series.frequency_domain_series_service import FrequencyDomainSeriesService
 
 
 class ObservableInformationServiceGraphDB(ObservableInformationService):
@@ -30,6 +31,7 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
         self.life_activity_service: LifeActivityService = None
         self.recording_service: RecordingService = None
         self.time_series_service: TimeSeriesService = None
+        self.frequency_domain_series_service: FrequencyDomainSeriesService = None
 
     def save_observable_information(self, observable_information: ObservableInformationIn):
         """
@@ -41,7 +43,8 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
         Returns:
             Result of request as observable information object
         """
-        node_response = self.graph_api_service.create_node("Observable Information")
+        node_response = self.graph_api_service.create_node(
+            "Observable Information")
 
         if node_response["errors"] is not None:
             return ObservableInformationOut(errors=node_response["errors"])
@@ -75,13 +78,15 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
         Returns:
             Result of request as list of observable information objects
         """
-        get_response = self.graph_api_service.get_nodes("`Observable Information`")
+        get_response = self.graph_api_service.get_nodes(
+            "`Observable Information`")
 
         observable_informations = []
 
         for observable_information_node in get_response["nodes"]:
             properties = {'id': observable_information_node['id']}
-            observable_information = BasicObservableInformationOut(**properties)
+            observable_information = BasicObservableInformationOut(
+                **properties)
             observable_informations.append(observable_information)
 
         return ObservableInformationsOut(observable_informations=observable_informations)
@@ -95,7 +100,8 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
         Returns:
             Result of request as observable information object
         """
-        get_response = self.graph_api_service.get_node(observable_information_id)
+        get_response = self.graph_api_service.get_node(
+            observable_information_id)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=observable_information_id, errors=get_response["errors"])
@@ -109,7 +115,8 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
             observable_information["modality"] = None
             observable_information["life_activity"] = None
             observable_information["timeSeries"] = []
-            relations_response = self.graph_api_service.get_node_relationships(observable_information_id)
+            relations_response = self.graph_api_service.get_node_relationships(
+                observable_information_id)
 
             for relation in relations_response["relationships"]:
                 if relation["start_node"] == observable_information_id & relation["name"] == "hasModality":
@@ -129,7 +136,7 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
                                     relation["name"] == "hasObservableInformation":
                                 observable_information['timeSeries'].append(self.time_series_service.
                                                                             get_signal_series(relation["start_node"],
-                                                                                            depth - 1))
+                                                                                              depth - 1))
 
             return ObservableInformationOut(**observable_information)
         else:
@@ -143,7 +150,8 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
         Returns:
             Result of request as observable information object
         """
-        get_response = self.get_observable_information(observable_information_id)
+        get_response = self.get_observable_information(
+            observable_information_id)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
@@ -161,7 +169,8 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
         Returns:
             Result of request as observable information object
         """
-        get_response = self.get_observable_information(observable_information_id)
+        get_response = self.get_observable_information(
+            observable_information_id)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response

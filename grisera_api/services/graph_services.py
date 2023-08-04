@@ -19,6 +19,7 @@ from registered_channel.registered_channel_service_graphdb import RegisteredChan
 from registered_data.registered_data_service_graphdb import RegisteredDataServiceGraphDB
 from scenario.scenario_service_graphdb import ScenarioServiceGraphDB
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
+from frequency_domain_series.frequency_domain_series_service_graphdb import FrequencyDomainSeriesServiceGraphDB
 from activity.activity_service import ActivityService
 from activity_execution.activity_execution_service import ActivityExecutionService
 from appearance.appearance_service import AppearanceService
@@ -40,6 +41,8 @@ from registered_data.registered_data_service import RegisteredDataService
 from scenario.scenario_service import ScenarioService
 from time_series.time_series_service import TimeSeriesService
 from time_series.time_series_service_graphdb_with_signal_values import TimeSeriesServiceGraphDBWithSignalValues
+from frequency_domain_series.frequency_domain_series_service import FrequencyDomainSeriesService
+from frequency_domain_series.frequency_domain_series_service_graphdb_with_signal_values import FrequencyDomainSeriesServiceGraphDBWithSignalValues
 
 
 class GraphServiceFactory(ServiceFactory):
@@ -64,7 +67,9 @@ class GraphServiceFactory(ServiceFactory):
         self.registered_data_service = RegisteredDataServiceGraphDB()
         self.scenario_service = ScenarioServiceGraphDB()
         self.time_series_service = TimeSeriesServiceGraphDB()
+        self.frequency_domain_series_service = FrequencyDomainSeriesServiceGraphDB()
         self.time_series_with_signal_values_service = TimeSeriesServiceGraphDBWithSignalValues()
+        self.frequency_domain_series_with_signal_values_service = FrequencyDomainSeriesServiceGraphDBWithSignalValues()
 
         self.activity_service.activity_execution_service = self.activity_execution_service
 
@@ -86,6 +91,7 @@ class GraphServiceFactory(ServiceFactory):
 
         self.measure_service.measure_name_service = self.measure_name_service
         self.measure_service.time_series_service = self.time_series_service
+        self.measure_service.frequency_domain_series_service = self.frequency_domain_series_service
 
         self.measure_name_service.measure_service = self.measure_service
 
@@ -95,6 +101,7 @@ class GraphServiceFactory(ServiceFactory):
         self.observable_information_service.recording_service = self.recording_service
         self.observable_information_service.life_activity_service = self.life_activity_service
         self.observable_information_service.time_series_service = self.time_series_service
+        self.observable_information_service.frequency_domain_series_service = self.frequency_domain_series_service
 
         self.participant_service.participant_state_service = self.participant_state_service
 
@@ -127,6 +134,12 @@ class GraphServiceFactory(ServiceFactory):
 
         self.time_series_with_signal_values_service.measure_service = self.measure_service
         self.time_series_with_signal_values_service.observable_information_service = self.observable_information_service
+
+        self.frequency_domain_series_service.measure_service = self.measure_service
+        self.frequency_domain_series_service.observable_information_service = self.observable_information_service
+
+        self.frequency_domain_series_with_signal_values_service.measure_service = self.measure_service
+        self.frequency_domain_series_with_signal_values_service.observable_information_service = self.observable_information_service
 
     def get_activity_service(self) -> ActivityService:
         return self.activity_service
@@ -188,7 +201,13 @@ class GraphServiceFactory(ServiceFactory):
     def get_time_series_service(self) -> TimeSeriesService:
         return self.time_series_service
 
+    def get_frequency_domain_series_service(self) -> FrequencyDomainSeriesService:
+        return self.frequency_domain_series_service
+
 
 class GraphWithSignalValuesServiceFactory(GraphServiceFactory):
     def get_time_series_service(self) -> TimeSeriesService:
         return self.time_series_with_signal_values_service
+
+    def get_frequency_domain_series_service(self) -> FrequencyDomainSeriesService:
+        return self.frequency_domain_series_with_signal_values_service

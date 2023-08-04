@@ -8,14 +8,14 @@ from signal_series.signal_series_model import Type, SignalSeriesIn, SignalSeries
     StampNodesIn, SignalSeriesNodesOut, BasicSignalSeriesOut, SignalSeriesTransformationIn, \
     SignalSeriesTransformationRelationshipIn, SignalSeriesMultidimensionalOut
 from signal_series.signal_series_service_graphdb import SignalSeriesServiceGraphDB
-from time_series.transformation.TimeSeriesTransformationFactory import TimeSeriesTransformationFactory
-from time_series.transformation.multidimensional.TimeSeriesTransformationMultidimensional import \
-    TimeSeriesTransformationMultidimensional
+from signal_series.transformation.SignalSeriesTransformationFactory import SignalSeriesTransformationFactory
+from signal_series.transformation.multidimensional.SignalSeriesTransformationMultidimensional import \
+    SignalSeriesTransformationMultidimensional
 
 
 class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
 
-    def __init__(self, graphdb_serivce,property_stamp_name,label_stamp_name,signal_series_type):
+    def __init__(self, graphdb_serivce, property_stamp_name, label_stamp_name, signal_series_type):
         self.graphdb_service = graphdb_serivce
         self.property_stamp_name = property_stamp_name
         self.label_stamp_name = label_stamp_name
@@ -40,7 +40,8 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         if errors is not None:
             return SignalSeriesOut(**signal_series.dict(), errors=errors)
 
-        result.signal_values = self.get_signal_values(signal_series_id, signal_series.type)
+        result.signal_values = self.get_signal_values(
+            signal_series_id, signal_series.type)
 
         return result
 
@@ -61,7 +62,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
                 return signal_series
             source_signal_series.append(signal_series)
         try:
-            new_signal_series, new_signal_values_id_mapping = TimeSeriesTransformationFactory().get_transformation(
+            new_signal_series, new_signal_values_id_mapping = SignalSeriesTransformationFactory().get_transformation(
                 signal_series_transformation.name) \
                 .transform(source_signal_series, signal_series_transformation.additional_properties)
         except Exception as e:
@@ -72,7 +73,8 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         result = self.save_signal_series(new_signal_series)
 
         for index, signal_series_id in enumerate(signal_series_transformation.source_signal_series_ids):
-            relationship = self.graph_api_service.create_relationships(result.id, signal_series_id, "transformedFrom")
+            relationship = self.graph_api_service.create_relationships(
+                result.id, signal_series_id, "transformedFrom")
             self.graph_api_service.create_relationship_properties(relationship["id"],
                                                                   SignalSeriesTransformationRelationshipIn(
                                                                       additional_properties=[
@@ -157,7 +159,8 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         return None
 
     def get_neighbour_node_id(self, node_id: int, relation_name: str, forward: bool = True):
-        relations_response = self.graph_api_service.get_node_relationships(node_id)
+        relations_response = self.graph_api_service.get_node_relationships(
+            node_id)
         for relation in relations_response["relationships"]:
             if relation["name"] == relation_name:
                 if relation["start_node" if forward else "end_node"] == node_id:
@@ -165,25 +168,27 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         return None, None
 
     def get_neighbour_node(self, node_id: int, relation_name: str, forward: bool = True):
-        neighbour_node_id, relation_id = self.get_neighbour_node_id(node_id, relation_name, forward)
+        neighbour_node_id, relation_id = self.get_neighbour_node_id(
+            node_id, relation_name, forward)
         if neighbour_node_id is not None:
             get_response = self.graph_api_service.get_node(neighbour_node_id)
             if get_response["errors"] is None:
                 return get_response, relation_id
         return None, None
 
-
     def get_or_create_stamp_node(self, stamp_value: int, stamp):
         if stamp_value is None:
-            return {"errors": "" + self.label_stamp_name + "value is None. Please check "+ self.signal_series_type +  "type."}
+            return {"errors": "" + self.label_stamp_name + "value is None. Please check " + self.signal_series_type + "type."}
         previous_stamp_id = None
         previous_stamp_stamp_relation_id = None
         while stamp is not None and int(get_node_property(stamp, self.property_stamp_name)) < stamp_value:
             previous_stamp_id = stamp["id"]
-            stamp, previous_stamp_stamp_relation_id = self.get_neighbour_node(stamp["id"], "next")
+            stamp, previous_stamp_stamp_relation_id = self.get_neighbour_node(
+                stamp["id"], "next")
 
         if stamp is None or int(get_node_property(stamp, self.property_stamp_name)) != stamp_value:
-            new_stamp_node = self.graph_api_service.create_node(self.label_stamp_name)
+            new_stamp_node = self.graph_api_service.create_node(
+                self.label_stamp_name)
 
             if new_stamp_node["errors"] is not None:
                 return new_stamp_node
@@ -191,7 +196,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
             new_stamp_id = new_stamp_node["id"]
 
             stamp_properties_response = self.graph_api_service.create_properties(new_stamp_id,
-                                                                                     self.get_stamp_nodes_in(stamp_value))
+                                                                                 self.get_stamp_nodes_in(stamp_value))
             if stamp_properties_response["errors"] is not None:
                 return stamp_properties_response
 
@@ -204,13 +209,15 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
                                                             end_node=stamp["id"],
                                                             name="next")
             if previous_stamp_stamp_relation_id is not None:
-                self.graph_api_service.delete_relationship(previous_stamp_stamp_relation_id)
+                self.graph_api_service.delete_relationship(
+                    previous_stamp_stamp_relation_id)
 
             return self.graph_api_service.get_node(new_stamp_id)
         return stamp
 
     def create_signal_value(self, signal_value: SignalValueNodesIn, previous_signal_value_node, signal_series_id: int):
-        signal_value_node_response = self.graph_api_service.create_node("Signal Value")
+        signal_value_node_response = self.graph_api_service.create_node(
+            "Signal Value")
 
         if signal_value_node_response["errors"] is not None:
             return signal_value_node_response
@@ -231,7 +238,6 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
 
         return signal_value_node_response
 
-
     def save_signal_values(self, signal_values: List[SignalIn], signal_series_id: int, experiment_id: int,
                            stamp_type: Type):
 
@@ -245,8 +251,9 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
 
             if current_signal_value_node["errors"] is not None:
                 return current_signal_value_node
-            
-            current_stamp = self.get_current_stamp(stamp_type,signal_value,stamp)
+
+            current_stamp = self.get_current_stamp(
+                stamp_type, signal_value, stamp)
 
             if current_stamp["errors"] is not None:
                 return current_stamp["errors"]
@@ -255,13 +262,15 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
                     stamp is None or int(get_node_property(current_stamp, self.property_stamp_name)) < int(
                     get_node_property(stamp, self.property_stamp_name))):
                 if experiment_stamp_relation_id is not None:
-                    self.graph_api_service.delete_relationship(experiment_stamp_relation_id)
+                    self.graph_api_service.delete_relationship(
+                        experiment_stamp_relation_id)
                 if experiment_id is not None:
                     self.graph_api_service.create_relationships(start_node=experiment_id,
                                                                 end_node=current_stamp["id"],
                                                                 name="takes")
 
-            current_stamp = self.create_relation_nodes(stamp_type,current_signal_value_node,signal_value,current_stamp)
+            current_stamp = self.create_relation_nodes(
+                stamp_type, current_signal_value_node, signal_value, current_stamp)
             if current_stamp["errors"] is not None:
                 return current_stamp["errors"]
 
@@ -270,8 +279,8 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         return None
 
     def get_signal_series(self, signal_series_id: Union[int, str], depth: int = 0,
-                        signal_min_value: Optional[int] = None,
-                        signal_max_value: Optional[int] = None):
+                          signal_min_value: Optional[int] = None,
+                          signal_max_value: Optional[int] = None):
         """
         Send request to graph api to get given time series
         Args:
@@ -282,10 +291,11 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         Returns:
             Result of request as time series object
         """
-        signal_series = self.graphdb_service.get_signal_series(signal_series_id, depth)
+        signal_series = self.graphdb_service.get_signal_series(
+            signal_series_id, depth)
         if signal_series.errors is None:
             signal_series.signal_values = self.get_signal_values(signal_series_id, signal_series.type,
-                                                               signal_min_value, signal_max_value)
+                                                                 signal_min_value, signal_max_value)
         return signal_series
 
     def get_signal_series_multidimensional(self, signal_series_ids: List[Union[int, str]]):
@@ -303,7 +313,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
                 return signal_series
             source_signal_series.append(signal_series)
         try:
-            result = TimeSeriesTransformationMultidimensional().transform(source_signal_series)
+            result = SignalSeriesTransformationMultidimensional().transform(source_signal_series)
             for signal_series in source_signal_series:
                 signal_series.signal_values = []
             result.signal_series = source_signal_series
@@ -458,19 +468,22 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
                 if "id" in params_per_node[node_param_name]:
                     node_id = int(params_per_node[node_param_name]["id"])
                     del params_per_node[node_param_name]["id"]
-                get_or_append_node_to_query(query, node_indexes, node_label, node_id, params_per_node[node_param_name])
+                get_or_append_node_to_query(
+                    query, node_indexes, node_label, node_id, params_per_node[node_param_name])
 
         response = self.graph_api_service.get_nodes_by_query(query)
 
         signal_series_nodes = []
         for signal_series_row in response["rows"]:
             signal_series_node = signal_series_row[0]
-            properties = {'id': signal_series_node['id'], 'additional_properties': []}
+            properties = {
+                'id': signal_series_node['id'], 'additional_properties': []}
             for property in signal_series_node["properties"]:
                 if property["key"] in ["type", "source"]:
                     properties[property["key"]] = property["value"]
                 else:
-                    properties['additional_properties'].append({'key': property['key'], 'value': property['value']})
+                    properties['additional_properties'].append(
+                        {'key': property['key'], 'value': property['value']})
             signal_series = BasicSignalSeriesOut(**properties)
             signal_series_nodes.append(signal_series)
 
@@ -487,12 +500,12 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
             Result of request as time series object
         """
         raise Exception("delete_signal_series not implemented yet")
-    
-    def get_stamp_nodes_in(self,stamp_value):
+
+    def get_stamp_nodes_in(self, stamp_value):
         raise Exception("get_stamp_nodes_in not implemented yet")
-    
-    def get_current_stamp(self,stamp_type,signal_value,stamp):
+
+    def get_current_stamp(self, stamp_type, signal_value, stamp):
         raise Exception("get_current_stamp not implemented yet")
-    
-    def create_relation_nodes(self,stamp_type,current_signal_value_node,signal_value,current_stamp):
+
+    def create_relation_nodes(self, stamp_type, current_signal_value_node, signal_value, current_stamp):
         raise Exception("create_relation_nodes not implemented yet")
