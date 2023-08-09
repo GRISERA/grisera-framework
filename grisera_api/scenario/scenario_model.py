@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Union, List, Optional
 
 from pydantic import BaseModel
 
@@ -14,8 +14,8 @@ class ScenarioIn(BaseModel):
     activity_executions (List[ActivityExecutionIn]): list of activity executions in scenario
     """
 
-    experiment_id: Union[int, str]
-    activity_executions: List[ActivityExecutionIn]
+    experiment_id: Optional[Union[int, str]]
+    activity_executions: Optional[List[ActivityExecutionIn]]
 
 
 class ScenarioOut(BaseModelOut):
@@ -27,8 +27,8 @@ class ScenarioOut(BaseModelOut):
         experiment (ExperimentOut): Experiment, the scenario belongs to
     """
 
-    activity_executions: "List[ActivityExecutionOut]"
-    experiment: "ExperimentOut"
+    activity_executions: "Optional[List[ActivityExecutionOut]]"
+    experiment: "Optional[ExperimentOut]"
 
 
 class OrderChangeIn(BaseModel):

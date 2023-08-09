@@ -5,6 +5,7 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 
 from activity.activity_model import ActivityOut, ActivitiesOut
+from activity.activity_model import ActivityIn
 from hateoas import get_links
 from models.not_found_model import NotFoundByIdModel
 from services import Services
@@ -24,13 +25,34 @@ class ActivityRouter:
     def __init__(self):
         self.activity_service = Services().activity_service()
 
+    @router.post(
+        "/activities",
+        tags=["activities"],
+        response_model=ActivityOut,
+    )
+    async def create_activity(self, activity: ActivityIn, response: Response):
+        """
+        Create activity execution in database
+        """
+        create_response = self.activity_service.save_activity(activity)
+        if create_response.errors is not None:
+            response.status_code = 422
+
+        # add links from hateoas
+        create_response.links = get_links(router)
+
+        return create_response
+
     @router.get(
         "/activities/{activity_id}",
         tags=["activities"],
         response_model=Union[ActivityOut, NotFoundByIdModel],
     )
     async def get_activity(
-        self, activity_id: Union[int, str], response: Response, depth: int = 0,
+        self,
+        activity_id: Union[int, str],
+        response: Response,
+        depth: int = 0,
     ):
         """
         Get activity from database. Depth attribute specifies how many models will be traversed to create the response.

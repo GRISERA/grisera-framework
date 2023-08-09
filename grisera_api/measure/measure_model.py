@@ -17,7 +17,7 @@ class MeasurePropertyIn(BaseModel):
 
     datatype: str
     range: str
-    unit: str
+    unit: Optional[str]
 
 
 class MeasureRelationIn(BaseModel):

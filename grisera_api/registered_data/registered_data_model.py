@@ -15,7 +15,7 @@ class RegisteredDataIn(BaseModel):
 
     """
 
-    source: str
+    source: Optional[str]
     additional_properties: Optional[List[PropertyIn]]
 
 

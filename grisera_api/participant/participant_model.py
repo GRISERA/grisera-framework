@@ -35,7 +35,7 @@ class ParticipantIn(BaseModel):
         additional_properties (Optional[List[PropertyIn]]): Additional properties for participant
     """
 
-    name: str
+    name: Optional[str]
     date_of_birth: Optional[date]
     sex: Optional[str]
     disorder: Optional[str]
