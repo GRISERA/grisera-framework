@@ -13,6 +13,7 @@ from relationship.relationship_model import RelationshipIn
 class DatabaseServiceTestCase(unittest.TestCase):
 
     def setUp(self):
+        self.database_name = "neo4j"
         self.database_service = DatabaseService()
         self.statement = "Create (n: Test)"
         self.commit_body = {"statements": [{"statement": self.statement}]}
@@ -24,7 +25,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
     def test_post(self, requests_mock):
         requests_mock.post.return_value = self.response
 
-        result = self.database_service.post(self.commit_body)
+        result = self.database_service.post(self.commit_body, self.database_name)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=self.commit_body,
@@ -34,7 +35,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
     def test_post_statement(self, requests_mock):
         requests_mock.post.return_value = self.response
 
-        result = self.database_service.post_statement(self.statement)
+        result = self.database_service.post_statement(self.statement, self.database_name)
 
         self.assertEqual(result, self.response_content)
 
@@ -44,7 +45,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
         commit_body = {"statements": [{"statement": "MATCH (n) where id(n) =1 return n"}]}
         node_id = 1
 
-        result = self.database_service.node_exists(node_id)
+        result = self.database_service.node_exists(node_id, self.database_name)
 
         self.assertTrue(result)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json = commit_body,
@@ -58,7 +59,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
         requests_mock.post.return_value = response
         node_id = 2
 
-        result = self.database_service.node_exists(node_id)
+        result = self.database_service.node_exists(node_id, self.database_name)
 
         self.assertFalse(result)
 
@@ -68,7 +69,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
         commit_body = {"statements": [{"statement": "CREATE (n:Test) RETURN n"}]}
         node = NodeIn(labels=["Test"])
 
-        result = self.database_service.create_node(node)
+        result = self.database_service.create_node(node, self.database_name)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
@@ -80,7 +81,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
         commit_body = {"statements": [{"statement": "CREATE (n:) RETURN n"}]}
         node = NodeIn()
 
-        result = self.database_service.create_node(node)
+        result = self.database_service.create_node(node, self.database_name)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
@@ -92,7 +93,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
         commit_body = {"statements": [{"statement": "MATCH (n) WHERE id(n)=5 RETURN n, labels(n)"}]}
         node_id = 5
 
-        result = self.database_service.get_node(node_id)
+        result = self.database_service.get_node(node_id, self.database_name)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
@@ -104,7 +105,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
         commit_body = {"statements": [{"statement": "MATCH (n: Test) RETURN n"}]}
         label = "Test"
 
-        result = self.database_service.get_nodes(label)
+        result = self.database_service.get_nodes(label, self.database_name)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
@@ -138,7 +139,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
                 RelationQueryIn(begin_node_index=4, end_node_index=2, label="endInSec"),
             ])
 
-        result = self.database_service.get_nodes_by_query(query)
+        result = self.database_service.get_nodes_by_query(query, self.database_name)
 
         self.assertEqual(self.response_content, result)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
@@ -150,7 +151,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
         commit_body = {"statements": [{"statement": "MATCH (n) WHERE id(n)=5 DETACH DELETE n return n"}]}
         node_id = 5
 
-        result = self.database_service.delete_node(node_id)
+        result = self.database_service.delete_node(node_id, self.database_name)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
@@ -162,7 +163,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
         commit_body = {"statements": [{"statement": "MATCH ()-[r]->() where id(r) =1 return r"}]}
         relation_id = 1
 
-        result = self.database_service.relationship_exist(relation_id)
+        result = self.database_service.relationship_exist(relation_id, self.database_name)
 
         self.assertTrue(result)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
@@ -176,7 +177,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
         requests_mock.post.return_value = response
         node_id = 2
 
-        result = self.database_service.relationship_exist(node_id)
+        result = self.database_service.relationship_exist(node_id, self.database_name)
 
         self.assertFalse(result)
 
@@ -187,7 +188,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
                                                     "return id(startNode(r)), id(endNode(r)), type(r), id(r)"}]}
         relationship_id = 5
 
-        result = self.database_service.get_relationship(relationship_id)
+        result = self.database_service.get_relationship(relationship_id, self.database_name)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
@@ -200,7 +201,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
                                                     "DETACH DELETE r return r"}]}
         relationship_id = 5
 
-        result = self.database_service.delete_relationship(relationship_id)
+        result = self.database_service.delete_relationship(relationship_id, self.database_name)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
@@ -213,7 +214,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
                                                     "return id(startNode(r)), id(endNode(r)), type(r), id(r)"}]}
         node_id = 5
 
-        result = self.database_service.get_relationships(node_id)
+        result = self.database_service.get_relationships(node_id, self.database_name)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
@@ -227,7 +228,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
                                                     "RETURN r"}]}
         relation = RelationshipIn(start_node=2, end_node=3, name="Test")
 
-        result = self.database_service.create_relationship(relation)
+        result = self.database_service.create_relationship(relation, self.database_name)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
@@ -241,7 +242,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
         properties = [PropertyIn(key="key", value="value"), PropertyIn(key="test", value="Test")]
         object_id = 2
 
-        result = self.database_service.create_properties(object_id, properties, "(x)", "id(x)")
+        result = self.database_service.create_properties(object_id, properties, "(x)", "id(x)", self.database_name)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
@@ -255,7 +256,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
         properties = [PropertyIn(key="key", value="value"), PropertyIn(key="test", value="Test")]
         object_id = 2
 
-        result = self.database_service.create_relationship_properties(object_id, properties)
+        result = self.database_service.create_relationship_properties(object_id, properties, self.database_name)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
@@ -269,7 +270,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
         properties = [PropertyIn(key="key", value="value"), PropertyIn(key="test", value="Test")]
         object_id = 2
 
-        result = self.database_service.create_node_properties(object_id, properties)
+        result = self.database_service.create_node_properties(object_id, properties, self.database_name)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,
@@ -282,7 +283,7 @@ class DatabaseServiceTestCase(unittest.TestCase):
         commit_body = {
             "statements": [{"statement": "MATCH (x) where id(x)="+str(object_id)+" SET x ={} return x"}]
         }
-        result = self.database_service.delete_node_properties(object_id)
+        result = self.database_service.delete_node_properties(object_id, self.database_name)
 
         self.assertEqual(result, self.response_content)
         requests_mock.post.assert_called_with(url=self.database_service.database_url, json=commit_body,

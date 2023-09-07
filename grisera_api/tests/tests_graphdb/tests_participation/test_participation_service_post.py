@@ -23,6 +23,7 @@ class TestParticipationServicePost(unittest.TestCase):
                                                create_relationships_mock, create_properties_mock,
                                                create_node_mock):
         id_node = 1
+        dataset_name = "neo4j"
         participation_in = ParticipationIn(activity_execution_id=6, participant_state_id=7)
         participation_out = BasicParticipationOut(id=id_node)
 
@@ -42,23 +43,26 @@ class TestParticipationServicePost(unittest.TestCase):
         get_participant_state_mock.return_value = BasicParticipantStateOut(id=7, age=15, additional_properties=[])
         participation_service.participant_state_service.get_participant_state = get_participant_state_mock
 
-        result = participation_service.save_participation(participation_in)
+        result = participation_service.save_participation(participation_in,dataset_name)
+
 
         create_relationships_mock.assert_has_calls(
-            [mock.call(start_node=id_node, end_node=6, name="hasActivityExecution"),
-             mock.call(start_node=id_node, end_node=7, name="hasParticipantState")])
+            [mock.call(start_node=id_node, end_node=6, name="hasActivityExecution",dataset_name=dataset_name),
+             mock.call(start_node=id_node, end_node=7, name="hasParticipantState",dataset_name=dataset_name)])
         create_properties_mock.assert_not_called()
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node,dataset_name)
         self.assertEqual(result, participation_out)
+
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_participation_with_node_error(self, create_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         participation = ParticipationIn(activity_execution_id=2, participant_state_id=3)
         participation_service = ParticipationServiceGraphDB()
 
-        result = participation_service.save_participation(participation)
+        result = participation_service.save_participation(participation, dataset_name)
 
         self.assertEqual(result, ParticipationOut(errors=['error']))
-        create_node_mock.assert_called_once_with('Participation')
+        create_node_mock.assert_called_once_with('Participation', dataset_name)

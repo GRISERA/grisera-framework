@@ -29,20 +29,22 @@ class ActivityExecutionRouter:
     def __init__(self):
         self.activity_execution_service = Services().activity_execution_service()
 
+
     @router.post(
         "/activity_executions",
         tags=["activity executions"],
         response_model=ActivityExecutionOut,
     )
     async def create_activity_execution(
-        self, activity_execution: ActivityExecutionIn, response: Response
+        self, activity_execution: ActivityExecutionIn, response: Response, dataset_name: str
     ):
         """
         Create activity execution in database
         """
         create_response = self.activity_execution_service.save_activity_execution(
-            activity_execution
+            activity_execution,dataset_name
         )
+
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -56,17 +58,19 @@ class ActivityExecutionRouter:
         tags=["activity executions"],
         response_model=ActivityExecutionsOut,
     )
-    async def get_activity_executions(self, response: Response):
+    async def get_activity_executions(self, response: Response, dataset_name: str):
+
         """
         Get activity executions from database
         """
 
-        get_response = self.activity_execution_service.get_activity_executions()
+        get_response = self.activity_execution_service.get_activity_executions(dataset_name)
 
         # add links from hateoas
         get_response.links = get_links(router)
 
         return get_response
+
 
     @router.get(
         "/activity_executions/{activity_execution_id}",
@@ -74,16 +78,19 @@ class ActivityExecutionRouter:
         response_model=Union[ActivityExecutionOut, NotFoundByIdModel],
     )
     async def get_activity_execution(
-        self, activity_execution_id: Union[int, str], response: Response, depth: int = 0,
+        self, activity_execution_id: Union[int, str], response: Response, dataset_name: str, depth: int = 0,
     ):
+
         """
         Get activity execution from database. Depth attribute specifies how many models will be traversed to create the
         response.
         """
 
+
         get_response = self.activity_execution_service.get_activity_execution(
-            activity_execution_id, depth
+            activity_execution_id, dataset_name, depth
         )
+
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -92,20 +99,22 @@ class ActivityExecutionRouter:
 
         return get_response
 
+
     @router.delete(
         "/activity_executions/{activity_execution_id}",
         tags=["activity executions"],
         response_model=Union[ActivityExecutionOut, NotFoundByIdModel],
     )
     async def delete_activity_execution(
-        self, activity_execution_id: Union[int, str], response: Response
+        self, activity_execution_id: Union[int, str], response: Response, dataset_name: str
     ):
         """
         Delete activity executions from database
         """
         get_response = self.activity_execution_service.delete_activity_execution(
-            activity_execution_id
+            activity_execution_id, dataset_name
         )
+
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -123,14 +132,15 @@ class ActivityExecutionRouter:
         self,
         activity_execution_id: Union[int, str],
         activity_execution: ActivityExecutionPropertyIn,
-        response: Response,
+        response: Response,dataset_name: str
     ):
         """
         Update activity execution model in database
         """
         update_response = self.activity_execution_service.update_activity_execution(
-            activity_execution_id, activity_execution
+            activity_execution_id, activity_execution,dataset_name
         )
+
         if update_response.errors is not None:
             response.status_code = 404
 
@@ -138,6 +148,7 @@ class ActivityExecutionRouter:
         update_response.links = get_links(router)
 
         return update_response
+
 
     @router.put(
         "/activity_executions/{activity_execution_id}/relationships",
@@ -148,16 +159,17 @@ class ActivityExecutionRouter:
         self,
         activity_execution_id: Union[int, str],
         activity_execution: ActivityExecutionRelationIn,
-        response: Response,
+        response: Response,dataset_name: str
     ):
         """
         Update activity executions relations in database
         """
         update_response = (
             self.activity_execution_service.update_activity_execution_relationships(
-                activity_execution_id, activity_execution
+                activity_execution_id, activity_execution,dataset_name
             )
         )
+
         if update_response.errors is not None:
             response.status_code = 404
 

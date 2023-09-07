@@ -10,6 +10,7 @@ class TestActivityExecutionRouterPut(unittest.TestCase):
 
     @mock.patch.object(ActivityExecutionServiceGraphDB, 'update_activity_execution_relationships')
     def test_update_activity_execution_relationships_without_error(self, update_activity_execution_relationships_mock):
+        dataset_name = "neo4j"
         id_node = 1
         update_activity_execution_relationships_mock.return_value = ActivityExecutionOut(id=id_node)
         response = Response()
@@ -18,14 +19,15 @@ class TestActivityExecutionRouterPut(unittest.TestCase):
         activity_execution_router = ActivityExecutionRouter()
 
         result = asyncio.run(activity_execution_router.
-                             update_activity_execution_relationships(id_node, activity_execution_in, response))
+                             update_activity_execution_relationships(id_node, activity_execution_in, response, dataset_name))
 
         self.assertEqual(result, activity_execution_out)
-        update_activity_execution_relationships_mock.assert_called_once_with(id_node, activity_execution_in)
+        update_activity_execution_relationships_mock.assert_called_once_with(id_node, activity_execution_in, dataset_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(ActivityExecutionServiceGraphDB, 'update_activity_execution_relationships')
     def test_update_activity_execution_relationships_with_error(self, update_activity_execution_relationships_mock):
+        dataset_name = "neo4j"
         id_node = 1
         update_activity_execution_relationships_mock.return_value = ActivityExecutionOut(id=id_node, errors="error")
         response = Response()
@@ -34,8 +36,8 @@ class TestActivityExecutionRouterPut(unittest.TestCase):
         activity_execution_router = ActivityExecutionRouter()
 
         result = asyncio.run(activity_execution_router.
-                             update_activity_execution_relationships(id_node, activity_execution_in, response))
+                             update_activity_execution_relationships(id_node, activity_execution_in, response, dataset_name))
 
         self.assertEqual(result, activity_execution_out)
-        update_activity_execution_relationships_mock.assert_called_once_with(id_node, activity_execution_in)
+        update_activity_execution_relationships_mock.assert_called_once_with(id_node, activity_execution_in, dataset_name)
         self.assertEqual(response.status_code, 404)

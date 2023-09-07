@@ -11,7 +11,9 @@ from graph_api_service import GraphApiService
 class TestRegisteredDataServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_node')
+
     def test_get_registered_data_without_error(self, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Data'],
                                       'properties': [{'key': 'source', 'value': 'test'},
@@ -21,10 +23,10 @@ class TestRegisteredDataServiceGet(unittest.TestCase):
         registered_data = BasicRegisteredDataOut(id=id_node, source="test", additional_properties=additional_properties)
         registered_data_service = RegisteredDataServiceGraphDB()
 
-        result = registered_data_service.get_registered_data(id_node)
+        result = registered_data_service.get_registered_data(id_node, dataset_name)
 
         self.assertEqual(result, registered_data)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     # @mock.patch.object(GraphApiService, 'get_node')
     # @mock.patch.object(GraphApiService, 'get_node_relationships')
@@ -51,31 +53,34 @@ class TestRegisteredDataServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_registered_data_without_participant_label(self, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         registered_data_service = RegisteredDataServiceGraphDB()
 
-        result = registered_data_service.get_registered_data(id_node)
+        result = registered_data_service.get_registered_data(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_registered_data_with_error(self, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         registered_data_service = RegisteredDataServiceGraphDB()
 
-        result = registered_data_service.get_registered_data(id_node)
+        result = registered_data_service.get_registered_data(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_registered_data_nodes(self, get_nodes_mock):
+        dataset_name = "neo4j"
         get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['`Registered Data`'],
                                                   'properties': [{'key': 'source', 'value': 'test'}]},
                                                  {'id': 2, 'labels': ['`Registered Data`'],
@@ -85,18 +90,19 @@ class TestRegisteredDataServiceGet(unittest.TestCase):
         registered_data_nodes = RegisteredDataNodesOut(registered_data_nodes=[registered_data_one, registered_data_two])
         registered_data_service = RegisteredDataServiceGraphDB()
 
-        result = registered_data_service.get_registered_data_nodes()
+        result = registered_data_service.get_registered_data_nodes(dataset_name)
 
         self.assertEqual(result, registered_data_nodes)
-        get_nodes_mock.assert_called_once_with("Registered Data")
+        get_nodes_mock.assert_called_once_with("`Registered Data`", dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_registered_data_nodes_empty(self, get_nodes_mock):
+        dataset_name = "neo4j"
         get_nodes_mock.return_value = {'nodes': []}
         registered_data_nodes = RegisteredDataNodesOut(registered_data_nodes=[])
         registered_data_service = RegisteredDataServiceGraphDB()
 
-        result = registered_data_service.get_registered_data_nodes()
+        result = registered_data_service.get_registered_data_nodes(dataset_name)
 
         self.assertEqual(result, registered_data_nodes)
-        get_nodes_mock.assert_called_once_with("Registered Data")
+        get_nodes_mock.assert_called_once_with("`Registered Data`", dataset_name)

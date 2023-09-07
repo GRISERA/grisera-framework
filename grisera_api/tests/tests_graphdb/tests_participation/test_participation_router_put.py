@@ -10,6 +10,7 @@ class TestParticipationRouterPut(unittest.TestCase):
 
     @mock.patch.object(ParticipationServiceGraphDB, 'update_participation_relationships')
     def test_update_participation_relationships_without_error(self, update_participation_relationships_mock):
+        dataset_name = "neo4j"
         id_node = 1
         update_participation_relationships_mock.return_value = ParticipationOut(id=id_node)
         response = Response()
@@ -18,14 +19,15 @@ class TestParticipationRouterPut(unittest.TestCase):
         participation_router = ParticipationRouter()
 
         result = asyncio.run(participation_router.
-                             update_participation_relationships(id_node, participation_in, response))
+                             update_participation_relationships(id_node, participation_in, response, dataset_name))
 
         self.assertEqual(result, participation_out)
-        update_participation_relationships_mock.assert_called_once_with(id_node, participation_in)
+        update_participation_relationships_mock.assert_called_once_with(id_node, participation_in, dataset_name)
         self.assertEqual(response.status_code, 200)
 
     @mock.patch.object(ParticipationServiceGraphDB, 'update_participation_relationships')
     def test_update_participation_relationships_with_error(self, update_participation_relationships_mock):
+        dataset_name = "neo4j"
         id_node = 1
         update_participation_relationships_mock.return_value = ParticipationOut(id=id_node, errors="error")
         response = Response()
@@ -34,8 +36,10 @@ class TestParticipationRouterPut(unittest.TestCase):
         participation_router = ParticipationRouter()
 
         result = asyncio.run(participation_router.
-                             update_participation_relationships(id_node, participation_in, response))
+                             update_participation_relationships(id_node, participation_in, response, dataset_name))
 
         self.assertEqual(result, participation_out)
-        update_participation_relationships_mock.assert_called_once_with(id_node, participation_in)
+
+        update_participation_relationships_mock.assert_called_once_with(id_node, participation_in,dataset_name)
         self.assertEqual(response.status_code, 404)
+

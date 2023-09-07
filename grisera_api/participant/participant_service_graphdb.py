@@ -20,36 +20,40 @@ class ParticipantServiceGraphDB(ParticipantService):
     def __init__(self):
         self.participant_state_service: ParticipantStateService = None
 
-    def save_participant(self, participant: ParticipantIn):
+    def save_participant(self, participant: ParticipantIn, dataset_name: str):
         """
         Send request to graph api to create new participant
 
         Args:
             participant (ParticipantIn): Participant to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as participant object
         """
-        node_response = self.graph_api_service.create_node("Participant")
+        node_response = self.graph_api_service.create_node("Participant", dataset_name)
 
         if node_response["errors"] is not None:
             return ParticipantOut(**participant.dict(), errors=node_response["errors"])
 
         participant_id = node_response["id"]
-        properties_response = self.graph_api_service.create_properties(participant_id, participant)
+        properties_response = self.graph_api_service.create_properties(participant_id, participant, dataset_name)
         if properties_response["errors"] is not None:
             return ParticipantOut(**participant.dict(), errors=properties_response["errors"])
 
         return ParticipantOut(**participant.dict(), id=participant_id)
 
-    def get_participants(self):
+    def get_participants(self, dataset_name: str):
         """
         Send request to graph api to get participants
+
+        Args:
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as list of participants objects
         """
-        get_response = self.graph_api_service.get_nodes("Participant")
+        get_response = self.graph_api_service.get_nodes("Participant", dataset_name)
 
         participants = []
 
@@ -65,18 +69,19 @@ class ParticipantServiceGraphDB(ParticipantService):
 
         return ParticipantsOut(participants=participants)
 
-    def get_participant(self, participant_id: Union[int, str], depth: int = 0):
+    def get_participant(self, participant_id: Union[int, str], dataset_name: str, depth: int = 0):
         """
         Send request to graph api to get given participant
 
         Args:
             depth: (int): specifies how many related entities will be traversed to create the response
             participant_id (int | str): identity of participant
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as participant object
         """
-        get_response = self.graph_api_service.get_node(participant_id)
+        get_response = self.graph_api_service.get_node(participant_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=participant_id, errors=get_response["errors"])
@@ -87,7 +92,7 @@ class ParticipantServiceGraphDB(ParticipantService):
 
         if depth != 0:
             participant["participant_states"] = []
-            relations_response = self.graph_api_service.get_node_relationships(participant_id)
+            relations_response = self.graph_api_service.get_node_relationships(participant_id, dataset_name)
 
             for relation in relations_response["relationships"]:
                 if relation["start_node"] == participant_id & relation["name"] == "hasParticipantState":
@@ -99,36 +104,38 @@ class ParticipantServiceGraphDB(ParticipantService):
         else:
             return BasicParticipantOut(**participant)
 
-    def delete_participant(self, participant_id: Union[int, str]):
+    def delete_participant(self, participant_id: Union[int, str], dataset_name: str):
         """
         Send request to graph api to delete given participant
 
         Args:
             participant_id (int): Id of participant
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as participant object
         """
-        get_response = self.get_participant(participant_id)
+        get_response = self.get_participant(participant_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node(participant_id)
+        self.graph_api_service.delete_node(participant_id, dataset_name)
         return get_response
 
-    def update_participant(self, participant_id: Union[int, str], participant: ParticipantIn):
+    def update_participant(self, participant_id: Union[int, str], participant: ParticipantIn, dataset_name: str):
         """
         Send request to graph api to update given participant
 
         Args:
             participant_id (int | str): Id of participant
             participant (ParticipantIn): Properties to update
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as participant object
         """
-        get_response = self.get_participant(participant_id)
+        get_response = self.get_participant(participant_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
@@ -136,8 +143,8 @@ class ParticipantServiceGraphDB(ParticipantService):
         if participant.date_of_birth is not None:
             participant.date_of_birth = participant.date_of_birth.__str__()
 
-        self.graph_api_service.delete_node_properties(participant_id)
-        self.graph_api_service.create_properties(participant_id, participant)
+        self.graph_api_service.delete_node_properties(participant_id, dataset_name)
+        self.graph_api_service.create_properties(participant_id, participant, dataset_name)
 
         participant_result = {"id": participant_id}
         participant_result.update(participant.dict())

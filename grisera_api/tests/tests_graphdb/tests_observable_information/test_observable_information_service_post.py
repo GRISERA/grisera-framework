@@ -24,7 +24,7 @@ class TestObservableInformationServicePost(unittest.TestCase):
     def test_save_observable_information_without_errors(self, create_relationships_mock, get_recording_mock,
                                                         get_life_activity_mock,
                                                         get_modality_mock, get_node_mock, create_node_mock):
-
+        dataset_name = "neo4j"
         id_node = 1
         observable_information_in = ObservableInformationIn(modality_id=6, life_activity_id=7, recording_id=8)
         observable_information_out = BasicObservableInformationOut(id=id_node)
@@ -50,16 +50,17 @@ class TestObservableInformationServicePost(unittest.TestCase):
         get_recording_mock.return_value = BasicRecordingOut(id=8)
         observable_information_service.recording_service.get_recording = get_recording_mock
 
-        result = observable_information_service.save_observable_information(observable_information_in)
+        result = observable_information_service.save_observable_information(observable_information_in, dataset_name)
 
-        create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=6, name="hasModality"),
-                 mock.call(start_node=id_node, end_node=7, name="hasLifeActivity"),
-                 mock.call(start_node=id_node, end_node=8, name="hasRecording")])
-        get_node_mock.assert_called_once_with(id_node)
+        create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=6, name="hasModality",dataset_name=dataset_name),
+                 mock.call(start_node=id_node, end_node=7, name="hasLifeActivity",dataset_name=dataset_name),
+                 mock.call(start_node=id_node, end_node=8, name="hasRecording",dataset_name=dataset_name)])
+        get_node_mock.assert_called_once_with(id_node,dataset_name)
         self.assertEqual(result, observable_information_out)
 
         @mock.patch.object(GraphApiService, 'create_node')
         def test_save_observable_information_with_node_error(self, create_node_mock):
+            dataset_name = "neo4j"
             id_node = 1
             create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
             observable_information = ObservableInformationIn(modality_id=2, life_activity_id=3)
@@ -68,7 +69,7 @@ class TestObservableInformationServicePost(unittest.TestCase):
             result = observable_information_service.save_observable_information(observable_information)
 
             self.assertEqual(result, ObservableInformationOut(errors=['error']))
-            create_node_mock.assert_called_once_with("Observable Information")
+            create_node_mock.assert_called_once_with("Observable Information", dataset_name)
 
 # @mock.patch.object(GraphApiService, 'create_node')
 # @mock.patch.object(GraphApiService, 'create_properties')

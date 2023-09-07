@@ -25,6 +25,7 @@ class TestTimeSeriesServicePost(unittest.TestCase):
     @mock.patch.object(MeasureServiceGraphDB, 'get_measure')
     def test_save_time_series_without_errors(self, get_measure_mock, get_observable_information_mock, get_node_mock,
                                              create_relationships_mock, create_properties_mock, create_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_observable_information_mock.return_value = BasicObservableInformationOut(id=2)
         get_measure_mock.return_value = None
@@ -47,15 +48,15 @@ class TestTimeSeriesServicePost(unittest.TestCase):
         time_series_service.measure_service = mock.create_autospec(MeasureServiceGraphDB)
         time_series_service.measure_service.get_measure = get_measure_mock
 
-        result = time_series_service.save_time_series(time_series_in)
+        result = time_series_service.save_time_series(time_series_in, dataset_name)
 
         self.assertEqual(result, time_series_out)
-        create_node_mock.assert_called_once_with('Time Series')
-        create_properties_mock.assert_called_once_with(id_node, time_series_in)
+        create_node_mock.assert_called_once_with('Time Series', dataset_name)
+        create_properties_mock.assert_called_once_with(id_node, time_series_in, dataset_name)
         create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=2,
-                                                              name="hasObservableInformation"),
+                                                              name="hasObservableInformation",dataset_name=dataset_name),
                                                     mock.call(start_node=id_node, end_node=3,
-                                                              name="hasMeasure")])
+                                                              name="hasMeasure",dataset_name=dataset_name)])
 
     # @mock.patch.object(GraphApiService, 'create_node')
     # @mock.patch.object(GraphApiService, 'create_properties')
@@ -96,12 +97,13 @@ class TestTimeSeriesServicePost(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_time_series_with_node_error(self, create_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         time_series = TimeSeriesIn(type="Epoch", source="cos", observable_information_id=1, measure_id=2)
         time_series_service = TimeSeriesServiceGraphDB()
 
-        result = time_series_service.save_time_series(time_series)
+        result = time_series_service.save_time_series(time_series, dataset_name)
 
         self.assertEqual(result, TimeSeriesOut(type="Epoch", source="cos", errors=['error']))
-        create_node_mock.assert_called_once_with('Time Series')
+        create_node_mock.assert_called_once_with('Time Series', dataset_name)

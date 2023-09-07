@@ -31,17 +31,19 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
         self.recording_service: RecordingService = None
         self.time_series_service: TimeSeriesService = None
 
-    def save_observable_information(self, observable_information: ObservableInformationIn):
+    def save_observable_information(self, observable_information: ObservableInformationIn, dataset_name: str):
         """
         Send request to graph api to create new observable information
 
         Args:
             observable_information (ObservableInformationIn): Observable information to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as observable information object
         """
-        node_response = self.graph_api_service.create_node("Observable Information")
+
+        node_response = self.graph_api_service.create_node("`Observable Information`",dataset_name)
 
         if node_response["errors"] is not None:
             return ObservableInformationOut(errors=node_response["errors"])
@@ -49,33 +51,41 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
         observable_information_id = node_response["id"]
 
         if observable_information.modality_id is not None and \
-                type(self.modality_service.get_modality(observable_information.modality_id)) is not NotFoundByIdModel:
+                type(self.modality_service.get_modality(observable_information.modality_id, dataset_name=dataset_name))\
+                is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=observable_information_id,
-                                                        end_node=observable_information.modality_id, name="hasModality")
+                                                        end_node=observable_information.modality_id, name="hasModality",
+                                                        dataset_name=dataset_name)
 
         if observable_information.life_activity_id is not None and \
                 type(self.life_activity_service.get_life_activity(
-                    observable_information.life_activity_id)) is not NotFoundByIdModel:
+                    observable_information.life_activity_id, dataset_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=observable_information_id,
                                                         end_node=observable_information.life_activity_id,
-                                                        name="hasLifeActivity")
+                                                        name="hasLifeActivity",
+                                                        dataset_name=dataset_name)
 
         if observable_information.recording_id is not None and \
                 type(
-                    self.recording_service.get_recording(observable_information.recording_id)) is not NotFoundByIdModel:
+                    self.recording_service.get_recording(observable_information.recording_id, dataset_name)) is not \
+                NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=observable_information_id,
                                                         end_node=observable_information.recording_id,
-                                                        name="hasRecording")
+                                                        name="hasRecording",
+                                                        dataset_name=dataset_name)
 
-        return self.get_observable_information(observable_information_id)
+        return self.get_observable_information(observable_information_id, dataset_name)
 
-    def get_observable_informations(self):
+    def get_observable_informations(self, dataset_name: str):
         """
         Send request to graph api to get observable information
+
+        Args:
+            dataset_name (str): name of dataset
         Returns:
             Result of request as list of observable information objects
         """
-        get_response = self.graph_api_service.get_nodes("`Observable Information`")
+        get_response = self.graph_api_service.get_nodes("`Observable Information`", dataset_name)
 
         observable_informations = []
 
@@ -86,16 +96,17 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
 
         return ObservableInformationsOut(observable_informations=observable_informations)
 
-    def get_observable_information(self, observable_information_id: Union[int, str], depth: int = 0):
+    def get_observable_information(self, observable_information_id: Union[int, str], dataset_name: str, depth: int = 0):
         """
         Send request to graph api to get given observable information
         Args:
             depth: (int): specifies how many related entities will be traversed to create the response
             observable_information_id (int | str): identity of observable information
+            dataset_name (str): name of dataset
         Returns:
             Result of request as observable information object
         """
-        get_response = self.graph_api_service.get_node(observable_information_id)
+        get_response = self.graph_api_service.get_node(observable_information_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=observable_information_id, errors=get_response["errors"])
@@ -109,7 +120,7 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
             observable_information["modality"] = None
             observable_information["life_activity"] = None
             observable_information["timeSeries"] = []
-            relations_response = self.graph_api_service.get_node_relationships(observable_information_id)
+            relations_response = self.graph_api_service.get_node_relationships(observable_information_id, dataset_name)
 
             for relation in relations_response["relationships"]:
                 if relation["start_node"] == observable_information_id & relation["name"] == "hasModality":
@@ -135,54 +146,61 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
         else:
             return BasicObservableInformationOut(**observable_information)
 
-    def delete_observable_information(self, observable_information_id: Union[int, str]):
+    def delete_observable_information(self, observable_information_id: Union[int, str], dataset_name: str):
         """
         Send request to graph api to delete given observable information
         Args:
             observable_information_id (int | str): identity of observable information
+            dataset_name (str): name of dataset
         Returns:
             Result of request as observable information object
         """
-        get_response = self.get_observable_information(observable_information_id)
+        get_response = self.get_observable_information(observable_information_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
-        self.graph_api_service.delete_node(observable_information_id)
+        self.graph_api_service.delete_node(observable_information_id, dataset_name)
         return get_response
 
     def update_observable_information_relationships(self, observable_information_id: Union[int, str],
-                                                    observable_information: ObservableInformationIn):
+                                                    observable_information: ObservableInformationIn, dataset_name: str):
         """
         Send request to graph api to update given observable information
         Args:
             observable_information_id (int | str): identity of observable information
             observable_information (ObservableInformationIn): Relationships to update
+            dataset_name (str): name of dataset
         Returns:
             Result of request as observable information object
         """
-        get_response = self.get_observable_information(observable_information_id)
+        get_response = self.get_observable_information(observable_information_id, dataset_name)
 
         if type(get_response) is NotFoundByIdModel:
             return get_response
 
         if observable_information.modality_id is not None and \
-                type(self.modality_service.get_modality(observable_information.modality_id)) is not NotFoundByIdModel:
+                type(self.modality_service.get_modality(observable_information.modality_id, dataset_name)) is not \
+                NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=observable_information_id,
-                                                        end_node=observable_information.modality_id, name="hasModality")
+                                                        end_node=observable_information.modality_id, name="hasModality",
+                                                        dataset_name=dataset_name)
 
         if observable_information.life_activity_id is not None and \
                 type(self.life_activity_service.get_life_activity(
-                    observable_information.life_activity_id)) is not NotFoundByIdModel:
+                    observable_information.life_activity_id, dataset_name)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=observable_information_id,
                                                         end_node=observable_information.life_activity_id,
-                                                        name="hasLifeActivity")
+                                                        name="hasLifeActivity",
+                                                        dataset_name=dataset_name)
 
         if observable_information.recording_id is not None and \
                 type(
-                    self.recording_service.get_recording(observable_information.recording_id)) is not NotFoundByIdModel:
+                    self.recording_service.get_recording(observable_information.recording_id, dataset_name)) is not \
+                NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=observable_information_id,
                                                         end_node=observable_information.recording_id,
-                                                        name="hasRecording")
+                                                        name="hasRecording",
+                                                        dataset_name=dataset_name)
 
-        return self.get_observable_information(observable_information_id)
+        return self.get_observable_information(observable_information_id, dataset_name)

@@ -23,11 +23,11 @@ class ExperimentRouter:
         self.experiment_service = Services().experiment_service()
 
     @router.post("/experiments", tags=["experiments"], response_model=ExperimentOut)
-    async def create_experiment(self, experiment: ExperimentIn, response: Response):
+    async def create_experiment(self, experiment: ExperimentIn, response: Response, dataset_name: str):
         """
         Create experiment in database
         """
-        create_response = self.experiment_service.save_experiment(experiment)
+        create_response = self.experiment_service.save_experiment(experiment, dataset_name)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -36,20 +36,24 @@ class ExperimentRouter:
 
         return create_response
 
+
     @router.get(
         "/experiments/{experiment_id}",
         tags=["experiments"],
         response_model=Union[ExperimentOut, NotFoundByIdModel],
     )
     async def get_experiment(
-        self, experiment_id: Union[int, str], response: Response, depth: int = 0
+        self, experiment_id: Union[int, str], response: Response, dataset_name: str, depth: int = 0
     ):
+
         """
         Get experiment from database. Depth attribute specifies how many models will be traversed to create the
         response.
         """
 
-        get_response = self.experiment_service.get_experiment(experiment_id, depth)
+
+        get_response = self.experiment_service.get_experiment(experiment_id,dataset_name, depth)
+
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -59,17 +63,18 @@ class ExperimentRouter:
         return get_response
 
     @router.get("/experiments", tags=["experiments"], response_model=ExperimentsOut)
-    async def get_experiments(self, response: Response):
+    async def get_experiments(self, response: Response, dataset_name: str):
         """
         Get experiments from database
         """
 
-        get_response = self.experiment_service.get_experiments()
+        get_response = self.experiment_service.get_experiments(dataset_name)
 
         # add links from hateoas
         get_response.links = get_links(router)
 
         return get_response
+
 
     @router.delete(
         "/experiments/{experiment_id}",
@@ -77,12 +82,13 @@ class ExperimentRouter:
         response_model=Union[ExperimentOut, NotFoundByIdModel],
     )
     async def delete_experiment(
-        self, experiment_id: Union[int, str], response: Response
+        self, experiment_id: Union[int, str], response: Response, dataset_name: str
     ):
+
         """
         Delete experiment from database
         """
-        get_response = self.experiment_service.delete_experiment(experiment_id)
+        get_response = self.experiment_service.delete_experiment(experiment_id, dataset_name)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -90,6 +96,7 @@ class ExperimentRouter:
         get_response.links = get_links(router)
 
         return get_response
+
 
     @router.put(
         "/experiments/{experiment_id}",
@@ -101,13 +108,15 @@ class ExperimentRouter:
         experiment_id: Union[int, str],
         experiment: ExperimentIn,
         response: Response,
+        dataset_name: str
     ):
         """
         Update experiment model in database
         """
         update_response = self.experiment_service.update_experiment(
-            experiment_id, experiment
+            experiment_id, experiment,dataset_name
         )
+
         if update_response.errors is not None:
             response.status_code = 404
 

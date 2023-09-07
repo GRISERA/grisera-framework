@@ -25,6 +25,7 @@ class TestRegisteredChannelServicePut(unittest.TestCase):
                                                                    create_relationships_mock,
                                                                    delete_node_properties_mock,
                                                                    get_node_mock, create_properties_mock):
+        dataset_name = "neo4j"
         id_node = 1
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
@@ -32,7 +33,7 @@ class TestRegisteredChannelServicePut(unittest.TestCase):
                                       'properties': [{'key': 'age', 'value': 5}, {'key': 'identifier', 'value': 5}],
                                       "errors": None, 'links': None}
         registered_channel_in = RegisteredChannelIn(channel_id=2, registered_data_id=3)
-        calls = [mock.call(1)]
+        calls = [mock.call(1, dataset_name)]
 
         registered_channel_out = BasicRegisteredChannelOut(age=5, id=id_node)
 
@@ -43,14 +44,14 @@ class TestRegisteredChannelServicePut(unittest.TestCase):
         registered_channel_service.registered_data_service = mock.create_autospec(RegisteredDataServiceGraphDB)
         registered_channel_service.registered_data_service.get_registered_data = get_registered_data_mock
 
-        result = registered_channel_service.update_registered_channel_relationships(id_node, registered_channel_in)
+        result = registered_channel_service.update_registered_channel_relationships(id_node, registered_channel_in, dataset_name)
 
         self.assertEqual(result, registered_channel_out)
         get_node_mock.assert_has_calls(calls)
         create_properties_mock.assert_not_called()
         create_relationships_mock.assert_has_calls([
-            mock.call(start_node=id_node, end_node=2, name='hasChannel'),
-            mock.call(start_node=id_node, end_node=3, name='hasRegisteredData')
+            mock.call(start_node=id_node, end_node=2, name='hasChannel', dataset_name=dataset_name),
+            mock.call(start_node=id_node, end_node=3, name='hasRegisteredData',dataset_name=dataset_name)
         ])
 
         # @mock.patch.object(GraphApiService, 'create_properties')
@@ -133,9 +134,9 @@ class TestRegisteredChannelServicePut(unittest.TestCase):
     #         create_properties_mock.assert_not_called()
     #         get_node_relationships_mock.assert_has_calls([mock.call(1), mock.call(1)])
 
-
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_registered_channel_relationships_without_label(self, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
@@ -143,20 +144,21 @@ class TestRegisteredChannelServicePut(unittest.TestCase):
         registered_channel_in = RegisteredChannelIn(channel_id=15, registered_data_id=19)
         registered_channel_service = RegisteredChannelServiceGraphDB()
 
-        result = registered_channel_service.update_registered_channel_relationships(id_node, registered_channel_in)
+        result = registered_channel_service.update_registered_channel_relationships(id_node, registered_channel_in, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_registered_channel_relationships_with_error(self, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         registered_channel_in = RegisteredChannelIn(channel_id=15, registered_data_id=19)
         registered_channel_service = RegisteredChannelServiceGraphDB()
 
-        result = registered_channel_service.update_registered_channel_relationships(id_node, registered_channel_in)
+        result = registered_channel_service.update_registered_channel_relationships(id_node, registered_channel_in, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)

@@ -19,6 +19,7 @@ class TestRegisteredChannelServicePost(unittest.TestCase):
     @mock.patch.object(RegisteredDataServiceGraphDB, 'get_registered_data')
     def test_save_registered_channel_without_errors(self, get_registered_data_mock,
                                                     get_channel_mock, get_node_mock, create_relationships_mock, create_node_mock):
+        dataset_name = "neo4j"
         registered_channel_in = RegisteredChannelIn(channel_id=2, registered_data_id=3)
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
@@ -36,15 +37,15 @@ class TestRegisteredChannelServicePost(unittest.TestCase):
         registered_channel_service.registered_data_service = mock.create_autospec(RegisteredDataServiceGraphDB)
         registered_channel_service.registered_data_service.get_registered_data = get_registered_data_mock
 
-        result = registered_channel_service.save_registered_channel(registered_channel_in)
+        result = registered_channel_service.save_registered_channel(registered_channel_in, dataset_name)
 
         self.assertEqual(result, registered_channel_out)
-        create_node_mock.assert_called_once_with('Registered Channel')
+        create_node_mock.assert_called_once_with('`Registered Channel`', dataset_name)
         create_relationships_mock.assert_has_calls([
-            mock.call(start_node=id_node, end_node=2, name='hasChannel'),
-            mock.call(start_node=id_node, end_node=3, name='hasRegisteredData')
+            mock.call(start_node=id_node, end_node=2, name='hasChannel',dataset_name=dataset_name),
+            mock.call(start_node=id_node, end_node=3, name='hasRegisteredData',dataset_name=dataset_name)
         ])
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     # @mock.patch.object(GraphApiService, 'create_node')
     # @mock.patch.object(GraphApiService, 'create_properties')
@@ -91,12 +92,13 @@ class TestRegisteredChannelServicePost(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_registered_channel_with_node_error(self, create_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         registered_channel = RegisteredChannelIn(channel_id=2, registered_data_id=3)
         registered_channel_service = RegisteredChannelServiceGraphDB()
 
-        result = registered_channel_service.save_registered_channel(registered_channel)
+        result = registered_channel_service.save_registered_channel(registered_channel, dataset_name)
 
         self.assertEqual(result, RegisteredChannelOut(errors=['error']))
-        create_node_mock.assert_called_once_with('Registered Channel')
+        create_node_mock.assert_called_once_with('`Registered Channel`', dataset_name)

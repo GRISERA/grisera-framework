@@ -47,7 +47,7 @@ class ActivityIn(ActivityPropertyIn):
 
 class BasicActivityOut(ActivityIn):
     """
-    Model of activity in database
+    Model of activity in dataset
 
     Attributes:
     id (Optional[Union[int, str]]): identity of activity returned from api
@@ -72,7 +72,7 @@ class ActivitiesOut(BaseModelOut):
     Model of activities to send to client as a result of request
 
     Attributes:
-    activity_types (List[BasicActivityOut]): Activity types from database
+    activity_types (List[BasicActivityOut]): Activity types from dataset
     """
 
     activities: List[BasicActivityOut] = []

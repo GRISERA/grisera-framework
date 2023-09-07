@@ -33,6 +33,7 @@ class TestObservableInformationServicePut(unittest.TestCase):
                                                                        get_modality_mock,
                                                                        delete_node_properties_mock,
                                                                        get_node_mock, create_properties_mock):
+        dataset_name = "neo4j"
         id_node = 1
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
@@ -42,7 +43,7 @@ class TestObservableInformationServicePut(unittest.TestCase):
                                       "errors": None, 'links': None}
         observable_information_in = ObservableInformationIn(modality_id=6, life_activity_id=7, recording_id=8)
         observable_information_out = BasicObservableInformationOut(id=id_node)
-        calls = [mock.call(1)]
+        calls = [mock.call(1, dataset_name)]
         observable_information_service = ObservableInformationServiceGraphDB()
 
         observable_information_service.modality_service = mock.create_autospec(ModalityServiceGraphDB)
@@ -58,11 +59,11 @@ class TestObservableInformationServicePut(unittest.TestCase):
         observable_information_service.recording_service.get_recording = get_recording_mock
 
         result = observable_information_service.update_observable_information_relationships(id_node,
-                                                                                            observable_information_in)
+                                                                                            observable_information_in, dataset_name)
 
-        create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=6, name="hasModality"),
-                                                    mock.call(start_node=id_node, end_node=7, name="hasLifeActivity"),
-                                                    mock.call(start_node=id_node, end_node=8, name="hasRecording")])
+        create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=6, name="hasModality",dataset_name=dataset_name),
+                                                    mock.call(start_node=id_node, end_node=7, name="hasLifeActivity",dataset_name=dataset_name),
+                                                    mock.call(start_node=id_node, end_node=8, name="hasRecording",dataset_name=dataset_name)])
         self.assertEqual(result, observable_information_out)
         get_node_mock.assert_has_calls(calls)
         create_properties_mock.assert_not_called()
@@ -112,6 +113,7 @@ class TestObservableInformationServicePut(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_observable_information_relationships_without_label(self, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
@@ -120,13 +122,14 @@ class TestObservableInformationServicePut(unittest.TestCase):
         observable_information_service = ObservableInformationServiceGraphDB()
 
         result = observable_information_service.update_observable_information_relationships(id_node,
-                                                                                            observable_information_in)
+                                                                                            observable_information_in, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_observable_information_relationships_with_error(self, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
@@ -134,7 +137,7 @@ class TestObservableInformationServicePut(unittest.TestCase):
         observable_information_service = ObservableInformationServiceGraphDB()
 
         result = observable_information_service.update_observable_information_relationships(id_node,
-                                                                                            observable_information_in)
+                                                                                            observable_information_in, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)

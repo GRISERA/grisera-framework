@@ -18,6 +18,7 @@ class TestRecordingServicePut(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'delete_node_properties')
     def test_update_recording_without_error(self, delete_node_properties_mock,
                                             get_node_mock, create_properties_mock):
+        dataset_name = "neo4j"
         id_node = 1
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
@@ -27,17 +28,18 @@ class TestRecordingServicePut(unittest.TestCase):
         additional_properties = [PropertyIn(key='identifier', value=5)]
         recording_in = RecordingPropertyIn(id=id_node, additional_properties=additional_properties)
         recording_out = BasicRecordingOut(additional_properties=additional_properties, id=id_node)
-        calls = [mock.call(1)]
+        calls = [mock.call(1, dataset_name)]
         recording_service = RecordingServiceGraphDB()
 
-        result = recording_service.update_recording(id_node, recording_in)
+        result = recording_service.update_recording(id_node, recording_in, dataset_name)
 
         self.assertEqual(result, recording_out)
         get_node_mock.assert_has_calls(calls)
-        create_properties_mock.assert_called_once_with(id_node, recording_in)
+        create_properties_mock.assert_called_once_with(id_node, recording_in, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_recording_without_participant_label(self, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
@@ -46,13 +48,14 @@ class TestRecordingServicePut(unittest.TestCase):
         recording_in = RecordingPropertyIn(id=id_node, additional_properties=additional_properties)
         recording_service = RecordingServiceGraphDB()
 
-        result = recording_service.update_recording(id_node, recording_in)
+        result = recording_service.update_recording(id_node, recording_in, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_recording_with_error(self, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
@@ -60,7 +63,7 @@ class TestRecordingServicePut(unittest.TestCase):
         recording_in = RecordingPropertyIn(id=id_node, additional_properties=additional_properties)
         recording_service = RecordingServiceGraphDB()
 
-        result = recording_service.update_recording(id_node, recording_in)
+        result = recording_service.update_recording(id_node, recording_in, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)

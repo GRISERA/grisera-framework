@@ -24,11 +24,11 @@ class NodeRouter:
     node_service = NodeService()
 
     @router.post("/nodes", tags=["nodes"], response_model=NodeOut)
-    async def create_node(self, node: NodeIn, response: Response):
+    async def create_node(self, node: NodeIn, database_name: str, response: Response):
         """
         Create node with optional labels
         """
-        create_response = self.node_service.save_node(node)
+        create_response = self.node_service.save_node(node, database_name)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -38,11 +38,11 @@ class NodeRouter:
         return create_response
 
     @router.get("/nodes/{id}", tags=["nodes"], response_model=NodeOut)
-    async def get_node(self, id: int, response: Response):
+    async def get_node(self, id: int, response: Response, database_name: str):
         """
         Get node with same id as given
         """
-        node = self.node_service.get_node(id)
+        node = self.node_service.get_node(id, database_name)
         if node.errors is not None:
             response.status_code = 404
 
@@ -51,11 +51,11 @@ class NodeRouter:
         return node
 
     @router.get("/nodes", tags=["nodes"], response_model=NodesOut)
-    async def get_nodes(self, label: str, response: Response):
+    async def get_nodes(self, label: str, response: Response, database_name: str):
         """
         Get nodes with same label as given
         """
-        nodes = self.node_service.get_nodes(label)
+        nodes = self.node_service.get_nodes(label, database_name)
         if nodes.errors is not None:
             response.status_code = 422
 
@@ -64,11 +64,11 @@ class NodeRouter:
         return nodes
 
     @router.post("/nodes_query", tags=["nodes"], response_model=NodeRowsOut)
-    async def get_nodes_by_query(self, query: NodeRowsQueryIn, response: Response):
+    async def get_nodes_by_query(self, query: NodeRowsQueryIn, response: Response, database_name: str):
         """
         Get nodes with same query as given
         """
-        nodes = self.node_service.get_nodes_by_query(query)
+        nodes = self.node_service.get_nodes_by_query(query, database_name)
         if nodes.errors is not None:
             response.status_code = 422
 
@@ -77,11 +77,11 @@ class NodeRouter:
         return nodes
 
     @router.delete("/nodes/{id}", tags=["nodes"], response_model=NodeOut)
-    async def delete_node(self, id: int, response: Response):
+    async def delete_node(self, id: int, response: Response, database_name: str):
         """
         Delete node by id
         """
-        delete_response = self.node_service.delete_node(id)
+        delete_response = self.node_service.delete_node(id,database_name)
         if delete_response.errors is not None:
             response.status_code = 404
 
@@ -91,11 +91,11 @@ class NodeRouter:
         return delete_response
 
     @router.get("/nodes/{id}/relationships", tags=["nodes"], response_model=RelationshipsOut)
-    async def get_node_relationships(self, id: int, response: Response):
+    async def get_node_relationships(self, id: int, response: Response, database_name: str):
         """
         Get relationships for node with given id
         """
-        get_response = self.node_service.get_relationships(id)
+        get_response = self.node_service.get_relationships(id,database_name)
         if get_response.errors is not None:
             response.status_code = 422
 
@@ -105,11 +105,11 @@ class NodeRouter:
         return get_response
 
     @router.post("/nodes/{id}/properties", tags=["nodes"], response_model=NodeOut)
-    async def create_node_properties(self, id: int, properties: List[PropertyIn], response: Response):
+    async def create_node_properties(self, id: int, properties: List[PropertyIn], response: Response, database_name: str):
         """
         Create properties for node with given id
         """
-        create_response = self.node_service.save_properties(id, properties)
+        create_response = self.node_service.save_properties(id, properties, database_name)
         if create_response.errors is not None:
             response.status_code = 422
 
@@ -119,11 +119,11 @@ class NodeRouter:
         return create_response
 
     @router.delete("/nodes/{id}/properties", tags=["nodes"], response_model=NodeOut)
-    async def delete_node_properties(self, id: int, response: Response):
+    async def delete_node_properties(self, id: int, response: Response, database_name: str):
         """
         Delete node properties by id
         """
-        delete_response = self.node_service.delete_node_properties(id)
+        delete_response = self.node_service.delete_node_properties(id,database_name)
         if delete_response.errors is not None:
             response.status_code = 404
 

@@ -16,6 +16,7 @@ class TestRegisteredChannelServiceDelete(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     def test_delete_registered_channel_without_error(self,get_node_mock,
                                                      delete_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Channel'],
                                                                       'properties': [{'key': 'age', 'value': 5}],
@@ -23,11 +24,11 @@ class TestRegisteredChannelServiceDelete(unittest.TestCase):
         registered_channel = BasicRegisteredChannelOut(age=5, id=id_node, additional_properties=[])
         registered_channel_service = RegisteredChannelServiceGraphDB()
 
-        result = registered_channel_service.delete_registered_channel(id_node)
+        result = registered_channel_service.delete_registered_channel(id_node, dataset_name)
 
         self.assertEqual(result, registered_channel)
-        get_node_mock.assert_called_once_with(id_node)
-        delete_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
+        delete_node_mock.assert_called_once_with(id_node, dataset_name)
 
         # @mock.patch.object(GraphApiService, 'delete_node')
         # @mock.patch.object(GraphApiService, 'get_node')
@@ -64,25 +65,27 @@ class TestRegisteredChannelServiceDelete(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_delete_registered_channel_without_participant_label(self, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         registered_channel_service = RegisteredChannelServiceGraphDB()
 
-        result = registered_channel_service.delete_registered_channel(id_node)
+        result = registered_channel_service.delete_registered_channel(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_delete_registered_channel_with_error(self, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         registered_channel_service = RegisteredChannelServiceGraphDB()
 
-        result = registered_channel_service.delete_registered_channel(id_node)
+        result = registered_channel_service.delete_registered_channel(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)

@@ -10,6 +10,7 @@ class TestMeasureNameServicePost(unittest.TestCase):
 
     @mock.patch('graph_api_service.requests')
     def test_measure_name_post_service_without_error(self, mock_requests):
+        dataset_name = "neo4j"
         response = Response()
         response._content = json.dumps({'id': 1, 'properties': None, "errors": None,
                                         'links': None}).encode('utf-8')
@@ -17,12 +18,13 @@ class TestMeasureNameServicePost(unittest.TestCase):
         measure_name = MeasureNameIn(name="Familiarity", type="Additional emotions measure")
         measure_name_service = MeasureNameServiceGraphDB()
 
-        result = measure_name_service.save_measure_name(measure_name)
+        result = measure_name_service.save_measure_name(measure_name, dataset_name)
 
         self.assertEqual(result, MeasureNameOut(name="Familiarity", type="Additional emotions measure", id=1))
 
     @mock.patch('graph_api_service.requests')
     def test_measure_name_post_service_with_error(self, mock_requests):
+        dataset_name = "neo4j"
         response = Response()
         response._content = json.dumps({'id': None, 'properties': None, "errors": {'error': 'test'},
                                         'links': None}).encode('utf-8')
@@ -30,7 +32,7 @@ class TestMeasureNameServicePost(unittest.TestCase):
         measure_name = MeasureNameIn(name="Familiarity", type="Additional emotions measure")
         measure_name_service = MeasureNameServiceGraphDB()
 
-        result = measure_name_service.save_measure_name(measure_name)
+        result = measure_name_service.save_measure_name(measure_name, dataset_name)
 
         self.assertEqual(result, MeasureNameOut(name="Familiarity", type="Additional emotions measure",
                                                 errors={'error': 'test'}))

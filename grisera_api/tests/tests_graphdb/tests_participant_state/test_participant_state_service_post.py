@@ -31,6 +31,7 @@ class TestParticipantStateServicePost(unittest.TestCase):
     @mock.patch.object(AppearanceServiceGraphDB, 'get_appearance')
     def test_save_participant_state_without_errors(self, get_appearance_mock, get_personality_mock, get_participant_mock, get_node_relationships_mock, get_node_mock,
                                                    create_relationships_mock, create_properties_mock, create_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         additional_properties = [PropertyIn(key='identifier', value=5)]
         participant_state_in = ParticipantStateIn(age=12, additional_properties=additional_properties, participant_id=6, personality_ids=[7,8], appearance_ids=[9,10])
@@ -60,25 +61,26 @@ class TestParticipantStateServicePost(unittest.TestCase):
                                                                         mesomorph=1.0)
         participant_state_service.appearance_service.get_appearance = get_appearance_mock
 
-        result = participant_state_service.save_participant_state(participant_state_in)
+        result = participant_state_service.save_participant_state(participant_state_in, dataset_name)
 
-        create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=6, name="hasParticipant"),
-                                                    mock.call(start_node=id_node, end_node=7, name="hasPersonality"),
-                                                    mock.call(start_node=id_node, end_node=8, name="hasPersonality"),
-                                                    mock.call(start_node=id_node, end_node=9, name="hasAppearance"),
-                                                    mock.call(start_node=id_node, end_node=10, name="hasAppearance")])
-        create_properties_mock.assert_called_once_with(id_node, participant_state_in)
-        get_node_mock.assert_called_once_with(id_node)
+        create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=6, name="hasParticipant",dataset_name=dataset_name),
+                                                    mock.call(start_node=id_node, end_node=7, name="hasPersonality",dataset_name=dataset_name),
+                                                    mock.call(start_node=id_node, end_node=8, name="hasPersonality",dataset_name=dataset_name),
+                                                    mock.call(start_node=id_node, end_node=9, name="hasAppearance",dataset_name=dataset_name),
+                                                    mock.call(start_node=id_node, end_node=10, name="hasAppearance",dataset_name=dataset_name)])
+        create_properties_mock.assert_called_once_with(id_node, participant_state_in, dataset_name)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
         self.assertEqual(result, participant_state_out)
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_participant_state_with_node_error(self, create_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         participant_state = ParticipantStateIn(age=5, participant_id=1, personality_id=2)
         participant_state_service = ParticipantStateServiceGraphDB()
 
-        result = participant_state_service.save_participant_state(participant_state)
+        result = participant_state_service.save_participant_state(participant_state, dataset_name)
 
         self.assertEqual(result, ParticipantStateOut(age=5, errors=['error']))
-        create_node_mock.assert_called_once_with('Participant State')
+        create_node_mock.assert_called_once_with('`Participant State`', dataset_name)

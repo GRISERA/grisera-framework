@@ -20,36 +20,40 @@ class ChannelServiceGraphDB(ChannelService):
     def __init__(self):
         self.registered_channel_service: RegisteredChannelService = None
 
-    def save_channel(self, channel: ChannelIn):
+    def save_channel(self, channel: ChannelIn, dataset_name: str):
         """
         Send request to graph api to create new channel
 
         Args:
             channel (ChannelIn): Channel to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as channel object
         """
-        create_response = self.graph_api_service.create_node("Channel")
+        create_response = self.graph_api_service.create_node("Channel", dataset_name)
 
         if create_response["errors"] is not None:
             return ChannelOut(type=channel.type, errors=create_response["errors"])
 
         channel_id = create_response["id"]
-        properties_response = self.graph_api_service.create_properties(channel_id, channel)
+        properties_response = self.graph_api_service.create_properties(channel_id, channel, dataset_name)
         if properties_response["errors"] is not None:
             return ChannelOut(type=channel.type, errors=properties_response["errors"])
 
         return ChannelOut(type=channel.type, id=channel_id)
 
-    def get_channels(self):
+    def get_channels(self, dataset_name: str):
         """
         Send request to graph api to get all channels
+
+        Args:
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as list of channel objects
         """
-        get_response = self.graph_api_service.get_nodes("Channel")
+        get_response = self.graph_api_service.get_nodes("Channel", dataset_name)
         if get_response["errors"] is not None:
             return ChannelsOut(errors=get_response["errors"])
         channels = [BasicChannelOut(id=channel["id"], type=channel["properties"][0]["value"])
@@ -57,19 +61,20 @@ class ChannelServiceGraphDB(ChannelService):
 
         return ChannelsOut(channels=channels)
 
-    def get_channel(self, channel_id: Union[int, str], depth: int = 0):
+    def get_channel(self, channel_id: Union[int, str], dataset_name: str, depth: int = 0):
         """
         Send request to graph api to get given channel
 
         Args:
-        channel_id (int | str): identity of channel
-        depth: (int): specifies how many related entities will be traversed to create the response
+            channel_id (int | str): identity of channel
+            depth: (int): specifies how many related entities will be traversed to create the response
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as channel object
         """
 
-        get_response = self.graph_api_service.get_node(channel_id)
+        get_response = self.graph_api_service.get_node(channel_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=channel_id, errors=get_response["errors"])
@@ -81,7 +86,7 @@ class ChannelServiceGraphDB(ChannelService):
         if depth != 0:
             channel["registered_channels"] = []
 
-            relations_response = self.graph_api_service.get_node_relationships(channel_id)
+            relations_response = self.graph_api_service.get_node_relationships(channel_id, dataset_name)
 
             for relation in relations_response["relationships"]:
                 if relation["end_node"] == channel_id & relation["name"] == "hasChannel":

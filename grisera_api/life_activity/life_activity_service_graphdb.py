@@ -20,38 +20,44 @@ class LifeActivityServiceGraphDB(LifeActivityService):
     def __init__(self):
         self.observable_information_service: ObservableInformationService = None
 
-    def save_life_activity(self, life_activity: LifeActivityIn):
+    def save_life_activity(self, life_activity: LifeActivityIn, dataset_name: str):
+
         """
         Send request to graph api to create new life activity
 
         Args:
             life_activity (LifeActivityIn): Life activity to be added
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as life activity object
         """
 
-        node_response = self.graph_api_service.create_node("Life Activity")
+        node_response = self.graph_api_service.create_node("`Life Activity`", dataset_name)
 
         if node_response["errors"] is not None:
             return LifeActivityOut(life_activity=life_activity.life_activity, errors=node_response["errors"])
 
         life_activity_id = node_response["id"]
 
-        properties_response = self.graph_api_service.create_properties(life_activity_id, life_activity)
+        properties_response = self.graph_api_service.create_properties(life_activity_id, life_activity, dataset_name)
         if properties_response["errors"] is not None:
             return LifeActivityOut(errors=properties_response["errors"])
 
         return LifeActivityOut(life_activity=life_activity.life_activity, id=life_activity_id)
 
-    def get_life_activities(self):
+    def get_life_activities(self, dataset_name: str):
         """
         Send request to graph api to get all life activities
 
+        Args:
+            dataset_name (str): name of dataset
         Returns:
             Result of request as list of life activity objects
         """
-        get_response = self.graph_api_service.get_nodes("Life Activity")
+
+        get_response = self.graph_api_service.get_nodes("`Life Activity`", dataset_name)
+
         if get_response["errors"] is not None:
             return LifeActivitiesOut(errors=get_response["errors"])
         life_activities = [BasicLifeActivityOut(id=life_activity["id"],
@@ -60,18 +66,19 @@ class LifeActivityServiceGraphDB(LifeActivityService):
 
         return LifeActivitiesOut(life_activities=life_activities)
 
-    def get_life_activity(self, life_activity_id: Union[int, str], depth: int = 0):
+    def get_life_activity(self, life_activity_id: Union[int, str], dataset_name: str, depth: int = 0):
         """
         Send request to graph api to get given life activity
 
         Args:
             life_activity_id (int | str): identity of life activity
             depth: (int): specifies how many related entities will be traversed to create the response
+            dataset_name (str): name of dataset
 
         Returns:
             Result of request as life activity object
         """
-        get_response = self.graph_api_service.get_node(life_activity_id)
+        get_response = self.graph_api_service.get_node(life_activity_id, dataset_name)
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=life_activity_id, errors=get_response["errors"])
@@ -83,7 +90,7 @@ class LifeActivityServiceGraphDB(LifeActivityService):
         if depth != 0:
             life_activity["observable_informations"] = []
 
-            relations_response = self.graph_api_service.get_node_relationships(life_activity_id)
+            relations_response = self.graph_api_service.get_node_relationships(life_activity_id, dataset_name)
 
             for relation in relations_response["relationships"]:
                 if relation["end_node"] == life_activity_id & relation["name"] == "hasLifeActivity":

@@ -11,6 +11,8 @@ from arrangement.arrangement_service import ArrangementService
 from arrangement.arrangement_service_ontology import ArrangementServiceOntology
 from channel.channel_service import ChannelService
 from channel.channel_service_ontology import ChannelServiceOntology
+from dataset.dataset_service import DatasetService
+from dataset.dataset_service_ontology import DatasetServiceOntology
 from experiment.experiment_service import ExperimentService
 from experiment.experiment_service_ontology import ExperimentServiceOntology
 from life_activity.life_activity_service import LifeActivityService
@@ -68,6 +70,9 @@ class OntologyServiceFactory(ServiceFactory):
 
     def get_channel_service(self) -> ChannelService:
         return ChannelServiceOntology()
+
+    def get_dataset_service(self) -> DatasetService:
+        return DatasetServiceOntology()
 
     def get_experiment_service(self) -> ExperimentService:
         return ExperimentServiceOntology()

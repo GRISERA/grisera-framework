@@ -14,6 +14,7 @@ class TestActivityExecutionServicePut(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'delete_node_properties')
     def test_update_activity_execution_without_error(self, delete_node_properties_mock,
                                                      get_node_mock, create_properties_mock):
+        dataset_name = "neo4j"
         id_node = 1
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
@@ -22,14 +23,15 @@ class TestActivityExecutionServicePut(unittest.TestCase):
                                       "errors": None, 'links': None}
         additional_properties = [PropertyIn(key='identifier', value=6), PropertyIn(key='fish', value='salmon')]
         activity_execution_in = ActivityExecutionPropertyIn(id=id_node, additional_properties=additional_properties)
+
         activity_execution_out = ActivityExecutionOut(additional_properties=additional_properties, id=id_node)
-        calls = [mock.call(1)]
+        calls = [mock.call(1,dataset_name)]
         activity_execution_service = ActivityExecutionServiceGraphDB()
-        result = activity_execution_service.update_activity_execution(id_node, activity_execution_in)
+        result = activity_execution_service.update_activity_execution(id_node, activity_execution_in,dataset_name)
 
         self.assertEqual(result, activity_execution_out)
-        get_node_mock.assert_has_calls(calls)
-        create_properties_mock.assert_called_once_with(id_node, activity_execution_in)
+        get_node_mock.assert_has_calls(calls,dataset_name)
+        create_properties_mock.assert_called_once_with(id_node, activity_execution_in,dataset_name)
 
     # @mock.patch.object(GraphApiService, 'create_properties')
     # @mock.patch.object(GraphApiService, 'get_node')
@@ -69,8 +71,10 @@ class TestActivityExecutionServicePut(unittest.TestCase):
     #     create_properties_mock.assert_called_once_with(id_node, activity_execution_in)
     #     get_node_relationships_mock.assert_called_once_with(id_node)
 
+
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_activity_execution_without_participant_label(self, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
@@ -80,13 +84,14 @@ class TestActivityExecutionServicePut(unittest.TestCase):
                                                             additional_properties=additional_properties)
         activity_execution_service = ActivityExecutionServiceGraphDB()
 
-        result = activity_execution_service.update_activity_execution(id_node, activity_execution_in)
+        result = activity_execution_service.update_activity_execution(id_node, activity_execution_in, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_update_activity_execution_with_error(self, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
@@ -95,7 +100,7 @@ class TestActivityExecutionServicePut(unittest.TestCase):
                                                             additional_properties=additional_properties)
         activity_execution_service = ActivityExecutionServiceGraphDB()
 
-        result = activity_execution_service.update_activity_execution(id_node, activity_execution_in)
+        result = activity_execution_service.update_activity_execution(id_node, activity_execution_in, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)

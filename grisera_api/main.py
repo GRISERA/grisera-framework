@@ -3,6 +3,7 @@ from activity.activity_router import router as activity_router
 from activity_execution.activity_execution_router import router as activity_execution_router
 from arrangement.arrangement_router import router as arrangement_router
 from appearance.appearance_router import router as appearance_router
+from dataset.dataset_router import router as dataset_router
 from channel.channel_router import router as channel_router
 from experiment.experiment_router import router as experiment_router
 from fastapi import FastAPI
@@ -35,6 +36,7 @@ app.include_router(activity_execution_router)
 app.include_router(appearance_router)
 app.include_router(arrangement_router)
 app.include_router(channel_router)
+app.include_router(dataset_router)
 app.include_router(experiment_router)
 app.include_router(life_activity_router)
 app.include_router(measure_router)

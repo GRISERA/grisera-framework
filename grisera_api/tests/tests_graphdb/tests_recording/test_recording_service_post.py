@@ -23,6 +23,7 @@ class TestRecordingServicePost(unittest.TestCase):
                                            get_node_mock,
                                            create_relationships_mock, create_properties_mock,
                                            create_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
 
         create_node_mock.return_value = {'id': id_node, 'labels': ['Recording'],
@@ -45,23 +46,25 @@ class TestRecordingServicePost(unittest.TestCase):
         get_registered_channel_mock.return_value = BasicRegisteredChannelOut(id=7, additional_properties=additional_properties)
         recording_service.registered_channel_service.get_registered_channel = get_registered_channel_mock
 
-        result = recording_service.save_recording(recording_in)
+        result = recording_service.save_recording(recording_in, dataset_name)
+
 
         create_relationships_mock.assert_has_calls(
-            [mock.call(start_node=id_node, end_node=6,name="hasParticipation"),
-             mock.call(start_node=id_node, end_node=7, name="hasRegisteredChannel")])
-        create_properties_mock.assert_called_once_with(id_node, recording_in)
-        get_node_mock.assert_called_once_with(id_node)
+            [mock.call(start_node=id_node, end_node=6,name="hasParticipation",dataset_name=dataset_name),
+             mock.call(start_node=id_node, end_node=7, name="hasRegisteredChannel",dataset_name=dataset_name)])
+        create_properties_mock.assert_called_once_with(id_node, recording_in,dataset_name)
+        get_node_mock.assert_called_once_with(id_node,dataset_name)
         self.assertEqual(result, recording_out)
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_recording_with_node_error(self, create_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         recording = RecordingIn()
         recording_service = RecordingServiceGraphDB()
 
-        result = recording_service.save_recording(recording)
+        result = recording_service.save_recording(recording, dataset_name)
 
         self.assertEqual(result, RecordingOut(errors=['error']))
-        create_node_mock.assert_called_once_with('Recording')
+        create_node_mock.assert_called_once_with('Recording', dataset_name)

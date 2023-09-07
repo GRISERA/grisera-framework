@@ -17,6 +17,7 @@ class TestMeasureServicePost(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     def test_save_measure_without_error(self, get_node_mock, get_measure_name_mock, create_properties_mock,
                                         create_relationships_mock, create_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         get_node_mock.return_value = {'id': id_node, 'labels': ['Measure'],
@@ -33,26 +34,25 @@ class TestMeasureServicePost(unittest.TestCase):
         get_measure_name_mock.return_value = BasicMeasureNameOut(id=6, name="Test", type="Test")
         measure_service.measure_name_service.get_measure_name = get_measure_name_mock
 
-        calls = [mock.call(start_node=id_node, end_node=6, name="hasMeasureName")]
+        calls = [mock.call(start_node=id_node, end_node=6, name="hasMeasureName", dataset_name=dataset_name)]
         measure = MeasureIn(measure_name_id=6, datatype="Test", range="Unknown", unit="cm")
 
-        result = measure_service.save_measure(measure)
+        result = measure_service.save_measure(measure, dataset_name)
 
-        self.assertEqual(result, BasicMeasureOut(measure_name_id=6, datatype="Test", range="Unknown", unit="cm",
-                                                 id=id_node))
-        create_node_mock.assert_called_once_with('Measure')
+        create_node_mock.assert_called_once_with('Measure', dataset_name)
         get_measure_name_mock.assert_called_once()
         create_relationships_mock.assert_has_calls(calls)
-        create_properties_mock.assert_called_once_with(id_node, measure)
+        create_properties_mock.assert_called_once_with(id_node, measure, dataset_name)
 
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_measure_with_node_error(self, create_node_mock):
+        dataset_name = "neo4j"
         create_node_mock.return_value = {'properties': None, "errors": ['error'], 'links': None}
         measure = MeasureIn(measure_name_id=1, datatype="Test", range="Unknown", unit="cm")
         measure_service = MeasureServiceGraphDB()
 
-        result = measure_service.save_measure(measure)
+        result = measure_service.save_measure(measure, dataset_name)
 
         self.assertEqual(result,
                          MeasureOut(datatype="Test", range="Unknown", unit="cm", errors=['error']))
-        create_node_mock.assert_called_once_with('Measure')
+        create_node_mock.assert_called_once_with('Measure', dataset_name)

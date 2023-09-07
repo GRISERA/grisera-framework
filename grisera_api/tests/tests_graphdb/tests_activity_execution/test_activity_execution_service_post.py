@@ -27,6 +27,7 @@ class TestActivityExecutionServicePost(unittest.TestCase):
                                                     create_relationships_mock,
                                                     create_properties_mock,
                                                     create_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         activity_id = 2
         arrangement_id = 3
@@ -34,7 +35,8 @@ class TestActivityExecutionServicePost(unittest.TestCase):
         create_relationships_mock.return_value = None
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         create_properties_mock.return_value = {'id': id_node, 'errors': None, 'links': None}
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Activity Execution'], 'properties': [], "errors": None, 'links': None}
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Activity Execution'], 'properties': [], "errors": None,
+                                      'links': None}
         get_activity_mock.return_value = None
         get_arrangement_mock.return_value = None
 
@@ -47,15 +49,15 @@ class TestActivityExecutionServicePost(unittest.TestCase):
         activity_execution_in = ActivityExecutionIn(activity_id=activity_id, arrangement_id=arrangement_id)
         activity_execution_out = BasicActivityExecutionOut(additional_properties=[], id=id_node)
 
-        result = activity_execution_service.save_activity_execution(activity_execution_in)
+        result = activity_execution_service.save_activity_execution(activity_execution_in, dataset_name)
 
         self.assertEqual(result, activity_execution_out)
-        create_node_mock.assert_called_once_with('Activity Execution')
+        create_node_mock.assert_called_once_with('`Activity Execution`', dataset_name)
         create_relationships_mock.assert_has_calls([
-            mock.call(start_node=id_node, end_node=activity_id, name='hasActivity'),
-            mock.call(start_node=id_node, end_node=arrangement_id, name='hasArrangement')
+            mock.call(start_node=id_node, end_node=activity_id, name='hasActivity', dataset_name=dataset_name),
+            mock.call(start_node=id_node, end_node=arrangement_id, name='hasArrangement', dataset_name=dataset_name)
         ])
-        create_properties_mock.assert_has_calls([mock.call(id_node, activity_execution_in)])
+        create_properties_mock.assert_has_calls([mock.call(id_node, activity_execution_in, dataset_name)])
 
     # @mock.patch.object(GraphApiService, 'create_node')
     # @mock.patch.object(GraphApiService, 'create_properties')
@@ -104,14 +106,18 @@ class TestActivityExecutionServicePost(unittest.TestCase):
     #     create_relationships_mock.assert_not_called()
     #     get_node_mock.assert_has_calls(calls)
 
+
     @mock.patch.object(GraphApiService, 'create_node')
     def test_save_activity_execution_with_node_error(self, create_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": ['error'], 'links': None}
         activity_execution = ActivityExecutionIn(activity_id=2, arrangement_id=3)
         activity_execution_service = ActivityExecutionServiceGraphDB()
 
-        result = activity_execution_service.save_activity_execution(activity_execution)
+        result = activity_execution_service.save_activity_execution(activity_execution, dataset_name)
 
         self.assertEqual(result, ActivityExecutionOut(errors=['error']))
-        create_node_mock.assert_called_once_with('Activity Execution')
+
+        create_node_mock.assert_called_once_with('`Activity Execution`', dataset_name)
+

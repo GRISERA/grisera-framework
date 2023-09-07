@@ -59,6 +59,7 @@ class TestObservableInformationServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_get_observable_information_without_error(self, get_node_relationships_mock, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Observable Information'],
                                       'properties': [],
@@ -66,38 +67,41 @@ class TestObservableInformationServiceGet(unittest.TestCase):
         observable_information = BasicObservableInformationOut(id=id_node)
         observable_information_service = ObservableInformationServiceGraphDB()
 
-        result = observable_information_service.get_observable_information(id_node)
+        result = observable_information_service.get_observable_information(id_node, dataset_name)
 
         self.assertEqual(result, observable_information)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_observable_information_without_label(self, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         observable_information_service = ObservableInformationServiceGraphDB()
 
-        result = observable_information_service.get_observable_information(id_node)
+        result = observable_information_service.get_observable_information(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_observable_information_with_error(self, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         observable_information_service = ObservableInformationServiceGraphDB()
 
-        result = observable_information_service.get_observable_information(id_node)
+        result = observable_information_service.get_observable_information(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_observable_informations(self, get_nodes_mock):
+        dataset_name = "neo4j"
         get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Observable Information'],
                                                   'properties': None},
                                                  {'id': 2, 'labels': ['Observable Information'],
@@ -110,18 +114,19 @@ class TestObservableInformationServiceGet(unittest.TestCase):
             observable_informations=[observable_information_one, observable_information_two])
         observable_informations_service = ObservableInformationServiceGraphDB()
 
-        result = observable_informations_service.get_observable_informations()
+        result = observable_informations_service.get_observable_informations(dataset_name)
 
         self.assertEqual(result, observable_informations)
-        get_nodes_mock.assert_called_once_with("`Observable Information`")
+        get_nodes_mock.assert_called_once_with("`Observable Information`", dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_observable_informations_empty(self, get_nodes_mock):
+        dataset_name = "neo4j"
         get_nodes_mock.return_value = {'nodes': []}
         observable_informations = ObservableInformationsOut(observable_information=[])
         observable_informations_service = ObservableInformationServiceGraphDB()
 
-        result = observable_informations_service.get_observable_informations()
+        result = observable_informations_service.get_observable_informations(dataset_name)
 
         self.assertEqual(result, observable_informations)
-        get_nodes_mock.assert_called_once_with("`Observable Information`")
+        get_nodes_mock.assert_called_once_with("`Observable Information`", dataset_name)

@@ -1,6 +1,5 @@
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Any
 from enum import Enum
-
 from pydantic import BaseModel
 
 from models.base_model_out import BaseModelOut
@@ -66,7 +65,6 @@ class PersonalityPanasIn(BaseModel):
 
     negative_affect: float
     positive_affect: float
-
 
 class BasicPersonalityPanasOut(PersonalityPanasIn):
     """

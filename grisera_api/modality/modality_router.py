@@ -27,18 +27,21 @@ class ModalityRouter:
     def __init__(self):
         self.modality_service = Services().modality_service()
 
+
     @router.get(
         "/modalities/{modality_id}",
         tags=["modalities"],
         response_model=Union[ModalityOut, NotFoundByIdModel],
     )
     async def get_modality(
-        self, modality_id: Union[int, str], response: Response, depth: int=0
+        self, modality_id: Union[int, str], response: Response,dataset_name: str, depth: int=0
     ):
+
         """
         Get modality from database. Depth attribute specifies how many models will be traversed to create the response.
         """
-        get_response = self.modality_service.get_modality(modality_id, depth)
+
+        get_response = self.modality_service.get_modality(modality_id,dataset_name, depth)
         if get_response.errors is not None:
             response.status_code = 404
 
@@ -48,12 +51,12 @@ class ModalityRouter:
         return get_response
 
     @router.get("/modalities", tags=["modalities"], response_model=ModalitiesOut)
-    async def get_modalities(self, response: Response):
+    async def get_modalities(self, response: Response, dataset_name: str):
         """
         Get modalities from database
         """
 
-        get_response = self.modality_service.get_modalities()
+        get_response = self.modality_service.get_modalities(dataset_name)
 
         # add links from hateoas
         get_response.links = get_links(router)

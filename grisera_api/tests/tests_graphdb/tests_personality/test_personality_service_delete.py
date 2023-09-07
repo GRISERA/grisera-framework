@@ -13,9 +13,12 @@ class TestPersonalityServiceDelete(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'delete_node')
     @mock.patch.object(GraphApiService, 'get_node')
+
     def test_delete_personality_big_five_without_error(self, get_node_mock,
                                                        delete_node_mock):
+
         id_node = 1
+        dataset_name = "neo4j"
         delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Personality'],
                                                                       'properties': [
                                                                           {'key': 'agreeableness', 'value': 2.5},
@@ -29,16 +32,17 @@ class TestPersonalityServiceDelete(unittest.TestCase):
                                                  openess=2.5, id=id_node)
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.delete_personality(id_node)
+        result = personality_service.delete_personality(id_node, dataset_name)
 
         self.assertEqual(result, personality)
-        get_node_mock.assert_called_once_with(id_node)
-        delete_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
+        delete_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'delete_node')
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_delete_personality_panas_without_error(self, get_node_relationships_mock, get_node_mock, delete_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Personality'],
                                                                       'properties': [
@@ -52,15 +56,16 @@ class TestPersonalityServiceDelete(unittest.TestCase):
         personality = BasicPersonalityPanasOut(negative_affect=0.5, positive_affect=0.5, id=id_node)
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.delete_personality(id_node)
+        result = personality_service.delete_personality(id_node, dataset_name)
 
         self.assertEqual(result, personality)
-        get_node_mock.assert_called_once_with(id_node)
-        delete_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
+        delete_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_delete_personality_without_personality_label(self, get_node_relationships_mock, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'labels': ['Test'], 'properties': None,
                                       "errors": None, 'links': None}
@@ -71,14 +76,15 @@ class TestPersonalityServiceDelete(unittest.TestCase):
         not_found = NotFoundByIdModel(id=id_node, errors="Node not found.")
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.delete_personality(id_node)
+        result = personality_service.delete_personality(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
 
     @mock.patch.object(GraphApiService, 'get_node')
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_delete_personality_with_error(self, get_node_relationships_mock, get_node_mock):
+        dataset_name = "neo4j"
         id_node = 1
         get_node_mock.return_value = {'id': id_node, 'errors': ['error'], 'links': None}
         get_node_relationships_mock.return_value = {"relationships": [
@@ -88,7 +94,7 @@ class TestPersonalityServiceDelete(unittest.TestCase):
         not_found = NotFoundByIdModel(id=id_node, errors=['error'])
         personality_service = PersonalityServiceGraphDB()
 
-        result = personality_service.delete_personality(id_node)
+        result = personality_service.delete_personality(id_node, dataset_name)
 
         self.assertEqual(result, not_found)
-        get_node_mock.assert_called_once_with(id_node)
+        get_node_mock.assert_called_once_with(id_node, dataset_name)
