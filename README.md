@@ -18,4 +18,3 @@ Graph Representation Integrating Signals for Emotion Recognition and Analysis (G
 
 ## Start Uvicorn server 
 `(venv) $ uvicorn main:app --reload`
-
