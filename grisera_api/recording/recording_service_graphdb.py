@@ -106,15 +106,15 @@ class RecordingServiceGraphDB(RecordingService):
             relations_response = self.graph_api_service.get_node_relationships(recording_id)
 
             for relation in relations_response["relationships"]:
-                if relation["start_node"] == recording_id & relation["name"] == "hasRegisteredChannel":
+                if relation["start_node"] == recording_id and relation["name"] == "hasRegisteredChannel":
                     recording["registered_channel"] = self.registered_channel_service. \
                         get_registered_channel(relation["end_node"], depth - 1)
                 else:
-                    if relation["start_node"] == recording_id & relation["name"] == "hasParticipation":
+                    if relation["start_node"] == recording_id and relation["name"] == "hasParticipation":
                         recording["participation"] = self.participation_service. \
                             get_participation(relation["end_node"], depth - 1)
                     else:
-                        if relation["end_node"] == recording_id & relation["name"] == "hasRecording":
+                        if relation["end_node"] == recording_id and relation["name"] == "hasRecording":
                             recording["observable_informations"].append(self.participation_service.
                                                                         get_participation(relation["start_node"],
                                                                                           depth - 1))

@@ -92,7 +92,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
             relations_response = self.graph_api_service.get_node_relationships(registered_data_id)
 
             for relation in relations_response["relationships"]:
-                if relation["end_node"] == registered_data_id & relation["name"] == "hasRegisteredData":
+                if relation["end_node"] == registered_data_id and relation["name"] == "hasRegisteredData":
                     registered_data["registered_channels"].append(self.registered_channel_service.
                                                                   get_registered_channel(relation["start_node"],
                                                                                          depth - 1))

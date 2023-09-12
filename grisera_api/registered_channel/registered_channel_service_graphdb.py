@@ -106,17 +106,17 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
             relations_response = self.graph_api_service.get_node_relationships(registered_channel_id)
 
             for relation in relations_response["relationships"]:
-                if relation["end_node"] == registered_channel_id & relation["name"] == "hasRegisteredChannel":
+                if relation["end_node"] == registered_channel_id and relation["name"] == "hasRegisteredChannel":
                     registered_channel["recordings"].append(self.recording_service.
                                                             get_recording(relation["start_node"], depth - 1))
                 else:
-                    if relation["start_node"] == registered_channel_id & relation["name"] == "hasChannel":
+                    if relation["start_node"] == registered_channel_id and relation["name"] == "hasChannel":
                         registered_channel["channel"] = self.channel_service. \
                             get_channel(relation["end_node"], depth - 1)
                     else:
-                        if relation["start_node"] == registered_channel_id & relation["name"] == "hasRegisteredData":
+                        if relation["start_node"] == registered_channel_id and relation["name"] == "hasRegisteredData":
                             registered_channel["registeredData"] = self.registered_data_service. \
-                                get_registered_data(relation["start_node"], depth - 1)
+                                get_registered_data(relation["end_node"], depth - 1)
 
             return RegisteredChannelOut(**registered_channel)
         else:

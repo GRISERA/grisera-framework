@@ -84,7 +84,7 @@ class ChannelServiceGraphDB(ChannelService):
             relations_response = self.graph_api_service.get_node_relationships(channel_id)
 
             for relation in relations_response["relationships"]:
-                if relation["end_node"] == channel_id & relation["name"] == "hasChannel":
+                if relation["end_node"] == channel_id and relation["name"] == "hasChannel":
                     channel['registered_channels'].append(
                         self.registered_channel_service.get_registered_channel(relation["start_node"], depth - 1))
 

@@ -113,13 +113,13 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
             relations_response = self.graph_api_service.get_node_relationships(time_series_id)
 
             for relation in relations_response["relationships"]:
-                if relation["start_node"] == time_series_id & relation["name"] == "hasObservableInformation":
+                if relation["start_node"] == time_series_id and relation["name"] == "hasObservableInformation":
                     time_series["observable_informations"].append(self.observable_information_service.
-                                                                  get_observable_information(relation["start_node"],
+                                                                  get_observable_information(relation["end_node"],
                                                                                              depth - 1))
                 else:
-                    if relation["start_node"] == time_series_id & relation["name"] == "hasMeasure":
-                        time_series["measure"] = self.measure_service.get_measure(relation["start_node"],
+                    if relation["start_node"] == time_series_id and relation["name"] == "hasMeasure":
+                        time_series["measure"] = self.measure_service.get_measure(relation["end_node"],
                                                                                   depth - 1)
 
             return TimeSeriesOut(**time_series)

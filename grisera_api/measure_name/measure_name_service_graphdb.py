@@ -86,7 +86,7 @@ class MeasureNameServiceGraphDB(MeasureNameService):
             relations_response = self.graph_api_service.get_node_relationships(measure_name_id)
 
             for relation in relations_response["relationships"]:
-                if relation["end_node"] == measure_name_id & relation["name"] == "hasMeasureName":
+                if relation["end_node"] == measure_name_id and relation["name"] == "hasMeasureName":
                     measure_name['measures'].append(self.measure_service.
                                                     get_measure(relation["start_node"], depth - 1))
 

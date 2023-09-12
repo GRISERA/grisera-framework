@@ -90,7 +90,7 @@ class ParticipantServiceGraphDB(ParticipantService):
             relations_response = self.graph_api_service.get_node_relationships(participant_id)
 
             for relation in relations_response["relationships"]:
-                if relation["start_node"] == participant_id & relation["name"] == "hasParticipantState":
+                if relation["start_node"] == participant_id and relation["name"] == "hasParticipantState":
                     participant['participant_states'].append(self.participant_state_service.
                                                              get_participant_state(relation["end_node"],
                                                                                    depth - 1))

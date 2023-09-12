@@ -83,7 +83,7 @@ class ModalityServiceGraphDB(ModalityService):
             relations_response = self.graph_api_service.get_node_relationships(modality_id)
 
             for relation in relations_response["relationships"]:
-                if relation["end_node"] == modality_id & relation["name"] == "hasModality":
+                if relation["end_node"] == modality_id and relation["name"] == "hasModality":
                     modality['observable_informations'].append(self.observable_information_service.
                                                                get_observable_information(relation["start_node"],
                                                                                           depth - 1))
