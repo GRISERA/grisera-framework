@@ -8,6 +8,7 @@ from services.graph_services import (
     GraphWithSignalValuesServiceFactory,
 )
 from services.ontology_services import OntologyServiceFactory
+from services.relational_services import RelationalServiceFactory
 from activity.activity_service import ActivityService
 from activity_execution.activity_execution_service import ActivityExecutionService
 from appearance.appearance_service import AppearanceService
@@ -37,6 +38,7 @@ class PersistenceTypes(Enum):
     ONTOLOGY = 2
     GRAPHDB_WITH_SIGNAL_VALUES = 3
     MONGODB = 4
+    POSTGRESQL = 5
 
 
 class Services:
@@ -62,6 +64,8 @@ class Services:
             return OntologyServiceFactory()
         elif self.persistence_type == PersistenceTypes.MONGODB:
             return MongoServiceFactory()
+        elif self.persistence_type == PersistenceTypes.POSTGRESQL:
+            return RelationalServiceFactory()
         else:
             return ServiceFactory()
 
