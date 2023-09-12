@@ -1,4 +1,4 @@
-version: "3.9"  # optional since v1.27.0
+ version: "3.9"  # optional since v1.27.0
 services:
   grisera_neo4j:
     build: graph_db
@@ -48,6 +48,17 @@ services:
       - GRAPH_API_HOST=host.docker.internal
       - GRAPH_API_PORT=18080
       - PERSISTENCE_TYPE=3
+
+  rdb_api:
+    build: grisera_api
+    ports:
+      - "18085:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - RDB_HOST=host.docker.internal
+      - RDB_PORT=5432
+      - PERSISTENCE_TYPE=5
       
   ontology_api:
     build: ontology_api
