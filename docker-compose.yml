@@ -1,5 +1,16 @@
 version: "3.9" # optional since v1.27.0
 services:
+  grisera_api:
+    build: grisera_api
+    ports:
+      - "18081:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - GRAPH_API_HOST=host.docker.internal
+      - GRAPH_API_PORT=18080
+      - PERSISTENCE_TYPE=1
+
   grisera_api_mongodb:
     build: grisera_api
     ports:
@@ -26,6 +37,17 @@ services:
       - "host.docker.internal:host-gateway"
     ports:
       - "18086:27017"
+
+    rdb_api:
+      build: grisera_api
+      ports:
+        - "18085:80"
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
+      environment:
+        - RDB_HOST=host.docker.internal
+        - RDB_PORT=5432
+        - PERSISTENCE_TYPE=5
 
 volumes:
   mongodbdata:
