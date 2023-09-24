@@ -27,7 +27,7 @@ class TestObservableInformationServiceGet(unittest.TestCase):
     #                                                   get_life_activity_mock,
     #                                                   get_modality_mock, get_node_mock):
     #     id_node = 1
-    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Observable Information'],
+    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Observable_Information'],
     #                                   'properties': [],
     #                                   "errors": None, 'links': None}
     #
@@ -60,7 +60,7 @@ class TestObservableInformationServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_get_observable_information_without_error(self, get_node_relationships_mock, get_node_mock):
         id_node = 1
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Observable Information'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Observable_Information'],
                                       'properties': [],
                                       "errors": None, 'links': None}
         observable_information = BasicObservableInformationOut(id=id_node)
@@ -98,9 +98,9 @@ class TestObservableInformationServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_observable_informations(self, get_nodes_mock):
-        get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Observable Information'],
+        get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Observable_Information'],
                                                   'properties': None},
-                                                 {'id': 2, 'labels': ['Observable Information'],
+                                                 {'id': 2, 'labels': ['Observable_Information'],
                                                   'properties': None
                                                   }]}
 
@@ -113,7 +113,7 @@ class TestObservableInformationServiceGet(unittest.TestCase):
         result = observable_informations_service.get_observable_informations()
 
         self.assertEqual(result, observable_informations)
-        get_nodes_mock.assert_called_once_with("`Observable Information`")
+        get_nodes_mock.assert_called_once_with("`Observable_Information`")
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_observable_informations_empty(self, get_nodes_mock):
@@ -124,4 +124,4 @@ class TestObservableInformationServiceGet(unittest.TestCase):
         result = observable_informations_service.get_observable_informations()
 
         self.assertEqual(result, observable_informations)
-        get_nodes_mock.assert_called_once_with("`Observable Information`")
+        get_nodes_mock.assert_called_once_with("`Observable_Information`")

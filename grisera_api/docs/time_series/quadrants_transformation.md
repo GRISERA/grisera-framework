@@ -2,7 +2,7 @@
 
 Name: `quadrants`
 
-This transformation use two signal values (X, Y) with the same timestamps and calculate quadrant. The default origin
+This transformation use two Signal_Values (X, Y) with the same timestamps and calculate quadrant. The default origin
 point is (0, 0) but it can be changed with parameters.
 
 ## Input parameters
@@ -17,8 +17,8 @@ point is (0, 0) but it can be changed with parameters.
 - this transformation allows to transform only two time series at the same time
 - types of time series should be equal
 - output time series type is the same as input time series
-- signal values with not matching timestamps will be omitted
-- if the signal value equals origin value (is on axis), the signal value will be interpreted as `signal_value + epsilon`
+- Signal_Values with not matching timestamps will be omitted
+- if the Signal_Value equals origin value (is on axis), the Signal_Value will be interpreted as `signal_value + epsilon`
 
 ## Examples
 
@@ -26,7 +26,7 @@ point is (0, 0) but it can be changed with parameters.
 
 Input parameters:
 
-| Timestamp | Signal value X | Signal value Y |
+| Timestamp | Signal_Value X | Signal_Value Y |
 |-----------|----------------|----------------|
 | 2         | 5              | 3              |
 | 4         | -5             | 3              |
@@ -35,7 +35,7 @@ Input parameters:
 
 Output:
 
-| Timestamp | Signal value |
+| Timestamp | Signal_Value |
 |-----------|--------------|
 | 2         | 1            |
 | 4         | 2            |
@@ -49,7 +49,7 @@ Input parameters:
 - origin_x = -10
 - origin_y = -10
 
-| Begin timestamp | End timestamp | Signal value X | Signal value Y |
+| Begin timestamp | End timestamp | Signal_Value X | Signal_Value Y |
 |-----------------|---------------|----------------|----------------|
 | 0               | 1             | 5              | 3              |
 | 5               | 6             |                | 3              |
@@ -58,7 +58,7 @@ Input parameters:
 
 Output:
 
-| Begin timestamp | End timestamp | Signal value |
+| Begin timestamp | End timestamp | Signal_Value |
 |-----------------|---------------|--------------|
 | 0               | 1             | 1            |
 | 10              | 11            | 1            |

@@ -19,27 +19,27 @@ class TestFrequencyDomainSeriesWithSignalValuesServiceDelete(unittest.TestCase):
         frequency_domain_series = SignalSeriesOut(id=10, type="Frequencystamp", source="cos",
                                                   signal_values=[
                                                       {
-                                                          'signal_value': {'labels': ['Signal Value'], 'id': 2,
+                                                          'signal_value': {'labels': ['Signal_Value'], 'id': 2,
                                                                            'properties': [{'key': 'value', 'value': '10'}]},
                                                           'frequencystamp': {'labels': ['Frequencystamp'], 'id': 1, 'properties': [
                                                               {'key': 'frequencystamp', 'value': '100'}]}
                                                       },
                                                       {
-                                                          'signal_value': {'labels': ['Signal Value'], 'id': 4,
+                                                          'signal_value': {'labels': ['Signal_Value'], 'id': 4,
                                                                            'properties': [
                                                               {'key': 'value', 'value': '20'}]},
                                                           'frequencystamp': {'labels': ['Frequencystamp'], 'id': 3, 'properties': [
                                                               {'key': 'frequencystamp', 'value': '200'}]}
                                                       },
                                                       {
-                                                          'signal_value': {'labels': ['Signal Value'], 'id': 6,
+                                                          'signal_value': {'labels': ['Signal_Value'], 'id': 6,
                                                                            'properties': [
                                                               {'key': 'value', 'value': '30'}]},
                                                           'frequencystamp': {'labels': ['Frequencystamp'], 'id': 5, 'properties': [
                                                               {'key': 'frequencystamp', 'value': '300'}]}
                                                       },
                                                       {
-                                                          'signal_value': {'labels': ['Signal Value'], 'id': 8,
+                                                          'signal_value': {'labels': ['Signal_Value'], 'id': 8,
                                                                            'properties': [
                                                               {'key': 'value', 'value': '40'}]},
                                                           'frequencystamp': {'labels': ['Frequencystamp'], 'id': 7, 'properties': [

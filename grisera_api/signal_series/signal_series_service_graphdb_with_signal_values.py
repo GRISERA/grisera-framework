@@ -3,7 +3,7 @@ from typing import List, Union, Optional
 from starlette.datastructures import QueryParams
 
 from models.not_found_model import NotFoundByIdModel
-from time_series.ts_helpers import get_node_property
+from signal_series.ss_helpers import get_node_property
 from signal_series.signal_series_model import Type, SignalSeriesIn, SignalSeriesOut, SignalIn, SignalValueNodesIn, \
     StampNodesIn, SignalSeriesNodesOut, BasicSignalSeriesOut, SignalSeriesTransformationIn, \
     SignalSeriesTransformationRelationshipIn, SignalSeriesMultidimensionalOut
@@ -15,11 +15,12 @@ from signal_series.transformation.multidimensional.SignalSeriesTransformationMul
 
 class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
 
-    def __init__(self, graphdb_serivce, property_stamp_name, label_stamp_name, signal_series_type):
-        self.graphdb_service = graphdb_serivce
+    def __init__(self, property_stamp_name, label_stamp_name, signal_series_type):
+        self.graphdb_service = None
         self.property_stamp_name = property_stamp_name
         self.label_stamp_name = label_stamp_name
         self.signal_series_type = signal_series_type
+        self.frequency_graphdb_with_signals_service = None
 
     def save_signal_series(self, signal_series: SignalSeriesIn):
         """
@@ -70,26 +71,32 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         new_signal_series.measure_id = signal_series_transformation.destination_measure_id
         new_signal_series.observable_information_id = signal_series_transformation.destination_observable_information_id
 
-        result = self.save_signal_series(new_signal_series)
+        if(new_signal_series.type == Type.frequencystamp):
+            service_to_handle_new_signal = self.frequency_graphdb_with_signals_service
+            result = self.frequency_graphdb_with_signals_service.save_signal_series(new_signal_series)
+        else: 
+            service_to_handle_new_signal = self
+            result = self.save_signal_series(new_signal_series)
+            assert len(new_signal_values_id_mapping) == len(
+                result.signal_values), "transformation Signal_Values mapping does not have correct length"
+            for signal_value_ids, new_signal_value in zip(new_signal_values_id_mapping, result.signal_values):
+                new_signal_value_id = new_signal_value["signal_value"]["id"]
+                for index, old_signal_value_id in enumerate(signal_value_ids):
+                    relationship = self.graph_api_service.create_relationships(new_signal_value_id, old_signal_value_id,
+                                                                            "basedOn")
+                    self.graph_api_service.create_relationship_properties(relationship["id"],
+                                                                        SignalSeriesTransformationRelationshipIn(
+                                                                            additional_properties=[
+                                                                                {'key': 'order', 'value': index + 1}]))
 
         for index, signal_series_id in enumerate(signal_series_transformation.source_signal_series_ids):
-            relationship = self.graph_api_service.create_relationships(
+            relationship = service_to_handle_new_signal.graph_api_service.create_relationships(
                 result.id, signal_series_id, "transformedFrom")
-            self.graph_api_service.create_relationship_properties(relationship["id"],
+            service_to_handle_new_signal.graph_api_service.create_relationship_properties(relationship["id"],
                                                                   SignalSeriesTransformationRelationshipIn(
                                                                       additional_properties=[
                                                                           {'key': 'order', 'value': index + 1}]))
-        assert len(new_signal_values_id_mapping) == len(
-            result.signal_values), "transformation signal values mapping does not have correct length"
-        for signal_value_ids, new_signal_value in zip(new_signal_values_id_mapping, result.signal_values):
-            new_signal_value_id = new_signal_value["signal_value"]["id"]
-            for index, old_signal_value_id in enumerate(signal_value_ids):
-                relationship = self.graph_api_service.create_relationships(new_signal_value_id, old_signal_value_id,
-                                                                           "basedOn")
-                self.graph_api_service.create_relationship_properties(relationship["id"],
-                                                                      SignalSeriesTransformationRelationshipIn(
-                                                                          additional_properties=[
-                                                                              {'key': 'order', 'value': index + 1}]))
+
         return result
 
     def get_experiment_id(self, signal_series_id: int):
@@ -100,7 +107,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
                     "label": self.signal_series_type
                 },
                 {
-                    "label": "Observable Information"
+                    "label": "Observable_Information"
                 },
                 {
                     "label": "Recording"
@@ -217,7 +224,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
 
     def create_signal_value(self, signal_value: SignalValueNodesIn, previous_signal_value_node, signal_series_id: int):
         signal_value_node_response = self.graph_api_service.create_node(
-            "Signal Value")
+            "Signal_Value")
 
         if signal_value_node_response["errors"] is not None:
             return signal_value_node_response
@@ -259,7 +266,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
                 return current_stamp["errors"]
 
             if signal_value_node is None and (
-                    stamp is None or int(get_node_property(current_stamp, self.property_stamp_name)) < int(
+                    stamp is None or self.get_stamp_value(get_node_property(current_stamp, self.property_stamp_name)) < self.get_stamp_value(
                     get_node_property(stamp, self.property_stamp_name))):
                 if experiment_stamp_relation_id is not None:
                     self.graph_api_service.delete_relationship(
@@ -286,8 +293,8 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
         Args:
             signal_series_id (int | str): identity of time series
             depth: (int): specifies how many related entities will be traversed to create the response
-            signal_min_value (Optional[int]): Filter signal values by min value
-            signal_max_value (Optional[int]): Filter signal values by max value
+            signal_min_value (Optional[int]): Filter Signal_Values by min value
+            signal_max_value (Optional[int]): Filter Signal_Values by max value
         Returns:
             Result of request as time series object
         """
@@ -325,14 +332,14 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
                           signal_min_value: Optional[int] = None,
                           signal_max_value: Optional[int] = None):
         """
-        Send requests to graph api to get all signal values
+        Send requests to graph api to get all Signal_Values
         Args:
             signal_series_id (int | str): identity of the time series
             signal_series_type (str): type of the time series
-            signal_min_value (Optional[int]): Filter signal values by min value
-            signal_max_value (Optional[int]): Filter signal values by max value
+            signal_min_value (Optional[int]): Filter Signal_Values by min value
+            signal_max_value (Optional[int]): Filter Signal_Values by max value
         Returns:
-            Array of signal value objects
+            Array of Signal_Value objects
         """
         raise Exception("get_signal_values not implemented yet")
 
@@ -378,7 +385,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
             new_node_index = len(query["nodes"])
             node_indexes[label] = new_node_index
             query["nodes"].append(new_node)
-            if label == "Observable Information":
+            if label == "Observable_Information":
                 query["relations"].append({
                     "begin_node_index": 0,
                     "end_node_index": new_node_index,
@@ -386,7 +393,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
                 })
             elif label == "Recording":
                 query["relations"].append({
-                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Observable Information"),
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Observable_Information"),
                     "end_node_index": new_node_index,
                     "label": "hasRecording"
                 })
@@ -396,7 +403,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
                     "end_node_index": new_node_index,
                     "label": "hasParticipation"
                 })
-            elif label == "Participant State":
+            elif label == "Participant_State":
                 query["relations"].append({
                     "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Participation"),
                     "end_node_index": new_node_index,
@@ -404,7 +411,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
                 })
             elif label == "Participant":
                 query["relations"].append({
-                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Participant State"),
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Participant_State"),
                     "end_node_index": new_node_index,
                     "label": "hasParticipant"
                 })
@@ -436,7 +443,7 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
                     "end_node_index": new_activity_execution_index,
                     "label": "hasScenario"
                 })
-            elif label == "Registered Channel":
+            elif label == "Registered_Channel":
                 query["relations"].append({
                     "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Recording"),
                     "end_node_index": new_node_index,
@@ -444,11 +451,11 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
                 })
             elif label == "Channel":
                 query["relations"].append({
-                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Registered Channel"),
+                    "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Registered_Channel"),
                     "end_node_index": new_node_index,
                     "label": "hasChannel"
                 })
-            elif label == "Registered Data":
+            elif label == "Registered_Data":
                 query["relations"].append({
                     "begin_node_index": get_or_append_node_to_query(query, node_indexes, "Channel"),
                     "end_node_index": new_node_index,
@@ -459,9 +466,9 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
             return new_node_index
 
         node_indexes = {}
-        for node_label in ["Observable Information", "Recording", "Participation", "Participant State", "Participant",
-                           "Activity Execution", "Activity", "Experiment", "Registered Channel", "Channel",
-                           "Registered Data"]:
+        for node_label in ["Observable_Information", "Recording", "Participation", "Participant_State", "Participant",
+                           "Activity Execution", "Activity", "Experiment", "Registered_Channel", "Channel",
+                           "Registered_Data"]:
             node_param_name = node_label.lower().replace(" ", "")
             if node_param_name in params_per_node:
                 node_id = None
@@ -509,3 +516,6 @@ class SignalSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDB):
 
     def create_relation_nodes(self, stamp_type, current_signal_value_node, signal_value, current_stamp):
         raise Exception("create_relation_nodes not implemented yet")
+
+    def get_stamp_value(self, stamp):
+        raise Exception("get_stamp_value not implemented yet")

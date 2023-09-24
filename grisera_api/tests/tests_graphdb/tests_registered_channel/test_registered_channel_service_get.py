@@ -15,7 +15,7 @@ class TestRegisteredChannelServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_registered_channel_without_error(self, get_node_mock):
         id_node = 1
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Channel'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Registered_Channel'],
                                       'properties': [],
                                       "errors": None, 'links': None}
         registered_channel = BasicRegisteredChannelOut(age=5, id=id_node, additional_properties=[])
@@ -30,7 +30,7 @@ class TestRegisteredChannelServiceGet(unittest.TestCase):
     # @mock.patch.object(GraphApiService, 'get_node_relationships')
     # def test_get_registered_channel_without_error(self, get_node_relationships_mock, get_node_mock):
     #     id_node = 1
-    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Channel'],
+    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Registered_Channel'],
     #                                   'properties': [],
     #                                   "errors": None, 'links': None}
     #     get_node_relationships_mock.return_value = {"relationships": [
@@ -83,10 +83,10 @@ class TestRegisteredChannelServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_registered_channels(self, get_nodes_mock):
-        get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Registered Channel'],
+        get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Registered_Channel'],
                                                   'properties': [{'key': 'age', 'value': 5},
                                                                  {'key': 'test', 'value': 'test'}]},
-                                                 {'id': 2, 'labels': ['Registered Channel'],
+                                                 {'id': 2, 'labels': ['Registered_Channel'],
                                                   'properties': [{'key': 'age', 'value': 10},
                                                                  {'key': 'test2', 'value': 'test3'}]}]}
         registered_channel_one = BasicRegisteredChannelOut(id=1)
@@ -98,7 +98,7 @@ class TestRegisteredChannelServiceGet(unittest.TestCase):
         result = registered_channels_service.get_registered_channels()
 
         self.assertEqual(result, registered_channels)
-        get_nodes_mock.assert_called_once_with("`Registered Channel`")
+        get_nodes_mock.assert_called_once_with("`Registered_Channel`")
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_registered_channels_empty(self, get_nodes_mock):
@@ -109,4 +109,4 @@ class TestRegisteredChannelServiceGet(unittest.TestCase):
         result = registered_channels_service.get_registered_channels()
 
         self.assertEqual(result, registered_channels)
-        get_nodes_mock.assert_called_once_with("`Registered Channel`")
+        get_nodes_mock.assert_called_once_with("`Registered_Channel`")

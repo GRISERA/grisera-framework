@@ -37,7 +37,7 @@ class TestObservableInformationServicePut(unittest.TestCase):
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
 
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Observable Information'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Observable_Information'],
                                       'properties': None,
                                       "errors": None, 'links': None}
         observable_information_in = ObservableInformationIn(modality_id=6, life_activity_id=7, recording_id=8)
@@ -91,7 +91,7 @@ class TestObservableInformationServicePut(unittest.TestCase):
     #          "name": "hasLifeActivity", "id": 0,
     #          "properties": None},
     #     ]}
-    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Observable Information'],
+    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Observable_Information'],
     #                                   'properties': None,
     #                                   "errors": None, 'links': None}
     #     observable_information_in = ObservableInformationIn(modality_id=15, life_activity_id=19)

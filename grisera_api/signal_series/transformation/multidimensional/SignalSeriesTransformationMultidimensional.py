@@ -1,6 +1,6 @@
 from typing import List
 
-from time_series.ts_helpers import get_node_property
+from signal_series.ss_helpers import get_node_property
 from signal_series.signal_series_model import SignalSeriesOut, Type, SignalSeriesMultidimensionalOut
 
 
@@ -14,8 +14,8 @@ class SignalSeriesTransformationMultidimensional:
         """
         Transform time series data.
 
-        Get signal values lists grouped by timestamp values.
-        This transformation will ignore all signal values which timestamps will not be equal.
+        Get Signal_Values lists grouped by timestamp values.
+        This transformation will ignore all Signal_Values which timestamps will not be equal.
 
         Args:
             time_series (List[SignalSeriesOut]): Time series to be transformed
@@ -31,12 +31,12 @@ class SignalSeriesTransformationMultidimensional:
         new_signal_values = []
         current_signal_value_rest_indexes = [0] * len(time_series)
         timestamp_label = "timestamp" if time_series[0].type == Type.timestamp else "start_timestamp"
-        # Iterate over all X signal values
+        # Iterate over all X Signal_Values
         for current_signal_value_x in time_series[0].signal_values:
             match = True
             signal_values = [current_signal_value_x["signal_value"]]
             for i in range(1, len(time_series)):
-                # For current X signal value find first Y, Z and other signal values with greater or equal timestamp
+                # For current X Signal_Value find first Y, Z and other Signal_Values with greater or equal timestamp
                 # value
                 # If not found, return not existing indexes
                 while current_signal_value_rest_indexes[i] < len(time_series[i].signal_values) and \

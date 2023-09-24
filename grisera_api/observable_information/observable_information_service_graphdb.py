@@ -20,7 +20,7 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
     Attributes:
     graph_api_service (GraphApiService): Service used to communicate with Graph API
     modality_service (ModalityService): Service used to communicate with Modality
-    life_activity_service (LifeActivityService): Service used to communicate with Life Activity
+    life_activity_service (LifeActivityService): Service used to communicate with Life_Activity
     recording_service (RecordingService): Service used to communicate with Recording
     """
 
@@ -44,7 +44,7 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
             Result of request as observable information object
         """
         node_response = self.graph_api_service.create_node(
-            "Observable Information")
+            "Observable_Information")
 
         if node_response["errors"] is not None:
             return ObservableInformationOut(errors=node_response["errors"])
@@ -79,7 +79,7 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
             Result of request as list of observable information objects
         """
         get_response = self.graph_api_service.get_nodes(
-            "`Observable Information`")
+            "`Observable_Information`")
 
         observable_informations = []
 
@@ -105,7 +105,7 @@ class ObservableInformationServiceGraphDB(ObservableInformationService):
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=observable_information_id, errors=get_response["errors"])
-        if get_response["labels"][0] != "Observable Information":
+        if get_response["labels"][0] != "Observable_Information":
             return NotFoundByIdModel(id=observable_information_id, errors="Node not found.")
 
         observable_information = create_stub_from_response(get_response)

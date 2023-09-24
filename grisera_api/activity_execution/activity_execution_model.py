@@ -37,7 +37,7 @@ class ActivityExecutionIn(ActivityExecutionPropertyIn, ActivityExecutionRelation
     """
 
 
-class BasicActivityExecutionOut(ActivityExecutionPropertyIn):
+class BasicActivityExecutionOut(ActivityExecutionIn):
     """
     Basic model of activity execution
 

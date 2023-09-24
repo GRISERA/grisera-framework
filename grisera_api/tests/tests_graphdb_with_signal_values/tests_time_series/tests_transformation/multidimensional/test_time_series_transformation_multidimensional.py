@@ -11,26 +11,26 @@ class TestSignalSeriesTransformationMultidimensional(unittest.TestCase):
             type=Type.timestamp,
             signal_values=[
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 2,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 2,
                                      'properties': [{'key': 'value', 'value': '5'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 1, 'properties': [
                         {'key': 'timestamp', 'value': '0'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 0,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 0,
                                      'properties': [{'key': 'value', 'value': '10'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 0, 'properties': [
                         {'key': 'timestamp', 'value': '1'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 4,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 4,
                                      'properties': [
                                          {'key': 'value', 'value': '15'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 3, 'properties': [
                         {'key': 'timestamp', 'value': '2'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 6,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 6,
                                      'properties': [
                                          {'key': 'value', 'value': '20'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 5, 'properties': [
@@ -41,20 +41,20 @@ class TestSignalSeriesTransformationMultidimensional(unittest.TestCase):
             type=Type.timestamp,
             signal_values=[
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 12,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 12,
                                      'properties': [{'key': 'value', 'value': '20'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 11, 'properties': [
                         {'key': 'timestamp', 'value': '0'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 14,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 14,
                                      'properties': [
                                          {'key': 'value', 'value': '25'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 13, 'properties': [
                         {'key': 'timestamp', 'value': '2'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 16,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 16,
                                      'properties': [
                                          {'key': 'value', 'value': '30'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 15, 'properties': [
@@ -65,20 +65,20 @@ class TestSignalSeriesTransformationMultidimensional(unittest.TestCase):
             type=Type.timestamp,
             signal_values=[
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 22,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 22,
                                      'properties': [{'key': 'value', 'value': '35'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 21, 'properties': [
                         {'key': 'timestamp', 'value': '0'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 24,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 24,
                                      'properties': [
                                          {'key': 'value', 'value': '40'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 23, 'properties': [
                         {'key': 'timestamp', 'value': '1'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 16,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 16,
                                      'properties': [
                                          {'key': 'value', 'value': '45'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 25, 'properties': [
@@ -92,7 +92,7 @@ class TestSignalSeriesTransformationMultidimensional(unittest.TestCase):
             type=Type.epoch,
             signal_values=[
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 2,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 2,
                                      'properties': [{'key': 'value', 'value': '5'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 1, 'properties': [
                         {'key': 'start_timestamp', 'value': 1},
@@ -100,7 +100,7 @@ class TestSignalSeriesTransformationMultidimensional(unittest.TestCase):
                     ]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 4,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 4,
                                      'properties': [{'key': 'value', 'value': '10'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 3, 'properties': [
                         {'key': 'start_timestamp', 'value': 15},
@@ -112,7 +112,7 @@ class TestSignalSeriesTransformationMultidimensional(unittest.TestCase):
             type=Type.epoch,
             signal_values=[
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 12,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 12,
                                      'properties': [{'key': 'value', 'value': '15'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 11, 'properties': [
                         {'key': 'start_timestamp', 'value': 1},
@@ -120,7 +120,7 @@ class TestSignalSeriesTransformationMultidimensional(unittest.TestCase):
                     ]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 14,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 14,
                                      'properties': [
                                          {'key': 'value', 'value': '20'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 13, 'properties': [
@@ -129,7 +129,7 @@ class TestSignalSeriesTransformationMultidimensional(unittest.TestCase):
                     ]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 16,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 16,
                                      'properties': [
                                          {'key': 'value', 'value': '25'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 15, 'properties': [
@@ -152,22 +152,22 @@ class TestSignalSeriesTransformationMultidimensional(unittest.TestCase):
                         'timestamp': {'labels': ['Timestamp'], 'id': 1,
                                       'properties': [{'key': 'timestamp', 'value': '0'}]},
                         'signal_values': [
-                            {'labels': ['Signal Value'], 'id': 2, 'properties': [
+                            {'labels': ['Signal_Value'], 'id': 2, 'properties': [
                                 {'key': 'value', 'value': '5'}]},
-                            {'labels': ['Signal Value'], 'id': 12, 'properties': [
+                            {'labels': ['Signal_Value'], 'id': 12, 'properties': [
                                 {'key': 'value', 'value': '20'}]},
-                            {'labels': ['Signal Value'], 'id': 22, 'properties': [
+                            {'labels': ['Signal_Value'], 'id': 22, 'properties': [
                                 {'key': 'value', 'value': '35'}]}
                         ]},
                     {
                         'timestamp': {'labels': ['Timestamp'], 'id': 3,
                                       'properties': [{'key': 'timestamp', 'value': '2'}]},
                         'signal_values': [
-                            {'labels': ['Signal Value'], 'id': 4, 'properties': [
+                            {'labels': ['Signal_Value'], 'id': 4, 'properties': [
                                 {'key': 'value', 'value': '15'}]},
-                            {'labels': ['Signal Value'], 'id': 14, 'properties': [
+                            {'labels': ['Signal_Value'], 'id': 14, 'properties': [
                                 {'key': 'value', 'value': '25'}]},
-                            {'labels': ['Signal Value'], 'id': 16, 'properties': [
+                            {'labels': ['Signal_Value'], 'id': 16, 'properties': [
                                 {'key': 'value', 'value': '45'}]}
                         ]}
                 ]
@@ -186,9 +186,9 @@ class TestSignalSeriesTransformationMultidimensional(unittest.TestCase):
                                       'properties': [{'key': 'start_timestamp', 'value': 1},
                                                      {'key': 'end_timestamp', 'value': 4}]},
                         'signal_values': [
-                            {'labels': ['Signal Value'], 'id': 2, 'properties': [
+                            {'labels': ['Signal_Value'], 'id': 2, 'properties': [
                                 {'key': 'value', 'value': '5'}]},
-                            {'labels': ['Signal Value'], 'id': 12, 'properties': [
+                            {'labels': ['Signal_Value'], 'id': 12, 'properties': [
                                 {'key': 'value', 'value': '15'}]}
                         ]},
                     {
@@ -196,9 +196,9 @@ class TestSignalSeriesTransformationMultidimensional(unittest.TestCase):
                                       'properties': [{'key': 'start_timestamp', 'value': 15},
                                                      {'key': 'end_timestamp', 'value': 20}]},
                         'signal_values': [
-                            {'labels': ['Signal Value'], 'id': 4, 'properties': [
+                            {'labels': ['Signal_Value'], 'id': 4, 'properties': [
                                 {'key': 'value', 'value': '10'}]},
-                            {'labels': ['Signal Value'], 'id': 16, 'properties': [
+                            {'labels': ['Signal_Value'], 'id': 16, 'properties': [
                                 {'key': 'value', 'value': '25'}]}
                         ]}
                 ]

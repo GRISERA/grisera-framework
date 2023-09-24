@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from property.property_model import PropertyIn
-from time_series.ts_helpers import get_node_property, get_additional_parameter
+from signal_series.ss_helpers import get_node_property, get_additional_parameter
 from signal_series.signal_series_model import SignalSeriesOut, SignalSeriesIn, SignalIn, Type, TransformationType, \
     SignalValueNodesIn
 from signal_series.transformation.SignalSeriesTransformation import SignalSeriesTransformation
@@ -17,8 +17,8 @@ class SignalSeriesTransformationQuadrants(SignalSeriesTransformation):
         """
         Transform signal series data.
 
-        Get quadrants for (X, Y) signal values pairs matched by timestamp values.
-        This transformation will ignore all signal values which timestamps will not be equal.
+        Get quadrants for (X, Y) Signal_Values pairs matched by timestamp values.
+        This transformation will ignore all Signal_Values which timestamps will not be equal.
 
         Args:
             signal_series (List[SignalSeriesOut]): Time series to be transformed
@@ -44,9 +44,9 @@ class SignalSeriesTransformationQuadrants(SignalSeriesTransformation):
         new_signal_values_id_mapping = []
         current_signal_value_y_index = 0
         timestamp_label = "timestamp" if signal_series[0].type == Type.timestamp else "start_timestamp"
-        # Iterate over all X signal values
+        # Iterate over all X Signal_Values
         for current_signal_value_x in signal_series[0].signal_values:
-            # For current X signal value find first Y signal value with greater or equal timestamp value
+            # For current X Signal_Value find first Y Signal_Value with greater or equal timestamp value
             # If not found, return not existing index
             while current_signal_value_y_index < len(signal_series[1].signal_values) and \
                 int(get_node_property(signal_series[1].signal_values[current_signal_value_y_index]["timestamp"],
@@ -61,7 +61,7 @@ class SignalSeriesTransformationQuadrants(SignalSeriesTransformation):
                     signal_series[1].signal_values[current_signal_value_y_index]["timestamp"], "start_timestamp") and \
                 get_node_property(current_signal_value_x["timestamp"], "end_timestamp") == get_node_property(
                     signal_series[1].signal_values[current_signal_value_y_index]["timestamp"], "end_timestamp"):
-                # Determine quadrant comparing X and Y signal values with origin point
+                # Determine quadrant comparing X and Y Signal_Values with origin point
                 x_positive = 1 if int(
                     get_node_property(current_signal_value_x["signal_value"], "value")) >= origin_x else 0
                 y_positive = 1 if int(

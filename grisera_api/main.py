@@ -57,10 +57,10 @@ app.include_router(frequency_domain_series_router)
 @app.on_event("startup")
 async def startup_event():
     startup = SetupNodes()
-    sleep(40)
+    sleep(2)
     if not os.path.exists("lock"):
         open("lock", "w").write("Busy")
-        sleep(40)
+        sleep(2)
         startup.set_activities()
         startup.set_channels()
         startup.set_arrangements()
@@ -76,5 +76,5 @@ async def root():
     Return home page of api
     """
     response = {"title": "GRISERA API"}
-    response.update({'links': get_links(app)})
+    response.update({"links": get_links(app)})
     return response

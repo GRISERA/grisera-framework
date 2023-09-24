@@ -16,7 +16,7 @@ class TestTimeSeriesServiceDelete(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     def test_delete_signal_series_without_error(self, get_node_mock, delete_node_mock):
         id_node = 1
-        delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Time Series'],
+        delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Time_Series'],
                                                                       'properties': [{'key': 'type', 'value': "Epoch"},
                                                                                      {'key': 'source', 'value': "cos"}],
                                                                       "errors": None, 'links': None}
@@ -34,7 +34,7 @@ class TestTimeSeriesServiceDelete(unittest.TestCase):
     # @mock.patch.object(GraphApiService, 'get_node_relationships')
     # def test_delete_signal_series_without_error(self, get_node_relationships_mock, get_node_mock, delete_node_mock):
     #     id_node = 1
-    #     delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Time Series'],
+    #     delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Time_Series'],
     #                                                                   'properties': [{'key': 'type', 'value': "Epoch"},
     #                                                                                  {'key': 'source', 'value': "cos"}],
     #                                                                   "errors": None, 'links': None}

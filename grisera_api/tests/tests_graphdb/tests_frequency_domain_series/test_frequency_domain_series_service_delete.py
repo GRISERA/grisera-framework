@@ -16,7 +16,7 @@ class TestFrequencyDomainSeriesServiceDelete(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     def test_delete_signal_series_without_error(self, get_node_mock, delete_node_mock):
         id_node = 1
-        delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Frequency Domain Series'],
+        delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Frequency_Domain_Series'],
                                                                       'properties': [{'key': 'type', 'value': "Frequencystamp"},
                                                                                      {'key': 'source', 'value': "cos"}],
                                                                       "errors": None, 'links': None}

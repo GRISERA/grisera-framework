@@ -5,6 +5,8 @@ services:
     ports:
       - "7474:7474"
       - "7687:7687"
+    environment:
+      - NEO4J_dbms_security_auth__minimum__password__length=5
 
   graph_api:
     build: graph_api
@@ -15,28 +17,8 @@ services:
     environment:
       - DB_HOST=host.docker.internal
       - DB_PORT=7474
+      - TIMEOUT=2137
       
-  grisera_api:
-    build: grisera_api
-    ports:
-      - "18081:80"
-    extra_hosts: 
-      - "host.docker.internal:host-gateway"
-    environment:
-      - GRAPH_API_HOST=host.docker.internal
-      - GRAPH_API_PORT=18080
-      - PERSISTENCE_TYPE=1
-      
-  grisera_api_ontology:
-    build: grisera_api
-    ports:
-      - "18083:80"
-    extra_hosts: 
-      - "host.docker.internal:host-gateway"
-    environment:
-      - ONTOLOGY_API_HOST=host.docker.internal
-      - ONTOLOGY_API_PORT=18082
-      - PERSISTENCE_TYPE=2
 
   grisera_api_time_series:
     build: grisera_api
@@ -48,10 +30,6 @@ services:
       - GRAPH_API_HOST=host.docker.internal
       - GRAPH_API_PORT=18080
       - PERSISTENCE_TYPE=3
+      - TIMEOUT=2137
       
-  ontology_api:
-    build: ontology_api
-    ports:
-      - "18082:80"
-    extra_hosts: 
-      - "host.docker.internal:host-gateway"
+

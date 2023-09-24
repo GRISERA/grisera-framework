@@ -29,13 +29,13 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
             measure_id=103,
             signal_values=[
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 22,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 22,
                                      'properties': [{'key': 'value', 'value': '4'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 21, 'properties': [
                         {'key': 'timestamp', 'value': '100'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 24,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 24,
                                      'properties': [
                                          {'key': 'value', 'value': '3'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 23, 'properties': [
@@ -56,7 +56,7 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
                     type=Type.timestamp,
                     signal_values=[
                         {
-                            'signal_value': {'labels': ['Signal Value'], 'id': 2,
+                            'signal_value': {'labels': ['Signal_Value'], 'id': 2,
                                              'properties': [
                                                  {'key': 'value', 'value': '10'}]},
                             'timestamp': {'labels': ['Timestamp'], 'id': 1,
@@ -64,7 +64,7 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
                                               {'key': 'timestamp', 'value': '100'}]}
                         },
                         {
-                            'signal_value': {'labels': ['Signal Value'], 'id': 4,
+                            'signal_value': {'labels': ['Signal_Value'], 'id': 4,
                                              'properties': [
                                                  {'key': 'value', 'value': '-10'}]},
                             'timestamp': {'labels': ['Timestamp'], 'id': 3,
@@ -78,7 +78,7 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
                     type=Type.timestamp,
                     signal_values=[
                         {
-                            'signal_value': {'labels': ['Signal Value'], 'id': 12,
+                            'signal_value': {'labels': ['Signal_Value'], 'id': 12,
                                              'properties': [
                                                  {'key': 'value', 'value': '-5'}]},
                             'timestamp': {'labels': ['Timestamp'], 'id': 11,
@@ -86,7 +86,7 @@ class TestTimeSeriesWithSignalValuesServiceTransformation(unittest.TestCase):
                                               {'key': 'timestamp', 'value': '100'}]}
                         },
                         {
-                            'signal_value': {'labels': ['Signal Value'], 'id': 14,
+                            'signal_value': {'labels': ['Signal_Value'], 'id': 14,
                                              'properties': [
                                                  {'key': 'value', 'value': '5'}]},
                             'timestamp': {'labels': ['Timestamp'], 'id': 13,

@@ -3,9 +3,10 @@ from typing import List, Union, Optional
 from starlette.datastructures import QueryParams
 
 from models.not_found_model import NotFoundByIdModel
-from time_series.ts_helpers import get_node_property
+from signal_series.ss_helpers import get_node_property
 from signal_series.signal_series_model import Type, SignalSeriesIn, SignalIn, SignalValueNodesIn, \
     StampNodesIn, SignalSeriesTransformationIn
+    
 from time_series.time_series_service_graphdb import TimeSeriesServiceGraphDB
 from signal_series.signal_series_service_graphdb_with_signal_values import SignalSeriesServiceGraphDBWithSignalValues
 
@@ -13,7 +14,7 @@ from signal_series.signal_series_service_graphdb_with_signal_values import Signa
 class TimeSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDBWithSignalValues):
     
     def __init__(self):
-        super().__init__(TimeSeriesServiceGraphDB(), "timestamp", "Timestamp","Time Series")
+        super().__init__("timestamp", "Timestamp","Time_Series")
 
     def save_signal_series(self, signal_series: SignalSeriesIn):
         """
@@ -65,8 +66,8 @@ class TimeSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDBWithSig
         Args:
             signal_series_id (int | str): identity of time series
             depth: (int): specifies how many related entities will be traversed to create the response
-            signal_min_value (Optional[int]): Filter signal values by min value
-            signal_max_value (Optional[int]): Filter signal values by max value
+            signal_min_value (Optional[int]): Filter Signal_Values by min value
+            signal_max_value (Optional[int]): Filter Signal_Values by max value
         Returns:
             Result of request as time series object
         """
@@ -86,14 +87,14 @@ class TimeSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDBWithSig
                           signal_min_value: Optional[int] = None,
                           signal_max_value: Optional[int] = None):
         """
-        Send requests to graph api to get all signal values
+        Send requests to graph api to get all Signal_Values
         Args:
             signal_series_id (int | str): identity of the time series
             signal_series_type (str): type of the time series
-            signal_min_value (Optional[int]): Filter signal values by min value
-            signal_max_value (Optional[int]): Filter signal values by max value
+            signal_min_value (Optional[int]): Filter Signal_Values by min value
+            signal_max_value (Optional[int]): Filter Signal_Values by max value
         Returns:
-            Array of signal value objects
+            Array of Signal_Value objects
         """
         parameters = []
         if signal_min_value is not None:
@@ -112,13 +113,13 @@ class TimeSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDBWithSig
             "nodes": [
                 {
                     "id": signal_series_id,
-                    "label": "Time Series"
+                    "label": "Time_Series"
                 },
                 {
-                    "label": "Signal Value"
+                    "label": "Signal_Value"
                 },
                 {
-                    "label": "Signal Value",
+                    "label": "Signal_Value",
                     "result": True,
                     "parameters": parameters
                 },
@@ -150,13 +151,13 @@ class TimeSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDBWithSig
             "nodes": [
                 {
                     "id": signal_series_id,
-                    "label": "Time Series"
+                    "label": "Time_Series"
                 },
                 {
-                    "label": "Signal Value"
+                    "label": "Signal_Value"
                 },
                 {
-                    "label": "Signal Value",
+                    "label": "Signal_Value",
                     "result": True,
                     "parameters": parameters
                 },
@@ -283,3 +284,6 @@ class TimeSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDBWithSig
                                                         end_node=current_signal_value_node["id"],
                                                         name="endInSec")
         return current_stamp
+
+    def get_stamp_value(self, stamp):
+        return int(stamp)

@@ -11,67 +11,67 @@ class TestSignalSeriesTransformationFourier(unittest.TestCase):
             type=Type.timestamp,
             signal_values=[
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 2,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 2,
                                      'properties': [{'key': 'value', 'value': '5'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 1, 'properties': [
                         {'key': 'timestamp', 'value': '0'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 0,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 0,
                                      'properties': [{'key': 'value', 'value': '5'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 0, 'properties': [
                         {'key': 'timestamp', 'value': '1'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 4,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 4,
                                      'properties': [
                                          {'key': 'value', 'value': '10'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 3, 'properties': [
                         {'key': 'timestamp', 'value': '2'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 6,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 6,
                                      'properties': [
                                          {'key': 'value', 'value': '-5'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 5, 'properties': [
                         {'key': 'timestamp', 'value': '3'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 8,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 8,
                                      'properties': [
                                          {'key': 'value', 'value': '-10'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 7, 'properties': [
                         {'key': 'timestamp', 'value': '4'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 12,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 12,
                                      'properties': [{'key': 'value', 'value': '10'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 11, 'properties': [
                         {'key': 'timestamp', 'value': '0'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 14,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 14,
                                      'properties': [
                                          {'key': 'value', 'value': '-5'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 13, 'properties': [
                         {'key': 'timestamp', 'value': '2'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 16,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 16,
                                      'properties': [
                                          {'key': 'value', 'value': '5'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 15, 'properties': [
                         {'key': 'timestamp', 'value': '3'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 18,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 18,
                                      'properties': [
                                          {'key': 'value', 'value': '-5'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 17, 'properties': [
                         {'key': 'timestamp', 'value': '4'}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 20,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 20,
                                      'properties': [
                                          {'key': 'value', 'value': '-5'}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 19, 'properties': [

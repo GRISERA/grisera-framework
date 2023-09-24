@@ -26,7 +26,7 @@ class TestParticipantStateServiceDelete(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     def test_delete_participant_state_without_error(self, get_node_mock, delete_node_mock):
         id_node = 1
-        delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Participant State'],
+        delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Participant_State'],
                                                                       'properties': [{'key': 'age', 'value': 5}],
                                                                       "errors": None, 'links': None}
         participant_state = BasicParticipantStateOut(age=5, id=id_node, additional_properties=[])
@@ -43,7 +43,7 @@ class TestParticipantStateServiceDelete(unittest.TestCase):
     # @mock.patch.object(GraphApiService, 'get_node_relationships')
     # def test_delete_participant_state_without_error(self, get_node_relationships_mock, get_node_mock, delete_node_mock):
     #     id_node = 1
-    #     delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Participant State'],
+    #     delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Participant_State'],
     #                                                                   'properties': [{'key': 'age', 'value': 5}],
     #                                                                   "errors": None, 'links': None}
     #     get_node_relationships_mock.return_value = {"relationships": [

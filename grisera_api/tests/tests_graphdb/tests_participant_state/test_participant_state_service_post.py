@@ -36,10 +36,10 @@ class TestParticipantStateServicePost(unittest.TestCase):
         participant_state_in = ParticipantStateIn(age=12, additional_properties=additional_properties, participant_id=6, personality_ids=[7,8], appearance_ids=[9,10])
         participant_state_out = BasicParticipantStateOut(id=id_node, age=12, additional_properties=additional_properties)
 
-        create_node_mock.return_value = {'id': id_node, 'labels': ['Participant State'],
+        create_node_mock.return_value = {'id': id_node, 'labels': ['Participant_State'],
                                          'properties': [],
                                          "errors": None, 'links': None}
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Participant State'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Participant_State'],
                                       'properties': [{'key': 'age', 'value': 12},
                                                      {'key': 'identifier', 'value': 5}],
                                       "errors": None, 'links': None}
@@ -81,4 +81,4 @@ class TestParticipantStateServicePost(unittest.TestCase):
         result = participant_state_service.save_participant_state(participant_state)
 
         self.assertEqual(result, ParticipantStateOut(age=5, errors=['error']))
-        create_node_mock.assert_called_once_with('Participant State')
+        create_node_mock.assert_called_once_with('Participant_State')

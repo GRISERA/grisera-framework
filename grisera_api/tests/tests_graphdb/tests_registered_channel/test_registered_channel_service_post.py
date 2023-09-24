@@ -24,7 +24,7 @@ class TestRegisteredChannelServicePost(unittest.TestCase):
         create_node_mock.return_value = {'id': id_node, 'properties': None, "errors": None, 'links': None}
         get_channel_mock.return_value = BasicChannelOut(**{'id': 2, 'type': 'Audio'})
         get_registered_data_mock.return_value = BasicRegisteredDataOut(**{'id': 3, 'source': 'test'})
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Channel'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Registered_Channel'],
                                       'properties': [],
                                       "errors": None, 'links': None}
 
@@ -39,7 +39,7 @@ class TestRegisteredChannelServicePost(unittest.TestCase):
         result = registered_channel_service.save_registered_channel(registered_channel_in)
 
         self.assertEqual(result, registered_channel_out)
-        create_node_mock.assert_called_once_with('Registered Channel')
+        create_node_mock.assert_called_once_with('Registered_Channel')
         create_relationships_mock.assert_has_calls([
             mock.call(start_node=id_node, end_node=2, name='hasChannel'),
             mock.call(start_node=id_node, end_node=3, name='hasRegisteredData')
@@ -55,7 +55,7 @@ class TestRegisteredChannelServicePost(unittest.TestCase):
     #                                                 create_relationships_mock, create_properties_mock,
     #                                                 create_node_mock):
     #     id_node = 1
-    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Channel'],
+    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Registered_Channel'],
     #                                   'properties': [],
     #                                   "errors": None, 'links': None}
     #     get_node_relationships_mock.return_value = {"relationships": [
@@ -84,7 +84,7 @@ class TestRegisteredChannelServicePost(unittest.TestCase):
     #     result = registered_channel_service.save_registered_channel(registered_channel_in)
     #
     #     self.assertEqual(result, registered_channel_out)
-    #     create_node_mock.assert_called_once_with('`Registered Channel`')
+    #     create_node_mock.assert_called_once_with('`Registered_Channel`')
     #     create_properties_mock.assert_not_called()
     #     create_relationships_mock.assert_not_called()
     #     get_node_mock.assert_has_calls(calls)
@@ -99,4 +99,4 @@ class TestRegisteredChannelServicePost(unittest.TestCase):
         result = registered_channel_service.save_registered_channel(registered_channel)
 
         self.assertEqual(result, RegisteredChannelOut(errors=['error']))
-        create_node_mock.assert_called_once_with('Registered Channel')
+        create_node_mock.assert_called_once_with('Registered_Channel')

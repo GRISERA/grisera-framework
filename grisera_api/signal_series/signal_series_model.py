@@ -29,10 +29,10 @@ class StampNodesIn(BaseModel):
 
 class SignalValueNodesIn(BaseModel):
     """
-    Model of signal value node
+    Model of Signal_Value node
     Attributes:
         value (Union[str, float]): Value of signal
-        additional_properties (Optional[List[PropertyIn]]): Additional properties for signal value
+        additional_properties (Optional[List[PropertyIn]]): Additional properties for Signal_Value
     """
     value: Union[str, float]
     additional_properties: Optional[List[PropertyIn]]
@@ -45,12 +45,13 @@ class SignalIn(BaseModel):
         timestamp (Optional[int]): Timestamp of signal measure of type Timestamp in milliseconds
         start_timestamp (Optional[int]): Timestamp of begin signal measure of type Epoch in milliseconds
         end_timestamp (Optional[int]): Timestamp of end signal measure of type Epoch in milliseconds
+        frequencystamp: (Optional[int]): Frequencystamp of signal measure of type Frequencystamp in herc
         signal_value (SignalValueNodesIn): Value of signal
     """
     timestamp: Optional[int]
     start_timestamp: Optional[int]
     end_timestamp: Optional[int]
-    frequencystamp: Optional[int]
+    frequencystamp: Optional[float]
     signal_value: SignalValueNodesIn
 
 
@@ -166,7 +167,7 @@ class SignalSeriesMultidimensionalOut(BaseModelOut):
     Model of signal multidimensional series to send to client as a result of request
 
     Attributes:
-        signal_values (list): List of signal values
+        signal_values (list): List of Signal_Values
         signal_series (List[SignalSeriesOut]): signal series nodes from database
     """
     signal_values: list = []

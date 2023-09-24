@@ -16,7 +16,7 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node_relationships')
     def test_get_signal_series_without_error(self, get_node_relationships_mock, get_nodes_by_query_mock, get_node_mock):
         id_node = 1
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Frequency Domain Series'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Frequency_Domain_Series'],
                                       'properties': [{'key': 'type', 'value': "Frequencystamp"},
                                                      {'key': 'source',
                                                          'value': "cos"},
@@ -24,11 +24,11 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
                                       "errors": None, 'links': None}
         get_nodes_by_query_mock.return_value = {
             'rows': [
-                [{'labels': ['Signal Value'], 'id': 2, 'properties': [{'key': 'value', 'value': '10'}]},
+                [{'labels': ['Signal_Value'], 'id': 2, 'properties': [{'key': 'value', 'value': '10'}]},
                  {'labels': ['Frequencystamp'], 'id': 1, 'properties': [{'key': 'frequencystamp', 'value': '100'}]}],
-                [{'labels': ['Signal Value'], 'id': 4, 'properties': [{'key': 'value', 'value': '20'}]},
+                [{'labels': ['Signal_Value'], 'id': 4, 'properties': [{'key': 'value', 'value': '20'}]},
                  {'labels': ['Frequencystamp'], 'id': 3, 'properties': [{'key': 'frequencystamp', 'value': '200'}]}],
-                [{'labels': ['Signal Value'], 'id': 6, 'properties': [{'key': 'value', 'value': '30'}]},
+                [{'labels': ['Signal_Value'], 'id': 6, 'properties': [{'key': 'value', 'value': '30'}]},
                  {'labels': ['Frequencystamp'], 'id': 5, 'properties': [{'key': 'frequencystamp', 'value': '300'}]}]
             ],
             'errors': []
@@ -44,20 +44,20 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
         frequency_domain_series = BasicSignalSeriesOut(id=1, type="Frequencystamp", source="cos",
                                                        signal_values=[
                                                            {
-                                                               'signal_value': {'labels': ['Signal Value'], 'id': 2,
+                                                               'signal_value': {'labels': ['Signal_Value'], 'id': 2,
                                                                                 'properties': [{'key': 'value', 'value': '10'}]},
                                                                'frequencystamp': {'labels': ['Frequencystamp'], 'id': 1, 'properties': [
                                                                    {'key': 'frequencystamp', 'value': '100'}]}
                                                            },
                                                            {
-                                                               'signal_value': {'labels': ['Signal Value'], 'id': 4,
+                                                               'signal_value': {'labels': ['Signal_Value'], 'id': 4,
                                                                                 'properties': [
                                                                    {'key': 'value', 'value': '20'}]},
                                                                'frequencystamp': {'labels': ['Frequencystamp'], 'id': 3, 'properties': [
                                                                    {'key': 'frequencystamp', 'value': '200'}]}
                                                            },
                                                            {
-                                                               'signal_value': {'labels': ['Signal Value'], 'id': 6,
+                                                               'signal_value': {'labels': ['Signal_Value'], 'id': 6,
                                                                                 'properties': [
                                                                    {'key': 'value', 'value': '30'}]},
                                                                'frequencystamp': {'labels': ['Frequencystamp'], 'id': 5, 'properties': [
@@ -93,9 +93,9 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
     def test_get_signal_series_nodes(self, get_nodes_by_query):
         get_nodes_by_query.return_value = {
             'rows': [
-                [{'labels': ['Frequency Domain Series'], 'id': 2,
+                [{'labels': ['Frequency_Domain_Series'], 'id': 2,
                   'properties': [{'key': 'value', 'value': 'test1'}, {'key': 'type', 'value': 'Frequencystamp'}]}],
-                [{'labels': ['Frequency Domain Series'], 'id': 4,
+                [{'labels': ['Frequency_Domain_Series'], 'id': 4,
                   'properties': [{'key': 'value', 'value': 'test2'}, {'key': 'type', 'value': 'Frequencystamp'}]}],
             ],
             'errors': []
@@ -115,15 +115,15 @@ class TestTimeSeriesWithSignalValuesServicePost(unittest.TestCase):
         get_nodes_by_query.assert_called_once_with({
             'nodes':
                 [
-                    {'label': 'Frequency Domain Series', 'result': True},
+                    {'label': 'Frequency_Domain_Series', 'result': True},
                     {'label': 'Participant', 'parameters': [
                         {'key': 'date_of_birth', 'operator': 'equals',
                             'value': '2023-01-11'}
                     ]},
-                    {'label': 'Participant State'},
+                    {'label': 'Participant_State'},
                     {'label': 'Participation'},
                     {'label': 'Recording'},
-                    {'label': 'Observable Information'}
+                    {'label': 'Observable_Information'}
                 ],
             'relations': [
                 {'begin_node_index': 0, 'end_node_index': 5,

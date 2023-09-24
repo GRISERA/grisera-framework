@@ -17,7 +17,7 @@ class TestRegisteredChannelServiceDelete(unittest.TestCase):
     def test_delete_registered_channel_without_error(self,get_node_mock,
                                                      delete_node_mock):
         id_node = 1
-        delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Channel'],
+        delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Registered_Channel'],
                                                                       'properties': [{'key': 'age', 'value': 5}],
                                                                       "errors": None, 'links': None}
         registered_channel = BasicRegisteredChannelOut(age=5, id=id_node, additional_properties=[])
@@ -36,7 +36,7 @@ class TestRegisteredChannelServiceDelete(unittest.TestCase):
         #                                                  delete_node_mock):
         #     id_node = 1
         #     delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node,
-        #                                                                   'labels': ['Registered Channel'],
+        #                                                                   'labels': ['Registered_Channel'],
         #                                                                   'properties': [{'key': 'age', 'value': 5}],
         #                                                                   "errors": None, 'links': None}
         #     get_node_relationships_mock.return_value = {"relationships": [

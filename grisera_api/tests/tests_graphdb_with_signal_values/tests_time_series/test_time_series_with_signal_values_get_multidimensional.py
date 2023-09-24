@@ -15,9 +15,9 @@ class TestTimeSeriesWithSignalValuesServiceGetMultidimensional(unittest.TestCase
                     'timestamp': {'labels': ['Timestamp'], 'id': 1, 'properties': [
                         {'key': 'timestamp', 'value': '100'}]},
                     'signal_values': [
-                        {'labels': ['Signal Value'], 'id': 22,
+                        {'labels': ['Signal_Value'], 'id': 22,
                          'properties': [{'key': 'value', 'value': '10'}]},
-                        {'labels': ['Signal Value'], 'id': 12,
+                        {'labels': ['Signal_Value'], 'id': 12,
                          'properties': [{'key': 'value', 'value': '11'}]}
                     ]
                 },
@@ -26,9 +26,9 @@ class TestTimeSeriesWithSignalValuesServiceGetMultidimensional(unittest.TestCase
                     'timestamp': {'labels': ['Timestamp'], 'id': 3, 'properties': [
                         {'key': 'timestamp', 'value': '200'}]},
                     'signal_values': [
-                        {'labels': ['Signal Value'], 'id': 4,
+                        {'labels': ['Signal_Value'], 'id': 4,
                          'properties': [{'key': 'value', 'value': '20'}]},
-                        {'labels': ['Signal Value'], 'id': 14,
+                        {'labels': ['Signal_Value'], 'id': 14,
                          'properties': [{'key': 'value', 'value': '21'}
                                         ]
                          }
@@ -48,7 +48,7 @@ class TestTimeSeriesWithSignalValuesServiceGetMultidimensional(unittest.TestCase
                     type=Type.timestamp,
                     signal_values=[
                         {
-                            'signal_value': {'labels': ['Signal Value'], 'id': 22,
+                            'signal_value': {'labels': ['Signal_Value'], 'id': 22,
                                              'properties': [
                                                  {'key': 'value', 'value': '10'}]},
                             'timestamp': {'labels': ['Timestamp'], 'id': 1,
@@ -56,7 +56,7 @@ class TestTimeSeriesWithSignalValuesServiceGetMultidimensional(unittest.TestCase
                                               {'key': 'timestamp', 'value': '100'}]}
                         },
                         {
-                            'signal_value': {'labels': ['Signal Value'], 'id': 4,
+                            'signal_value': {'labels': ['Signal_Value'], 'id': 4,
                                              'properties': [
                                                  {'key': 'value', 'value': '20'}]},
                             'timestamp': {'labels': ['Timestamp'], 'id': 3,
@@ -70,7 +70,7 @@ class TestTimeSeriesWithSignalValuesServiceGetMultidimensional(unittest.TestCase
                     type=Type.timestamp,
                     signal_values=[
                         {
-                            'signal_value': {'labels': ['Signal Value'], 'id': 12,
+                            'signal_value': {'labels': ['Signal_Value'], 'id': 12,
                                              'properties': [
                                                  {'key': 'value', 'value': '11'}]},
                             'timestamp': {'labels': ['Timestamp'], 'id': 11,
@@ -78,7 +78,7 @@ class TestTimeSeriesWithSignalValuesServiceGetMultidimensional(unittest.TestCase
                                               {'key': 'timestamp', 'value': '100'}]}
                         },
                         {
-                            'signal_value': {'labels': ['Signal Value'], 'id': 14,
+                            'signal_value': {'labels': ['Signal_Value'], 'id': 14,
                                              'properties': [
                                                  {'key': 'value', 'value': '21'}]},
                             'timestamp': {'labels': ['Timestamp'], 'id': 13,

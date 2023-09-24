@@ -31,7 +31,7 @@ class LifeActivityServiceGraphDB(LifeActivityService):
             Result of request as life activity object
         """
 
-        node_response = self.graph_api_service.create_node("Life Activity")
+        node_response = self.graph_api_service.create_node("Life_Activity")
 
         if node_response["errors"] is not None:
             return LifeActivityOut(life_activity=life_activity.life_activity, errors=node_response["errors"])
@@ -51,7 +51,7 @@ class LifeActivityServiceGraphDB(LifeActivityService):
         Returns:
             Result of request as list of life activity objects
         """
-        get_response = self.graph_api_service.get_nodes("Life Activity")
+        get_response = self.graph_api_service.get_nodes("Life_Activity")
         if get_response["errors"] is not None:
             return LifeActivitiesOut(errors=get_response["errors"])
         life_activities = [BasicLifeActivityOut(id=life_activity["id"],
@@ -75,7 +75,7 @@ class LifeActivityServiceGraphDB(LifeActivityService):
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=life_activity_id, errors=get_response["errors"])
-        if get_response["labels"][0] != "Life Activity":
+        if get_response["labels"][0] != "Life_Activity":
             return NotFoundByIdModel(id=life_activity_id, errors="Node not found.")
 
         life_activity = create_stub_from_response(get_response, properties=['life_activity'])

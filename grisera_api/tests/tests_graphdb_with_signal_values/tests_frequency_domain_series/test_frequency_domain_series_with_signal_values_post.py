@@ -26,7 +26,7 @@ class TestFrequencyDomainSeriesWithSignalValuesServicePost(unittest.TestCase):
 
         self.assertEqual(node, result)
 
-        self.assertEqual([mock.call('Signal Value')],
+        self.assertEqual([mock.call('Signal_Value')],
                          create_node_mock.call_args_list)
         self.assertEqual([mock.call(50, SignalValueNodesIn(
             value=75))], create_properties_mock.call_args_list)
@@ -52,7 +52,7 @@ class TestFrequencyDomainSeriesWithSignalValuesServicePost(unittest.TestCase):
 
         self.assertEqual(node, result)
 
-        self.assertEqual([mock.call('Signal Value')],
+        self.assertEqual([mock.call('Signal_Value')],
                          create_node_mock.call_args_list)
         self.assertEqual([mock.call(50, SignalValueNodesIn(
             value=75))], create_properties_mock.call_args_list)
@@ -294,7 +294,7 @@ class TestFrequencyDomainSeriesWithSignalValuesServicePost(unittest.TestCase):
 
         self.assertEqual(result, SignalSeriesOut(
             type="Frequencystamp", source="cos", errors=['error']))
-        create_node_mock.assert_called_once_with('Frequency Domain Series')
+        create_node_mock.assert_called_once_with('Frequency_Domain_Series')
 
     @mock.patch.object(GraphApiService, 'get_nodes_by_query')
     def test_get_experiment_id_without_error(self, get_nodes_by_query_mock):

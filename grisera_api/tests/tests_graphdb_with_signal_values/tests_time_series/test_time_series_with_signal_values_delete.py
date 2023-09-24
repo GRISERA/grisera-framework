@@ -19,27 +19,27 @@ class TestTimeSeriesWithSignalValuesServiceDelete(unittest.TestCase):
         time_series = SignalSeriesOut(id=10, type="Timestamp", source="cos",
                                     signal_values=[
                                         {
-                                            'signal_value': {'labels': ['Signal Value'], 'id': 2,
+                                            'signal_value': {'labels': ['Signal_Value'], 'id': 2,
                                                              'properties': [{'key': 'value', 'value': '10'}]},
                                             'timestamp': {'labels': ['Timestamp'], 'id': 1, 'properties': [
                                                 {'key': 'timestamp', 'value': '100'}]}
                                         },
                                         {
-                                            'signal_value': {'labels': ['Signal Value'], 'id': 4,
+                                            'signal_value': {'labels': ['Signal_Value'], 'id': 4,
                                                              'properties': [
                                                                  {'key': 'value', 'value': '20'}]},
                                             'timestamp': {'labels': ['Timestamp'], 'id': 3, 'properties': [
                                                 {'key': 'timestamp', 'value': '200'}]}
                                         },
                                         {
-                                            'signal_value': {'labels': ['Signal Value'], 'id': 6,
+                                            'signal_value': {'labels': ['Signal_Value'], 'id': 6,
                                                              'properties': [
                                                                  {'key': 'value', 'value': '30'}]},
                                             'timestamp': {'labels': ['Timestamp'], 'id': 5, 'properties': [
                                                 {'key': 'timestamp', 'value': '300'}]}
                                         },
                                         {
-                                            'signal_value': {'labels': ['Signal Value'], 'id': 8,
+                                            'signal_value': {'labels': ['Signal_Value'], 'id': 8,
                                                              'properties': [
                                                                  {'key': 'value', 'value': '40'}]},
                                             'timestamp': {'labels': ['Timestamp'], 'id': 7, 'properties': [

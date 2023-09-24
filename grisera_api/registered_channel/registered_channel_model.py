@@ -18,7 +18,7 @@ class RegisteredChannelIn(BaseModel):
     registered_data_id: Optional[Union[int, str]]
 
 
-class BasicRegisteredChannelOut(RegisteredChannelIn):
+class BasicRegisteredChannelOut(RegisteredChannelIn,BaseModelOut):
     """
     Basic model of registered channel
 

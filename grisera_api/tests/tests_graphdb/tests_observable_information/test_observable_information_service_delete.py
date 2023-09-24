@@ -20,7 +20,7 @@ class TestObservableInformationServiceDelete(unittest.TestCase):
                                                          delete_node_mock):
         id_node = 1
         delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node,
-                                                                      'labels': ['Observable Information'],
+                                                                      'labels': ['Observable_Information'],
                                                                       'properties': None,
                                                                       "errors": None, 'links': None}
         observable_information = BasicObservableInformationOut(id=id_node)
@@ -39,7 +39,7 @@ class TestObservableInformationServiceDelete(unittest.TestCase):
     #                                                      delete_node_mock):
     #     id_node = 1
     #     delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node,
-    #                                                                   'labels': ['Observable Information'],
+    #                                                                   'labels': ['Observable_Information'],
     #                                                                   'properties': None,
     #                                                                   "errors": None, 'links': None}
     #     get_node_relationships_mock.return_value = {"relationships": [

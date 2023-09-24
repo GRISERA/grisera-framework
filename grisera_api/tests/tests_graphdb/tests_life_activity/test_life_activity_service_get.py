@@ -14,7 +14,7 @@ class TestLifeActivityServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_life_activity_without_error(self, get_node_mock):
         id_node = 1
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Life Activity'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Life_Activity'],
                                       'properties': [{'key': 'life_activity', 'value': 'test'},
                                                      {'key': 'test', 'value': 'test'}],
                                       "errors": None, 'links': None}
@@ -30,7 +30,7 @@ class TestLifeActivityServiceGet(unittest.TestCase):
     # @mock.patch.object(GraphApiService, 'get_node_relationships')
     # def test_get_life_activity_without_error(self, get_node_relationships_mock, get_node_mock):
     #     id_node = 1
-    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Life Activity'],
+    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Life_Activity'],
     #                                   'properties': [{'key': 'life_activity', 'value': 'test'},
     #                                                  {'key': 'test', 'value': 'test'}],
     #                                   "errors": None, 'links': None}
@@ -75,9 +75,9 @@ class TestLifeActivityServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_life_activities(self, get_nodes_mock):
-        get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Life Activity'],
+        get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Life_Activity'],
                                                   'properties': [{'key': 'life_activity', 'value': 'test'}]},
-                                                 {'id': 2, 'labels': ['Life Activity'],
+                                                 {'id': 2, 'labels': ['Life_Activity'],
                                                   'properties': [{'key': 'life_activity', 'value': 'test2'}]}],
                                        'errors': None}
         life_activity_one = BasicLifeActivityOut(life_activity="test", id=1)
@@ -88,7 +88,7 @@ class TestLifeActivityServiceGet(unittest.TestCase):
         result = life_activity_service.get_life_activities()
 
         self.assertEqual(result, life_activities)
-        get_nodes_mock.assert_called_once_with("Life Activity")
+        get_nodes_mock.assert_called_once_with("Life_Activity")
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_life_activities_empty(self, get_nodes_mock):
@@ -99,4 +99,4 @@ class TestLifeActivityServiceGet(unittest.TestCase):
         result = life_activity_service.get_life_activities()
 
         self.assertEqual(result, life_activities)
-        get_nodes_mock.assert_called_once_with("Life Activity")
+        get_nodes_mock.assert_called_once_with("Life_Activity")

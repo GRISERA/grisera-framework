@@ -179,17 +179,17 @@ class NodeServiceTestCase(unittest.TestCase):
                 {
                     'data': [
                         {
-                            'row': [{'value': '10'}, ['Signal Value'],
+                            'row': [{'value': '10'}, ['Signal_Value'],
                                     {'timestamp': '100'}, ['Timestamp']],
                             'meta': [{'id': 2},
                                      None, {'id': 1}, None]
                         }, {
-                            'row': [{'value': '20'}, ['Signal Value'],
+                            'row': [{'value': '20'}, ['Signal_Value'],
                                     {'timestamp': '200'}, ['Timestamp']],
                             'meta': [{'id': 4},
                                      None, {'id': 3}, None]
                         }, {
-                            'row': [{'value': '30'}, ['Signal Value'],
+                            'row': [{'value': '30'}, ['Signal_Value'],
                                     {'timestamp': '300'}, ['Timestamp']],
                             'meta': [{'id': 6},
                                      None, {'id': 5}, None]
@@ -201,9 +201,9 @@ class NodeServiceTestCase(unittest.TestCase):
         }
         query = NodeRowsQueryIn(
             nodes=[
-                NodeQueryIn(id=15, label="Time Series"),
-                NodeQueryIn(label="Signal Value"),
-                NodeQueryIn(label="Signal Value", result=True),
+                NodeQueryIn(id=15, label="Time_Series"),
+                NodeQueryIn(label="Signal_Value"),
+                NodeQueryIn(label="Signal_Value", result=True),
                 NodeQueryIn(label="Timestamp", result=True),
                 NodeQueryIn(label="Timestamp", result=True),
             ],
@@ -218,11 +218,11 @@ class NodeServiceTestCase(unittest.TestCase):
         result = node_service.get_nodes_by_query(query)
 
         self.assertEqual(NodeRowsOut(rows=[
-            [BasicNodeOut(labels={'Signal Value'}, id=2, properties=[PropertyIn(key='value', value='10')]),
+            [BasicNodeOut(labels={'Signal_Value'}, id=2, properties=[PropertyIn(key='value', value='10')]),
              BasicNodeOut(labels={'Timestamp'}, id=1, properties=[PropertyIn(key='timestamp', value='100')])],
-            [BasicNodeOut(labels={'Signal Value'}, id=4, properties=[PropertyIn(key='value', value='20')]),
+            [BasicNodeOut(labels={'Signal_Value'}, id=4, properties=[PropertyIn(key='value', value='20')]),
              BasicNodeOut(labels={'Timestamp'}, id=3, properties=[PropertyIn(key='timestamp', value='200')])],
-            [BasicNodeOut(labels={'Signal Value'}, id=6, properties=[PropertyIn(key='value', value='30')]),
+            [BasicNodeOut(labels={'Signal_Value'}, id=6, properties=[PropertyIn(key='value', value='30')]),
              BasicNodeOut(labels={'Timestamp'}, id=5, properties=[PropertyIn(key='timestamp', value='300')])]
         ]), result)
         get_nodes_by_query_mock.assert_called_once_with(query)
@@ -232,9 +232,9 @@ class NodeServiceTestCase(unittest.TestCase):
         get_nodes_by_query_mock.return_value = {'results': [{'data': [{'meta': [{}]}]}], 'errors': ['error']}
         query = NodeRowsQueryIn(
             nodes=[
-                NodeQueryIn(id=15, label="Time Series"),
-                NodeQueryIn(label="Signal Value"),
-                NodeQueryIn(label="Signal Value", result=True),
+                NodeQueryIn(id=15, label="Time_Series"),
+                NodeQueryIn(label="Signal_Value"),
+                NodeQueryIn(label="Signal_Value", result=True),
                 NodeQueryIn(label="Timestamp", result=True),
                 NodeQueryIn(label="Timestamp", result=True),
             ],

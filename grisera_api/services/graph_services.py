@@ -128,18 +128,22 @@ class GraphServiceFactory(ServiceFactory):
 
         self.scenario_service.experiment_service = self.experiment_service
         self.scenario_service.activity_execution_service = self.activity_execution_service
-
+        
         self.time_series_service.measure_service = self.measure_service
         self.time_series_service.observable_information_service = self.observable_information_service
 
         self.time_series_with_signal_values_service.measure_service = self.measure_service
         self.time_series_with_signal_values_service.observable_information_service = self.observable_information_service
+        self.time_series_with_signal_values_service.graphdb_service = self.time_series_service
+        self.time_series_with_signal_values_service.frequency_graphdb_with_signals_service = self.frequency_domain_series_with_signal_values_service
 
         self.frequency_domain_series_service.measure_service = self.measure_service
         self.frequency_domain_series_service.observable_information_service = self.observable_information_service
 
         self.frequency_domain_series_with_signal_values_service.measure_service = self.measure_service
         self.frequency_domain_series_with_signal_values_service.observable_information_service = self.observable_information_service
+        self.frequency_domain_series_with_signal_values_service.graphdb_service = self.frequency_domain_series_service
+        self.frequency_domain_series_with_signal_values_service.frequency_graphdb_with_signals_service = None
 
     def get_activity_service(self) -> ActivityService:
         return self.activity_service

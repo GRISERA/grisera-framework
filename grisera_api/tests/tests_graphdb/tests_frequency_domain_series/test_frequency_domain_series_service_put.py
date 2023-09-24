@@ -21,7 +21,7 @@ class TestFrequencyDomainSeriesServicePut(unittest.TestCase):
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
 
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Frequency Domain Series'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Frequency_Domain_Series'],
                                       'properties': [{'key': 'type', 'value': "Frequencystamp"},
                                                      {'key': 'source',
                                                          'value': "cos"},

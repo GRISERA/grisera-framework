@@ -32,7 +32,7 @@ class ParticipantStateRelationIn(BaseModel):
 
     participant_id: Optional[Union[int, str]] = None
     personality_ids: List[Optional[Union[int, str]]] = None
-    appearance_ids: List[Optional[Union[int, str]]] = None
+    appearance_ids: Optional[Union[int, str]] = None
 
 
 class ParticipantStateIn(ParticipantStatePropertyIn, ParticipantStateRelationIn):
@@ -41,7 +41,7 @@ class ParticipantStateIn(ParticipantStatePropertyIn, ParticipantStateRelationIn)
     """
 
 
-class BasicParticipantStateOut(ParticipantStatePropertyIn):
+class BasicParticipantStateOut(ParticipantStatePropertyIn, BaseModelOut):
     """
     Basic model of participant
 

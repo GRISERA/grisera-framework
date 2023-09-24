@@ -22,7 +22,7 @@ class TimeSeriesServiceGraphDB(SignalSeriesServiceGraphDB):
     graph_api_service = GraphApiService()
 
     def __init__(self):
-        super().__init__("Time Series")
+        super().__init__("Time_Series")
 
     def save_signal_series(self, signal_series: SignalSeriesIn):
         """
@@ -54,8 +54,8 @@ class TimeSeriesServiceGraphDB(SignalSeriesServiceGraphDB):
         Args:
             signal_series_id (int | str): identity of time series
             depth: (int): specifies how many related entities will be traversed to create the response
-            signal_min_value (Optional[int]): Filter signal values by min value
-            signal_max_value (Optional[int]): Filter signal values by max value
+            signal_min_value (Optional[int]): Filter Signal_Values by min value
+            signal_max_value (Optional[int]): Filter Signal_Values by max value
 
         Returns:
             Result of request as time series object

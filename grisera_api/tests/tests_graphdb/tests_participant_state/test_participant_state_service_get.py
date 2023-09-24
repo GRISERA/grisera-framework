@@ -17,7 +17,7 @@ class TestParticipantStateServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_participant_state_without_error(self, get_node_mock):
         id_node = 1
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Participant State'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Participant_State'],
                                       'properties': [{'key': 'age', 'value': 5},
                                                      {'key': 'test', 'value': 'test2'}],
                                       "errors": None, 'links': None}
@@ -33,7 +33,7 @@ class TestParticipantStateServiceGet(unittest.TestCase):
     # @mock.patch.object(GraphApiService, 'get_node_relationships')
     # def test_get_participant_state_without_error(self, get_node_relationships_mock, get_node_mock):
     #     id_node = 1
-    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Participant State'],
+    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Participant_State'],
     #                                   'properties': [{'key': 'age', 'value': 5},
     #                                                  {'key': 'test', 'value': 'test2'}],
     #                                   "errors": None, 'links': None}
@@ -99,7 +99,7 @@ class TestParticipantStateServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_participant_states(self, get_nodes_mock):
-        get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Participant State'],
+        get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Participant_State'],
                                                   'properties': [{'key': 'age', 'value': 5},
                                                                  {'key': 'test', 'value': 'test'}]},
                                                  {'id': 2, 'labels': ['Participant'],
@@ -115,7 +115,7 @@ class TestParticipantStateServiceGet(unittest.TestCase):
         result = participant_states_service.get_participant_states()
 
         self.assertEqual(result, participant_states)
-        get_nodes_mock.assert_called_once_with("`Participant State`")
+        get_nodes_mock.assert_called_once_with("`Participant_State`")
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_participant_states_empty(self, get_nodes_mock):
@@ -126,4 +126,4 @@ class TestParticipantStateServiceGet(unittest.TestCase):
         result = participant_states_service.get_participant_states()
 
         self.assertEqual(result, participant_states)
-        get_nodes_mock.assert_called_once_with("`Participant State`")
+        get_nodes_mock.assert_called_once_with("`Participant_State`")

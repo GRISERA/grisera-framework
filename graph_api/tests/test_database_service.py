@@ -115,16 +115,16 @@ class DatabaseServiceTestCase(unittest.TestCase):
         requests_mock.post.return_value = self.response
         commit_body = {"statements": [{
             "statement": "MATCH (n_0)-[:`hasSignal`]->(n_1),(n_1)-[:`next`*0..]->(n_2),(n_3)-[:`startInSec`]->(n_2)," +
-                         "(n_4)-[:`endInSec`]->(n_2),(n_0:`Time Series`),(n_1:`Signal Value`),(n_2:`Signal Value`)," +
+                         "(n_4)-[:`endInSec`]->(n_2),(n_0:`Time_Series`),(n_1:`Signal_Value`),(n_2:`Signal_Value`)," +
                          "(n_3:`Timestamp`),(n_4:`Timestamp`) " +
                          "WHERE ID(n_0)=15 AND n_4.propertyA='valueA' AND n_4.propertyB='valueB' " +
                          "RETURN n_2,LABELS(n_2),n_3,LABELS(n_3),n_4,LABELS(n_4)"
         }]}
         query = NodeRowsQueryIn(
             nodes=[
-                NodeQueryIn(id=15, label="Time Series"),
-                NodeQueryIn(label="Signal Value"),
-                NodeQueryIn(label="Signal Value", result=True),
+                NodeQueryIn(id=15, label="Time_Series"),
+                NodeQueryIn(label="Signal_Value"),
+                NodeQueryIn(label="Signal_Value", result=True),
                 NodeQueryIn(label="Timestamp", result=True),
                 NodeQueryIn(label="Timestamp", result=True, parameters=[
                     NodeParameterQueryIn(key="propertyA", operator="equals", value="valueA"),

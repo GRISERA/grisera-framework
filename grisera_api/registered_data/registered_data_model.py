@@ -15,7 +15,7 @@ class RegisteredDataIn(BaseModel):
 
     """
 
-    source: str
+    source: Optional[str]
     additional_properties: Optional[List[PropertyIn]]
 
 
@@ -46,7 +46,7 @@ class RegisteredDataNodesOut(BaseModelOut):
     Model of registered data nodes to send to client as a result of request
 
     Attributes:
-    registered_data_nodes (List[BasicRegisteredDataOut]): Registered Data nodes from database
+    registered_data_nodes (List[BasicRegisteredDataOut]): Registered_Data nodes from database
     """
 
     registered_data_nodes: List[BasicRegisteredDataOut] = []

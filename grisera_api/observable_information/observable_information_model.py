@@ -3,6 +3,7 @@ from typing import Optional, Union, List
 from pydantic import BaseModel
 
 from models.base_model_out import BaseModelOut
+from typing import Optional, Any
 
 
 class ObservableInformationIn(BaseModel):
@@ -28,6 +29,8 @@ class BasicObservableInformationOut(ObservableInformationIn):
     id (Optional[Union[int, str]]): Id of node returned from api
     """
 
+    errors: Optional[Any] = None
+    links: Optional[list] = None
     id: Optional[Union[int, str]]
 
 

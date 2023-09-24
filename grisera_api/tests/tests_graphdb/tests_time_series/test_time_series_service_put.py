@@ -21,7 +21,7 @@ class TestTimeSeriesServicePut(unittest.TestCase):
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
 
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Time Series'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Time_Series'],
                                       'properties': [{'key': 'type', 'value': "Epoch"},
                                                      {'key': 'source', 'value': "cos"},
                                                      {'key': 'identifier', 'value': 5}],
@@ -54,7 +54,7 @@ class TestTimeSeriesServicePut(unittest.TestCase):
         #         {"start_node": id_node, "end_node": 15,
         #          "name": "hasMeasure", "id": 0,
         #          "properties": None}]}
-        #     get_node_mock.return_value = {'id': id_node, 'labels': ['Time Series'],
+        #     get_node_mock.return_value = {'id': id_node, 'labels': ['Time_Series'],
         #                                   'properties': [{'key': 'type', 'value': "Epoch"},
         #                                                  {'key': 'source', 'value': "cos"},
         #                                                  {'key': 'identifier', 'value': 5}],

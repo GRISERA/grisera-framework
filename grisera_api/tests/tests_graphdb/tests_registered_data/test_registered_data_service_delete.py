@@ -15,7 +15,7 @@ class TestRegisteredDataServiceDelete(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     def test_delete_registered_data_without_error(self, get_node_mock, delete_node_mock):
         id_node = 1
-        delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Data'],
+        delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Registered_Data'],
                                                                       'properties': [{'key': 'source', 'value': 'test'},
                                                                                      {'key': 'test', 'value': 'test'}],
                                                                       "errors": None, 'links': None}
@@ -35,7 +35,7 @@ class TestRegisteredDataServiceDelete(unittest.TestCase):
         # def test_delete_registered_data_without_error(self, get_node_relationships_mock, get_node_mock,
         #                                               delete_node_mock):
         #     id_node = 1
-        #     delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Data'],
+        #     delete_node_mock.return_value = get_node_mock.return_value = {'id': id_node, 'labels': ['Registered_Data'],
         #                                                                   'properties': [
         #                                                                       {'key': 'source', 'value': 'test'},
         #                                                                       {'key': 'test', 'value': 'test'}],

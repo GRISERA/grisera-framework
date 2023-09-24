@@ -28,7 +28,7 @@ class TestRegisteredChannelServicePut(unittest.TestCase):
         id_node = 1
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Channel'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Registered_Channel'],
                                       'properties': [{'key': 'age', 'value': 5}, {'key': 'identifier', 'value': 5}],
                                       "errors": None, 'links': None}
         registered_channel_in = RegisteredChannelIn(channel_id=2, registered_data_id=3)
@@ -74,7 +74,7 @@ class TestRegisteredChannelServicePut(unittest.TestCase):
         #          "name": "hasRegisteredData", "id": 0,
         #          "properties": None},
         #     ]}
-        #     get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Channel'],
+        #     get_node_mock.return_value = {'id': id_node, 'labels': ['Registered_Channel'],
         #                                   'properties': [{'key': 'age', 'value': 5}, {'key': 'identifier', 'value': 5}],
         #                                   "errors": None, 'links': None}
         #     registered_channel_in = RegisteredChannelIn(channel_id=15, registered_data_id=19)
@@ -115,7 +115,7 @@ class TestRegisteredChannelServicePut(unittest.TestCase):
     #              "name": "hasRegisteredData", "id": 0,
     #              "properties": None},
     #         ]}
-    #         get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Channel'],
+    #         get_node_mock.return_value = {'id': id_node, 'labels': ['Registered_Channel'],
     #                                       'properties': [{'key': 'age', 'value': 5}, {'key': 'identifier', 'value': 5}],
     #                                       "errors": None, 'links': None}
     #         registered_channel_in = RegisteredChannelIn(channel_id=15, registered_data_id=19)

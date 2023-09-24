@@ -11,6 +11,8 @@ from modality.modality_model import (
 
 from models.not_found_model import NotFoundByIdModel
 from services import Services
+from modality.modality_model import ModalityIn
+from modality.modality_model import ModalityOut, ModalitiesOut
 
 router = InferringRouter()
 
@@ -26,6 +28,24 @@ class ModalityRouter:
 
     def __init__(self):
         self.modality_service = Services().modality_service()
+
+    @router.post(
+        "/modalities",
+        tags=["modalities"],
+        response_model=ModalityOut,
+    )
+    async def create_modality(self, modality: ModalityIn, response: Response):
+        """
+        Create channel in database
+        """
+        create_response = self.modality_service.save_modality(modality)
+        if create_response.errors is not None:
+            response.status_code = 422
+
+        # add links from hateoas
+        create_response.links = get_links(router)
+
+        return create_response
 
     @router.get(
         "/modalities/{modality_id}",

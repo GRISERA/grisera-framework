@@ -22,7 +22,7 @@ class TestParticipantStateServicePut(unittest.TestCase):
         id_node = 1
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Participant State'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Participant_State'],
                                       'properties': [{'key': 'age', 'value': 12},
                                                      {'key': 'identifier', 'value': 5}],
                                       "errors": None, 'links': None}

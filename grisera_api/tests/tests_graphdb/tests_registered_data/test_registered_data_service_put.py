@@ -19,7 +19,7 @@ class TestRegisteredDataServicePut(unittest.TestCase):
         id_node = 1
         create_properties_mock.return_value = {}
         delete_node_properties_mock.return_value = {}
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Data'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Registered_Data'],
                                       'properties': [{'key': 'source', 'value': 'test'},
                                                      {'key': 'test', 'value': 'test'}],
                                       "errors": None, 'links': None}
@@ -44,7 +44,7 @@ class TestRegisteredDataServicePut(unittest.TestCase):
     #     id_node = 1
     #     create_properties_mock.return_value = {}
     #     delete_node_properties_mock.return_value = {}
-    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Registered Data'],
+    #     get_node_mock.return_value = {'id': id_node, 'labels': ['Registered_Data'],
     #                                   'properties': [{'key': 'source', 'value': 'test'},
     #                                                  {'key': 'test', 'value': 'test'}],
     #                                   "errors": None, 'links': None}

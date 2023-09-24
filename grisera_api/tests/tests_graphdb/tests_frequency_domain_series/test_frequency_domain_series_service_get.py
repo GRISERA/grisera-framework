@@ -15,7 +15,7 @@ class TestFrequencyDomainSeriesServiceGet(unittest.TestCase):
     @mock.patch.object(GraphApiService, 'get_node')
     def test_get_signal_series_without_error(self, get_node_mock):
         id_node = 1
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Frequency Domain Series'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Frequency_Domain_Series'],
                                       'properties': [{'key': 'type', 'value': "Frequencystamp"},
                                                      {'key': 'source',
                                                          'value': "cos"},
@@ -58,12 +58,12 @@ class TestFrequencyDomainSeriesServiceGet(unittest.TestCase):
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_signal_series_nodes(self, get_nodes_mock):
-        get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Frequency Domain Series'],
+        get_nodes_mock.return_value = {'nodes': [{'id': 1, 'labels': ['Frequency_Domain_Series'],
                                                   'properties': [{'key': 'type', 'value': "Frequencystamp"},
                                                                  {'key': 'source',
                                                                      'value': "cos"},
                                                                  {'key': 'test', 'value': 'test'}]},
-                                                 {'id': 2, 'labels': ['Frequency Domain Series'],
+                                                 {'id': 2, 'labels': ['Frequency_Domain_Series'],
                                                   'properties': [{'key': 'type', 'value': "Frequencystamp"},
                                                                  {'key': 'source',
                                                                      'value': "cos"},
@@ -79,7 +79,7 @@ class TestFrequencyDomainSeriesServiceGet(unittest.TestCase):
         result = frequency_domain_series_nodes_service.get_signal_series_nodes()
 
         self.assertEqual(result, frequency_domain_series_nodes)
-        get_nodes_mock.assert_called_once_with("`Frequency Domain Series`")
+        get_nodes_mock.assert_called_once_with("`Frequency_Domain_Series`")
 
     @mock.patch.object(GraphApiService, 'get_nodes')
     def test_get_signal_series_nodes_empty(self, get_nodes_mock):
@@ -91,4 +91,4 @@ class TestFrequencyDomainSeriesServiceGet(unittest.TestCase):
         result = frequency_domain_series_nodes_service.get_signal_series_nodes()
 
         self.assertEqual(result, frequency_domain_series_nodes)
-        get_nodes_mock.assert_called_once_with("`Frequency Domain Series`")
+        get_nodes_mock.assert_called_once_with("`Frequency_Domain_Series`")

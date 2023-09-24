@@ -37,7 +37,7 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
         Returns:
             Result of request as registered channel object
         """
-        node_response = self.graph_api_service.create_node("Registered Channel")
+        node_response = self.graph_api_service.create_node("Registered_Channel")
 
         if node_response["errors"] is not None:
             return RegisteredChannelOut(errors=node_response["errors"])
@@ -64,7 +64,7 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
         Returns:
             Result of request as list of registered channels objects
         """
-        get_response = self.graph_api_service.get_nodes("`Registered Channel`")
+        get_response = self.graph_api_service.get_nodes("`Registered_Channel`")
 
         registered_channels = []
 
@@ -93,7 +93,7 @@ class RegisteredChannelServiceGraphDB(RegisteredChannelService):
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=registered_channel_id, errors=get_response["errors"])
-        if get_response["labels"][0] != "Registered Channel":
+        if get_response["labels"][0] != "Registered_Channel":
             return NotFoundByIdModel(id=registered_channel_id, errors="Node not found.")
 
         registered_channel = create_stub_from_response(get_response)

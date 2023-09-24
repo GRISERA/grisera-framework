@@ -8,8 +8,8 @@
    in `grisera_api/signal_series/transformation/TimeSeriesTransformationFactory.py` using new enum value.
 4. Implement `def transform` method. This method should return tuple of new `SignalSeriesIn` object
    and `new_signal_values_id_mapping` list. Each `new_signal_values_id_mapping` value represent list of source signal
-   value ids for every new signal value. This mapping is necessary to create `basedOn` relationships between new and
-   source signal values. Bellow is simple transformation example implementation.
+   value ids for every new Signal_Value. This mapping is necessary to create `basedOn` relationships between new and
+   source Signal_Values. Bellow is simple transformation example implementation.
 
 ```python
 class TimeSeriesTransformationMultiplication(TimeSeriesTransformation):
@@ -22,7 +22,7 @@ class TimeSeriesTransformationMultiplication(TimeSeriesTransformation):
         """
         Transform time series data.
 
-        Multiply every signal value by `multiplier` additional input parameter.
+        Multiply every Signal_Value by `multiplier` additional input parameter.
         If parameter does not exist default value is 10
 
         Args:
@@ -42,7 +42,7 @@ class TimeSeriesTransformationMultiplication(TimeSeriesTransformation):
 
         new_signal_values = []
         new_signal_values_id_mapping = []
-        # Iterate over all signal values
+        # Iterate over all Signal_Values
         for current_signal_value in time_series[0].signal_values:
             product = int(get_node_property(current_signal_value["signal_value"], "value")) * multiplier
             new_signal_values.append(SignalIn(signal_value=SignalValueNodesIn(value=product),
@@ -71,20 +71,20 @@ class TestTimeSeriesTransformationMultiplication(unittest.TestCase):
             type=Type.timestamp,
             signal_values=[
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 2,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 2,
                                      'properties': [{'key': 'value', 'value': 10}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 1, 'properties': [
                         {'key': 'timestamp', 'value': 0}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 4,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 4,
                                      'properties': [
                                          {'key': 'value', 'value': 20}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 3, 'properties': [
                         {'key': 'timestamp', 'value': 5}]}
                 },
                 {
-                    'signal_value': {'labels': ['Signal Value'], 'id': 6,
+                    'signal_value': {'labels': ['Signal_Value'], 'id': 6,
                                      'properties': [
                                          {'key': 'value', 'value': 30}]},
                     'timestamp': {'labels': ['Timestamp'], 'id': 5, 'properties': [

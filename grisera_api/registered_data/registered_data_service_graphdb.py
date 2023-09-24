@@ -31,7 +31,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         Returns:
             Result of request as registered data object
         """
-        node_response = self.graph_api_service.create_node("Registered Data")
+        node_response = self.graph_api_service.create_node("Registered_Data")
 
         if node_response["errors"] is not None:
             return RegisteredDataOut(**registered_data.dict(), errors=node_response["errors"])
@@ -50,7 +50,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
         Returns:
             Result of request as list of registered_data_nodes objects
         """
-        get_response = self.graph_api_service.get_nodes("Registered Data")
+        get_response = self.graph_api_service.get_nodes("Registered_Data")
 
         registered_data_nodes = []
 
@@ -81,7 +81,7 @@ class RegisteredDataServiceGraphDB(RegisteredDataService):
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=registered_data_id, errors=get_response["errors"])
-        if get_response["labels"][0] != "Registered Data":
+        if get_response["labels"][0] != "Registered_Data":
             return NotFoundByIdModel(id=registered_data_id, errors="Node not found.")
 
         registered_data = create_stub_from_response(get_response, properties=['source'])

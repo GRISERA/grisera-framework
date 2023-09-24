@@ -12,7 +12,7 @@ from signal_series.signal_series_service_graphdb_with_signal_values import Signa
 class FrequencyDomainSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGraphDBWithSignalValues):
     
     def __init__(self):
-        super().__init__(FrequencyDomainSeriesServiceGraphDB(), "frequencystamp", "Frequencystamp","Frequency Domain Series")
+        super().__init__("frequencystamp", "Frequencystamp","Frequency_Domain_Series")
 
     def save_signal_series(self, signal_series: SignalSeriesIn):
         """
@@ -64,8 +64,8 @@ class FrequencyDomainSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGra
         Args:
             signal_series_id (int | str): identity of frequency domain series
             depth: (int): specifies how many related entities will be traversed to create the response
-            signal_min_value (Optional[int]): Filter signal values by min value
-            signal_max_value (Optional[int]): Filter signal values by max value
+            signal_min_value (Optional[int]): Filter Signal_Values by min value
+            signal_max_value (Optional[int]): Filter Signal_Values by max value
         Returns:
             Result of request as frequency domain series object
         """
@@ -85,14 +85,14 @@ class FrequencyDomainSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGra
                           signal_min_value: Optional[int] = None,
                           signal_max_value: Optional[int] = None):
         """
-        Send requests to graph api to get all signal values
+        Send requests to graph api to get all Signal_Values
         Args:
             signal_series_id (int | str): identity of the frequency domain series
             signal_series_type (str): type of the frequency domain series
-            signal_min_value (Optional[int]): Filter signal values by min value
-            signal_max_value (Optional[int]): Filter signal values by max value
+            signal_min_value (Optional[int]): Filter Signal_Values by min value
+            signal_max_value (Optional[int]): Filter Signal_Values by max value
         Returns:
-            Array of signal value objects
+            Array of Signal_Value objects
         """
         parameters = []
         if signal_min_value is not None:
@@ -111,13 +111,13 @@ class FrequencyDomainSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGra
             "nodes": [
                 {
                     "id": signal_series_id,
-                    "label": "Frequency Domain Series"
+                    "label": "Frequency_Domain_Series"
                 },
                 {
-                    "label": "Signal Value"
+                    "label": "Signal_Value"
                 },
                 {
-                    "label": "Signal Value",
+                    "label": "Signal_Value",
                     "result": True,
                     "parameters": parameters
                 },
@@ -214,3 +214,8 @@ class FrequencyDomainSeriesServiceGraphDBWithSignalValues(SignalSeriesServiceGra
                                                         end_node=current_signal_value_node["id"],
                                                         name="inHz")
         return current_stamp
+    
+    def get_stamp_value(self, stamp):
+        return float(stamp)
+    
+

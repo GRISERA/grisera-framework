@@ -24,7 +24,7 @@ class ObservableInformationServiceMongoDB(
     Attributes:
     recording_service (RecordingService): Service used to communicate with Recording
     modality_service (ModalityService): Service used to communicate with Modality
-    life_activity_service (LifeActivityService): Service used to communicate with Life Activity
+    life_activity_service (LifeActivityService): Service used to communicate with Life_Activity
     recording_service (RecordingService): Service used to communicate with Recording
     model_out_class (Type[BaseModel]): Out class of the model, used by GenericMongoServiceMixin
     """

@@ -29,7 +29,7 @@ class TestFrequencyDomainSeriesServicePost(unittest.TestCase):
         get_observable_information_mock.return_value = BasicObservableInformationOut(
             id=2)
         get_measure_mock.return_value = None
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Frequency Domain Series'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Frequency_Domain_Series'],
                                       'properties': [{'key': 'type', 'value': "Frequencystamp"},
                                                      {'key': 'source', 'value': "cos"}],
                                       "errors": None, 'links': None}
@@ -58,7 +58,7 @@ class TestFrequencyDomainSeriesServicePost(unittest.TestCase):
             frequency_domain_series_in)
 
         self.assertEqual(result, frequency_domain_series_out)
-        create_node_mock.assert_called_once_with('Frequency Domain Series')
+        create_node_mock.assert_called_once_with('Frequency_Domain_Series')
         create_properties_mock.assert_called_once_with(
             id_node, frequency_domain_series_in)
         create_relationships_mock.assert_has_calls([mock.call(start_node=id_node, end_node=2,
@@ -80,4 +80,4 @@ class TestFrequencyDomainSeriesServicePost(unittest.TestCase):
 
         self.assertEqual(result, SignalSeriesOut(
             type="Frequencystamp", source="cos", errors=['error']))
-        create_node_mock.assert_called_once_with('Frequency Domain Series')
+        create_node_mock.assert_called_once_with('Frequency_Domain_Series')

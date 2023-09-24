@@ -37,7 +37,7 @@ class RecordingIn(RecordingPropertyIn, RecordingRelationIn):
     """
 
 
-class BasicRecordingOut(RecordingIn):
+class BasicRecordingOut(RecordingIn,BaseModelOut):
     """
     Basic Model of recording
 

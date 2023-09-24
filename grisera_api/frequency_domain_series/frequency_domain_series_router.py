@@ -39,7 +39,7 @@ class FrequencyDomainSeriesRouter:
         """
         Create frequency domain series in database
 
-        Signal values:
+        Signal_Values:
         - should be provided in ascending order of (start) frequencystamp
         - frequencystamps within one frequency domain series should be unique (for Timestamp type)
         """
@@ -127,10 +127,10 @@ class FrequencyDomainSeriesRouter:
         signal_max_value: Optional[int] = None
     ):
         """
-        Get frequency domain series by id from database with signal values. Depth attribute specifies how many models will be traversed to create the
+        Get frequency domain series by id from database with Signal_Values. Depth attribute specifies how many models will be traversed to create the
         response.
 
-        Signal values will be filtered using minimum and maximum value if present.
+        Signal_Values will be filtered using minimum and maximum value if present.
         """
 
         get_response = self.frequency_domain_series_service.get_signal_series(frequency_domain_series_id, depth, signal_min_value, signal_max_value)
@@ -146,7 +146,7 @@ class FrequencyDomainSeriesRouter:
                 response_model=Union[SignalSeriesMultidimensionalOut, NotFoundByIdModel])
     async def get_signal_series_multidimensional(self, frequency_domain_series_ids: str, response: Response):
         """
-        Get multidimensional frequency domain series by ids from database with signal values.
+        Get multidimensional frequency domain series by ids from database with Signal_Values.
 
         Time series ids is comma separated string.
         """
@@ -174,7 +174,7 @@ class FrequencyDomainSeriesRouter:
         self, frequency_domain_series_id: Union[int, str], response: Response
     ):
         """
-        Delete frequency domain series by id from database with all signal values.
+        Delete frequency domain series by id from database with all Signal_Values.
         """
         get_response = self.frequency_domain_series_service.delete_signal_series(frequency_domain_series_id)
         if get_response.errors is not None:

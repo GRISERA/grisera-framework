@@ -29,10 +29,10 @@ class TestObservableInformationServicePost(unittest.TestCase):
         observable_information_in = ObservableInformationIn(modality_id=6, life_activity_id=7, recording_id=8)
         observable_information_out = BasicObservableInformationOut(id=id_node)
 
-        create_node_mock.return_value = {'id': id_node, 'labels': ['Observable Information'],
+        create_node_mock.return_value = {'id': id_node, 'labels': ['Observable_Information'],
                                       'properties': [],
                                       "errors": None, 'links': None}
-        get_node_mock.return_value = {'id': id_node, 'labels': ['Observable Information'],
+        get_node_mock.return_value = {'id': id_node, 'labels': ['Observable_Information'],
                                          'properties': [],
                                          "errors": None, 'links': None}
 
@@ -68,7 +68,7 @@ class TestObservableInformationServicePost(unittest.TestCase):
             result = observable_information_service.save_observable_information(observable_information)
 
             self.assertEqual(result, ObservableInformationOut(errors=['error']))
-            create_node_mock.assert_called_once_with("Observable Information")
+            create_node_mock.assert_called_once_with("Observable_Information")
 
 # @mock.patch.object(GraphApiService, 'create_node')
 # @mock.patch.object(GraphApiService, 'create_properties')
@@ -79,7 +79,7 @@ class TestObservableInformationServicePost(unittest.TestCase):
 #                                                     create_relationships_mock, create_properties_mock,
 #                                                     create_node_mock):
 #     id_node = 1
-#     get_node_mock.return_value = {'id': id_node, 'labels': ['Observable Information'],
+#     get_node_mock.return_value = {'id': id_node, 'labels': ['Observable_Information'],
 #                                   'properties': None,
 #                                   "errors": None, 'links': None}
 #     get_node_relationships_mock.return_value = {"relationships": [
@@ -112,7 +112,7 @@ class TestObservableInformationServicePost(unittest.TestCase):
 #     result = observable_information_service.save_observable_information(observable_information_in)
 #
 #     self.assertEqual(result, observable_information_out)
-#     create_node_mock.assert_called_once_with("`Observable Information`")
+#     create_node_mock.assert_called_once_with("`Observable_Information`")
 #     # create_properties_mock.assert_not_called()
 #     create_relationships_mock.assert_not_called()
 #     get_node_mock.assert_has_calls(calls)

@@ -40,7 +40,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         Returns:
             Result of request as participant state object
         """
-        node_response = self.graph_api_service.create_node("Participant State")
+        node_response = self.graph_api_service.create_node("Participant_State")
 
         if node_response["errors"] is not None:
             return ParticipantStateOut(**participant_state.dict(), errors=node_response["errors"])
@@ -53,18 +53,19 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
             self.graph_api_service.create_relationships(start_node=participant_state_id,
                                                         end_node=participant_state.participant_id,
                                                         name="hasParticipant")
-        for personality_id in participant_state.personality_ids:
-            if personality_id is not None and \
-                    type(self.personality_service.get_personality(personality_id)) is not NotFoundByIdModel:
-                self.graph_api_service.create_relationships(start_node=participant_state_id,
-                                                            end_node=personality_id,
-                                                            name="hasPersonality")
-        for appearance_id in participant_state.appearance_ids:
-            if appearance_id is not None and \
-                    type(self.appearance_service.get_appearance(appearance_id)) is not NotFoundByIdModel:
-                self.graph_api_service.create_relationships(start_node=participant_state_id,
-                                                            end_node=appearance_id,
-                                                            name="hasAppearance")
+        if participant_state.personality_ids is not None:
+            for personality_id in participant_state.personality_ids:
+                if personality_id is not None and \
+                        type(self.personality_service.get_personality(personality_id)) is not NotFoundByIdModel:
+                    self.graph_api_service.create_relationships(start_node=participant_state_id,
+                                                                end_node=personality_id,
+                                                                name="hasPersonality")
+        appearance_id = participant_state.appearance_ids
+        if appearance_id is not None and \
+                type(self.appearance_service.get_appearance(appearance_id)) is not NotFoundByIdModel:
+            self.graph_api_service.create_relationships(start_node=participant_state_id,
+                                                        end_node=appearance_id,
+                                                        name="hasAppearance")
 
         participant_state.participant_id = None
         participant_state.personality_ids = participant_state.appearance_ids = None
@@ -79,7 +80,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
         Returns:
             Result of request as list of participant states objects
         """
-        get_response = self.graph_api_service.get_nodes("`Participant State`")
+        get_response = self.graph_api_service.get_nodes("`Participant_State`")
 
         participant_states = []
 
@@ -110,7 +111,7 @@ class ParticipantStateServiceGraphDB(ParticipantStateService):
 
         if get_response["errors"] is not None:
             return NotFoundByIdModel(id=participant_state_id, errors=get_response["errors"])
-        if get_response["labels"][0] != "Participant State":
+        if get_response["labels"][0] != "Participant_State":
             return NotFoundByIdModel(id=participant_state_id, errors="Node not found.")
 
         participant_state = create_stub_from_response(get_response, properties=['age'])

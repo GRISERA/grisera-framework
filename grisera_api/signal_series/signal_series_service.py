@@ -57,8 +57,8 @@ class SignalSeriesService:
         Args:
             signal_series_id (int | str): identity of signal series
             depth: (int): specifies how many related entities will be traversed to create the response
-            signal_min_value (Optional[int]): Filter signal values by min value
-            signal_max_value (Optional[int]): Filter signal values by max value
+            signal_min_value (Optional[int]): Filter Signal_Values by min value
+            signal_max_value (Optional[int]): Filter Signal_Values by max value
 
         Returns:
             Result of request as signal series object

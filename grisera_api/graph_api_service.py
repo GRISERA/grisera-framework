@@ -27,6 +27,7 @@ class GraphApiService:
 
         response = requests.post(url=self.graph_api_url + url_part,
                                  json=request_body).json()
+
         return response
 
     def get(self, url_part, params):

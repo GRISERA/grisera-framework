@@ -17,7 +17,7 @@ class MeasurePropertyIn(BaseModel):
 
     datatype: str
     range: str
-    unit: str
+    unit: Optional[str]
 
 
 class MeasureRelationIn(BaseModel):
@@ -37,14 +37,13 @@ class MeasureIn(MeasurePropertyIn, MeasureRelationIn):
     """
 
 
-class BasicMeasureOut(MeasurePropertyIn):
+class BasicMeasureOut(MeasurePropertyIn,BaseModelOut):
     """
     Basic model of measure
 
     Attributes:
     id (Optional[Union[int, str]]): Id of measure returned from api
     """
-
     id: Optional[Union[int, str]]
 
 

@@ -8,6 +8,8 @@ from signal_series.signal_series_model import SignalSeriesPropertyIn, BasicSigna
     SignalSeriesNodesOut, SignalSeriesOut, SignalSeriesIn, SignalSeriesRelationIn
 from models.not_found_model import NotFoundByIdModel
 from signal_series.signal_series_service import SignalSeriesService
+from observable_information.observable_information_service import ObservableInformationService
+from measure.measure_service import MeasureService
 
 
 class SignalSeriesServiceGraphDB(SignalSeriesService):
@@ -22,8 +24,8 @@ class SignalSeriesServiceGraphDB(SignalSeriesService):
     graph_api_service = GraphApiService()
 
     def __init__(self,signal_series_type_name):
-        self.measure_service = None
-        self.observable_information_service = None
+        self.measure_service : MeasureService = None
+        self.observable_information_service : ObservableInformationService = None
         self.signal_series_type_name = signal_series_type_name
 
 
@@ -45,6 +47,7 @@ class SignalSeriesServiceGraphDB(SignalSeriesService):
         signal_series_id = node_response["id"]
 
         if signal_series.observable_information_id is not None and \
+            self.observable_information_service is not None and \
                 type(self.observable_information_service.get_observable_information(
                     signal_series.observable_information_id)) is not NotFoundByIdModel:
             self.graph_api_service.create_relationships(start_node=signal_series_id,
@@ -93,8 +96,8 @@ class SignalSeriesServiceGraphDB(SignalSeriesService):
         Args:
             signal_series_id (int | str): identity of time series
             depth: (int): specifies how many related entities will be traversed to create the response
-            signal_min_value (Optional[int]): Filter signal values by min value
-            signal_max_value (Optional[int]): Filter signal values by max value
+            signal_min_value (Optional[int]): Filter Signal_Values by min value
+            signal_max_value (Optional[int]): Filter Signal_Values by max value
 
         Returns:
             Result of request as time series object
