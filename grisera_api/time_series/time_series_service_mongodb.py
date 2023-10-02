@@ -1,5 +1,7 @@
 from typing import Union, Optional, List
 
+import bson
+
 from starlette.datastructures import QueryParams
 from time_series.transformation.multidimensional.TimeSeriesTransformationMultidimensional import (
     TimeSeriesTransformationMultidimensional,
@@ -123,6 +125,10 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
         Returns:
             Result of request as time series object
         """
+        try:
+            bson.ObjectId(time_series_id)
+        except bson.errors.InvalidId:
+            return NotFoundByIdModel(id=time_series_id, errors="Invalid ID")
         time_series = self.mongo_api_service.get_time_series(
             ts_id=time_series_id,
             signal_min_value=signal_min_value,
