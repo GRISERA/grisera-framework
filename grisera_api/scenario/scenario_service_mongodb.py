@@ -31,6 +31,7 @@ class ScenarioServiceMongoDB(ScenarioService, GenericMongoServiceMixin):
     """
 
     def __init__(self):
+        super().__init__()
         self.activity_execution_service: ActivityExecutionService = None
         self.experiment_service: ExperimentService = None
 
@@ -60,7 +61,7 @@ class ScenarioServiceMongoDB(ScenarioService, GenericMongoServiceMixin):
         ]
         activity_executions_ids = [ae.id for ae in activity_executions]
 
-        scenario = ScenarioIn(**scenario)
+        scenario = ScenarioIn(**scenario.dict())
         scenario_dict = scenario.dict()
         scenario_dict[
             "activity_executions"
@@ -68,9 +69,8 @@ class ScenarioServiceMongoDB(ScenarioService, GenericMongoServiceMixin):
         created_scenario_id = self.mongo_api_service.create_document_from_dict(
             scenario_dict, Collections.SCENARIO
         )
-
-        scenario["activity_executions"] = activity_executions
-        return self.get_scenario(created_scenario_id)
+        scenario_dict["activity_executions"] = activity_executions
+        return ScenarioOut(**scenario_dict)
 
     def add_activity_execution(
         self, previous_id: Union[int, str], activity_execution: ActivityExecutionIn
@@ -192,13 +192,13 @@ class ScenarioServiceMongoDB(ScenarioService, GenericMongoServiceMixin):
             self.activity_execution_service.get_activity_execution(element_id)
         )
         if type(activity_execution_result) is not NotFoundByIdModel:
-            scenario = self.get_scenario_after_activity_execution(element_id, depth)
+            scenario = self.get_scenario_by_activity_execution(element_id, depth)
             return scenario, activity_execution_result
 
         return (
             NotFoundByIdModel(
                 id=element_id,
-                errors="No activity execution or expriment with given id found",
+                errors=f"No activity execution or expriment with given id ({element_id}) found",
             ),
             None,
         )
@@ -280,7 +280,9 @@ class ScenarioServiceMongoDB(ScenarioService, GenericMongoServiceMixin):
             )
 
         scenario = scenarios[0]
-        self._change_ae_ids_to_objects(scenario, depth, source=Collections.EXPERIMENT)
+        scenario = self._change_ae_ids_to_objects(
+            scenario, depth, source=Collections.EXPERIMENT
+        )
 
         return ScenarioOut(**scenario)
 

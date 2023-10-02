@@ -6,6 +6,8 @@ from activity_execution.activity_execution_model import (
 from appearance.appearance_model import (
     AppearanceOcclusionOut,
     AppearanceSomatotypeOut,
+    AppearanceOcclusionIn,
+    AppearanceSomatotypeIn,
 )
 from arrangement.arrangement_model import ArrangementIn
 from channel.channel_model import ChannelIn
@@ -80,7 +82,9 @@ SUPERCLASSES_TO_COLLECTION_NAMES = {
     ActivityIn: Collections.ACTIVITY,
     ActivityExecutionPropertyIn: Collections.ACTIVITY_EXECUTION,
     ActivityExecutionRelationIn: Collections.ACTIVITY_EXECUTION,
+    AppearanceOcclusionIn: Collections.APPEARANCE,
     AppearanceOcclusionOut: Collections.APPEARANCE,
+    AppearanceSomatotypeIn: Collections.APPEARANCE,
     AppearanceSomatotypeOut: Collections.APPEARANCE,
     ArrangementIn: Collections.ARRANGEMENT,
     ChannelIn: Collections.CHANNEL,

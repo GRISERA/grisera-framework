@@ -1,11 +1,12 @@
 from typing import Union, Optional, List
 
 from starlette.datastructures import QueryParams
+from time_series.transformation.multidimensional.TimeSeriesTransformationMultidimensional import (
+    TimeSeriesTransformationMultidimensional,
+)
 
-from graph_api_service import GraphApiService
 from mongo_service.collection_mapping import Collections
 from mongo_service.mongo_api_service import MongoApiService
-from helpers import create_stub_from_response
 from time_series.time_series_model import (
     TimeSeriesPropertyIn,
     BasicTimeSeriesOut,
@@ -14,6 +15,8 @@ from time_series.time_series_model import (
     TimeSeriesIn,
     TimeSeriesRelationIn,
     TimeSeriesTransformationIn,
+    SignalIn,
+    SignalValueNodesIn,
 )
 from models.not_found_model import NotFoundByIdModel
 from time_series.time_series_service import TimeSeriesService
@@ -48,8 +51,18 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
         Returns:
             Result of request as time series object
         """
-        if not self._check_related_observable_informations(
+        if (
+            not time_series.observable_information_ids
+            and time_series.observable_information_id
+        ):
+            time_series.observable_information_ids = [
+                time_series.observable_information_id
+            ]
+        if (
             time_series.observable_information_ids
+            and not self._check_related_observable_informations(
+                time_series.observable_information_ids
+            )
         ):
             return NotFoundByIdModel(
                 errors={"errors": "given observable information does not exist"}
@@ -60,13 +73,19 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
         if time_series.measure_id is not None and not related_measure_exists:
             return NotFoundByIdModel(errors={"errors": "given measure does not exist"})
 
+        if len(time_series.signal_values) == 0:
+            time_series.signal_values = [
+                SignalIn(signal_value=SignalValueNodesIn(value=1), timestamp=1)
+            ]
         created_ts_id = self.mongo_api_service.create_time_series(
             time_series_in=time_series
         )
         return self.get_time_series(created_ts_id)
 
-    def get_multiple(self, query: dict = {}, depth: int = 0, source: str = ""):
-        results_dict = self.mongo_api_service.get_many_time_series(query)
+    def get_multiple(
+        self, query: dict = {}, depth: int = 0, source: str = "", query_params=None
+    ):
+        results_dict = self.mongo_api_service.get_many_time_series(query, query_params)
 
         for result in results_dict:
             self._add_related_documents(result, depth, source)
@@ -80,7 +99,7 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
         Returns:
             Result of request as list of time series nodes objects
         """
-        time_series_dicts = self.get_multiple()
+        time_series_dicts = self.get_multiple(query_params=params)
         results = [BasicTimeSeriesOut(**ts_dict) for ts_dict in time_series_dicts]
         return TimeSeriesNodesOut(time_series_nodes=results)
 
@@ -110,7 +129,31 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
             signal_max_value=signal_max_value,
         )
         self._add_related_documents(time_series, depth, source)
+        if type(time_series) == NotFoundByIdModel:
+            return time_series
         return TimeSeriesOut(**time_series)
+
+    def get_time_series_multidimensional(self, time_series_ids: List[Union[int, str]]):
+        """
+        Send request to graph api to get given time series
+        Args:
+            time_series_ids (int | str): Ids of the time series
+        Returns:
+            Result of request as time series object
+        """
+        source_time_series = []
+        for time_series_id in time_series_ids:
+            time_series = self.get_time_series(time_series_id)
+            if time_series.errors is not None:
+                return time_series
+            source_time_series.append(time_series)
+        result = TimeSeriesTransformationMultidimensional().transform(
+            source_time_series
+        )
+        for time_series in source_time_series:
+            time_series.signal_values = []
+        result.time_series = source_time_series
+        return result
 
     def delete_time_series(self, time_series_id: Union[int, str]):
         """
@@ -158,6 +201,13 @@ class TimeSeriesServiceMongoDB(TimeSeriesService):
         Returns:
             Result of request as time series object
         """
+        if (
+            not time_series.observable_information_ids
+            and time_series.observable_information_id
+        ):
+            time_series.observable_information_ids = [
+                time_series.observable_information_id
+            ]
         get_response = self.get_time_series(time_series_id)
 
         if type(get_response) is NotFoundByIdModel:

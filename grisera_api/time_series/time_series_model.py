@@ -101,7 +101,7 @@ class TimeSeriesTransformationIn(BaseModel):
     """
 
     name: TransformationType
-    source_time_series_ids: List[int]
+    source_time_series_ids: List[Union[str, int]]
     destination_observable_information_id: Optional[int]
     destination_measure_id: Optional[int]
     additional_properties: Optional[List[PropertyIn]]
@@ -138,7 +138,7 @@ class TimeSeriesIn(TimeSeriesPropertyIn, TimeSeriesRelationIn):
     """
 
 
-class BasicTimeSeriesOut(TimeSeriesPropertyIn, BaseModelOut):
+class BasicTimeSeriesOut(TimeSeriesPropertyIn, TimeSeriesRelationIn, BaseModelOut):
     """
     Basic model of time series
 

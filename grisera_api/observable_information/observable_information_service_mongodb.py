@@ -84,7 +84,10 @@ class ObservableInformationServiceMongoDB(
                 errors={"errors": "given life activity does not exist"}
             )
 
-        return self.recording_service.add_observable_information(observable_information)
+        basic_oi = self.recording_service.add_observable_information(
+            observable_information
+        )
+        return ObservableInformationOut(**basic_oi.dict())
 
     def get_multiple(
         self, query: dict = {}, depth: int = 0, source: str = "", *args, **kwargs

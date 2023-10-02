@@ -13,6 +13,9 @@ from models.not_found_model import NotFoundByIdModel
 from mongo_service.collection_mapping import get_collection_name, Collections
 from mongo_service.mongodb_api_config import mongo_api_address, mongo_database_name
 
+client = pymongo.MongoClient(mongo_api_address)
+db = client[mongo_database_name]
+
 
 class MongoApiService:
     """
@@ -28,8 +31,7 @@ class MongoApiService:
         """
         Connect to MongoDB database
         """
-        self.client = pymongo.MongoClient(mongo_api_address)
-        self.db = self.client[mongo_database_name]
+        self.db = db
 
     def create_document(self, data_in: BaseModel):
         """
@@ -137,12 +139,19 @@ class MongoApiService:
             )
         return self._time_series_documents_to_dict(time_series_documents)
 
-    def get_many_time_series(self, query={}):
-        self._fix_input_ids(query)
+    def get_many_time_series(self, query={}, query_params=None):
+        if query_params:
+            ts_ids = self._get_many_ts_filtered(query_params)
+            if ts_ids is not None:
+                query = {"metadata.id": {"$in": ts_ids}}
+            else:
+                query = {}
+        else:
+            self._fix_input_ids(query)
         ts_documents = self._get_many_ts(query)
         return [
             self._time_series_documents_to_dict(ts_document["value"])
-            for ts_document in ts_documents
+            for ts_document in list(ts_documents)
         ]
 
     def update_time_series_metadata(
@@ -176,7 +185,7 @@ class MongoApiService:
         return self.db[Collections.TIME_SERIES].delete_many(filter=query)
 
     def get_id_in_query(self, id_list):
-        return {"$in": [ObjectId(id) for id in id_list]}
+        return {"$in": [ObjectId(str(id)) for id in id_list]}
 
     def _update_mongo_input_id(self, mongo_input: dict):
         """
@@ -265,16 +274,34 @@ class MongoApiService:
 
         time_series_in.signal_values = []  # avoid unnecessary parsing of signal values
         metadata = self._get_time_series_metadata(time_series_in, time_series_id)
-        return [
-            {
+        return [self._signal_to_dict(signal, metadata) for signal in signal_values]
+
+    def _signal_to_dict(self, signal, metadata):
+        signal_value_dict = signal.signal_value.dict()
+        if (
+            type(signal_value_dict["value"]) == str
+            and signal_value_dict["value"].isnumeric()
+        ):
+            signal_value_dict["value"] = int(signal_value_dict["value"])
+        if signal.timestamp is not None:
+            return {
                 self.TIMESTAMP_FIELD: datetime.fromtimestamp(
                     signal.timestamp, tz=timezone.utc
                 ),
                 self.METADATA_FIELD: metadata,
-                **signal.signal_value.dict(),
+                **signal_value_dict,
             }
-            for signal in signal_values
-        ]
+        else:
+            return {
+                self.TIMESTAMP_FIELD: datetime.fromtimestamp(
+                    signal.start_timestamp, tz=timezone.utc
+                ),
+                self.METADATA_FIELD: metadata,
+                "end_timestamp": datetime.fromtimestamp(
+                    signal.end_timestamp, tz=timezone.utc
+                ),
+                **signal_value_dict,
+            }
 
     def _get_time_series_metadata(
         self, time_series_in: TimeSeriesIn, time_series_id: ObjectId
@@ -291,26 +318,42 @@ class MongoApiService:
         """
         Convert documents from single time series to BasicTimeSeriesOut
         """
+        metadata = ts_documents[0][self.METADATA_FIELD]
+        type = metadata["type"]
         signal_values = [
-            self._signal_from_ts_document(document) for document in ts_documents
+            self._signal_from_ts_document(document, type) for document in ts_documents
         ]
         result = {
             "signal_values": signal_values,
-            **ts_documents[0][self.METADATA_FIELD],
+            **metadata,
         }
         self._fix_output_ids(result)
         return result
 
-    def _signal_from_ts_document(self, document):
-        return SignalIn(
-            timestamp=document[self.TIMESTAMP_FIELD]
-            .replace(tzinfo=timezone.utc)
-            .timestamp(),
-            signal_value=SignalValueNodesIn(
-                value=document["value"],
-                additional_properties=document["additional_properties"],
-            ),
-        )
+    def _signal_from_ts_document(self, document, type):
+        if type == "Timestamp":
+            return SignalIn(
+                timestamp=document[self.TIMESTAMP_FIELD]
+                .replace(tzinfo=timezone.utc)
+                .timestamp(),
+                signal_value=SignalValueNodesIn(
+                    value=document["value"],
+                    additional_properties=document["additional_properties"],
+                ),
+            )
+        else:
+            return SignalIn(
+                start_timestamp=document[self.TIMESTAMP_FIELD]
+                .replace(tzinfo=timezone.utc)
+                .timestamp(),
+                end_timestamp=document["end_timestamp"]
+                .replace(tzinfo=timezone.utc)
+                .timestamp(),
+                signal_value=SignalValueNodesIn(
+                    value=document["value"],
+                    additional_properties=document["additional_properties"],
+                ),
+            )
 
     def _create_ts_query(
         self,
@@ -342,3 +385,210 @@ class MongoApiService:
             with session.start_transaction():
                 self.delete_time_series(time_series_id)
                 self.create_time_series(TimeSeriesIn(**new_time_series))
+
+    def _get_many_ts_filtered(self, query_params):
+        recording_params = {}
+        participant_state_params = {}
+        participant_params = {}
+        experiment_params = {}
+        for key in query_params:
+            entity, property = key.split("_")
+            if entity == "recording":
+                recording_params[property] = query_params[key]
+            elif entity == "participantstate":
+                participant_state_params[property] = query_params[key]
+            elif entity == "participant":
+                participant_params[property] = query_params[key]
+            elif entity == "experiment":
+                experiment_params[property] = query_params[key]
+
+        ts_by_recording = None
+        if recording_params != {}:
+            ts_by_recording = list(self._get_ts_by_recording(recording_params))
+
+        ts_by_participant = None
+        if participant_state_params != {} or participant_params != {}:
+            ts_by_participant = list(
+                self._get_ts_by_pariticipant(
+                    pariticipant_state_params=participant_state_params,
+                    participant_params=participant_params,
+                )
+            )
+
+        ts_by_experiment = None
+        if experiment_params != {}:
+            ts_by_experiment = list(self._get_ts_by_experiment(experiment_params))
+
+        non_empty_lists = [
+            ts_list
+            for ts_list in (ts_by_recording, ts_by_participant, ts_by_experiment)
+            if ts_list is not None
+        ]
+        if not len(non_empty_lists):
+            return None
+
+        matching_ts_ids = set(non_empty_lists[0])
+        for ts_ids in non_empty_lists[1:]:
+            matching_ts_ids = matching_ts_ids.intersection(set(ts_ids))
+
+        return list(matching_ts_ids)
+
+    def _get_ts_by_recording(self, recording_params):
+        match_params = {}
+        for key, value in recording_params.items():
+            if key == "id":
+                match_params["_id"] = ObjectId(value)
+            else:
+                match_params[key] = value
+        aggregation = [
+            {"$match": match_params},
+            {
+                "$lookup": {
+                    "from": "timeSeries",
+                    "localField": "observable_informations.id",
+                    "foreignField": "metadata.observable_information_id",
+                    "as": "timeSeries",
+                }
+            },
+            {
+                "$group": {
+                    "_id": None,
+                    "tsIds": {"$addToSet": {"$setUnion": "$timeSeries.metadata.id"}},
+                }
+            },
+            {"$unwind": "$tsIds"},
+            {"$project": {"_id": 0}},
+        ]
+        aggregation_result = list(self.db[Collections.RECORDING].aggregate(aggregation))
+        return aggregation_result[0]["tsIds"] if len(aggregation_result) else []
+
+    def _get_ts_by_pariticipant(self, pariticipant_state_params, participant_params):
+        match_params = {}
+        for key, value in pariticipant_state_params.items():
+            if key == "id":
+                match_params["participant_states.id"] = ObjectId(value)
+            else:
+                match_params[f"participant_states.{key}"] = value
+        for key, value in participant_params.items():
+            if key == "id":
+                match_params["_id"] = ObjectId(value)
+            else:
+                match_params[key] = value
+        aggregation = self._get_participant_aggregation(match_params)
+        aggregation_result = list(
+            self.db[Collections.PARTICIPANT].aggregate(aggregation)
+        )
+        results = []
+        for ar in aggregation_result:
+            results.extend(ar["tsIds"])
+        return results
+
+    def _get_participant_aggregation(self, match_params):
+        return [
+            {"$unwind": "$participant_states"},
+            {"$match": match_params},
+            {
+                "$lookup": {
+                    "from": "participations",
+                    "localField": "participant_states.id",
+                    "foreignField": "participant_state_id",
+                    "as": "participations",
+                }
+            },
+            {"$unwind": "$participations"},
+            {
+                "$lookup": {
+                    "from": "recordings",
+                    "localField": "participations._id",
+                    "foreignField": "participation_id",
+                    "as": "recordings",
+                }
+            },
+            {"$unwind": "$recordings"},
+            {"$unwind": "$recordings.observable_informations"},
+            {
+                "$lookup": {
+                    "from": "timeSeries",
+                    "localField": "recordings.observable_informations.id",
+                    "foreignField": "metadata.observable_information_id",
+                    "as": "timeSeries",
+                }
+            },
+            {
+                "$group": {
+                    "_id": None,
+                    "tsIds": {"$addToSet": {"$setUnion": "$timeSeries.metadata.id"}},
+                }
+            },
+            {"$unwind": "$tsIds"},
+            {"$project": {"_id": 0}},
+        ]
+
+    def _get_ts_by_experiment(self, experiment_params):
+        match_params = {}
+        for key, value in experiment_params.items():
+            if key == "id":
+                match_params["experiments._id"] = ObjectId(value)
+            else:
+                match_params[f"experiments.{key}"] = value
+        aggregation = [
+            {"$unwind": "$participant_states"},
+            {
+                "$lookup": {
+                    "from": "participations",
+                    "localField": "participant_states.id",
+                    "foreignField": "participant_state_id",
+                    "as": "participations",
+                }
+            },
+            {"$unwind": "$participations"},
+            {
+                "$lookup": {
+                    "from": "scenarios",
+                    "localField": "participations.activity_execution_id",
+                    "foreignField": "activity_executions",
+                    "as": "scenarios",
+                }
+            },
+            {"$unwind": "$scenarios"},
+            {
+                "$lookup": {
+                    "from": "experiments",
+                    "localField": "scenarios.experiment_id",
+                    "foreignField": "_id",
+                    "as": "experiments",
+                }
+            },
+            {"$match": match_params},
+            {
+                "$lookup": {
+                    "from": "recordings",
+                    "localField": "participations._id",
+                    "foreignField": "participation_id",
+                    "as": "recordings",
+                }
+            },
+            {"$unwind": "$recordings"},
+            {"$unwind": "$recordings.observable_informations"},
+            {
+                "$lookup": {
+                    "from": "timeSeries",
+                    "localField": "recordings.observable_informations.id",
+                    "foreignField": "metadata.observable_information_id",
+                    "as": "timeSeries",
+                }
+            },
+            {
+                "$group": {
+                    "_id": None,
+                    "tsIds": {"$addToSet": {"$setUnion": "$timeSeries.metadata.id"}},
+                }
+            },
+            {"$unwind": "$tsIds"},
+            {"$project": {"_id": 0}},
+        ]
+        print(match_params)
+        aggregation_result = list(
+            self.db[Collections.PARTICIPANT].aggregate(aggregation)
+        )
+        return aggregation_result[0]["tsIds"] if len(aggregation_result) else []

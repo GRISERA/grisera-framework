@@ -110,16 +110,16 @@ class ParticipantServiceMongoDB(ParticipantService, GenericMongoServiceMixin):
     def add_participant_state(self, participant_state: ParticipantStateIn):
         participant_state_dict = participant_state.dict()
         participant_state_dict["id"] = str(ObjectId())
+        participant_id = participant_state.participant_id
         participant_state = ParticipantStateOut(**participant_state_dict)
 
-        participant_id = participant_state.participant_id
         participant = self.get_single_dict(participant_id)
         participant_states = participant.get(Collections.PARTICIPANT_STATE, [])
         participant_states.append(participant_state)
         participant[Collections.PARTICIPANT_STATE] = participant_states
 
         self.update(participant_id, ParticipantOut(**participant))
-        return BasicParticipantStateOut(**participant_state)
+        return BasicParticipantStateOut(**participant_state.dict())
 
     def update_participant_state(
         self,

@@ -54,7 +54,8 @@ class ParticipantStateServiceMongoDB(ParticipantStateService, GenericMongoServic
         if not is_correct:
             return error
 
-        self.participant_service.add_participant_state(participant_state)
+        basic_ps = self.participant_service.add_participant_state(participant_state)
+        return ParticipantStateOut(**basic_ps.dict())
 
     def get_multiple(
         self, query: dict = {}, depth: int = 0, source: str = "", *args, **kwargs
@@ -140,6 +141,14 @@ class ParticipantStateServiceMongoDB(ParticipantStateService, GenericMongoServic
         if type(result) is NotFoundByIdModel:
             return result
         return ParticipantStateOut(**result)
+
+    def get_participant_state(
+        self, id: Union[str, int], depth: int = 0, source: str = "", *args, **kwargs
+    ):
+        """
+        Get single participation state object.
+        """
+        return self.get_single(id, depth, source, *args, **kwargs)
 
     def delete_participant_state(self, participant_state_id: Union[int, str]):
         """

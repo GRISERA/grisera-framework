@@ -25,7 +25,7 @@ class ExperimentServiceMongoDB(ExperimentService, GenericMongoServiceMixin):
     def __init__(self):
         super().__init__()
         self.mongo_api_service = MongoApiService()
-        self.model_out = ExperimentOut
+        self.model_out_class = ExperimentOut
         self.scenario_service: ScenarioService = None
 
     def save_experiment(self, experiment: ExperimentIn):

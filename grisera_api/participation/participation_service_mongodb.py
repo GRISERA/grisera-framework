@@ -1,7 +1,7 @@
 from typing import Union
 
 from activity_execution.activity_execution_service import ActivityExecutionService
-from helpers import create_stub_from_response
+from mongo_service.collection_mapping import Collections
 from mongo_service import MongoApiService
 from mongo_service.service_mixins import GenericMongoServiceMixin
 from participant_state.participant_state_service import ParticipantStateService
@@ -147,3 +147,43 @@ class ParticipationServiceMongoDB(ParticipationService, GenericMongoServiceMixin
         )
         activity_execution_exists = related_activity_execution is not NotFoundByIdModel
         return activity_execution_id is None or activity_execution_exists
+
+    def _add_related_documents(self, participation: dict, depth: int, source: str):
+        if depth > 0:
+            self._add_related_recordings(participation, depth, source)
+            self._add_related_participant_state(participation, depth, source)
+            self._add_related_activity_executions(participation, depth, source)
+
+    def _add_related_recordings(self, participation: dict, depth: int, source: str):
+        if source != Collections.RECORDING:
+            participation["recordings"] = self.recording_service.get_multiple(
+                {"participation_id": participation["id"]},
+                depth=depth - 1,
+                source=Collections.PARTICIPATION,
+            )
+
+    def _add_related_participant_state(
+        self, participation: dict, depth: int, source: str
+    ):
+        has_related_ps = participation["participant_state_id"] is not None
+        if source != Collections.PARTICIPANT_STATE and has_related_ps:
+            participation[
+                "participant_state"
+            ] = self.participant_state_service.get_single_dict(
+                participation["participant_state_id"],
+                depth=depth - 1,
+                source=Collections.PARTICIPATION,
+            )
+
+    def _add_related_activity_executions(
+        self, participation: dict, depth: int, source: str
+    ):
+        has_related_ae = participation["activity_execution_id"] is not None
+        if source != Collections.ACTIVITY_EXECUTION and has_related_ae:
+            participation[
+                "activity_execution"
+            ] = self.activity_execution_service.get_single_dict(
+                participation["activity_execution_id"],
+                depth=depth - 1,
+                source=Collections.ACTIVITY_EXECUTION,
+            )
