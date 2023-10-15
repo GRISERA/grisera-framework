@@ -1,6 +1,6 @@
-from grisera_api.activity.activity_model import BasicActivityOut, ActivitiesOut
-from grisera_api.activity.activity_service import ActivityService
-from grisera_api.rdb_api_service import RdbApiService
+from activity.activity_model import BasicActivityOut, ActivitiesOut
+from activity.activity_service import ActivityService
+from rdb_api_service import RdbApiService
 
 
 
