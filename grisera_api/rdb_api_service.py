@@ -35,20 +35,19 @@ class RdbApiService:
         cursor.execute(query)
         result = cursor.fetchall()
         column_names = [desc[0] for desc in cursor.description]
-        data_list = []
-        for row in result:
-            row_dict = dict(zip(column_names, row))
-            data_list.append(row_dict)
+        data_list = self.convert_to_dict(result, column_names)
         cursor.close()
         return data_list
 
     def get_with_id(self, table_name, id):
         cursor = self.connection.cursor()
-        query = "SELECT * FROM " + table_name + "WHERE id == " + id
+        query = "SELECT * FROM " + table_name + " WHERE id = " + str(id)
         cursor.execute(query)
         result = cursor.fetchall()
+        column_names = [desc[0] for desc in cursor.description]
+        data_list = self.convert_to_dict(result, column_names)
         cursor.close()
-        return result
+        return data_list[0]
 
     def post(self, table_name, record):
         try:
