@@ -17,7 +17,7 @@ class RdbApiService:
                 database=rdb_api_database_name,
                 user=rdb_api_user,
                 password=rdb_api_password,
-                port=rdb_api_port 
+                port=rdb_api_port
             )
         except psycopg2.Error as e:
             print("Error connecting to the database:", e)
@@ -35,19 +35,20 @@ class RdbApiService:
         cursor.execute(query)
         result = cursor.fetchall()
         column_names = [desc[0] for desc in cursor.description]
-        data_list = self.convert_to_dict(result, column_names)
+        data_list = []
+        for row in result:
+            row_dict = dict(zip(column_names, row))
+            data_list.append(row_dict)
         cursor.close()
         return data_list
 
     def get_with_id(self, table_name, id):
         cursor = self.connection.cursor()
-        query = "SELECT * FROM " + table_name + " WHERE id = " + str(id)
+        query = "SELECT * FROM " + table_name + "WHERE id == " + id
         cursor.execute(query)
         result = cursor.fetchall()
-        column_names = [desc[0] for desc in cursor.description]
-        data_list = self.convert_to_dict(result, column_names)
         cursor.close()
-        return data_list[0]
+        return result
 
     def post(self, table_name, record):
         try:
