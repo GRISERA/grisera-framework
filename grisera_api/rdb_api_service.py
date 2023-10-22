@@ -48,7 +48,7 @@ class RdbApiService:
         data_list = self.convert_to_dict(result, column_names)
         cursor.close()
         return data_list[0]
-
+    
     def post(self, table_name, record):
         try:
             cursor = self.connection.cursor()
@@ -65,16 +65,18 @@ class RdbApiService:
         try:
             cursor = self.connection.cursor()
             
-            # Extract column names and their corresponding values from the record
             columns = ', '.join(record.keys())
             placeholders = ', '.join(['%s'] * len(record))
             values = list(record.values())
             
-            # Construct the query using placeholders
             query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders}) RETURNING *"
             
             cursor.execute(query, values)
-            new_record = cursor.fetchone()
+            row = cursor.fetchone()
+
+            new_record = {}
+            for desc, value in zip(cursor.description, row):
+                new_record[desc.name] = value
             
             self.connection.commit()
             cursor.close()
@@ -82,5 +84,6 @@ class RdbApiService:
         except psycopg2.Error as error:
             self.connection.rollback()
             return error
+
 
 
