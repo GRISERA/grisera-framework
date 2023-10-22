@@ -61,15 +61,26 @@ class RdbApiService:
             self.connection.rollback()
             return error
 
-    def put(self, table_name, id, column_values):
+    def post(self, table_name, record):
         try:
             cursor = self.connection.cursor()
-            set_clause = ", ".join([f"{key} = %s" for key in column_values.keys()])
-            update_query = f"UPDATE {table_name} SET {set_clause} WHERE id = %s;"
-            cursor.execute(update_query, list(column_values.values()) + [id])
+            
+            # Extract column names and their corresponding values from the record
+            columns = ', '.join(record.keys())
+            placeholders = ', '.join(['%s'] * len(record))
+            values = list(record.values())
+            
+            # Construct the query using placeholders
+            query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders}) RETURNING *"
+            
+            cursor.execute(query, values)
+            new_record = cursor.fetchone()
+            
             self.connection.commit()
             cursor.close()
-            return True
+            return new_record
         except psycopg2.Error as error:
             self.connection.rollback()
             return error
+
+
