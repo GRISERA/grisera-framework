@@ -73,6 +73,20 @@ class RdbApiService:
         data_list = self.convert_to_dict(result, column_names)
         cursor.close()
         return data_list[0]
+    
+    def get_records_with_foreign_id(self, table_name, column_name, id):
+        cursor = self.connection.cursor()
+        query = f"SELECT * FROM {table_name} WHERE {column_name} = %s"
+        cursor.execute(query, (id,))
+        result = cursor.fetchall()
+        
+        if not result:
+            return None
+        
+        column_names = [desc[0] for desc in cursor.description]
+        records = [dict(zip(column_names, row)) for row in result]
+        
+        return records
 
     def post(self, table_name, record):
         """
