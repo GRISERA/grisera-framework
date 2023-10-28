@@ -79,10 +79,6 @@ class RdbApiService:
         query = f"SELECT * FROM {table_name} WHERE {column_name} = %s"
         cursor.execute(query, (id,))
         result = cursor.fetchall()
-        
-        if not result:
-            return None
-        
         column_names = [desc[0] for desc in cursor.description]
         records = [dict(zip(column_names, row)) for row in result]
         

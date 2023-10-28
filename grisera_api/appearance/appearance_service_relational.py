@@ -9,7 +9,7 @@ from participant_state.participant_state_service_relational import ParticipantSt
 class AppearanceServiceRelational(AppearanceService):
 
     rdb_api_service = RdbApiService()
-    table_name = "Appearance"
+    table_name = "appearance"
 
     def __init__(self):
         self.participant_state_service = ParticipantStateServiceRelational()
@@ -46,34 +46,17 @@ class AppearanceServiceRelational(AppearanceService):
         return AppearanceSomatotypeOut(id=saved_appearance["id"], ectomorph=appearance.ectomorph, endomorph=appearance.endomorph, 
                                        mesomorph=appearance.mesomorph)
 
-    def get_appearance(self, appearance_id: Union[int, str], depth: int = 0):
-        appearance = self.rdb_api_service.get_with_id(self.table_name, appearance_id)
-
-        if not appearance:
-            return NotFoundByIdModel(id=appearance_id, errors="Entity not found.")
+    def get_appearance(self, appearance_id: Union[int, str], depth: int = 0, source: str = ""):
+        appearance_dict = self.rdb_api_service.get_with_id(self.table_name, appearance_id)
+        if not appearance_dict:
+            return NotFoundByIdModel(id=appearance_id, errors={"Entity not found."})
         
+        if depth > 0:
+            if source != "participant_state":
+                appearance_dict["participant_states"] = self.participant_state_service.get_multiple_with_foreign_id(appearance_id, depth - 1, self.table_name)
 
-        if depth != 0:
-            appearance["participant_states"] = []
-            participant_states_records = self.rdb_api_service.get_records_with_foreign_id("participant_state", "appearance_id", appearance_id)
-
-            for participant_state_record in participant_states_records:
-                participant_state = self.participant_state_service.get_participant_state(participant_state_record["id"], depth - 1)
-                appearance["participant_states"].append(participant_state)
-
-            if appearance["type"] == "somatotype":
-                return AppearanceSomatotypeOut(id=appearance["id"], ectomorph=appearance["ectomorph"], endomorph=appearance["endomorph"], 
-                                               mesomorph=appearance["mesomorph"], participant_states=appearance["participant_states"])
-            elif appearance["type"] == "occlusion":
-                return AppearanceOcclusionOut(id=appearance["id"], beard=appearance["beard"], moustache=appearance["moustache"], 
-                                              glasses=appearance["glasses"], participant_states=appearance["participant_states"])
-        else:
-            if appearance["type"] == "somatotype":
-                return AppearanceSomatotypeOut(id=appearance["id"], ectomorph=appearance["ectomorph"], endomorph=appearance["endomorph"], 
-                                                    mesomorph=appearance["mesomorph"])
-            elif appearance["type"] == "occlusion":
-                return AppearanceOcclusionOut(id=appearance["id"], beard=appearance["beard"], moustache=appearance["moustache"], 
-                                                   glasses=appearance["glasses"])
+        print(appearance_dict)
+        return AppearanceOcclusionOut(**appearance_dict) if "beard" in appearance_dict.keys() else AppearanceSomatotypeOut(**appearance_dict)
     
     def get_appearances(self):
         results = self.rdb_api_service.get(self.table_name)
