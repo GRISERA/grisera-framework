@@ -68,6 +68,7 @@ class RdbApiService:
         cursor.execute(query)
         result = cursor.fetchall()
         if not result:
+            cursor.close()
             return None
         column_names = [desc[0] for desc in cursor.description]
         data_list = self.convert_to_dict(result, column_names)
@@ -135,6 +136,9 @@ class RdbApiService:
             
             cursor.execute(query, values)
             row = cursor.fetchone()
+            if row is None:
+                cursor.close()
+                return None
 
             data_list = {}
             for desc, value in zip(cursor.description, row):
