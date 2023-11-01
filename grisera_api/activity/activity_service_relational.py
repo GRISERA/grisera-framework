@@ -21,7 +21,7 @@ class ActivityServiceRelational(ActivityService):
 
         return ActivitiesOut(activities=activities)
 
-    def get_activity(self, activity_id: int | str, depth: int = 0):
+    def get_activity(self, activity_id: Union[int, str], depth: int = 0):
         activity = self.rdb_api_service.get_with_id(self.table_name, activity_id)
         additional_properties = []
         for k, v in activity["additional_properties"].items():
