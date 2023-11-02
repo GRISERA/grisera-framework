@@ -1,3 +1,4 @@
+import json
 from typing import Union
 from experiment.experiment_model import ExperimentIn, ExperimentOut, ExperimentsOut
 from experiment.experiment_service import ExperimentService
@@ -15,12 +16,12 @@ class ExperimentServiceRelational(ExperimentService):
     def save_experiment(self, experiment: ExperimentIn):
         experiment_data = {
             "experiment_name": experiment.experiment_name,
-            "additional_properties": {[
+            "additional_properties": json.dumps([
                 {
                     "key": p.key,
                     "value": p.value
                 } for p in experiment.additional_properties
-            ]}
+            ])
         }
 
         print(experiment_data)
@@ -45,7 +46,26 @@ class ExperimentServiceRelational(ExperimentService):
         return ExperimentOut(**experiment_dict)
         
     def delete_experiment(self, experiment_id: Union[int, str]):
-        get_response = self.get_appearance(experiment_id)
+        get_response = self.get_experiment(experiment_id)
+
         if type(get_response) != NotFoundByIdModel:
             self.rdb_api_service.delete_with_id(self.table_name, experiment_id)
+
         return get_response
+    
+    def update_experiment(self, experiment_id: Union[int, str], experiment: ExperimentIn):
+        experiment_data = {
+            "experiment_name": experiment.experiment_name,
+            "additional_properties": json.dumps([
+                {
+                    "key": p.key,
+                    "value": p.value
+                } for p in experiment.additional_properties
+            ])
+        }
+
+        get_response = self.get_experiment(experiment_id)
+        if type(get_response) != NotFoundByIdModel:
+            self.rdb_api_service.put(self.table_name, experiment_id, experiment_data)
+
+        return self.get_experiment(experiment_id)
