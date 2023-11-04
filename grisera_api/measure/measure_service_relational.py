@@ -2,17 +2,17 @@ from typing import Union
 from measure.measure_model import MeasureIn, MeasureOut, MeasuresOut, MeasurePropertyIn, MeasureRelationIn
 from measure.measure_service import MeasureService
 from models.not_found_model import NotFoundByIdModel
-from rdb_api_service import RdbApiService
+from rdb_api_service import RdbApiService, Collections
 from time_series.time_series_service_relational import TimeSeriesService
 from measure_name.measure_name_service_relational import MeasureNameService
 
 class MeasureServiceRelational(MeasureService):
-    rdb_api_service = RdbApiService()
-    table_name = "measure"
-
+    
     def __init__(self):
+        self.rdb_api_service = RdbApiService()
         self.time_series_service = TimeSeriesService()
         self.measure_name_service = MeasureNameService()
+        self.table_name = Collections.MEASURE
 
     def save_measure(self, measure: MeasureIn):
         measure_data = {
@@ -23,7 +23,6 @@ class MeasureServiceRelational(MeasureService):
         }
 
         saved_measure_dict = self.rdb_api_service.post(self.table_name, measure_data)
-
         return MeasureOut(**saved_measure_dict)
     
     def get_measures(self):
@@ -36,11 +35,10 @@ class MeasureServiceRelational(MeasureService):
             return NotFoundByIdModel(id=measure_id, errors={"Entity not found."})
         
         if depth > 0:
-            # not implemented yet
-            if source != "time_series":
+            if source != Collections.TIMESERIES:
                 measure_dict["time_series"] = self.time_series_service.get_multiple_with_foreign_id(measure_id, depth - 1, self.table_name)
-            if source != "measure_name":
-                measure_dict["measure_name"] = self.measure_name_service.get_single(measure_dict["measure_name_id"], depth - 1, self.table_name)
+            if source != Collections.MEASURE_NAME:
+                measure_dict["measure_name"] = self.measure_name_service.get_single_with_foreign_id(measure_dict["measure_name_id"], depth - 1, self.table_name)
 
         return MeasureOut(**measure_dict)
     
@@ -61,3 +59,4 @@ class MeasureServiceRelational(MeasureService):
         if type(get_response) != NotFoundByIdModel:
             self.rdb_api_service.put(self.table_name, measure_id, measure.dict())
         return self.get_measure(measure_id)
+    
