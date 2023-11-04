@@ -1,15 +1,35 @@
+from enum import Enum
 import psycopg2
 from rdb_api_config import *
 
 
+class Collections(str, Enum):
+    ACTIVITY = "activity"
+    ACTIVITY_EXECUTION = "activity_execution"
+    APPEARANCE = "appearance"
+    ARRANGEMENT = "arrangement"
+    CHANNEL = "channel"
+    EXPERIMENT = "experiment"
+    LIFE_ACTIVITY = "life_activity"
+    MEASURE = "measure"
+    MEASURE_NAME = "measure_name"
+    MODALITY = "modality"
+    OBSERVABLE_INFORMATION = "observable_information"
+    OBSERVABLE_INFORMATION_TIMESERIES = "observable_information_timeseries"
+    PARTICIPANT = "participant"
+    PARTICIPANT_STATE = "participant_state"
+    PARTICIPANT_STATE_APPEARANCE = "participant_state_appearance"
+    PARTICIPANT_STATE_PERSONALITY = "participant_state_personality"
+    PARTICIPATION = "participation"
+    PERSONALITY = "personality"
+    REGISTERED_CHANNEL = "registered_channel"
+    REGISTERED_DATA = "registered_data"
+    SCENARIO = "scenario"
+    TIMESERIES = "timeseries"
+    TIMESERIES_METADATA = "timeseries_metadata"
+
 class RdbApiService:
-    """
-    Object that handles direct communication with mongodb
-    """
-
-    MONGO_ID_FIELD = "_id"
-    MODEL_ID_FIELD = "id"
-
+    
     def __init__(self):
         """
         Initialize and establish a connection to the database.
@@ -78,12 +98,14 @@ class RdbApiService:
     def get_records_with_foreign_id(self, table_name, column_name, id):
         cursor = self.connection.cursor()
         query = f"SELECT * FROM {table_name} WHERE {column_name} = %s"
-        cursor.execute(query, (id,))
-        result = cursor.fetchall()
-        column_names = [desc[0] for desc in cursor.description]
-        records = [dict(zip(column_names, row)) for row in result]
-        
-        return records
+        try:
+            cursor.execute(query, (id,))
+            result = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            records = [dict(zip(column_names, row)) for row in result]
+            return {"records": records}
+        except psycopg2.Error as error:
+            return {"errors": error}
 
     def post(self, table_name, record):
         """
@@ -140,13 +162,13 @@ class RdbApiService:
                 cursor.close()
                 return None
 
-            data_list = {}
+            data_dict = {}
             for desc, value in zip(cursor.description, row):
-                data_list[desc.name] = value
+                data_dict[desc.name] = value
 
             self.connection.commit()
             cursor.close()
-            return data_list
+            return data_dict
         except psycopg2.Error as error:
             self.connection.rollback()
             return error
