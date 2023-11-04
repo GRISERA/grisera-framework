@@ -67,7 +67,7 @@ class RegisteredDataServiceRelational(RegisteredDataService):
         return self.get_registered_data(registered_data_id)
     
 
-    def get_single_with_foreign_id(self, registered_data_id, depth: int = 0, source: str = ""):
+    def get_single_with_foreign_id(self, registered_data_id: Union[int, str], depth: int = 0, source: str = ""):
         if depth > 0 and source != Collections.REGISTERED_CHANNEL:
             result = self.rdb_api_service.get_with_id(self.table_name, registered_data_id)
             return result
