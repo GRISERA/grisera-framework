@@ -60,3 +60,14 @@ class MeasureServiceRelational(MeasureService):
             self.rdb_api_service.put(self.table_name, measure_id, measure.dict())
         return self.get_measure(measure_id)
     
+    def get_single_with_foreign_id(self, measure_id: Union[int, str], depth: int = 0, source: str = ""):
+        if depth > 0 and source != Collections.TIMESERIES:
+            result = self.rdb_api_service.get_with_id(self.table_name, measure_id)
+            return result
+        return None
+    
+    def get_multiple_with_foreign_id(self, id: Union[int, str], depth: int = 0, source: str = ""):
+        if depth > 0 and source != Collections.MEASURE_NAME:
+            result = self.rdb_api_service.get_records_with_foreign_id(self.table_name, "{}_id".format(source), id)
+            return result
+        return None
