@@ -2,17 +2,28 @@ from typing import Union
 from appearance.appearance_model import AppearancesOut, AppearanceOcclusionOut, AppearanceSomatotypeOut, AppearanceOcclusionIn, AppearanceSomatotypeIn
 from models.not_found_model import NotFoundByIdModel
 from appearance.appearance_service import AppearanceService
-from rdb_api_service import RdbApiService
+from rdb_api_service import RdbApiService, Collections
 from participant_state.participant_state_service_relational import ParticipantStateServiceRelational
 
 
 class AppearanceServiceRelational(AppearanceService):
 
-    rdb_api_service = RdbApiService()
-    table_name = "appearance"
-
     def __init__(self):
+        self.rdb_api_service = RdbApiService()
+        self.table_name = Collections.APPEARANCE
         self.participant_state_service = ParticipantStateServiceRelational()
+    
+    def save_appearance_occlusion(self, appearance: AppearanceOcclusionIn):
+        appearance_data = {
+            "type": "occlusion",
+            "beard": appearance.beard,
+            "moustache": appearance.moustache,
+            "glasses": appearance.glasses
+        }
+
+        saved_appearance_dict = self.rdb_api_service.post(self.table_name, appearance_data)
+
+        return AppearanceOcclusionOut(**saved_appearance_dict)
     
     def save_appearance_somatotype(self, appearance: AppearanceSomatotypeIn):
         if not self.is_valid_somatotype(appearance):
@@ -36,7 +47,7 @@ class AppearanceServiceRelational(AppearanceService):
             return NotFoundByIdModel(id=appearance_id, errors={"Entity not found."})
         
         if depth > 0:
-            if source != "participant_state":
+            if source != Collections.PARTICIPANT_STATE:
                 appearance_dict["participant_states"] = self.participant_state_service.get_multiple_with_foreign_id(appearance_id, depth - 1, self.table_name)
         return AppearanceOcclusionOut(**appearance_dict) if appearance_dict["type"] == "occlusion" else AppearanceSomatotypeOut(**appearance_dict)
     
@@ -77,3 +88,9 @@ class AppearanceServiceRelational(AppearanceService):
         return not (appearance.ectomorph < 1 or appearance.ectomorph > 7 \
                 or appearance.endomorph < 1 or appearance.endomorph > 7 \
                 or appearance.mesomorph < 1 or appearance.mesomorph > 7)
+    
+    def get_single_with_foreign_id(self, appearance_id: Union[int, str], depth: int = 0, source: str = ""):
+        if depth > 0 and source != Collections.PARTICIPANT_STATE:
+            result = self.rdb_api_service.get_with_id(self.table_name, appearance_id)
+            return result
+        return None
