@@ -54,3 +54,8 @@ class ActivityServiceRelational(ActivityService):
                 activity.activity == Activity.two_people or  \
                 activity.activity == Activity.group
     
+    def get_single_with_foreign_id(self, activity_id, depth: int = 0, source: str = ""):
+        if depth > 0 and source != Collections.ACTIVITY_EXECUTION:
+            result = self.rdb_api_service.get_with_id(self.table_name, activity_id)
+            return result
+        return None
