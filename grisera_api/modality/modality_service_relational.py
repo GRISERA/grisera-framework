@@ -1,7 +1,8 @@
 from typing import Union
+from observable_information.observable_information_service import ObservableInformationService
 from models.not_found_model import NotFoundByIdModel
 from modality.modality_model import ModalityIn, Modality, ModalitiesOut, ModalityOut
-from rdb_api_service import RdbApiService
+from rdb_api_service import RdbApiService, Collections
 from modality.modality_service import ModalityService
 
 
@@ -9,7 +10,8 @@ class ModalityServiceRelational(ModalityService):
 
     def __init__(self) -> None:
         self.rdb_api_service = RdbApiService()
-        self.table_name = "modality"
+        self.observable_information_service = ObservableInformationService()
+        self.table_name = Collections.MODALITY
 
     def save_modality(self, modality: ModalityIn):
         if not self.is_valid_modality(modality):
@@ -25,10 +27,14 @@ class ModalityServiceRelational(ModalityService):
         results = self.rdb_api_service.get(self.table_name)
         return ModalitiesOut(modalities=results)
 
-    def get_modality(self, modality_id: Union[int, str], depth: int = 0):
+    def get_modality(self, modality_id: Union[int, str], depth: int = 0, source: str = ""):
         result = self.rdb_api_service.get_with_id(self.table_name, modality_id)
         if not result:
             return NotFoundByIdModel(id=modality_id, errors={"Entity not found."})
+        
+        if depth > 0 and source != Collections.OBSERVABLE_INFORMATION:
+            result["observable_informations"] = self.observable_information_service.get_multiple_with_foreign_id(modality_id, depth - 1, self.table_name)
+
         return ModalityOut(**result)
 
     def is_valid_modality(self, modality: ModalityIn):
@@ -40,4 +46,10 @@ class ModalityServiceRelational(ModalityService):
                             Modality.neural_activity]
         
         return modality.modality in valid_modalities
+    
+    def get_single_with_foreign_id(self, modality_id, depth: int = 0, source: str = ""):
+        if depth > 0 and source != Collections.OBSERVABLE_INFORMATION:
+            result = self.rdb_api_service.get_with_id(self.table_name, modality_id)
+            return result
+        return None
     
