@@ -1,6 +1,32 @@
+from enum import Enum
 import psycopg2
 from rdb_api_config import *
 
+
+class Collections(str, Enum):
+    ACTIVITY = "activity"
+    ACTIVITY_EXECUTION = "activity_execution"
+    APPEARANCE = "appearance"
+    ARRANGEMENT = "arrangement"
+    CHANNEL = "channel"
+    EXPERIMENT = "experiment"
+    LIFE_ACTIVITY = "life_activity"
+    MEASURE = "measure"
+    MEASURE_NAME = "measure_name"
+    MODALITY = "modality"
+    OBSERVABLE_INFORMATION = "observable_information"
+    OBSERVABLE_INFORMATION_TIMESERIES = "observable_information_timeseries"
+    PARTICIPANT = "participant"
+    PARTICIPANT_STATE = "participant_state"
+    PARTICIPANT_STATE_APPEARANCE = "participant_state_appearance"
+    PARTICIPANT_STATE_PERSONALITY = "participant_state_personality"
+    PARTICIPATION = "participation"
+    PERSONALITY = "personality"
+    REGISTERED_CHANNEL = "registered_channel"
+    REGISTERED_DATA = "registered_data"
+    SCENARIO = "scenario"
+    TIMESERIES = "timeseries"
+    TIMESERIES_METADATA = "timeseries_metadata"
 
 class RdbApiService:
     
