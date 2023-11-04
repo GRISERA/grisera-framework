@@ -47,7 +47,7 @@ class ModalityServiceRelational(ModalityService):
         
         return modality.modality in valid_modalities
     
-    def get_single_with_foreign_id(self, modality_id, depth: int = 0, source: str = ""):
+    def get_single_with_foreign_id(self, modality_id: Union[int, str], depth: int = 0, source: str = ""):
         if depth > 0 and source != Collections.OBSERVABLE_INFORMATION:
             result = self.rdb_api_service.get_with_id(self.table_name, modality_id)
             return result
