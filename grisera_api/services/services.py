@@ -51,7 +51,7 @@ class Services:
         self.persistence_type = (
             PersistenceTypes(int(os.environ.get("PERSISTENCE_TYPE")))
             if "PERSISTENCE_TYPE" in os.environ
-            else PersistenceTypes.GRAPHDB
+            else PersistenceTypes.POSTGRESQL
         )
         self.service_factory = self.get_service_factory()
 
