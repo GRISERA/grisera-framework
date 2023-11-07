@@ -97,7 +97,7 @@ class RdbApiService:
     
     def get_records_with_foreign_id(self, table_name, column_name, id):
         cursor = self.connection.cursor()
-        query = f"SELECT * FROM {table_name} WHERE {column_name} = %s"
+        query = "SELECT * FROM " + table_name + " WHERE " + column_name + "= %s"
         try:
             cursor.execute(query, (id,))
             result = cursor.fetchall()
