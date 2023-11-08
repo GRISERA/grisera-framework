@@ -22,6 +22,7 @@ class Collections(str, Enum):
     PARTICIPANT_STATE_PERSONALITY = "participant_state_personality"
     PARTICIPATION = "participation"
     PERSONALITY = "personality"
+    RECORDING = "recording"
     REGISTERED_CHANNEL = "registered_channel"
     REGISTERED_DATA = "registered_data"
     SCENARIO = "scenario"
