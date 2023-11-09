@@ -7,16 +7,9 @@ from rdb_api_service import RdbApiService
 
 class ArrangementServiceRelational(ArrangementService):
 
-    rdb_api_service = RdbApiService()
-    table_name = "Arrangement"
-
-    def save_arrangement(self, arrangement: ArrangementIn):
-        arrangement_data = {
-            "type": arrangement.arrangement_type,
-            "distance": arrangement.arrangement_distance
-        }
-        saved_arrangement = self.rdb_api_service.post(self.table_name, arrangement_data)
-        return ArrangementOut(id=saved_arrangement["id"], arrangement_type=saved_arrangement["type"], arrangement_distance=saved_arrangement["distance"])
+    def __init__(self) -> None:
+        self.rdb_api_service = RdbApiService()
+        self.table_name = "Arrangement"
 
     def get_arrangements(self):
         results = self.rdb_api_service.get(self.table_name)
