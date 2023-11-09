@@ -16,7 +16,7 @@ class MeasureNameServiceRelational(MeasureNameService):
             "name": measure_name.name,
             "type": measure_name.type
         }
-        saved_measure_name_dict = self.rdb_api_service.post(self.table_name, measure_name_dict)
+        saved_measure_name_dict = self.rdb_api_service.post(self.table_name, measure_name_dict)["records"]
         return MeasureNameOut(**saved_measure_name_dict)
 
     def get_measure_names(self):
