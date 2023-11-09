@@ -18,8 +18,10 @@ class MeasureServiceRelational(MeasureService):
             "unit": measure.unit
         }
 
-        saved_measure_dict = self.rdb_api_service.post(self.table_name, measure_data)
-        return MeasureOut(**saved_measure_dict)
+        result = self.rdb_api_service.post(self.table_name, measure_data)
+        if result["errors"] is not None:
+            return MeasureOut(errors=result["errors"])
+        return MeasureOut(**result["records"])
     
     def get_measures(self):
         results = self.rdb_api_service.get(self.table_name)
@@ -53,37 +55,21 @@ class MeasureServiceRelational(MeasureService):
     def update_measure(self, measure_id: Union[int, str], measure: MeasurePropertyIn):
         get_response = self.get_measure(measure_id)
         if type(get_response) != NotFoundByIdModel:
-            self.rdb_api_service.put(self.table_name, measure_id, measure.dict())
-        return self.get_measure(measure_id)
+            put_result = self.rdb_api_service.put(self.table_name, measure_id,  measure.dict())
+            if put_result["errors"] is not None:
+                return MeasureOut(errors=put_result["errors"])
+            return MeasureOut(**put_result["records"])
+        return get_response
 
     def update_measure_relationships(self, measure_id: Union[int, str], measure: MeasureRelationIn):
         get_response = self.get_measure(measure_id)
         if type(get_response) != NotFoundByIdModel:
-            self.rdb_api_service.put(self.table_name, measure_id, measure.dict())
-        return self.get_measure(measure_id)
-    
-    def get_single_with_foreign_id(self, measure_id: Union[int, str], depth: int = 0, source: str = ""):
-        import measure_name.measure_name_service_relational
-        measure_name_service = measure_name.measure_name_service_relational.MeasureNameServiceRelational()
-        
-        import time_series.time_series_service_relational
-        time_series_service = time_series.time_series_service_relational.TimeSeriesServiceRelational()
+            put_result = self.rdb_api_service.put(self.table_name, measure_id, measure.dict())
+            if put_result["errors"] is not None:
+                return MeasureOut(errors=put_result["errors"])
+            return MeasureOut(**put_result["records"])
+        return get_response
 
-        measure_dict = self.rdb_api_service.get_with_id(self.table_name, measure_id)
-
-        if not measure_dict:
-            return None
-        
-        if depth <= 0:
-            return measure_dict
-        
-        #if source != Collections.TIMESERIES:
-            #TODO measure_dict["time_series"] = time_series_service.get_multiple_with_foreign_id(measure_dict["id"], depth - 1, self.table_name)
-        if source != Collections.MEASURE_NAME:
-            measure_dict["measure_name"] = measure_name_service.get_single_with_foreign_id(measure_dict["measure_name_id"], depth - 1, self.table_name)
-
-        return measure_dict
-        
     def get_multiple_with_foreign_id(self, id: Union[int, str], depth: int = 0, source = ""):
         import measure_name.measure_name_service_relational
         measure_name_service = measure_name.measure_name_service_relational.MeasureNameServiceRelational()
@@ -92,7 +78,7 @@ class MeasureServiceRelational(MeasureService):
         time_series_service = time_series.time_series_service_relational.TimeSeriesServiceRelational()
 
         measure_dict_list = self.rdb_api_service.get_records_with_foreign_id(self.table_name, source + "_id", id)
-        if "errors" in measure_dict_list.keys():
+        if measure_dict_list["errors"] is not None:
             return []
         
         if depth <= 0:
