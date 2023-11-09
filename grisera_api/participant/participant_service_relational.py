@@ -26,7 +26,7 @@ class ParticipantServiceRelational(ParticipantService):
                 } for p in participant.additional_properties
             ])
         }
-        saved_participant_dict = self.rdb_api_service.post(self.table_name, participant_data_dict)
+        saved_participant_dict = self.rdb_api_service.post(self.table_name, participant_data_dict)["records"]
         return ParticipantOut(**saved_participant_dict)
 
     def get_participants(self):
