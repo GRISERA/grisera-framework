@@ -104,9 +104,9 @@ class RdbApiService:
             result = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
             records = [dict(zip(column_names, row)) for row in result]
-            return {"records": records}
+            return {"records": records, "errors": None}
         except psycopg2.Error as error:
-            return {"errors": error.pgerror}
+            return {"records":None, "errors": error.pgerror}
 
     def post(self, table_name, record):
         """

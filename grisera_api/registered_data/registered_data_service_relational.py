@@ -23,7 +23,7 @@ class RegisteredDataServiceRelational(RegisteredDataService):
                 } for p in registered_data.additional_properties
             ])
         }
-        saved_registered_data_dict = self.rdb_api_service.post(self.table_name, registered_data_dict)
+        saved_registered_data_dict = self.rdb_api_service.post(self.table_name, registered_data_dict)["records"]
         return RegisteredDataOut(**saved_registered_data_dict)
 
 

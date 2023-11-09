@@ -42,7 +42,7 @@ class RegisteredChannelServiceRelational(RegisteredChannelService):
 
     def get_multiple_with_foreign_id(self, foreign_id: Union[int, str], depth: int = 0, source: str = ""):
         response = self.rdb_api_service.get_records_with_foreign_id(self.table_name, source+"_id",foreign_id)
-        if "errors" in response.keys():
+        if response["errors"] is not None:
             print(response["errors"])
             return []
         registered_channels = response["records"]
@@ -70,4 +70,9 @@ class RegisteredChannelServiceRelational(RegisteredChannelService):
             return RegisteredChannelOut(**put_result["records"])
         return result
 
+    def delete_registered_channel(self, registered_channel_id: Union[int, str]):
+        result = self.get_registered_data(registered_channel_id)
+        if type(result) != NotFoundByIdModel:
+            self.rdb_api_service.delete_with_id(self.table_name, registered_channel_id)
+        return result
 
