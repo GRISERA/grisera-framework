@@ -60,8 +60,10 @@ class RegisteredDataServiceRelational(RegisteredDataService):
                 } for p in registered_data.additional_properties
             ])
         }
-
         result = self.get_registered_data(registered_data_id)
         if type(result) != NotFoundByIdModel:
-            self.rdb_api_service.put(self.table_name, registered_data_id, registered_data_dict)
-        return self.get_registered_data(registered_data_id)
+            put_result = self.rdb_api_service.put(self.table_name, registered_data_id, registered_data_dict)
+            if put_result["errors"] is not None:
+                return RegisteredDataOut(errors = put_result["errors"])
+            return RegisteredDataOut(**put_result["records"])
+        return result

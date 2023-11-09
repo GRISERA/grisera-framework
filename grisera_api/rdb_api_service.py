@@ -106,7 +106,7 @@ class RdbApiService:
             records = [dict(zip(column_names, row)) for row in result]
             return {"records": records}
         except psycopg2.Error as error:
-            return {"errors": error}
+            return {"errors": error.pgerror}
 
     def post(self, table_name, record):
         """
@@ -123,7 +123,7 @@ class RdbApiService:
             placeholders = ', '.join(['%s'] * len(record))
             values = list(record.values())
             
-            query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders}) RETURNING *"
+            query = "INSERT INTO " + table_name + "(" + columns + ") VALUES (" + placeholders + ") RETURNING *"
             
             cursor.execute(query, values)
             row = cursor.fetchone()
@@ -134,10 +134,10 @@ class RdbApiService:
 
             self.connection.commit()
             cursor.close()
-            return data_list
+            return {"records": data_list, "errors": None}
         except psycopg2.Error as error:
             self.connection.rollback()
-            return error
+            return {"records": None, "errors": error.pgerror}
         
     def put(self, table_name, id, updated_record):
         """
@@ -155,7 +155,7 @@ class RdbApiService:
             values = list(updated_record.values())
             values.append(id)
             
-            query = f"UPDATE {table_name} SET {set_statements} WHERE id = %s RETURNING *"
+            query = "UPDATE "+ table_name + " SET " + set_statements + " WHERE id = %s RETURNING *"
             
             cursor.execute(query, values)
             row = cursor.fetchone()
@@ -169,10 +169,10 @@ class RdbApiService:
 
             self.connection.commit()
             cursor.close()
-            return data_dict
+            return {"records":data_dict, "errors": None}
         except psycopg2.Error as error:
             self.connection.rollback()
-            return error
+            return {"records": None, "errors": error.pgerror}
 
         
     def delete_with_id(self, table_name, id):

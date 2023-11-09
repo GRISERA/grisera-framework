@@ -15,12 +15,13 @@ class RegisteredChannelServiceRelational(RegisteredChannelService):
         self.table_name = Collections.REGISTERED_CHANNEL
 
     def save_registered_channel(self, registered_channel: RegisteredChannelIn):
-        save_registered_channel_dict = self.rdb_api_service.post(self.table_name, registered_channel.dict())
-        return RegisteredChannelOut(**save_registered_channel_dict)
+        result = self.rdb_api_service.post(self.table_name, registered_channel.dict())
+        if result["errors"] is not None:
+            return RegisteredChannelOut(errors=result["errors"])
+        return RegisteredChannelOut(**result["records"])
 
     def get_registered_channels(self):
         results = self.rdb_api_service.get(self.table_name)
-        print(results)
         return RegisteredChannelsOut(registered_channels=results)
 
     def get_registered_channel(self, registered_channel_id: Union[int, str], depth: int = 0, source: str = ""):
@@ -58,4 +59,15 @@ class RegisteredChannelServiceRelational(RegisteredChannelService):
                 # registered_channel["recordings"] = self.recording_service.get_multiple_with_foreign_id(
                 #     registered_channel["registered_data_id"], depth - 1, self.table_name)
         return registered_channels
+
+    def update_registered_channel_relationships(self, registered_channel_id: Union[int, str],
+                                                registered_channel: RegisteredChannelIn):
+        result = self.get_registered_channel(registered_channel_id)
+        if type(result) != NotFoundByIdModel:
+            put_result = self.rdb_api_service.put(self.table_name, registered_channel_id, registered_channel.dict())
+            if put_result["errors"] is not None:
+                return RegisteredChannelOut(errors=put_result["errors"])
+            return RegisteredChannelOut(**put_result["records"])
+        return result
+
 
