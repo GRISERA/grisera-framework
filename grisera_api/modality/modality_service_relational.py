@@ -40,7 +40,3 @@ class ModalityServiceRelational(ModalityService):
 
         return ModalityOut(**result)
 
-
-    def get_single_with_foreign_id(self, modality_id: Union[int, str], depth: int = 0, source: str = ""):
-        return self.get_modality(modality_id, depth, source)
-    
