@@ -13,10 +13,7 @@ class ModalityServiceRelational(ModalityService):
         self.table_name = Collections.MODALITY
 
     def save_modality(self, modality: ModalityIn):
-        modality_data = {
-            "modality": modality.modality
-        }
-        result = self.rdb_api_service.post(self.table_name, modality_data)
+        result = self.rdb_api_service.post(self.table_name, modality.dict())
         if result["errors"] is not None:
             return ModalityOut(errors=result["errors"])
         return ModalityOut(**result["records"])
