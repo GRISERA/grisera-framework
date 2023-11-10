@@ -77,13 +77,13 @@ class RegisteredChannelServiceRelational(RegisteredChannelService):
 
     def update_registered_channel_relationships(self, registered_channel_id: Union[int, str],
                                                 registered_channel: RegisteredChannelIn):
-            result = self.get_registered_channel(registered_channel_id)
-            if type(result) != NotFoundByIdModel:
-                put_result = self.rdb_api_service.put(self.table_name, registered_channel_id, registered_channel.dict())
-                if put_result["errors"] is not None:
-                    return RegisteredChannelOut(errors=put_result["errors"])
-                return RegisteredChannelOut(**put_result["records"])
-            return result
+        result = self.get_registered_channel(registered_channel_id)
+        if type(result) != NotFoundByIdModel:
+            put_result = self.rdb_api_service.put(self.table_name, registered_channel_id, registered_channel.dict())
+            if put_result["errors"] is not None:
+                return RegisteredChannelOut(errors=put_result["errors"])
+            return RegisteredChannelOut(**put_result["records"])
+        return result
 
 
     def delete_registered_channel(self, registered_channel_id: Union[int, str]):
