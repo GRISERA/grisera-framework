@@ -8,15 +8,11 @@ from modality.modality_service import ModalityService
 
 class ModalityServiceRelational(ModalityService):
 
-    def __init__(self) -> None:
+    def __init__(self):
         self.rdb_api_service = RdbApiService()
-        self.observable_information_service = ObservableInformationService()
         self.table_name = Collections.MODALITY
 
     def save_modality(self, modality: ModalityIn):
-        if not self.is_valid_modality(modality):
-            return ModalityOut(modality=modality.modality, errors="Invalid modality type")
-        
         modality_data = {
             "modality": modality.modality
         }
@@ -44,17 +40,6 @@ class ModalityServiceRelational(ModalityService):
 
         return ModalityOut(**result)
 
-
-    def is_valid_modality(self, modality: ModalityIn):
-        valid_modalities = [Modality.facial_expressions, Modality.body_posture, Modality.eye_gaze, \
-                            Modality.head_movement, Modality.gestures, Modality.motion, \
-                            Modality.prosody_of_speech, Modality.vocalization, Modality.heart_rate, \
-                            Modality.hrv, Modality.muscle_tension, Modality.skin_conductance, \
-                            Modality.resp_intensity_and_period, Modality.peripheral_temperature, \
-                            Modality.neural_activity]
-        
-        return modality.modality in valid_modalities
-    
 
     def get_single_with_foreign_id(self, modality_id: Union[int, str], depth: int = 0, source: str = ""):
         return self.get_modality(modality_id, depth, source)
