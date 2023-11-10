@@ -1,5 +1,5 @@
 from typing import Union
-from observable_information.observable_information_service import ObservableInformationService
+
 from models.not_found_model import NotFoundByIdModel
 from modality.modality_model import ModalityIn, Modality, ModalitiesOut, ModalityOut
 from rdb_api_service import RdbApiService, Collections
@@ -20,22 +20,30 @@ class ModalityServiceRelational(ModalityService):
         modality_data = {
             "modality": modality.modality
         }
-        saved_modality_dict = self.rdb_api_service.post(self.table_name, modality_data)
-        return ModalityOut(**saved_modality_dict)
+        result = self.rdb_api_service.post(self.table_name, modality_data)
+        if result["errors"] is not None:
+            return ModalityOut(errors=result["errors"])
+        return ModalityOut(**result["records"])
+
 
     def get_modalities(self):
         results = self.rdb_api_service.get(self.table_name)
         return ModalitiesOut(modalities=results)
 
+
     def get_modality(self, modality_id: Union[int, str], depth: int = 0, source: str = ""):
+        import observable_information.observable_information_service_relational as oi_rel_service
+        observable_information_service = oi_rel_service.ObservableInformationServiceRelational()
+
         result = self.rdb_api_service.get_with_id(self.table_name, modality_id)
         if not result:
             return NotFoundByIdModel(id=modality_id, errors={"Entity not found."})
         
         if depth > 0 and source != Collections.OBSERVABLE_INFORMATION:
-            result["observable_informations"] = self.observable_information_service.get_multiple_with_foreign_id(modality_id, depth - 1, self.table_name)
+            result["observable_informations"] = observable_information_service.get_multiple_with_foreign_id(modality_id, depth - 1, self.table_name)
 
         return ModalityOut(**result)
+
 
     def is_valid_modality(self, modality: ModalityIn):
         valid_modalities = [Modality.facial_expressions, Modality.body_posture, Modality.eye_gaze, \
@@ -47,9 +55,7 @@ class ModalityServiceRelational(ModalityService):
         
         return modality.modality in valid_modalities
     
+
     def get_single_with_foreign_id(self, modality_id: Union[int, str], depth: int = 0, source: str = ""):
-        if depth > 0 and source != Collections.OBSERVABLE_INFORMATION:
-            result = self.rdb_api_service.get_with_id(self.table_name, modality_id)
-            return result
-        return None
+        return self.get_modality(modality_id, depth, source)
     
