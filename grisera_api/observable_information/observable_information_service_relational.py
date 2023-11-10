@@ -65,11 +65,11 @@ class ObservableInformationServiceRelational(ObservableInformationService):
     def get_multiple_with_foreign_id(self, id: Union[int, str], depth: int = 0, source = ""):
         #import life_activity.life_activity_service_relational
         import modality.modality_service_relational
-        #import recording.recording_service_relational
+        import recording.recording_service_relational
         #import time_series.time_series_service_relational
         #life_activity_service = life_activity.life_activity_service_relational.LifeActivityServiceRelational()
         modality_service = modality.modality_service_relational.ModalityServiceRelational()
-        #recording_service = recording.recording_service_relational.RecordingServiceRelational()
+        recording_service = recording.recording_service_relational.RecordingServiceRelational()
         #time_series_service = time_series.time_series_service_relational.TimeSeriesServiceRelational()
 
         observable_information_dict_list = self.rdb_api_service.get_records_with_foreign_id(self.table_name, source + "_id", id)
@@ -84,8 +84,8 @@ class ObservableInformationServiceRelational(ObservableInformationService):
                 #observable_information_dict["life_activity"] = life_activity_service.get_life_activity(observable_information_dict["life_activity_id"], depth - 1, self.table_name)
             if source != Collections.MODALITY:
                 observable_information_dict["modality"] = modality_service.get_modality(observable_information_dict["modality_id"], depth - 1, self.table_name)
-            #if source != Collections.RECORDING:
-                #observable_information_dict["recording"] = recording_service.get_recording(observable_information_dict["recording_id"], depth - 1, self.table_name)
+            if source != Collections.RECORDING:
+                observable_information_dict["recording"] = recording_service.get_recording(observable_information_dict["recording_id"], depth - 1, self.table_name)
             #if source != Collections.TIMESERIES:
                 #observable_information_dict["timeSeries"] = time_series_service.get_multiple_with_foreign_id(id, depth - 1, self.table_name)
         
