@@ -15,6 +15,8 @@ class RecordingServiceRelational(RecordingService):
 
     def save_recording(self, recording: RecordingIn):
         recording_data = {
+            "participation_id": recording.participation_id,
+            "registered_channel_id": recording.registered_channel_id,
             "additional_properties": json.dumps([
                 {
                     "key": p.key,
