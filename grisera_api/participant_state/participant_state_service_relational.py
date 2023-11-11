@@ -60,9 +60,6 @@ class ParticipantStateServiceRelational(ParticipantStateService):
     
 
     def get_participant_states(self):
-        result = self.get_multiple_from_proxy_with_foreign_id(3, 0, Collections.PERSONALITY)
-        print(result)
-        return ParticipantStatesOut(participant_states=[])
         results = self.rdb_api_service.get(self.table_name)
         return ParticipantStatesOut(participant_states=results)
     
