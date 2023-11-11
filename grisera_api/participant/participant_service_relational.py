@@ -38,11 +38,11 @@ class ParticipantServiceRelational(ParticipantService):
         if not participant_dict:
             return NotFoundByIdModel(id=participant_id, errors={"Entity not found"})
         
-        # import participant_state.participant_state_service_relational
-        # participant_state_service = participant_state.participant_state_service_relational.ParticipantStateServiceRelational()
-        # if depth > 0:
-        #     if source != Collections.PARTICIPANT_STATE:
-        #         participant_dict["participant_states"] = participant_state_service.get_multiple_with_foreign_id(participant_id, depth - 1, self.table_name)
+        import participant_state.participant_state_service_relational
+        participant_state_service = participant_state.participant_state_service_relational.ParticipantStateServiceRelational()
+        if depth > 0:
+            if source != Collections.PARTICIPANT_STATE:
+                participant_dict["participant_states"] = participant_state_service.get_multiple_with_foreign_id(participant_id, depth - 1, self.table_name)
 
         return ParticipantOut(**participant_dict)
     

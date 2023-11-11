@@ -21,15 +21,10 @@ class ChannelServiceRelational(ChannelService):
         if not channel_dict:
             return NotFoundByIdModel(id=channel_id, errors={"Entity not found."})
         
-        if depth > 0:
-            if source != Collections.REGISTERED_CHANNEL:
-                # not implemented yet
-                channel_dict["registered_channels"] = self.registered_channel_service.get_single_with_foreign_id(channel_id, depth - 1, self.table_name)
+        import registered_channel.registered_channel_service_relational
+        registered_channel_service = registered_channel.registered_channel_service_relational.RegisteredChannelServiceRelational()
+
+        if depth > 0 and source != Collections.REGISTERED_CHANNEL:
+                channel_dict["registered_channels"] = registered_channel_service.get_multiple_with_foreign_id(channel_id, depth - 1, self.table_name)
 
         return ChannelOut(**channel_dict)
-
-    def get_single_with_foreign_id(self, channel_id: Union[int, str], depth: int = 0, source: str = ""):
-        if depth > 0 and source != Collections.REGISTERED_CHANNEL:
-            result = self.rdb_api_service.get_with_id(self.table_name, channel_id)
-            return result
-        return None
