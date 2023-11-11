@@ -39,12 +39,12 @@ class ExperimentServiceRelational(ExperimentService):
         if not experiment_dict:
             return NotFoundByIdModel(id=experiment_id, errors={"Entity not found."})
         
-        import activity_execution.activity_execution_service_relational
-        activity_executions_service = activity_execution.activity_execution_service_relational.ActivityExecutionServiceRelational()
-        
-        if depth > 0 and source != Collections.ACTIVITY_EXECUTION:
-                experiment_dict["activity_executions"] == activity_executions_service.get_multiple_with_foreign_id(experiment_id, depth - 1, self.table_name)
-
+        import scenario.scenario_service_relational as sc_rel
+        scenario_service = sc_rel.ScenarioServiceRelational()
+        if depth > 0 and source != Collections.ACTIVITY_EXECUTION and source != Collections.SCENARIO:
+            scenario = scenario_service.get_scenario_by_experiment(experiment_id, depth - 1, self.table_name)
+            if type(scenario) != NotFoundByIdModel:
+                experiment_dict["activity_executions"] = scenario.activity_executions
         return ExperimentOut(**experiment_dict)
         
 

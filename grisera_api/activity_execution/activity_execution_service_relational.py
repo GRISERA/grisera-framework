@@ -38,22 +38,21 @@ class ActivityExecutionServiceRelational(ActivityExecutionService):
         if depth > 0:
             import activity.activity_service_relational
             import participation.participation_service_relational
-            import experiment.experiment_service_relational
             import arrangement.arrangement_service_relational
+            import scenario.scenario_service_relational
             activity_service_relational = activity.activity_service_relational.ActivityServiceRelational()
             participation_service_relational = participation.participation_service_relational.ParticipationServiceRelational()
-            experiment_service_relational = experiment.experiment_service_relational.ExperimentServiceRelational()
             arrangement_service_relational = arrangement.arrangement_service_relational.ArrangementServiceRelational()
-
-            #TODO if source != Collections.ACTIVITY:
-            #     activity_execution["activity"] = activity_service_relational.get_activity(
-            #         activity_execution["activity_id"], depth - 1, self.table_name)
-            # if source != Collections.PARTICIPATION:
-            #     activity_execution["participations"] = participation_service_relational.get_multiple_with_foregn_id(
-            #         activity_execution["participation_id"], depth - 1, self.table_name)
-            # if source != Collections.EXPERIMENT:
-            #     activity_execution["experiments"] = experiment_service_relational.get_multiple_with_foregn_id(
-            #         activity_execution["experiment_id"], depth - 1, self.table_name)
+            scenario_service_relational = scenario.scenario_service_relational.ScenarioServiceRelational()
+            if source != Collections.ACTIVITY:
+                activity_execution["activity"] = activity_service_relational.get_activity(
+                    activity_execution["activity_id"], depth - 1, self.table_name)
+            if source != Collections.PARTICIPATION:
+                activity_execution["participations"] = participation_service_relational.get_multiple_with_foreign_id(
+                    activity_execution["id"], depth - 1, self.table_name)
+            if source != Collections.EXPERIMENT and source != Collections.SCENARIO:
+                activity_execution["experiments"] = scenario_service_relational.get_experiment_by_activity_execution(
+                    activity_execution["id"], depth - 1, self.table_name)
             # if source != Collections.ARRANGEMENT:
             #     activity_execution["arrangements"] = arrangement_service_relational.get_arrangement(
             #         activity_execution["arrangement_id"], depth - 1, self.table_name)
@@ -98,3 +97,32 @@ class ActivityExecutionServiceRelational(ActivityExecutionService):
         if put_result["errors"] is not None:
             return ActivityExecutionOut(errors=put_result["errors"])
         return ActivityExecutionOut(**put_result["records"])
+
+    def get_multiple_with_foreign_id(self, foreign_id: Union[int, str], depth: int = 0, source: str = ""):
+        activity_executions = self.rdb_api_service.get_records_with_foreign_id(self.table_name, source+"_id",foreign_id)
+        if depth > 0:
+            import activity.activity_service_relational
+            import participation.participation_service_relational
+            import arrangement.arrangement_service_relational
+            import scenario.scenario_service_relational
+            activity_service_relational = activity.activity_service_relational.ActivityServiceRelational()
+            participation_service_relational = participation.participation_service_relational.ParticipationServiceRelational()
+            arrangement_service_relational = arrangement.arrangement_service_relational.ArrangementServiceRelational()
+            scenario_service_relational = scenario.scenario_service_relational.ScenarioServiceRelational()
+            if source != Collections.ACTIVITY:
+                for activity_execution in activity_executions:
+                    activity_execution["activity"] = activity_service_relational.get_activity(
+                        activity_execution["activity_id"], depth - 1, self.table_name)
+            if source != Collections.PARTICIPATION:
+                for activity_execution in activity_executions:
+                    activity_execution["participations"] = participation_service_relational.get_multiple_with_foreign_id(
+                        activity_execution["id"], depth - 1, self.table_name)
+            if source != Collections.EXPERIMENT and source != Collections.SCENARIO:
+                for activity_execution in activity_executions:
+                    activity_execution["experiments"] = scenario_service_relational.get_experiment_by_activity_execution(
+                        activity_execution["id"], depth - 1, self.table_name)
+            #TODO if source != Collections.ARRANGEMENT:
+            #     for activity_execution in activity_executions:
+            #         activity_execution["arrangements"] = arrangement_service_relational.get_arrangement(
+            #             activity_execution["arrangement_id"], depth - 1, self.table_name)
+        return ActivityExecutionsOut(activity_executions=activity_executions)
