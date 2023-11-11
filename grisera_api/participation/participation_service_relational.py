@@ -14,6 +14,8 @@ class ParticipationServiceRelational(ParticipationService):
 
     def save_participation(self, participation: ParticipationIn):
         result = self.rdb_api_service.post(self.table_name, participation.dict())["records"]
+        if result["errors"] is not None:
+            return ParticipationOut(errors=result["errors"])
         return ParticipationOut(**result)
 
 
