@@ -12,10 +12,18 @@ class ChannelServiceRelational(ChannelService):
         self.table_name = Collections.CHANNEL
         self.registered_channel_service = RegisteredChannelService()
 
+
+    def save_channel(self, channel: ChannelIn):
+        saved_channel_dict = self.rdb_api_service.post(self.table_name, channel.dict())
+        if saved_channel_dict["errors"] is not None:
+             return ChannelOut(errors=saved_channel_dict["errors"])
+        return ChannelOut(**saved_channel_dict["records"])
+
     def get_channels(self):
         results = self.rdb_api_service.get(self.table_name)
         return  ChannelsOut(channels=results)
     
+
     def get_channel(self, channel_id: Union[int, str], depth: int = 0, source: str = ""):
         channel_dict = self.rdb_api_service.get_with_id(self.table_name, channel_id)
         if not channel_dict:
