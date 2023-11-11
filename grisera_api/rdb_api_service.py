@@ -98,15 +98,6 @@ class RdbApiService:
     
     def get_records_with_foreign_id(self, table_name, column_name, id):
         cursor = self.connection.cursor()
-<<<<<<< HEAD
-        query = f"SELECT * FROM {table_name} WHERE {column_name} = %s"
-        cursor.execute(query, (id,))
-        result = cursor.fetchall()
-        column_names = [desc[0] for desc in cursor.description]
-        records = [dict(zip(column_names, row)) for row in result]
-        
-        return records
-=======
         query = "SELECT * FROM " + table_name + " WHERE " + column_name + "= %s"
         try:
             cursor.execute(query, (id,))
@@ -116,76 +107,10 @@ class RdbApiService:
             return {"records": records, "errors": None}
         except psycopg2.Error as error:
             return {"records":None, "errors": error.pgerror}
->>>>>>> rdb-stage
 
     def post(self, table_name, record):
         """
         Insert a record into a table.
-<<<<<<< HEAD
-
-        :param table_name: Name of the table.
-        :param record: Dictionary containing column names and values.
-        :return: Inserted record as a dictionary or error.
-        """
-        try:
-            cursor = self.connection.cursor()
-            
-            columns = ', '.join(record.keys())
-            placeholders = ', '.join(['%s'] * len(record))
-            values = list(record.values())
-            
-            query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders}) RETURNING *"
-            
-            cursor.execute(query, values)
-            row = cursor.fetchone()
-
-            data_list = {}
-            for desc, value in zip(cursor.description, row):
-                data_list[desc.name] = value
-
-            self.connection.commit()
-            cursor.close()
-            return data_list
-        except psycopg2.Error as error:
-            self.connection.rollback()
-            return error
-        
-    def put(self, table_name, id, updated_record):
-        """
-        Update a record in a table by its id.
-
-        :param table_name: Name of the table
-        :param id: ID of the record to update
-        :param updated_record: Dictionary containing columns and their new values
-        :return: Updated record or error
-        """
-        try:
-            cursor = self.connection.cursor()
-
-            set_statements = ', '.join([f"{column} = %s" for column in updated_record.keys()])
-            values = list(updated_record.values())
-            values.append(id)
-            
-            query = f"UPDATE {table_name} SET {set_statements} WHERE id = %s RETURNING *"
-            
-            cursor.execute(query, values)
-            row = cursor.fetchone()
-            if row is None:
-                cursor.close()
-                return None
-
-            data_list = {}
-            for desc, value in zip(cursor.description, row):
-                data_list[desc.name] = value
-
-            self.connection.commit()
-            cursor.close()
-            return data_list
-        except psycopg2.Error as error:
-            self.connection.rollback()
-            return error
-
-=======
 
         :param table_name: Name of the table.
         :param record: Dictionary containing column names and values.
@@ -249,7 +174,6 @@ class RdbApiService:
             self.connection.rollback()
             return {"records": None, "errors": error.pgerror}
 
->>>>>>> rdb-stage
         
     def delete_with_id(self, table_name, id):
         """
