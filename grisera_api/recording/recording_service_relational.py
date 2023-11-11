@@ -37,12 +37,11 @@ class RecordingServiceRelational(RecordingService):
 
     def get_recording(self, recording_id: Union[int, str], depth: int = 0, source: str = ""):
         import registered_channel.registered_channel_service_relational as rc_rel
-        registered_channel_service = rc_rel.RegisteredChannelServiceRelational()
-
-        #import participation.participation_service_relational as p_rel
-        #participation_service = p_rel.ParticipationServiceRelational()
-
+        import participation.participation_service_relational as p_rel
         import observable_information.observable_information_service_relational as oi_rel
+
+        registered_channel_service = rc_rel.RegisteredChannelServiceRelational()
+        participation_service = p_rel.ParticipationServiceRelational()
         observable_information_service = oi_rel.ObservableInformationServiceRelational()
 
         recording_dict = self.rdb_api_service.get_with_id(self.table_name, recording_id)
@@ -52,8 +51,8 @@ class RecordingServiceRelational(RecordingService):
         if depth > 0:
             if source != Collections.REGISTERED_CHANNEL:
                 recording_dict["registered_channel"] = registered_channel_service.get_registered_channel(recording_dict["registered_channel_id"], depth - 1, self.table_name)
-            # TODO if source != Collections.PARTICIPATION:
-            #    recording_dict["participation"] = participation_service.get_participation(recording_dict["participation_id"], depth - 1, self.table_name)
+            if source != Collections.PARTICIPATION:
+                recording_dict["participation"] = participation_service.get_participation(recording_dict["participation_id"], depth - 1, self.table_name)
             if source != Collections.OBSERVABLE_INFORMATION:
                 recording_dict["observable_informations"] = observable_information_service.get_multiple_with_foreign_id(recording_id, depth - 1, self.table_name)
         return RecordingOut(**recording_dict)
@@ -97,12 +96,10 @@ class RecordingServiceRelational(RecordingService):
 
     def get_multiple_with_foreign_id(self, foreign_id: Union[int, str], depth: int = 0, source: str = ""):
         import registered_channel.registered_channel_service_relational as rc_rel
-        registered_channel_service = rc_rel.RegisteredChannelServiceRelational()
-
-        #import participation.participation_service_relational as p_rel
-        #participation_service = p_rel.ParticipationServiceRelational()
-
         import observable_information.observable_information_service_relational as oi_rel
+        import participation.participation_service_relational as p_rel
+        registered_channel_service = rc_rel.RegisteredChannelServiceRelational()
+        participation_service = p_rel.ParticipationServiceRelational()
         observable_information_service = oi_rel.ObservableInformationServiceRelational()
         
         response = self.rdb_api_service.get_records_with_foreign_id(self.table_name, source + "_id", foreign_id)
@@ -114,8 +111,8 @@ class RecordingServiceRelational(RecordingService):
             for recording in recordings:
                 if source != Collections.REGISTERED_CHANNEL:
                     recording["registered_channel"] = registered_channel_service.get_registered_channel(recording["registered_channel_id"], depth - 1, self.table_name)
-                # TODO if source != Collections.PARTICIPATION:
-                    #recording["participation"] = participation_service.get_participation(recording["participation_id"], depth - 1, self.table_name)
+                if source != Collections.PARTICIPATION:
+                    recording["participation"] = participation_service.get_participation(recording["participation_id"], depth - 1, self.table_name)
                 if source != Collections.OBSERVABLE_INFORMATION:
                     recording["observable_informations"] = observable_information_service.get_multiple_with_foreign_id(recording["id"], depth - 1, self.table_name)
         return recordings
