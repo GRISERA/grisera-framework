@@ -120,6 +120,10 @@ class ParticipantStateServiceRelational(ParticipantStateService):
     
 
     def update_participant_state_relationships(self, participant_state_id: Union[int, str], participant_state: ParticipantStateRelationIn):
+        result = self.get_participant_state(participant_state_id)
+        if type(result) == NotFoundByIdModel:
+            return result
+        
         for appearance_id in participant_state.appearance_ids:
             appearance_dict = self.rdb_api_service.get_with_id(Collections.APPEARANCE, appearance_id)
             if appearance_dict is None:
@@ -129,10 +133,6 @@ class ParticipantStateServiceRelational(ParticipantStateService):
             personality_dict = self.rdb_api_service.get_with_id(Collections.PERSONALITY, personality_id)
             if personality_dict is None:
                 return NotFoundByIdModel(errors={"Personality entity not found"})
-            
-        result = self.get_participant_state(participant_state_id)
-        if type(result) == NotFoundByIdModel:
-            return result
         
         participant_state_data = {
             "participant_id": participant_state.participant_id
