@@ -79,10 +79,10 @@ class ParticipationServiceRelational(ParticipationService):
             return []
         if depth <= 0:
             return participation_dict_list["records"]
-        
-        for participation_dict in participation_dict_list:
+            
+        for participation_dict in participation_dict_list["records"]:
             if source != Collections.RECORDING:
-                participation_dict["recordings"] = recording_service.get_multiple_with_foreign_id(participation_id, depth - 1, self.table_name)
+                participation_dict["recordings"] = recording_service.get_multiple_with_foreign_id(participation_dict["id"], depth - 1, self.table_name)
             # TODO if source != Collections.ACTIVITY_EXECUTION:
             #    participation_dict["activity_execution"] = activity_execution_service.get_activity_execution(participation_dict["activity_execution_id"], depth - 1, self.table_name)
             if source != Collections.PARTICIPANT_STATE:
