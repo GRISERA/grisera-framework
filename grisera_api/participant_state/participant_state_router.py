@@ -74,7 +74,7 @@ class ParticipantStateRouter:
         response_model=Union[ParticipantStateOut, NotFoundByIdModel],
     )
     async def get_participant_state(
-        self, participant_id: Union[int, str], response: Response, depth: int=0
+        self, participant_state_id: Union[int, str], response: Response, depth: int=0
     ):
         """
         Get participant state from database. Depth attribute specifies how many models will be traversed to create the
@@ -82,7 +82,7 @@ class ParticipantStateRouter:
         """
 
         get_response = self.participant_state_service.get_participant_state(
-            participant_id, depth
+            participant_state_id, depth
         )
         if get_response.errors is not None:
             response.status_code = 404
