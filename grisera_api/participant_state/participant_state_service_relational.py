@@ -60,6 +60,9 @@ class ParticipantStateServiceRelational(ParticipantStateService):
     
 
     def get_participant_states(self):
+        result = self.get_multiple_from_proxy_with_foreign_id(3, 0, Collections.PERSONALITY)
+        print(result)
+        return ParticipantStatesOut(participant_states=[])
         results = self.rdb_api_service.get(self.table_name)
         return ParticipantStatesOut(participant_states=results)
     
@@ -84,17 +87,9 @@ class ParticipantStateServiceRelational(ParticipantStateService):
             if source != Collections.PARTICIPANT:
                 participant_state_dict["participant"] = participant_service.get_participant(participant_state_dict["participant_id"], depth - 1, self.table_name)
             # if source != Collections.APPEARANCE:
-            #     appearances = list()
-            #     for appearance_id in participant_state_dict["appearance_ids"]:
-            #         appearance = appearance_service.get_appearance(appearance_id, depth - 1, self.table_name)
-            #         appearances.append(appearance)
-            #     participant_state_dict["appearances"] = appearances
+            #     participant_state_dict["appearances"] = appearance_service.get_multiple_with_foreign_id(participant_state_id, depth - 1, self.table_name)
             # if source != Collections.PERSONALITY:
-            #     personalities = list()
-            #     for personality_id in participant_state_dict["personality_ids"]:
-            #         personality = personality_service.get_personality(personality_id, depth - 1, self.table_name)
-            #         personalities.append(personality)
-            #     participant_state_dict["personalities"] = personalities
+            #     participant_state_dict["personalities"] = personality_service.get_multiple_with_foreign_id(participant_state_id, depth - 1, self.table_name)
 
         return ParticipantStateOut(**participant_state_dict)
     
@@ -167,3 +162,39 @@ class ParticipantStateServiceRelational(ParticipantStateService):
             self.rdb_api_service.post(Collections.PARTICIPANT_STATE_PERSONALITY, perticipant_state_personality_data)
 
         return ParticipantStateOut(**updated_participant_state["records"])
+    
+
+    def get_multiple_with_foreign_id(self, id: Union[int, str], depth: int = 0, source = ""):
+        import participant.participant_service_relational
+        participant_service = participant.participant_service_relational.ParticipantServiceRelational()
+
+        participant_state_dict_list = self.rdb_api_service.get_records_with_foreign_id(self.table_name, source + "_id", id)
+        if participant_state_dict_list["errors"] is not None:
+            return []
+        
+        if depth <= 0:
+            return participant_state_dict_list["records"]
+        
+        for participant_state_dict in participant_state_dict_list["records"]:
+            if source != Collections.PARTICIPANT:
+                participant_state_dict["participant"] = participant_service.get_participant(participant_state_dict["participant_id"], depth - 1, self.table_name)
+
+        return participant_state_dict_list["records"]
+
+    def get_multiple_from_proxy_with_foreign_id(self, id: Union[int, str], depth: int = 0, source = ""):
+        proxy_table_name = str()
+        if source == Collections.APPEARANCE:
+            proxy_table_name = Collections.PARTICIPANT_STATE_APPEARANCE
+        elif source == Collections.PERSONALITY:
+            proxy_table_name = Collections.PARTICIPANT_STATE_PERSONALITY
+        else:
+            return []
+        
+        participant_state_proxy_list = self.rdb_api_service.get_records_with_foreign_id(proxy_table_name, source + "_id", id)["records"]
+
+        participant_states_list = list()
+        for participant_state_proxy in participant_state_proxy_list:
+            participant_state = self.get_participant_state(participant_state_proxy["participant_state_id"], depth, source)
+            participant_states_list.append(participant_state)
+
+        return participant_states_list
