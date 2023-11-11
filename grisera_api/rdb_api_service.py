@@ -187,3 +187,18 @@ class RdbApiService:
         cursor.execute(query, (id,))
         self.connection.commit()
         cursor.close()
+
+    def delete_by_column_value(self, table_name, column_name, column_value):
+        """
+        Delete a record from a table based on a specified column value.
+
+        :param table_name: Name of the table.
+        :param column_name: Name of the column to match.
+        :param column_value: Value to match in the specified column.
+        """
+        cursor = self.connection.cursor()
+        query = f"DELETE FROM {table_name} WHERE {column_name} = %s"
+        cursor.execute(query, (column_value,))
+        self.connection.commit()
+        cursor.close()
+        
