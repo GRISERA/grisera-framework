@@ -24,18 +24,18 @@ class ObservableInformationServiceRelational(ObservableInformationService):
         if not observable_information_dict:
             return NotFoundByIdModel(id=observable_information_id, errors={"Entity not found"})
         
-        # import life_activity.life_activity_service_relational
+        import life_activity.life_activity_service_relational
         import modality.modality_service_relational
         import recording.recording_service_relational
         # import time_series.time_series_service_relational
-        # life_activity_service = life_activity.life_activity_service_relational.LifeActivityServiceRelational()
+        life_activity_service = life_activity.life_activity_service_relational.LifeActivityServiceRelational()
         modality_service = modality.modality_service_relational.ModalityServiceRelational()
         recording_service = recording.recording_service_relational.RecordingServiceRelational()
         # time_series_service = time_series.time_series_service_relational.TimeSeriesServiceRelational()
 
         if depth > 0:
-        #     if source != Collections.LIFE_ACTIVITY:
-        #         observable_information_dict["life_activity"] = life_activity_service.get_life_activity(observable_information_dict["life_activity_id"], depth - 1, self.table_name)
+            if source != Collections.LIFE_ACTIVITY:
+                observable_information_dict["life_activity"] = life_activity_service.get_life_activity(observable_information_dict["life_activity_id"], depth - 1, self.table_name)
             if source != Collections.MODALITY:
                 observable_information_dict["modality"] = modality_service.get_modality(observable_information_dict["modality_id"], depth - 1, self.table_name)
             if source != Collections.RECORDING:
@@ -63,11 +63,11 @@ class ObservableInformationServiceRelational(ObservableInformationService):
         return ObservableInformationOut(**put_result["records"])
     
     def get_multiple_with_foreign_id(self, id: Union[int, str], depth: int = 0, source = ""):
-        #import life_activity.life_activity_service_relational
+        import life_activity.life_activity_service_relational
         import modality.modality_service_relational
         import recording.recording_service_relational
         #import time_series.time_series_service_relational
-        #life_activity_service = life_activity.life_activity_service_relational.LifeActivityServiceRelational()
+        life_activity_service = life_activity.life_activity_service_relational.LifeActivityServiceRelational()
         modality_service = modality.modality_service_relational.ModalityServiceRelational()
         recording_service = recording.recording_service_relational.RecordingServiceRelational()
         #time_series_service = time_series.time_series_service_relational.TimeSeriesServiceRelational()
@@ -80,8 +80,8 @@ class ObservableInformationServiceRelational(ObservableInformationService):
             return observable_information_dict_list["records"]
         
         for observable_information_dict in observable_information_dict_list["records"]:
-            #if source != Collections.LIFE_ACTIVITY:
-                #observable_information_dict["life_activity"] = life_activity_service.get_life_activity(observable_information_dict["life_activity_id"], depth - 1, self.table_name)
+            if source != Collections.LIFE_ACTIVITY:
+                observable_information_dict["life_activity"] = life_activity_service.get_life_activity(observable_information_dict["life_activity_id"], depth - 1, self.table_name)
             if source != Collections.MODALITY:
                 observable_information_dict["modality"] = modality_service.get_modality(observable_information_dict["modality_id"], depth - 1, self.table_name)
             if source != Collections.RECORDING:
