@@ -84,9 +84,9 @@ class ParticipantStateServiceRelational(ParticipantStateService):
             if source != Collections.PARTICIPANT:
                 participant_state_dict["participant"] = participant_service.get_participant(participant_state_dict["participant_id"], depth - 1, self.table_name)
             # if source != Collections.APPEARANCE:
-            #     participant_state_dict["appearances"] = appearance_service.get_multiple_with_foreign_id(participant_state_id, depth - 1, self.table_name)
+            #     participant_state_dict["appearances"] = appearance_service.get_multiple_from_proxy_with_foreign_id(participant_state_id, depth - 1, self.table_name)
             # if source != Collections.PERSONALITY:
-            #     participant_state_dict["personalities"] = personality_service.get_multiple_with_foreign_id(participant_state_id, depth - 1, self.table_name)
+            #     participant_state_dict["personalities"] = personality_service.get_multiple_from_proxy_with_foreign_id(participant_state_id, depth - 1, self.table_name)
 
         return ParticipantStateOut(**participant_state_dict)
     
@@ -184,9 +184,9 @@ class ParticipantStateServiceRelational(ParticipantStateService):
             if source != Collections.PARTICIPANT:
                 participant_state_dict["participant"] = participant_service.get_participant(participant_state_dict["participant_id"], depth - 1, self.table_name)
             # if source != Collections.APPEARANCE:
-            #     participant_state_dict["appearances"] = appearance_service.get_multiple_with_foreign_id(participant_state_id, depth - 1, self.table_name)
+            #     participant_state_dict["appearances"] = appearance_service.get_multiple_from_proxy_with_foreign_id(participant_state_id, depth - 1, self.table_name)
             # if source != Collections.PERSONALITY:
-            #     participant_state_dict["personalities"] = personality_service.get_multiple_with_foreign_id(participant_state_id, depth - 1, self.table_name)
+            #     participant_state_dict["personalities"] = personality_service.get_multiple_from_proxy_with_foreign_id(participant_state_id, depth - 1, self.table_name)
 
         return participant_state_dict_list["records"]
 
