@@ -35,15 +35,15 @@ class ActivityServiceRelational(ActivityService):
 
 
     def get_activity(self, activity_id: Union[int, str], depth: int = 0, source: str = ""):
-        #import activity_execution.activity_execution_service as ae_rel
-        #activity_execution_service = ae_rel.ActivityExecutionService()
+        import activity_execution.activity_execution_service as ae_rel
+        activity_execution_service = ae_rel.ActivityExecutionService()
         
         activity_dict = self.rdb_api_service.get_with_id(self.table_name, activity_id)
         if not activity_dict:
             return NotFoundByIdModel(id=activity_id, errors={"Entity not found."})
         
         if depth > 0 and source != Collections.ACTIVITY_EXECUTION:
-            #activity_dict["activity_executions"] = activity_execution_service.get_multiple_with_foreign_id(activity_id, depth - 1, self.table_name)
+            activity_dict["activity_executions"] = activity_execution_service.get_multiple_with_foreign_id(activity_id, depth - 1, self.table_name)
             pass
 
         return ActivityOut(**activity_dict)

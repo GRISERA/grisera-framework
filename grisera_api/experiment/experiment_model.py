@@ -38,7 +38,7 @@ class ExperimentOut(BasicExperimentOut, BaseModelOut):
     activity_executions (Optional[ActivityExecutionOut]): activity_executions related to this experiment
     """
 
-    activity_executions: "Optional[ActivityExecutionOut]"
+    activity_executions: "Optional[List[ActivityExecutionOut]]"
 
 
 class ExperimentsOut(BaseModelOut):
