@@ -25,15 +25,16 @@ class ScenarioServiceRelational(ScenarioService):
         experiment = experiment_service_relational.get_experiment(scenario_dict["experiment_id"])
         if not experiment:
             return NotFoundByIdModel(id=scenario_dict["experiment_id"], errors={"Entity not found"})
-
+        if type(self.get_scenario_by_experiment(scenario_dict["experiment_id"])) is not NotFoundByIdModel:
+            return NotFoundByIdModel(id=scenario_dict["experiment_id"], errors={"Scenario with such experiment id already exists"})
         for activity_execution in scenario_dict["activity_executions"]:
-            activity_execution_ids.append(activity_execution["id"])
-            activity_execution_service_relational.save_activity_execution(activity_execution)
+            activity_execution_id = activity_execution_service_relational.save_activity_execution(ActivityExecutionIn(**activity_execution)).id
+            activity_execution_ids.append(activity_execution_id)
         scenario_dict["activity_executions"] = activity_execution_ids
         result = self.rdb_api_service.post(self.table_name, scenario_dict)
         if result["errors"] is not None:
             return ScenarioOut(errors=result["errors"])
-        result["records"]["activity_executions"] = scenario_dict["activity_executions"]
+        result["records"]["activity_executions"] = scenario.activity_executions
         return ScenarioOut(**result["records"])
 
     def add_activity_execution(self, previous_id: Union[int, str], activity_execution: ActivityExecutionIn):
