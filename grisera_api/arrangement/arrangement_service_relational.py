@@ -3,14 +3,13 @@ from arrangement.arrangement_service import ArrangementService
 from arrangement.arrangement_model import ArrangementOut, ArrangementIn, ArrangementsOut
 from models.not_found_model import NotFoundByIdModel
 from rdb_api_service import RdbApiService, Collections
-from activity_execution.activity_execution_service_relational import ActivityExecutionServiceRelational
+
 
 class ArrangementServiceRelational(ArrangementService):
 
     def __init__(self):
         self.rdb_api_service = RdbApiService()
         self.table_name = Collections.ARRANGEMENT
-        self.activity_execution_service = ActivityExecutionServiceRelational()
 
 
     def get_arrangements(self):

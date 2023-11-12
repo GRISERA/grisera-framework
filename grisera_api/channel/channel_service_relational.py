@@ -3,14 +3,13 @@ from channel.channel_service import ChannelService
 from channel.channel_model import ChannelIn, ChannelOut, ChannelsOut
 from models.not_found_model import NotFoundByIdModel
 from rdb_api_service import RdbApiService, Collections
-from registered_channel.registered_channel_service import RegisteredChannelService
+
 
 class ChannelServiceRelational(ChannelService):
 
     def __init__(self) -> None:
         self.rdb_api_service = RdbApiService()
         self.table_name = Collections.CHANNEL
-        self.registered_channel_service = RegisteredChannelService()
 
 
     def save_channel(self, channel: ChannelIn):

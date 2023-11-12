@@ -3,7 +3,6 @@ from appearance.appearance_model import AppearancesOut, AppearanceOcclusionOut, 
 from models.not_found_model import NotFoundByIdModel
 from appearance.appearance_service import AppearanceService
 from rdb_api_service import RdbApiService, Collections
-from participant_state.participant_state_service_relational import ParticipantStateServiceRelational
 
 
 class AppearanceServiceRelational(AppearanceService):
@@ -11,7 +10,6 @@ class AppearanceServiceRelational(AppearanceService):
     def __init__(self):
         self.rdb_api_service = RdbApiService()
         self.table_name = Collections.APPEARANCE
-        self.participant_state_service = ParticipantStateServiceRelational()
     
     
     def save_appearance_occlusion(self, appearance: AppearanceOcclusionIn):
