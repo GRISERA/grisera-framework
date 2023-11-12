@@ -49,9 +49,12 @@ class AppearanceServiceRelational(AppearanceService):
         if not appearance_dict:
             return NotFoundByIdModel(id=appearance_id, errors={"Entity not found."})
         
+        import participant_state.participant_state_service_relational
+        participant_state_service = participant_state.participant_state_service_relational.ParticipantStateServiceRelational()
+
         if depth > 0:
             if source != Collections.PARTICIPANT_STATE:
-                appearance_dict["participant_states"] = self.participant_state_service.get_multiple_from_proxy_with_foreign_id(appearance_id, depth - 1, self.table_name)
+                appearance_dict["participant_states"] = participant_state_service.get_multiple_from_proxy_with_foreign_id(appearance_id, depth - 1, self.table_name)
         return AppearanceOcclusionOut(**appearance_dict) if appearance_dict["type"] == "occlusion" else AppearanceSomatotypeOut(**appearance_dict)
     
 
