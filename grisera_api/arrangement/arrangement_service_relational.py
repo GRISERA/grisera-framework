@@ -22,11 +22,11 @@ class ArrangementServiceRelational(ArrangementService):
         if not arrangement_dict:
             return NotFoundByIdModel(id=arrangement_id, errors={"Entity not found."})
         
-        # import activity_execution.activity_execution_service_relational
-        # activity_execution_service = activity_execution.activity_execution_service_relational.ActivityExecutionServiceRelational()
+        import activity_execution.activity_execution_service_relational
+        activity_execution_service = activity_execution.activity_execution_service_relational.ActivityExecutionServiceRelational()
 
-        # if depth > 0 and source != Collections.ACTIVITY_EXECUTION:
-        #         arrangement_dict["activity_executions"] = activity_execution_service.get_multiple_with_foreign_id(arrangement_id, depth - 1, self.table_name)
+        if depth > 0 and source != Collections.ACTIVITY_EXECUTION:
+                arrangement_dict["activity_executions"] = activity_execution_service.get_multiple_with_foreign_id(arrangement_id, depth - 1, self.table_name)
 
         return ArrangementOut(**arrangement_dict)
     
@@ -39,11 +39,11 @@ class ArrangementServiceRelational(ArrangementService):
         if depth <= 0:
             return arrangement_dict_list["records"]
         
-        # import activity_execution.activity_execution_service_relational
-        # activity_execution_service = activity_execution.activity_execution_service_relational.ActivityExecutionServiceRelational()
+        import activity_execution.activity_execution_service_relational
+        activity_execution_service = activity_execution.activity_execution_service_relational.ActivityExecutionServiceRelational()
 
-        # for arrangement_dict in arrangement_dict_list["records"]:
-            # if source != Collections.ACTIVITY_EXECUTION:
-            #     arrangement_dict["activity_executions"] = activity_execution_service.get_multiple_with_foreign_id(arrangement_dict["id"], depth - 1, self.table_name)
+        for arrangement_dict in arrangement_dict_list["records"]:
+            if source != Collections.ACTIVITY_EXECUTION:
+                arrangement_dict["activity_executions"] = activity_execution_service.get_multiple_with_foreign_id(arrangement_dict["id"], depth - 1, self.table_name)
         
         return arrangement_dict_list["records"]
