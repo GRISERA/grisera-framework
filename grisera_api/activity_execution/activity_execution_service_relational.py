@@ -53,9 +53,9 @@ class ActivityExecutionServiceRelational(ActivityExecutionService):
             if source != Collections.EXPERIMENT and source != Collections.SCENARIO:
                 activity_execution["experiments"] = scenario_service_relational.get_experiment_by_activity_execution(
                     activity_execution["id"], depth - 1, self.table_name)
-            # if source != Collections.ARRANGEMENT:
-            #     activity_execution["arrangements"] = arrangement_service_relational.get_arrangement(
-            #         activity_execution["arrangement_id"], depth - 1, self.table_name)
+            if source != Collections.ARRANGEMENT:
+                activity_execution["arrangements"] = arrangement_service_relational.get_arrangement(
+                    activity_execution["arrangement_id"], depth - 1, self.table_name)
         return ActivityExecutionOut(**activity_execution)
 
     def delete_activity_execution(self, activity_execution_id: Union[int, str]):
@@ -121,8 +121,9 @@ class ActivityExecutionServiceRelational(ActivityExecutionService):
                 for activity_execution in activity_executions:
                     activity_execution["experiments"] = scenario_service_relational.get_experiment_by_activity_execution(
                         activity_execution["id"], depth - 1, self.table_name)
-            #TODO if source != Collections.ARRANGEMENT:
-            #     for activity_execution in activity_executions:
-            #         activity_execution["arrangements"] = arrangement_service_relational.get_arrangement(
-            #             activity_execution["arrangement_id"], depth - 1, self.table_name)
+            if source != Collections.ARRANGEMENT:
+                for activity_execution in activity_executions:
+                    activity_execution["arrangements"] = arrangement_service_relational.get_arrangement(
+                        activity_execution["arrangement_id"], depth - 1, self.table_name)
         return ActivityExecutionsOut(activity_executions=activity_executions)
+    

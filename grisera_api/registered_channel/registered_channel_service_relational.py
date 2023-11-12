@@ -42,8 +42,8 @@ class RegisteredChannelServiceRelational(RegisteredChannelService):
         if depth > 0:
             registered_channel["registeredData"] = registered_data_service_relational.get_registered_data(
                 registered_channel["registered_data_id"], depth - 1, self.table_name)
-            # registered_channel["channels"] = self.channels_service.get_channel(
-            #TODO     registered_channel["channel_id"], depth - 1, self.table_name)
+            registered_channel["channels"] = self.channels_service.get_channel(
+                registered_channel["channel_id"], depth - 1, self.table_name)
             if source != Collections.RECORDING:
                 registered_channel["recordings"] = self.recording_service.get_recording(
                     registered_channel["registered_data_id"], depth - 1, self.table_name)
@@ -67,9 +67,9 @@ class RegisteredChannelServiceRelational(RegisteredChannelService):
                 if source != Collections.REGISTERED_DATA:
                     registered_channel["registeredData"] = registered_data_service_relation.get_registered_data(
                         registered_channel["registered_data_id"], depth - 1, self.table_name)
-                # if source != Collections.CHANNEL:
-                #TODO     registered_channel["channels"] = self.channels_service.get_channel(
-                #         registered_channel["channel_id"], depth - 1, self.table_name)
+                if source != Collections.CHANNEL:
+                    registered_channel["channels"] = self.channels_service.get_channel(
+                        registered_channel["channel_id"], depth - 1, self.table_name)
                 if source != Collections.RECORDING:
                     registered_channel["recordings"] = recording_service.get_multiple_with_foreign_id(registered_channel["registered_data_id"], depth - 1, self.table_name)
         return registered_channels
