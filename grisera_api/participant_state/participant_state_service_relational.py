@@ -72,11 +72,11 @@ class ParticipantStateServiceRelational(ParticipantStateService):
         import participation.participation_service_relational
         import participant.participant_service_relational
         # import appearance.appearance_service_relational
-        # import personality.personality_service_relational
+        import personality.personality_service_relational
         participation_service = participation.participation_service_relational.ParticipationServiceRelational()
         participant_service = participant.participant_service_relational.ParticipantServiceRelational()
         # appearance_service = appearance.appearance_service_relational.AppearanceServiceRelational()
-        # personality_service = personality.personality_service_relational.PersonalityServiceRelational()
+        personality_service = personality.personality_service_relational.PersonalityServiceRelational()
 
         if depth > 0:
             if source != Collections.PARTICIPATION:
@@ -85,8 +85,8 @@ class ParticipantStateServiceRelational(ParticipantStateService):
                 participant_state_dict["participant"] = participant_service.get_participant(participant_state_dict["participant_id"], depth - 1, self.table_name)
             # if source != Collections.APPEARANCE:
             #     participant_state_dict["appearances"] = appearance_service.get_multiple_from_proxy_with_foreign_id(participant_state_id, depth - 1, self.table_name)
-            # if source != Collections.PERSONALITY:
-            #     participant_state_dict["personalities"] = personality_service.get_multiple_from_proxy_with_foreign_id(participant_state_id, depth - 1, self.table_name)
+            if source != Collections.PERSONALITY:
+               participant_state_dict["personalities"] = personality_service.get_multiple_from_proxy_with_foreign_id(participant_state_id, depth - 1, self.table_name)
 
         return ParticipantStateOut(**participant_state_dict)
     
@@ -165,11 +165,11 @@ class ParticipantStateServiceRelational(ParticipantStateService):
         import participation.participation_service_relational
         import participant.participant_service_relational
         # import appearance.appearance_service_relational
-        # import personality.personality_service_relational
+        import personality.personality_service_relational
         participation_service = participation.participation_service_relational.ParticipationServiceRelational()
         participant_service = participant.participant_service_relational.ParticipantServiceRelational()
         # appearance_service = appearance.appearance_service_relational.AppearanceServiceRelational()
-        # personality_service = personality.personality_service_relational.PersonalityServiceRelational()
+        personality_service = personality.personality_service_relational.PersonalityServiceRelational()
 
         participant_state_dict_list = self.rdb_api_service.get_records_with_foreign_id(self.table_name, source + "_id", id)
         if participant_state_dict_list["errors"] is not None:
@@ -185,8 +185,8 @@ class ParticipantStateServiceRelational(ParticipantStateService):
                 participant_state_dict["participant"] = participant_service.get_participant(participant_state_dict["participant_id"], depth - 1, self.table_name)
             # if source != Collections.APPEARANCE:
             #     participant_state_dict["appearances"] = appearance_service.get_multiple_from_proxy_with_foreign_id(participant_state_id, depth - 1, self.table_name)
-            # if source != Collections.PERSONALITY:
-            #     participant_state_dict["personalities"] = personality_service.get_multiple_from_proxy_with_foreign_id(participant_state_id, depth - 1, self.table_name)
+            if source != Collections.PERSONALITY:
+                participant_state_dict["personalities"] = personality_service.get_multiple_from_proxy_with_foreign_id(participant_state_id, depth - 1, self.table_name)
 
         return participant_state_dict_list["records"]
 
