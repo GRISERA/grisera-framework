@@ -39,7 +39,7 @@ class LifeActivityIn(BaseModel):
     life_activity (str): Actions of a human body
     """
 
-    life_activity: str
+    life_activity: LifeActivity
 
 
 class BasicLifeActivityOut(LifeActivityIn):

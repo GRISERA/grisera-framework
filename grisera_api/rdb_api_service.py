@@ -202,3 +202,24 @@ class RdbApiService:
         self.connection.commit()
         cursor.close()
         
+
+
+    def get_scenario_by_activity_execution(self, table_name, activity_execution_id):
+        cursor = self.connection.cursor()
+        query = "SELECT * FROM " + table_name + " WHERE activity_executions @> ARRAY[" + str(activity_execution_id) + "]"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        if not result:
+            cursor.close()
+            return None
+        column_names = [desc[0] for desc in cursor.description]
+        data_list = self.convert_to_dict(result, column_names)
+        cursor.close()
+        return data_list[0]
+
+    def delete_activity_execution_from_scenario(self,table_name, activity_execution_id, scenario_id):
+        cursor = self.connection.cursor()
+        query = "UPDATE " + table_name + " SET activity_executions = array_remove(activity_executions, %s) WHERE id = %s"
+        cursor.execute(query, (activity_execution_id, scenario_id))
+        self.connection.commit()
+        cursor.close()
