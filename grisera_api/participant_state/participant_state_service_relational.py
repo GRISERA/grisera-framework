@@ -71,11 +71,11 @@ class ParticipantStateServiceRelational(ParticipantStateService):
         
         import participation.participation_service_relational
         import participant.participant_service_relational
-        # import appearance.appearance_service_relational
+        import appearance.appearance_service_relational
         # import personality.personality_service_relational
         participation_service = participation.participation_service_relational.ParticipationServiceRelational()
         participant_service = participant.participant_service_relational.ParticipantServiceRelational()
-        # appearance_service = appearance.appearance_service_relational.AppearanceServiceRelational()
+        appearance_service = appearance.appearance_service_relational.AppearanceServiceRelational()
         # personality_service = personality.personality_service_relational.PersonalityServiceRelational()
 
         if depth > 0:
@@ -83,8 +83,8 @@ class ParticipantStateServiceRelational(ParticipantStateService):
                 participant_state_dict["participations"] = participation_service.get_multiple_with_foreign_id(participant_state_id, depth - 1, self.table_name)
             if source != Collections.PARTICIPANT:
                 participant_state_dict["participant"] = participant_service.get_participant(participant_state_dict["participant_id"], depth - 1, self.table_name)
-            # if source != Collections.APPEARANCE:
-            #     participant_state_dict["appearances"] = appearance_service.get_multiple_from_proxy_with_foreign_id(participant_state_id, depth - 1, self.table_name)
+            if source != Collections.APPEARANCE:
+                participant_state_dict["appearances"] = appearance_service.get_multiple_from_proxy_with_foreign_id(participant_state_id, depth - 1, self.table_name)
             # if source != Collections.PERSONALITY:
             #     participant_state_dict["personalities"] = personality_service.get_multiple_from_proxy_with_foreign_id(participant_state_id, depth - 1, self.table_name)
 
@@ -164,11 +164,11 @@ class ParticipantStateServiceRelational(ParticipantStateService):
     def get_multiple_with_foreign_id(self, id: Union[int, str], depth: int = 0, source = ""):
         import participation.participation_service_relational
         import participant.participant_service_relational
-        # import appearance.appearance_service_relational
+        import appearance.appearance_service_relational
         # import personality.personality_service_relational
         participation_service = participation.participation_service_relational.ParticipationServiceRelational()
         participant_service = participant.participant_service_relational.ParticipantServiceRelational()
-        # appearance_service = appearance.appearance_service_relational.AppearanceServiceRelational()
+        appearance_service = appearance.appearance_service_relational.AppearanceServiceRelational()
         # personality_service = personality.personality_service_relational.PersonalityServiceRelational()
 
         participant_state_dict_list = self.rdb_api_service.get_records_with_foreign_id(self.table_name, source + "_id", id)
@@ -180,11 +180,11 @@ class ParticipantStateServiceRelational(ParticipantStateService):
         
         for participant_state_dict in participant_state_dict_list["records"]:
             if source != Collections.PARTICIPATION:
-                participant_state_dict["participations"] = participation_service.get_multiple_with_foreign_id(participant_state_id, depth - 1, self.table_name)
+                participant_state_dict["participations"] = participation_service.get_multiple_with_foreign_id(participant_state_dict["id"], depth - 1, self.table_name)
             if source != Collections.PARTICIPANT:
                 participant_state_dict["participant"] = participant_service.get_participant(participant_state_dict["participant_id"], depth - 1, self.table_name)
-            # if source != Collections.APPEARANCE:
-            #     participant_state_dict["appearances"] = appearance_service.get_multiple_from_proxy_with_foreign_id(participant_state_id, depth - 1, self.table_name)
+            if source != Collections.APPEARANCE:
+                participant_state_dict["appearances"] = appearance_service.get_multiple_from_proxy_with_foreign_id(participant_state_dict["id"], depth - 1, self.table_name)
             # if source != Collections.PERSONALITY:
             #     participant_state_dict["personalities"] = personality_service.get_multiple_from_proxy_with_foreign_id(participant_state_id, depth - 1, self.table_name)
 
