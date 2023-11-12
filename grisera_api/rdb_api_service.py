@@ -197,7 +197,7 @@ class RdbApiService:
         :param column_value: Value to match in the specified column.
         """
         cursor = self.connection.cursor()
-        query = f"DELETE FROM {table_name} WHERE {column_name} = %s"
+        query = "DELETE FROM " + table_name +  " WHERE " + column_name + " = %s"
         cursor.execute(query, (column_value,))
         self.connection.commit()
         cursor.close()

@@ -127,7 +127,6 @@ class TimeSeriesRelationIn(BaseModel):
         measure_id (Optional[Union[int, str]]): Id of measure
     """
 
-    observable_information_id: Optional[Union[int, str]]
     observable_information_ids: Optional[List[Union[int, str]]]
     measure_id: Optional[Union[int, str]]
 
