@@ -120,6 +120,9 @@ class TimeSeriesServiceRelational(TimeSeriesService):
         return result
 
     def update_time_series(self, time_series_id: Union[int, str], time_series: TimeSeriesPropertyIn):
+        if len(time_series.observable_information_ids) <= 0:
+            return TimeSeriesOut(errors="Observable information ids must be provided", **time_series.dict())
+        
         get_result = self.get_time_series(time_series_id)
         if type(get_result) == NotFoundByIdModel:
             return get_result
@@ -145,24 +148,30 @@ class TimeSeriesServiceRelational(TimeSeriesService):
 
     def update_time_series_relationships(self, time_series_id: Union[int, str],
                                          time_series: TimeSeriesRelationIn):
+        
         get_result = self.get_time_series(time_series_id)
         if type(get_result) == NotFoundByIdModel:
             return get_result
         get_result = get_result.dict()
         get_result.pop("errors")
-        import observable_information.observable_information_service_relational
-        observable_information_service_relational = observable_information.observable_information_service_relational.ObservableInformationServiceRelational()
-        for observable_information_id in time_series.observable_information_ids:
-            if type(observable_information_service_relational.get_observable_information(
-                    observable_information_id)) is NotFoundByIdModel:
-                return TimeSeriesOut(errors="Observable information with id " + str(observable_information_id) + " not found", **get_result)
-        time_series_dict = time_series.dict()
-        time_series_dict.pop("observable_information_ids")
-        put_result = self.rdb_api_service.put(self.table_name, time_series_id, time_series_dict)
-        if put_result["errors"] is not None:
-            print(put_result["errors"])
-            return TimeSeriesOut(errors=put_result["errors"], **get_result)
-        self.rdb_api_service.delete_by_column_value(Collections.OBSERVABLE_INFORMATION_TIMESERIES, self.table_name + "_id", time_series_id)
-        for observable_information_id in time_series.observable_information_ids:
-            observable_information_service_relational.add_proxy(observable_information_id, time_series_id, self.table_name)
+
+
+        if time_series.observable_information_ids is not None:
+            import observable_information.observable_information_service_relational
+            observable_information_service_relational = observable_information.observable_information_service_relational.ObservableInformationServiceRelational()
+            for observable_information_id in time_series.observable_information_ids:
+                if type(observable_information_service_relational.get_observable_information(
+                        observable_information_id)) is NotFoundByIdModel:
+                    return TimeSeriesOut(errors="Observable information with id " + str(observable_information_id) + " not found", **get_result)
+                
+        if time_series.measure_id is not None:
+            put_result = self.rdb_api_service.put(self.table_name, time_series_id, {"measure_id": time_series.measure_id})
+            if put_result["errors"] is not None:
+                print(put_result["errors"])
+                return TimeSeriesOut(errors=put_result["errors"], **get_result)
+        
+        if time_series.observable_information_ids is not None:
+            self.rdb_api_service.delete_by_column_value(Collections.OBSERVABLE_INFORMATION_TIMESERIES, self.table_name + "_id", time_series_id)
+            for observable_information_id in time_series.observable_information_ids:
+                observable_information_service_relational.add_proxy(observable_information_id, time_series_id, self.table_name)
         return self.get_time_series(time_series_id)
