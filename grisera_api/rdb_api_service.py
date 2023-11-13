@@ -226,10 +226,31 @@ class RdbApiService:
         return data_list[0]
 
 
-    def delete_activity_execution_from_scenario(self,table_name, activity_execution_id, scenario_id):
+    def delete_activity_execution_from_scenario(self, table_name, activity_execution_id, scenario_id):
         cursor = self.connection.cursor()
         query = "UPDATE " + table_name + " SET activity_executions = array_remove(activity_executions, %s) WHERE id = %s"
         cursor.execute(query, (activity_execution_id, scenario_id))
         self.connection.commit()
         cursor.close()
 
+    
+    def get_signal_values_in_range_with_foreign_id(self, table_name, time_series_id, signal_max, signal_min):
+        print(signal_max)
+        if signal_max is None and signal_min is None:
+            return self.get_records_with_foreign_id(table_name, Collections.TIMESERIES + "_id", time_series_id)
+
+        cursor = self.connection.cursor()
+        query = "SELECT * FROM " + table_name + " WHERE " + Collections.TIMESERIES + "_id " + "= %s"
+        if signal_max is not None:
+            query += " AND value <= " + signal_max
+        if signal_min is not None:
+            query += " AND value >= " + signal_min
+        print(query)
+        try:
+            cursor.execute(query, (time_series_id,))
+            result = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            records = [dict(zip(column_names, row)) for row in result]
+            return {"records": records, "errors": None}
+        except psycopg2.Error as error:
+            return {"records":None, "errors": error.pgerror}

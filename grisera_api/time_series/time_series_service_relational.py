@@ -19,13 +19,15 @@ class TimeSeriesServiceRelational(TimeSeriesService):
     def get_time_series(self, time_series_id: Union[int, str], depth: int = 0,
                         signal_min_value: Optional[int] = None,
                         signal_max_value: Optional[int] = None, source: str = ""):
-        
+        print(signal_min_value)
+        print("duuuupa")
         get_response = self.rdb_api_service.get_with_id(self.table_name, time_series_id)
         if get_response is None:
             return NotFoundByIdModel(id=time_series_id, errors={"Entity not found"})
         
         signal_table_name = Collections.SIGNAL_VALUES_EPOCH if get_response["type"] == Type.epoch else Collections.SIGNAL_VALUES_TIMESTAMP
-        get_response["signal_values"] = self.rdb_api_service.get_records_with_foreign_id(signal_table_name, self.table_name + "_id", time_series_id)["records"]
+        get_response["signal_values"] = self.rdb_api_service\
+            .get_signal_values_in_range_with_foreign_id(signal_table_name, time_series_id, signal_max_value, signal_min_value)["records"]
 
         import observable_information.observable_information_service_relational
         import measure.measure_service_relational
