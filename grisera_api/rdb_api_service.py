@@ -29,7 +29,7 @@ class Collections(str, Enum):
     SIGNAL_VALUES_EPOCH = "signal_values_epoch"
     SIGNAL_VALUES_TIMESTAMP = "signal_values_timestamp"
     TIMESERIES = "timeseries"
-    TIMESERIES_METADATA = "timeseries_metadata"
+
 
 class RdbApiService:
     
@@ -48,6 +48,7 @@ class RdbApiService:
         except psycopg2.Error as e:
             print("Error connecting to the database:", e)
 
+
     def convert_to_dict(self, records, column_names):
         """
         Convert rows fetched from the database into a list of dictionaries.
@@ -61,6 +62,7 @@ class RdbApiService:
             row_dict = dict(zip(column_names, row))
             data_list.append(row_dict)
         return data_list
+
 
     def get(self, table_name):
         """
@@ -77,6 +79,7 @@ class RdbApiService:
         data_list = self.convert_to_dict(result, column_names)
         cursor.close()
         return data_list
+
 
     def get_with_id(self, table_name, id):
         """
@@ -98,6 +101,7 @@ class RdbApiService:
         cursor.close()
         return data_list[0]
     
+
     def get_records_with_foreign_id(self, table_name, column_name, id):
         cursor = self.connection.cursor()
         query = "SELECT * FROM " + table_name + " WHERE " + column_name + "= %s"
@@ -109,6 +113,7 @@ class RdbApiService:
             return {"records": records, "errors": None}
         except psycopg2.Error as error:
             return {"records":None, "errors": error.pgerror}
+
 
     def post(self, table_name, record):
         """
@@ -140,7 +145,8 @@ class RdbApiService:
         except psycopg2.Error as error:
             self.connection.rollback()
             return {"records": None, "errors": error.pgerror}
-        
+
+
     def put(self, table_name, id, updated_record):
         """
         Update a record in a table by its id.
@@ -190,6 +196,7 @@ class RdbApiService:
         self.connection.commit()
         cursor.close()
 
+
     def delete_by_column_value(self, table_name, column_name, column_value):
         """
         Delete a record from a table based on a specified column value.
@@ -205,7 +212,6 @@ class RdbApiService:
         cursor.close()
         
 
-
     def get_scenario_by_activity_execution(self, table_name, activity_execution_id):
         cursor = self.connection.cursor()
         query = "SELECT * FROM " + table_name + " WHERE activity_executions @> ARRAY[" + str(activity_execution_id) + "]"
@@ -219,9 +225,11 @@ class RdbApiService:
         cursor.close()
         return data_list[0]
 
+
     def delete_activity_execution_from_scenario(self,table_name, activity_execution_id, scenario_id):
         cursor = self.connection.cursor()
         query = "UPDATE " + table_name + " SET activity_executions = array_remove(activity_executions, %s) WHERE id = %s"
         cursor.execute(query, (activity_execution_id, scenario_id))
         self.connection.commit()
         cursor.close()
+
