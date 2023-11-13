@@ -11,11 +11,11 @@ class ExperimentIn(BaseModel):
     Model of experiment to acquire from client
 
     Attributes:
-    experiment_name (str): Name of experiment
+    experiment_name (Optional[str]): Name of experiment
     additional_properties (Optional[List[PropertyIn]]): Additional properties for experiment
     """
 
-    experiment_name: str
+    experiment_name: Optional[str]
     additional_properties: Optional[List[PropertyIn]]
 
 

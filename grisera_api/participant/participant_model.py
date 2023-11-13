@@ -28,14 +28,14 @@ class ParticipantIn(BaseModel):
     Model of participant to acquire from client
 
     Attributes:
-        name (str): Name of the participant
+        name (Optional[str]): Name of the participant
         date_of_birth (Optional[date]): Date of birth of participant
         sex (Optional[str]): Sex of participant
         disorder (Optional[str]): Type of disorder
         additional_properties (Optional[List[PropertyIn]]): Additional properties for participant
     """
 
-    name: str
+    name: Optional[str]
     date_of_birth: Optional[date]
     sex: Optional[str]
     disorder: Optional[str]

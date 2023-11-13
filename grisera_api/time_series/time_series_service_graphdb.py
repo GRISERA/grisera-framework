@@ -83,16 +83,16 @@ class TimeSeriesServiceGraphDB(TimeSeriesService):
         return TimeSeriesNodesOut(time_series_nodes=time_series_nodes)
 
     def get_time_series(self, time_series_id: Union[int, str], depth: int = 0,
-                        signal_min_value: Optional[int] = None,
-                        signal_max_value: Optional[int] = None):
+                        signal_min_value: Optional[float] = None,
+                        signal_max_value: Optional[float] = None):
         """
         Send request to graph api to get given time series
 
         Args:
             time_series_id (int | str): identity of time series
             depth: (int): specifies how many related entities will be traversed to create the response
-            signal_min_value (Optional[int]): Filter signal values by min value
-            signal_max_value (Optional[int]): Filter signal values by max value
+            signal_min_value (Optional[float]): Filter signal values by min value
+            signal_max_value (Optional[float]): Filter signal values by max value
 
         Returns:
             Result of request as time series object

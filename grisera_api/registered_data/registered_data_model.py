@@ -11,11 +11,11 @@ class RegisteredDataIn(BaseModel):
     Model of registered data to acquire from client
 
     Attributes:
-    source (str): URI address where recorded data is located
+    source (Optional[str]): URI address where recorded data is located
 
     """
 
-    source: str
+    source: Optional[str]
     additional_properties: Optional[List[PropertyIn]]
 
 

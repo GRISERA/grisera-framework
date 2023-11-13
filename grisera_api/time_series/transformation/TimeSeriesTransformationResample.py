@@ -70,8 +70,11 @@ class TimeSeriesTransformationResample(TimeSeriesTransformation):
                     if abs(current_time - before_signal_value_timestamp) <= abs(
                             after_signal_value_timestamp - current_time):
                         new_signal_value_index = current_signal_value_index - 1
-                new_signal_values.append(SignalIn(signal_value=SignalValueNodesIn(value=int(
-                    get_node_property(time_series[0].signal_values[new_signal_value_index]["signal_value"], "value"))),
+                new_signal_values.append(SignalIn(signal_value=SignalValueNodesIn(value=
+                get_node_property(
+                    time_series[0].signal_values[
+                        new_signal_value_index][
+                        "signal_value"], "value")),
                     timestamp=current_time))
                 new_signal_values_id_mapping.append(
                     [time_series[0].signal_values[new_signal_value_index]["signal_value"]["id"]])

@@ -129,8 +129,8 @@ class TimeSeriesRouter:
     )
     async def get_time_series(
         self, time_series_id: Union[int, str], depth: int, response: Response,
-        signal_min_value: Optional[int] = None,
-        signal_max_value: Optional[int] = None
+        signal_min_value: Optional[float] = None,
+        signal_max_value: Optional[float] = None
     ):
         """
         Get time series by id from database with signal values. Depth attribute specifies how many models will be traversed to create the

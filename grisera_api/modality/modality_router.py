@@ -5,6 +5,7 @@ from fastapi_utils.cbv import cbv
 from fastapi_utils.inferring_router import InferringRouter
 from hateoas import get_links
 from modality.modality_model import (
+    ModalityIn,
     ModalityOut,
     ModalitiesOut
 )
@@ -26,6 +27,21 @@ class ModalityRouter:
 
     def __init__(self):
         self.modality_service = Services().modality_service()
+
+    @router.post("/modalities", tags=["modalities"], response_model=ModalityOut)
+    async def create_modality(self, modality: ModalityIn, response: Response):
+        """
+        Create modality in database
+        """
+
+        create_response = self.modality_service.save_modality(modality)
+        if create_response.errors is not None:
+            response.status_code = 422
+
+        # add links from hateoas
+        create_response.links = get_links(router)
+
+        return create_response
 
     @router.get(
         "/modalities/{modality_id}",

@@ -31,8 +31,8 @@ class TimeSeriesTransformationQuadrants(TimeSeriesTransformation):
         assert time_series[0].type == time_series[1].type, "Time series types should be equal"
         origin_x = get_additional_parameter(additional_properties, "origin_x")
         origin_y = get_additional_parameter(additional_properties, "origin_y")
-        origin_x = int(origin_x) if origin_x is not None else 0
-        origin_y = int(origin_y) if origin_y is not None else 0
+        origin_x = float(origin_x) if origin_x is not None else 0
+        origin_y = float(origin_y) if origin_y is not None else 0
 
         if additional_properties is None:
             additional_properties = []
@@ -60,9 +60,9 @@ class TimeSeriesTransformationQuadrants(TimeSeriesTransformation):
                     get_node_property(current_signal_value_x["timestamp"], "end_timestamp") == get_node_property(
                 time_series[1].signal_values[current_signal_value_y_index]["timestamp"], "end_timestamp"):
                 # Determine quadrant comparing X and Y signal values with origin point
-                x_positive = 1 if int(
+                x_positive = 1 if float(
                     get_node_property(current_signal_value_x["signal_value"], "value")) >= origin_x else 0
-                y_positive = 1 if int(
+                y_positive = 1 if float(
                     get_node_property(time_series[1].signal_values[current_signal_value_y_index]["signal_value"],
                                       "value")) >= origin_y else 0
                 quadrant = 1 + [(1, 1), (0, 1), (0, 0), (1, 0)].index((x_positive, y_positive))

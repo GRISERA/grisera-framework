@@ -247,7 +247,7 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
 
             if signal_value_node is None and (
                     timestamp is None or int(get_node_property(current_timestamp, "timestamp")) < int(
-                    get_node_property(timestamp, "timestamp"))):
+                get_node_property(timestamp, "timestamp"))):
                 if experiment_timestamp_relation_id is not None:
                     self.graph_api_service.delete_relationship(experiment_timestamp_relation_id)
                 if experiment_id is not None:
@@ -277,15 +277,15 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
         return None
 
     def get_time_series(self, time_series_id: Union[int, str], depth: int = 0,
-                        signal_min_value: Optional[int] = None,
-                        signal_max_value: Optional[int] = None):
+                        signal_min_value: Optional[float] = None,
+                        signal_max_value: Optional[float] = None):
         """
         Send request to graph api to get given time series
         Args:
             time_series_id (int | str): identity of time series
             depth: (int): specifies how many related entities will be traversed to create the response
-            signal_min_value (Optional[int]): Filter signal values by min value
-            signal_max_value (Optional[int]): Filter signal values by max value
+            signal_min_value (Optional[float]): Filter signal values by min value
+            signal_max_value (Optional[float]): Filter signal values by max value
         Returns:
             Result of request as time series object
         """
@@ -319,15 +319,15 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             return TimeSeriesMultidimensionalOut(errors=str(e))
 
     def get_signal_values(self, time_series_id: Union[int, str], time_series_type: str,
-                          signal_min_value: Optional[int] = None,
-                          signal_max_value: Optional[int] = None):
+                          signal_min_value: Optional[float] = None,
+                          signal_max_value: Optional[float] = None):
         """
         Send requests to graph api to get all signal values
         Args:
             time_series_id (int | str): identity of the time series
             time_series_type (str): type of the time series
-            signal_min_value (Optional[int]): Filter signal values by min value
-            signal_max_value (Optional[int]): Filter signal values by max value
+            signal_min_value (Optional[float]): Filter signal values by min value
+            signal_max_value (Optional[float]): Filter signal values by max value
         Returns:
             Array of signal value objects
         """
@@ -457,17 +457,21 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
             "relations": [
             ]
         }
+        id_per_node = {}
         params_per_node = {}
         for param_key, param_value in dict(params).items():
             if "_" in param_key:
                 param_key_prefix, param_key_suffix = param_key.split("_", 1)
-                if param_key_prefix not in params_per_node:
-                    params_per_node[param_key_prefix] = []
-                params_per_node[param_key_prefix].append({
-                    "key": param_key_suffix,
-                    "operator": "equals",
-                    "value": param_value
-                })
+                if param_key_suffix == "id":
+                    id_per_node[param_key_prefix] = param_value
+                else:
+                    if param_key_prefix not in params_per_node:
+                        params_per_node[param_key_prefix] = []
+                    params_per_node[param_key_prefix].append({
+                        "key": param_key_suffix,
+                        "operator": "equals",
+                        "value": param_value
+                    })
             else:
                 print("Bad query param value format")
 
@@ -567,19 +571,16 @@ class TimeSeriesServiceGraphDBWithSignalValues(TimeSeriesServiceGraphDB):
                            "Activity Execution", "Activity", "Experiment", "Registered Channel", "Channel",
                            "Registered Data"]:
             node_param_name = node_label.lower().replace(" ", "")
-            if node_param_name in params_per_node:
-                node_id = None
-                if "id" in params_per_node[node_param_name]:
-                    node_id = int(params_per_node[node_param_name]["id"])
-                    del params_per_node[node_param_name]["id"]
-                get_or_append_node_to_query(query, node_indexes, node_label, node_id, params_per_node[node_param_name])
-
+            node_id = id_per_node[node_param_name] if node_param_name in id_per_node else None
+            node_parameters = params_per_node[node_param_name] if node_param_name in params_per_node else None
+            if node_id is not None or node_parameters is not None:
+                get_or_append_node_to_query(query, node_indexes, node_label, node_id, node_parameters)
         response = self.graph_api_service.get_nodes_by_query(query)
 
         time_series_nodes = []
         for time_series_row in response["rows"]:
             time_series_node = time_series_row[0]
-            properties = {'id': time_series_node['id'], 'additional_properties': []}
+            properties = {'id': time_series_node['id'], 'additional_properties': [], 'type': Type.timestamp}
             for property in time_series_node["properties"]:
                 if property["key"] in ["type", "source"]:
                     properties[property["key"]] = property["value"]
