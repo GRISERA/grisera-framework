@@ -43,7 +43,7 @@ class ChannelIn(BaseModel):
     type (str): Type of the channel
     """
 
-    type: str
+    type: Type
 
 
 class BasicChannelOut(ChannelIn):
