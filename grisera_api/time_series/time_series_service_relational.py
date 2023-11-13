@@ -3,7 +3,7 @@ import json
 from models.not_found_model import NotFoundByIdModel
 from rdb_api_service import RdbApiService, Collections
 from time_series.time_series_model import TimeSeriesNodesOut, TimeSeriesOut, TimeSeriesIn, TimeSeriesPropertyIn, \
-    TimeSeriesRelationIn
+    TimeSeriesRelationIn, Type
 from time_series.time_series_service import TimeSeriesService
 from typing import Union, Optional, List
 from starlette.datastructures import QueryParams
@@ -19,21 +19,28 @@ class TimeSeriesServiceRelational(TimeSeriesService):
     def get_time_series(self, time_series_id: Union[int, str], depth: int = 0,
                         signal_min_value: Optional[int] = None,
                         signal_max_value: Optional[int] = None, source: str = ""):
+        
         get_response = self.rdb_api_service.get_with_id(self.table_name, time_series_id)
         if get_response is None:
             return NotFoundByIdModel(id=time_series_id, errors={"Entity not found"})
+        
+        signal_table_name = Collections.SIGNAL_VALUES_EPOCH if get_response["type"] == Type.epoch else Collections.SIGNAL_VALUES_TIMESTAMP
+        get_response["signal_values"] = self.rdb_api_service.get_records_with_foreign_id(signal_table_name, self.table_name + "_id", time_series_id)["records"]
+
         import observable_information.observable_information_service_relational
+        import measure.measure_service_relational
         observable_information_service_relational = observable_information.observable_information_service_relational.ObservableInformationServiceRelational()
+        measure_service_relational = measure.measure_service_relational.MeasureServiceRelational()
+
         get_response["observable_information_ids"] = observable_information_service_relational.get_ids_by_proxy_foreign_id(time_series_id, self.table_name)
         if depth > 0:
-            import measure.measure_service_relational
-            measure_service_relational = measure.measure_service_relational.MeasureServiceRelational()
             if source != Collections.MEASURE:
                 get_response["measure"] = measure_service_relational.get_measure(
                     get_response["measure_id"], depth - 1, self.table_name)
             if source != Collections.OBSERVABLE_INFORMATION:
                 get_response["observable_informations"] = observable_information_service_relational.get_multiple_from_proxy_with_foreign_id(
                     time_series_id, depth - 1, self.table_name)
+                
         return TimeSeriesOut(**get_response)
 
     def get_time_series_nodes(self, params: QueryParams = None):

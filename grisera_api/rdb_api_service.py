@@ -26,6 +26,8 @@ class Collections(str, Enum):
     REGISTERED_CHANNEL = "registered_channel"
     REGISTERED_DATA = "registered_data"
     SCENARIO = "scenario"
+    SIGNAL_VALUES_EPOCH = "signal_values_epoch"
+    SIGNAL_VALUES_TIMESTAMP = "signal_values_timestamp"
     TIMESERIES = "timeseries"
     TIMESERIES_METADATA = "timeseries_metadata"
 
