@@ -15,7 +15,10 @@ class ExperimentServiceRelational(ExperimentService):
 
 
     def save_experiment(self, experiment: ExperimentIn):
-        experiment_data = experiment.dict()
+        experiment_data = {
+            "experiment_name": experiment.experiment_name
+        }
+
         if experiment.additional_properties is not None:
             experiment_data["additional_properties"] = json.dumps([
                 {
@@ -56,7 +59,10 @@ class ExperimentServiceRelational(ExperimentService):
     
     
     def update_experiment(self, experiment_id: Union[int, str], experiment: ExperimentIn):
-        experiment_data = experiment.dict()
+        experiment_data = {
+            "experiment_name": experiment.experiment_name
+        }
+        
         if experiment.additional_properties is not None:
             experiment_data["additional_properties"] = json.dumps([
                 {
