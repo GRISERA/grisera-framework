@@ -16,14 +16,17 @@ class RecordingServiceRelational(RecordingService):
     def save_recording(self, recording: RecordingIn):
         recording_data = {
             "participation_id": recording.participation_id,
-            "registered_channel_id": recording.registered_channel_id,
-            "additional_properties": json.dumps([
+            "registered_channel_id": recording.registered_channel_id
+        }
+
+        if recording.additional_properties is not None:
+            recording_data["additional_properties"] = json.dumps([
                 {
                     "key": p.key,
                     "value": p.value
                 } for p in recording.additional_properties
             ])
-        }
+
         result = self.rdb_api_service.post(self.table_name, recording_data)
         if result["errors"] is not None:
                 return RecordingOut(errors=result["errors"])
@@ -67,13 +70,17 @@ class RecordingServiceRelational(RecordingService):
 
     def update_recording(self, recording_id: Union[int, str], recording: RecordingPropertyIn):
         recording_data = {
-            "additional_properties": json.dumps([
+            "additional_properties": None
+        }
+
+        if recording.additional_properties is not None:
+            recording_data["additional_properties"] = json.dumps([
                 {
                     "key": p.key,
                     "value": p.value
                 } for p in recording.additional_properties
             ])
-        }
+
         result = self.get_recording(recording_id)
         if type(result) != NotFoundByIdModel:
             put_result = self.rdb_api_service.put(self.table_name, recording_id, recording_data)
