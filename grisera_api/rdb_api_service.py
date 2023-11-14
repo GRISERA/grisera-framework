@@ -45,6 +45,8 @@ class RdbApiService:
                 password=rdb_api_password,
                 port=rdb_api_port 
             )
+            self.connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+
         except psycopg2.Error as e:
             print("Error connecting to the database:", e)
 
@@ -89,19 +91,23 @@ class RdbApiService:
         :param id: ID of the record to fetch.
         :return: Dictionary representing the row or None if not found.
         """
-        cursor = self.connection.cursor()
-        query = "SELECT * FROM " + table_name + " WHERE id = " + str(id)
-        cursor.execute(query)
-        result = cursor.fetchall()
-        if not result:
-            cursor.close()
-            return None
-        column_names = [desc[0] for desc in cursor.description]
-        data_list = self.convert_to_dict(result, column_names)
-        cursor.close()
-        return data_list[0]
+        query = "SELECT * FROM " + table_name + " WHERE id = %s"
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(query, (id,))
+                result = cursor.fetchall()
+                if not result:
+                    cursor.close()
+                    return None
+                column_names = [desc[0] for desc in cursor.description]
+                data_list = self.convert_to_dict(result, column_names)
+                self.connection.commit()
+                return data_list[0]
+        except psycopg2.Error as error:
+            self.connection.rollback()
+            print(error)
     
-
+    
     def get_records_with_foreign_id(self, table_name, column_name, id):
         cursor = self.connection.cursor()
         query = "SELECT * FROM " + table_name + " WHERE " + column_name + "= %s"
@@ -112,7 +118,7 @@ class RdbApiService:
             records = [dict(zip(column_names, row)) for row in result]
             return {"records": records, "errors": None}
         except psycopg2.Error as error:
-            return {"records":None, "errors": error.pgerror}
+            return {"records":[], "errors": error.pgerror}
 
 
     def post(self, table_name, record):
@@ -254,4 +260,4 @@ class RdbApiService:
                 records.append(row_dict)
             return {"records": records, "errors": None}
         except psycopg2.Error as error:
-            return {"records":None, "errors": error.pgerror}
+            return {"records":[], "errors": error.pgerror}

@@ -45,8 +45,7 @@ class TimeSeriesServiceRelational(TimeSeriesService):
         get_response["observable_information_ids"] = observable_information_service_relational.get_ids_by_proxy_foreign_id(time_series_id, self.table_name)
         if depth > 0:
             if source != Collections.MEASURE:
-                get_response["measure"] = measure_service_relational.get_measure(
-                    get_response["measure_id"], depth - 1, self.table_name)
+                get_response["measure"] = measure_service_relational.get_measure(get_response["measure_id"], depth - 1, self.table_name)
             if source != Collections.OBSERVABLE_INFORMATION:
                 get_response["observable_informations"] = observable_information_service_relational.get_multiple_from_proxy_with_foreign_id(
                     time_series_id, depth - 1, self.table_name)
@@ -256,3 +255,15 @@ class TimeSeriesServiceRelational(TimeSeriesService):
             for observable_information_id in time_series.observable_information_ids:
                 observable_information_service_relational.add_proxy(observable_information_id, time_series_id, self.table_name)
         return self.get_time_series(time_series_id)
+    
+
+    def get_multiple_from_proxy_with_foreign_id(self, id: Union[int, str], depth: int = 0, source=""):
+        proxy_table_name = Collections.OBSERVABLE_INFORMATION_TIMESERIES
+
+        timeseries_proxy_list = self.rdb_api_service.get_records_with_foreign_id(proxy_table_name, source + "_id", id)["records"]
+
+        timeseries_list = list()
+        for timeseries_proxy in timeseries_proxy_list:
+            timeseries = self.get_time_series(timeseries_proxy["timeseries_id"], depth, source=source)
+            timeseries_list.append(timeseries)
+        return timeseries_list
