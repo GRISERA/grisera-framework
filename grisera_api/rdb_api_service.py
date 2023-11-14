@@ -159,6 +159,8 @@ class RdbApiService:
         try:
             cursor = self.connection.cursor()
             
+            updated_record = {k: v for k, v in updated_record.items() if v is not None}
+            
             set_statements = ', '.join([f"{column} = %s" for column in updated_record.keys()])
             values = list(updated_record.values())
             values.append(id)
