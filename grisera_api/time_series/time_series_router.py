@@ -138,7 +138,7 @@ class TimeSeriesRouter:
 
         Signal values will be filtered using minimum and maximum value if present.
         """
-        print("dsapodaospd")
+        
         get_response = self.time_series_service.get_time_series(time_series_id, depth, signal_min_value, signal_max_value)
         if get_response.errors is not None:
             response.status_code = 404

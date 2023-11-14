@@ -103,17 +103,11 @@ class ObservableInformationServiceRelational(ObservableInformationService):
         return observable_informations_list
 
     def get_ids_by_proxy_foreign_id(self, id: Union[int,str], source):
-        proxy_table_name = Collections.OBSERVABLE_INFORMATION_TIMESERIES
-
         observable_information_proxy_list = \
-        self.rdb_api_service.get_records_with_foreign_id(proxy_table_name, source + "_id", id)["records"]
+        self.rdb_api_service.get_records_with_foreign_id(Collections.OBSERVABLE_INFORMATION_TIMESERIES, source + "_id", id)["records"]
 
-        observable_informations_list = list()
-        for observable_information_proxy in observable_information_proxy_list:
-            observable_information = self.get_observable_information(
-                observable_information_proxy["observable_information_id"])
-            observable_informations_list.append(observable_information.id)
-        return observable_informations_list
+        observable_information_ids = [observable_information_proxy["observable_information_id"] for observable_information_proxy in observable_information_proxy_list]
+        return observable_information_ids
 
     def add_proxy(self, observable_information_id, param, table_name):
         proxy_table_name = Collections.OBSERVABLE_INFORMATION_TIMESERIES

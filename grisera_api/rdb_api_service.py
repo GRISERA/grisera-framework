@@ -158,13 +158,11 @@ class RdbApiService:
         """
         try:
             cursor = self.connection.cursor()
-            for key in updated_record.keys():
-                if updated_record[key] is None:
-                    updated_record.pop(key)
+            
             set_statements = ', '.join([f"{column} = %s" for column in updated_record.keys()])
             values = list(updated_record.values())
             values.append(id)
-            
+
             query = "UPDATE "+ table_name + " SET " + set_statements + " WHERE id = %s RETURNING *"
             
             cursor.execute(query, values)
