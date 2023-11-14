@@ -158,7 +158,9 @@ class RdbApiService:
         """
         try:
             cursor = self.connection.cursor()
-
+            for key in updated_record.keys():
+                if updated_record[key] is None:
+                    updated_record.pop(key)
             set_statements = ', '.join([f"{column} = %s" for column in updated_record.keys()])
             values = list(updated_record.values())
             values.append(id)
@@ -235,22 +237,21 @@ class RdbApiService:
 
     
     def get_signal_values_in_range_with_foreign_id(self, table_name, time_series_id, signal_max, signal_min):
-        print(signal_max)
-        if signal_max is None and signal_min is None:
-            return self.get_records_with_foreign_id(table_name, Collections.TIMESERIES + "_id", time_series_id)
-
         cursor = self.connection.cursor()
         query = "SELECT * FROM " + table_name + " WHERE " + Collections.TIMESERIES + "_id " + "= %s"
         if signal_max is not None:
-            query += " AND value <= " + signal_max
+            query += " AND value <= " + str(signal_max)
         if signal_min is not None:
-            query += " AND value >= " + signal_min
-        print(query)
+            query += " AND value >= " + str(signal_min)
         try:
             cursor.execute(query, (time_series_id,))
             result = cursor.fetchall()
             column_names = [desc[0] for desc in cursor.description]
-            records = [dict(zip(column_names, row)) for row in result]
+            records = []
+            for row in result:
+                row_dict = dict(zip(column_names, row))
+                row_dict.pop("timeseries_id")
+                records.append(row_dict)
             return {"records": records, "errors": None}
         except psycopg2.Error as error:
             return {"records":None, "errors": error.pgerror}

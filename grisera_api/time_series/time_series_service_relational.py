@@ -19,8 +19,6 @@ class TimeSeriesServiceRelational(TimeSeriesService):
     def get_time_series(self, time_series_id: Union[int, str], depth: int = 0,
                         signal_min_value: Optional[int] = None,
                         signal_max_value: Optional[int] = None, source: str = ""):
-        print(signal_min_value)
-        print("duuuupa")
         get_response = self.rdb_api_service.get_with_id(self.table_name, time_series_id)
         if get_response is None:
             return NotFoundByIdModel(id=time_series_id, errors={"Entity not found"})
@@ -47,6 +45,12 @@ class TimeSeriesServiceRelational(TimeSeriesService):
 
     def get_time_series_nodes(self, params: QueryParams = None):
         timeseries_nodes = self.rdb_api_service.get(self.table_name)
+        for timeseries_node in timeseries_nodes:
+            table_name = Collections.SIGNAL_VALUES_EPOCH if timeseries_node["type"] == Type.epoch else Collections.SIGNAL_VALUES_TIMESTAMP
+            timeseries_node["signal_values"] = self.rdb_api_service.get_records_with_foreign_id\
+                (table_name,Collections.TIMESERIES+"_id",timeseries_node["id"])["records"]
+            for signal_value in timeseries_node["signal_values"]:
+                signal_value.pop("timeseries_id")
         return TimeSeriesNodesOut(time_series_nodes=timeseries_nodes)
 
 
@@ -122,12 +126,18 @@ class TimeSeriesServiceRelational(TimeSeriesService):
         return result
 
     def update_time_series(self, time_series_id: Union[int, str], time_series: TimeSeriesPropertyIn):
-        if len(time_series.observable_information_ids) <= 0:
-            return TimeSeriesOut(errors="Observable information ids must be provided", **time_series.dict())
-        
         get_result = self.get_time_series(time_series_id)
         if type(get_result) == NotFoundByIdModel:
             return get_result
+
+        signal_table_name = str()
+        if time_series.type == Type.epoch:
+            signal_table_name = Collections.SIGNAL_VALUES_EPOCH
+        elif time_series.type == Type.timestamp:
+            signal_table_name = Collections.SIGNAL_VALUES_TIMESTAMP
+        else:
+            return TimeSeriesOut(errors="Provided timeseries type is not allowed.", **time_series.dict())
+
         time_series_dict = time_series.dict()
         if time_series.additional_properties is not None:
             time_series_dict["additional_properties"] = json.dumps([
@@ -136,16 +146,40 @@ class TimeSeriesServiceRelational(TimeSeriesService):
                     "value": p.value
                 } for p in time_series.additional_properties
             ])
-        signal_values = []
-        for signal_value in time_series.signal_values:
-            signal_value_dict = signal_value.dict()
-            signal_values.append(signal_value_dict)
+        signal_values_list = list()
 
-        time_series_dict["signal_values"] = json.dumps(signal_values)
+        old_table_name = Collections.SIGNAL_VALUES_EPOCH if get_result.type == Type.epoch else Collections.SIGNAL_VALUES_TIMESTAMP
+        self.rdb_api_service.delete_by_column_value(old_table_name, "timeseries_id", time_series_id)
+        for signal_value in time_series.signal_values:
+            signal_value_dict = {
+                "timeseries_id": time_series_id,
+                "value": signal_value.signal_value.value,
+                "additional_properties": json.dumps([
+                    {
+                        "key": p.key,
+                        "value": p.value
+                    } for p in signal_value.signal_value.additional_properties if
+                    signal_value.signal_value.additional_properties is not None
+                ])
+            }
+            if time_series.type == Type.epoch:
+                signal_value_dict["start_timestamp"] = signal_value.start_timestamp
+                signal_value_dict["end_timestamp"] = signal_value.end_timestamp
+            elif time_series.type == Type.timestamp:
+                signal_value_dict["timestamp"] = signal_value.timestamp
+            saved_signal_dict = self.rdb_api_service.post(signal_table_name, signal_value_dict)
+            if saved_signal_dict["errors"] is not None:
+                self.delete_time_series(time_series_dict["id"])
+                return TimeSeriesOut(errors=saved_signal_dict["errors"], **time_series.dict())
+            signal_value_dict.pop("timeseries_id")
+            signal_values_list.append(signal_value_dict)
+
+
         result = self.rdb_api_service.put(self.table_name, time_series_id, time_series_dict)
         if result["errors"] is not None:
             return TimeSeriesOut(errors=result["errors"], **time_series.dict())
         result["records"]["observable_information_ids"] = get_result.observable_information_ids
+        result["records"]["signal_values"] = signal_values_list
         return TimeSeriesOut(**result["records"])
 
     def update_time_series_relationships(self, time_series_id: Union[int, str],
