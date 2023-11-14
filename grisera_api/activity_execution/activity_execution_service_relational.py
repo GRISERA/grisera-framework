@@ -14,7 +14,11 @@ class ActivityExecutionServiceRelational(ActivityExecutionService):
         self.table_name = Collections.ACTIVITY_EXECUTION
 
     def save_activity_execution(self, activity_execution: ActivityExecutionIn):
-        activity_execution_dict = activity_execution.dict()
+        activity_execution_dict = {
+            "activity_id": activity_execution.activity_id,
+            "arrangement_id": activity_execution.arrangement_id
+        }
+        
         if activity_execution.additional_properties is not None:
             activity_execution_dict["additional_properties"] = json.dumps([
                 {
@@ -89,7 +93,10 @@ class ActivityExecutionServiceRelational(ActivityExecutionService):
 
     def update_activity_execution_relationships(self, activity_execution_id: Union[int, str],
                                                 activity_execution: ActivityExecutionRelationIn):
-        activity_execution_dict = activity_execution.dict()
+        activity_execution_dict = {
+            "activity_id": activity_execution.activity_id,
+            "arrangement_id": activity_execution.arrangement_id
+        }
         result = self.get_activity_execution(activity_execution_id)
         if type(result) is NotFoundByIdModel:
             return result
