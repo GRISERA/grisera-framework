@@ -24,8 +24,18 @@ class TimeSeriesServiceRelational(TimeSeriesService):
             return NotFoundByIdModel(id=time_series_id, errors={"Entity not found"})
         
         signal_table_name = Collections.SIGNAL_VALUES_EPOCH if get_response["type"] == Type.epoch else Collections.SIGNAL_VALUES_TIMESTAMP
-        get_response["signal_values"] = self.rdb_api_service\
+        signal_values_list = self.rdb_api_service\
             .get_signal_values_in_range_with_foreign_id(signal_table_name, time_series_id, signal_max_value, signal_min_value)["records"]
+
+        get_response["signal_values"] = list()
+        for signal_value in signal_values_list:
+            signal_value["signal_value"] = {
+                "value": signal_value["value"],
+                "additional_properties": signal_value["additional_properties"]
+            }
+            signal_value.pop("value")
+            signal_value.pop("additional_properties")
+            get_response["signal_values"].append(signal_value)
 
         import observable_information.observable_information_service_relational
         import measure.measure_service_relational
@@ -192,6 +202,9 @@ class TimeSeriesServiceRelational(TimeSeriesService):
             
             signals_to_save.append(signal_value_dict)
 
+        old_signal_table_name = Collections.SIGNAL_VALUES_EPOCH if get_result.type == Type.epoch else Collections.SIGNAL_VALUES_TIMESTAMP
+        self.rdb_api_service.delete_by_column_value(old_signal_table_name, Collections.TIMESERIES + "_id", time_series_id)
+
         new_signal_values_list = list()
         for signal_value_dict in signals_to_save:
             saved_signal_dict = self.rdb_api_service.post(signal_table_name, signal_value_dict)
@@ -205,10 +218,6 @@ class TimeSeriesServiceRelational(TimeSeriesService):
                 "additional_properties": saved_signal_dict.pop("additional_properties")
             }
             new_signal_values_list.append(saved_signal_dict)
-
-
-        old_signal_table_name = Collections.SIGNAL_VALUES_EPOCH if get_result.type == Type.epoch else Collections.SIGNAL_VALUES_TIMESTAMP
-        self.rdb_api_service.delete_by_column_value(old_signal_table_name, Collections.TIMESERIES + "_id", time_series_id)
 
         put_result = self.rdb_api_service.put(self.table_name, time_series_id, time_series_dict)
         if put_result["errors"] is not None:
