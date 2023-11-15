@@ -45,7 +45,6 @@ class RdbApiService:
                 password=rdb_api_password,
                 port=rdb_api_port 
             )
-            self.connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 
         except psycopg2.Error as e:
             print("Error connecting to the database:", e)
