@@ -23,16 +23,18 @@ class ParticipantStateServiceRelational(ParticipantStateService):
             if personality_dict is None:
                 return NotFoundByIdModel(errors={"Personality entity not found"})
 
-        participant_state_data= {
+        participant_state_data = {
             "participant_id": participant_state.participant_id,
-            "age": participant_state.age,
-            "additional_properties": json.dumps([
+            "age": participant_state.age
+        }
+
+        if participant_state.additional_properties is not None:
+            participant_state_data["additional_properties"] = json.dumps([
                 {
                     "key": p.key,
                     "value": p.value
                 } for p in participant_state.additional_properties
             ])
-        }
 
         saved_participant_dict = self.rdb_api_service.post(self.table_name, participant_state_data)
         if saved_participant_dict["errors"] is not None:
@@ -101,13 +103,15 @@ class ParticipantStateServiceRelational(ParticipantStateService):
     def update_participant_state(self, participant_state_id: Union[int, str], participant_state: ParticipantStatePropertyIn):
         participant_state_data_dict = {
             "age": participant_state.age,
-            "additional_properties": json.dumps([
+        }
+        
+        if participant_state.additional_properties is not None:
+            participant_state_data_dict["additional_properties"] = json.dumps([
                 {
                     "key": p.key,
                     "value": p.value
                 } for p in participant_state.additional_properties
             ])
-        }
 
         result = self.get_participant_state(participant_state_id)
         if type(result) == NotFoundByIdModel:

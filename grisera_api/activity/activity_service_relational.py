@@ -17,13 +17,15 @@ class ActivityServiceRelational(ActivityService):
         activity_dict = {
             "activity_name": activity.activity_name,
             "activity": activity.activity,
-            "additional_properties": json.dumps([
+        }
+
+        if activity.additional_properties is not None:
+            activity_dict["additional_properties"] = json.dumps([
                 {
                     "key": p.key,
                     "value": p.value
                 } for p in activity.additional_properties
             ])
-        }
         
         saved_activity_dict = self.rdb_api_service.post(self.table_name, activity_dict)["records"]
         return ActivityOut(**saved_activity_dict)

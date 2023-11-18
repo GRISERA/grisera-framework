@@ -8,31 +8,36 @@ from rdb_api_service import RdbApiService, Collections
 
 class ParticipantServiceRelational(ParticipantService):
     
-
     def __init__(self) -> None:
         self.rdb_api_service = RdbApiService()
         self.table_name = Collections.PARTICIPANT
+
 
     def save_participant(self, participant: ParticipantIn):
         participant_data_dict = {
             "name": participant.name,
             "date_of_birth": participant.date_of_birth,
             "sex": participant.sex,
-            "disorder": participant.disorder,
-            "additional_properties": json.dumps([
+            "disorder": participant.disorder
+        }
+
+        if participant.additional_properties is not None:
+            participant_data_dict["additional_properties"] = json.dumps([
                 {
                     "key": p.key,
                     "value": p.value
                 } for p in participant.additional_properties
             ])
-        }
+
         saved_participant_dict = self.rdb_api_service.post(self.table_name, participant_data_dict)["records"]
         return ParticipantOut(**saved_participant_dict)
+
 
     def get_participants(self):
         results = self.rdb_api_service.get(self.table_name)
         return ParticipantsOut(participants=results)
     
+
     def get_participant(self, participant_id: Union[int, str], depth: int = 0, source: str = ""):
         participant_dict = self.rdb_api_service.get_with_id(self.table_name, participant_id)
         if not participant_dict:
@@ -46,25 +51,29 @@ class ParticipantServiceRelational(ParticipantService):
 
         return ParticipantOut(**participant_dict)
     
+
     def delete_participant(self, participant_id: Union[int, str]):
         result = self.get_participant(participant_id)
         if type(result) != NotFoundByIdModel:
             self.rdb_api_service.delete_with_id(self.table_name, participant_id)
         return result
     
+
     def update_participant(self, participant_id: Union[int, str], participant: ParticipantIn):
         participant_data_dict = {
             "name": participant.name,
             "date_of_birth": participant.date_of_birth,
             "sex": participant.sex,
-            "disorder": participant.disorder,
-            "additional_properties": json.dumps([
+            "disorder": participant.disorder
+        }
+
+        if participant.additional_properties is not None:
+            participant_data_dict["additional_properties"] = json.dumps([
                 {
                     "key": p.key,
                     "value": p.value
                 } for p in participant.additional_properties
             ])
-        }
 
         result = self.get_participant(participant_id)
         if type(result) == NotFoundByIdModel:
