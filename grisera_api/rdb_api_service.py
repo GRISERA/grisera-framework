@@ -26,8 +26,10 @@ class Collections(str, Enum):
     REGISTERED_CHANNEL = "registered_channel"
     REGISTERED_DATA = "registered_data"
     SCENARIO = "scenario"
+    SIGNAL_VALUES_EPOCH = "signal_values_epoch"
+    SIGNAL_VALUES_TIMESTAMP = "signal_values_timestamp"
     TIMESERIES = "timeseries"
-    TIMESERIES_METADATA = "timeseries_metadata"
+
 
 class RdbApiService:
     
@@ -43,8 +45,10 @@ class RdbApiService:
                 password=rdb_api_password,
                 port=rdb_api_port 
             )
+
         except psycopg2.Error as e:
             print("Error connecting to the database:", e)
+
 
     def convert_to_dict(self, records, column_names):
         """
@@ -59,6 +63,7 @@ class RdbApiService:
             row_dict = dict(zip(column_names, row))
             data_list.append(row_dict)
         return data_list
+
 
     def get(self, table_name):
         """
@@ -76,6 +81,7 @@ class RdbApiService:
         cursor.close()
         return data_list
 
+
     def get_with_id(self, table_name, id):
         """
         Fetch a record from a table using its ID.
@@ -84,17 +90,22 @@ class RdbApiService:
         :param id: ID of the record to fetch.
         :return: Dictionary representing the row or None if not found.
         """
-        cursor = self.connection.cursor()
-        query = "SELECT * FROM " + table_name + " WHERE id = " + str(id)
-        cursor.execute(query)
-        result = cursor.fetchall()
-        if not result:
-            cursor.close()
-            return None
-        column_names = [desc[0] for desc in cursor.description]
-        data_list = self.convert_to_dict(result, column_names)
-        cursor.close()
-        return data_list[0]
+        query = "SELECT * FROM " + table_name + " WHERE id = %s"
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute(query, (id,))
+                result = cursor.fetchall()
+                if not result:
+                    cursor.close()
+                    return None
+                column_names = [desc[0] for desc in cursor.description]
+                data_list = self.convert_to_dict(result, column_names)
+                self.connection.commit()
+                return data_list[0]
+        except psycopg2.Error as error:
+            self.connection.rollback()
+            print(error)
+    
     
     def get_records_with_foreign_id(self, table_name, column_name, id):
         cursor = self.connection.cursor()
@@ -106,7 +117,8 @@ class RdbApiService:
             records = [dict(zip(column_names, row)) for row in result]
             return {"records": records, "errors": None}
         except psycopg2.Error as error:
-            return {"records":None, "errors": error.pgerror}
+            return {"records":[], "errors": error.pgerror}
+
 
     def post(self, table_name, record):
         """
@@ -138,7 +150,8 @@ class RdbApiService:
         except psycopg2.Error as error:
             self.connection.rollback()
             return {"records": None, "errors": error.pgerror}
-        
+
+
     def put(self, table_name, id, updated_record):
         """
         Update a record in a table by its id.
@@ -150,11 +163,13 @@ class RdbApiService:
         """
         try:
             cursor = self.connection.cursor()
-
+            
+            updated_record = {k: v for k, v in updated_record.items() if v is not None}
+            
             set_statements = ', '.join([f"{column} = %s" for column in updated_record.keys()])
             values = list(updated_record.values())
             values.append(id)
-            
+
             query = "UPDATE "+ table_name + " SET " + set_statements + " WHERE id = %s RETURNING *"
             
             cursor.execute(query, values)
@@ -188,6 +203,7 @@ class RdbApiService:
         self.connection.commit()
         cursor.close()
 
+
     def delete_by_column_value(self, table_name, column_name, column_value):
         """
         Delete a record from a table based on a specified column value.
@@ -197,12 +213,11 @@ class RdbApiService:
         :param column_value: Value to match in the specified column.
         """
         cursor = self.connection.cursor()
-        query = f"DELETE FROM {table_name} WHERE {column_name} = %s"
+        query = "DELETE FROM " + table_name +  " WHERE " + column_name + " = %s"
         cursor.execute(query, (column_value,))
         self.connection.commit()
         cursor.close()
         
-
 
     def get_scenario_by_activity_execution(self, table_name, activity_execution_id):
         cursor = self.connection.cursor()
@@ -217,9 +232,31 @@ class RdbApiService:
         cursor.close()
         return data_list[0]
 
-    def delete_activity_execution_from_scenario(self,table_name, activity_execution_id, scenario_id):
+
+    def delete_activity_execution_from_scenario(self, table_name, activity_execution_id, scenario_id):
         cursor = self.connection.cursor()
         query = "UPDATE " + table_name + " SET activity_executions = array_remove(activity_executions, %s) WHERE id = %s"
         cursor.execute(query, (activity_execution_id, scenario_id))
         self.connection.commit()
         cursor.close()
+
+    
+    def get_signal_values_in_range_with_foreign_id(self, table_name, time_series_id, signal_max, signal_min):
+        cursor = self.connection.cursor()
+        query = "SELECT * FROM " + table_name + " WHERE " + Collections.TIMESERIES + "_id " + "= %s"
+        if signal_max is not None:
+            query += " AND value <= " + str(signal_max)
+        if signal_min is not None:
+            query += " AND value >= " + str(signal_min)
+        try:
+            cursor.execute(query, (time_series_id,))
+            result = cursor.fetchall()
+            column_names = [desc[0] for desc in cursor.description]
+            records = []
+            for row in result:
+                row_dict = dict(zip(column_names, row))
+                row_dict.pop("timeseries_id")
+                records.append(row_dict)
+            return {"records": records, "errors": None}
+        except psycopg2.Error as error:
+            return {"records":[], "errors": error.pgerror}
