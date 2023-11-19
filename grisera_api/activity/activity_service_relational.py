@@ -37,8 +37,8 @@ class ActivityServiceRelational(ActivityService):
 
 
     def get_activity(self, activity_id: Union[int, str], depth: int = 0, source: str = ""):
-        import activity_execution.activity_execution_service as ae_rel
-        activity_execution_service = ae_rel.ActivityExecutionService()
+        import activity_execution.activity_execution_service_relational as ae_rel
+        activity_execution_service = ae_rel.ActivityExecutionServiceRelational()
         
         activity_dict = self.rdb_api_service.get_with_id(self.table_name, activity_id)
         if not activity_dict:
