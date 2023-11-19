@@ -48,9 +48,12 @@ class ActivityExecutionServiceRelational(ActivityExecutionService):
             participation_service_relational = participation.participation_service_relational.ParticipationServiceRelational()
             arrangement_service_relational = arrangement.arrangement_service_relational.ArrangementServiceRelational()
             scenario_service_relational = scenario.scenario_service_relational.ScenarioServiceRelational()
+
             if source != Collections.ACTIVITY:
-                activity_execution["activity"] = activity_service_relational.get_activity(
+                activity = activity_service_relational.get_activity(
                     activity_execution["activity_id"], depth - 1, self.table_name)
+                if type(activity) is not NotFoundByIdModel:
+                    activity_execution["activity"] = activity
             if source != Collections.PARTICIPATION:
                 activity_execution["participations"] = participation_service_relational.get_multiple_with_foreign_id(
                     activity_execution["id"], depth - 1, self.table_name)
@@ -58,8 +61,10 @@ class ActivityExecutionServiceRelational(ActivityExecutionService):
                 activity_execution["experiments"] = scenario_service_relational.get_experiment_by_activity_execution(
                     activity_execution["id"], depth - 1, self.table_name)
             if source != Collections.ARRANGEMENT:
-                activity_execution["arrangements"] = arrangement_service_relational.get_arrangement(
+                arrangement = arrangement_service_relational.get_arrangement(
                     activity_execution["arrangement_id"], depth - 1, self.table_name)
+                if type(arrangement) is not NotFoundByIdModel:
+                    activity_execution["arrangements"] = arrangement
         return ActivityExecutionOut(**activity_execution)
 
     def delete_activity_execution(self, activity_execution_id: Union[int, str]):
@@ -106,7 +111,7 @@ class ActivityExecutionServiceRelational(ActivityExecutionService):
         return ActivityExecutionOut(**put_result["records"])
 
     def get_multiple_with_foreign_id(self, foreign_id: Union[int, str], depth: int = 0, source: str = ""):
-        activity_executions = self.rdb_api_service.get_records_with_foreign_id(self.table_name, source+"_id",foreign_id)
+        activity_executions = self.rdb_api_service.get_records_with_foreign_id(self.table_name, source+"_id",foreign_id)["records"]
         if depth > 0:
             import activity.activity_service_relational
             import participation.participation_service_relational
@@ -132,5 +137,5 @@ class ActivityExecutionServiceRelational(ActivityExecutionService):
                 for activity_execution in activity_executions:
                     activity_execution["arrangements"] = arrangement_service_relational.get_arrangement(
                         activity_execution["arrangement_id"], depth - 1, self.table_name)
-        return ActivityExecutionsOut(activity_executions=activity_executions)
-    
+        return [ActivityExecutionOut(**execution) for execution in activity_executions]
+

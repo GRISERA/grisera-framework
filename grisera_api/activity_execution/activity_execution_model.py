@@ -62,7 +62,7 @@ class ActivityExecutionOut(BasicActivityExecutionOut, BaseModelOut):
     activity: "Optional[ActivityOut]"
     participations: "Optional[List[ParticipationOut]]"
     experiments: "Optional[List[ExperimentOut]]"
-    arrangements: "Optional[List[ArrangementOut]]"
+    arrangements: "Optional[ArrangementOut]"
 
 
 class ActivityExecutionsOut(BaseModelOut):

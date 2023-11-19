@@ -171,7 +171,9 @@ class RdbApiService:
             values.append(id)
 
             query = "UPDATE "+ table_name + " SET " + set_statements + " WHERE id = %s RETURNING *"
-            
+            if(len(updated_record) == 0):
+                cursor.close()
+                return {"records": None, "errors": "No values to update"}
             cursor.execute(query, values)
             row = cursor.fetchone()
             if row is None:

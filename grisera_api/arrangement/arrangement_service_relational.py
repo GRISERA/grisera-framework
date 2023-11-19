@@ -27,7 +27,6 @@ class ArrangementServiceRelational(ArrangementService):
 
         if depth > 0 and source != Collections.ACTIVITY_EXECUTION:
                 arrangement_dict["activity_executions"] = activity_execution_service.get_multiple_with_foreign_id(arrangement_id, depth - 1, self.table_name)
-
         return ArrangementOut(**arrangement_dict)
     
 
