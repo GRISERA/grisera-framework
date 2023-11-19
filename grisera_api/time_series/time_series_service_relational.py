@@ -267,3 +267,37 @@ class TimeSeriesServiceRelational(TimeSeriesService):
             timeseries = self.get_time_series(timeseries_proxy["timeseries_id"], depth, source=source)
             timeseries_list.append(timeseries)
         return timeseries_list
+
+    def get_multiple_with_foreign_id(self, foreign_id: Union[int, str], depth: int = 0, source="" ):
+        import observable_information.observable_information_service_relational
+        import measure.measure_service_relational
+        observable_information_service_relational = observable_information.observable_information_service_relational.ObservableInformationServiceRelational()
+        measure_service_relational = measure.measure_service_relational.MeasureServiceRelational()
+
+        timeseries_dict_list = self.rdb_api_service.get_records_with_foreign_id(self.table_name, source + "_id", foreign_id)
+        if timeseries_dict_list["errors"] is not None:
+            return []
+        
+        for timeseries_dict in timeseries_dict_list["records"]:
+            signal_table_name = Collections.SIGNAL_VALUES_EPOCH if timeseries_dict["type"] == Type.epoch else Collections.SIGNAL_VALUES_TIMESTAMP
+            signal_values_list = self.rdb_api_service.get_records_with_foreign_id(signal_table_name, self.table_name + "_id", timeseries_dict["id"])["records"]
+
+            timeseries_dict["signal_values"] = list()
+            for signal_value in signal_values_list:
+                signal_value["signal_value"] = {
+                    "value": signal_value["value"],
+                    "additional_properties": signal_value["additional_properties"]
+                }
+                signal_value.pop("value")
+                signal_value.pop("additional_properties")
+                timeseries_dict["signal_values"].append(signal_value)
+
+            timeseries_dict["observable_information_ids"] = observable_information_service_relational.get_ids_by_proxy_foreign_id(timeseries_dict["id"], self.table_name)
+            if depth > 0:
+                if source != Collections.MEASURE:
+                    timeseries_dict["measure"] = measure_service_relational.get_measure(timeseries_dict["measure_id"], depth - 1, self.table_name)
+                if source != Collections.OBSERVABLE_INFORMATION:
+                    timeseries_dict["observable_informations"] = observable_information_service_relational.get_multiple_from_proxy_with_foreign_id(
+                        timeseries_dict["id"], depth - 1, self.table_name)
+                    
+        return timeseries_dict_list["records"]
