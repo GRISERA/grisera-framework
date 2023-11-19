@@ -112,7 +112,6 @@ class ActivityExecutionServiceRelational(ActivityExecutionService):
 
     def get_multiple_with_foreign_id(self, foreign_id: Union[int, str], depth: int = 0, source: str = ""):
         activity_executions = self.rdb_api_service.get_records_with_foreign_id(self.table_name, source+"_id",foreign_id)["records"]
-        print(activity_executions)
         if depth > 0:
             import activity.activity_service_relational
             import participation.participation_service_relational

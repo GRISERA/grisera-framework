@@ -56,7 +56,7 @@ class ArrangementOut(BasicArrangementOut, BaseModelOut):
     activity_executions (Optional[ActivityExecutionOut]): activity_executions related to this arrangement
     """
 
-    activity_executions: "Optional[ActivityExecutionOut]"
+    activity_executions: "Optional[List[ActivityExecutionOut]]"
 
 
 class ArrangementsOut(BaseModelOut):
