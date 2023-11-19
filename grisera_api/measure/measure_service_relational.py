@@ -39,8 +39,8 @@ class MeasureServiceRelational(MeasureService):
             return NotFoundByIdModel(id=measure_id, errors={"Entity not found."})
         
         if depth > 0:
-            #if source != Collections.TIMESERIES:
-                #TODO measure_dict["time_series"] = time_series_service.get_multiple_with_foreign_id(measure_id, depth - 1, self.table_name)
+            if source != Collections.TIMESERIES:
+                measure_dict["time_series"] = time_series_service.get_multiple_with_foreign_id(measure_id, depth - 1, self.table_name)
             if source != Collections.MEASURE_NAME:
                 measure_dict["measure_name"] = measure_name_service.get_single_with_foreign_id(measure_dict["measure_name_id"], depth - 1, self.table_name)
 
@@ -85,8 +85,8 @@ class MeasureServiceRelational(MeasureService):
             return measure_dict_list["records"]
         
         for measure_dict in measure_dict_list["records"]:
-            #if source != Collections.TIMESERIES:
-                #TODO measure_dict["time_series"] = time_series_service.get_multiple_with_foreign_id(measure_dict["id"], depth - 1, self.table_name)
+            if source != Collections.TIMESERIES:
+                measure_dict["time_series"] = time_series_service.get_multiple_with_foreign_id(measure_dict["id"], depth - 1, self.table_name)
             if source != Collections.MEASURE_NAME:
                 measure_dict["measure_name"] = measure_name_service.get_single_with_foreign_id(measure_dict["measure_name_id"], depth - 1, self.table_name)
         
